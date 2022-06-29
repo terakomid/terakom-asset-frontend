@@ -3,9 +3,7 @@
 // React component
 import React, { Component } from 'react';
 
-// CSS
-import "@popperjs/core";
-import "bootstrap";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 
 // Header
 import Header from './component/Header';
@@ -22,11 +20,19 @@ class App extends Component {
   render() {
     return (
       <div id="layout-wrapper">
+        {/* Header */}
         <Header />
+
+        {/* Sidebar */}
         <Sidebar />
 
         <div className='main-content'>
-          <Content />
+          <BrowserRouter>
+            <Routes>
+              <Route path='/' element={<Content />} />
+            </Routes>
+          </BrowserRouter>
+
           <Footer />
         </div>
       </div>

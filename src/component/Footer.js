@@ -11,6 +11,7 @@ class Footer extends Component {
         //An array of assets
         let scripts = [
             // { src: "assets/libs/jquery/jquery.min.js" },
+            // { src: "assets/libs/bootstrap/js/bootstrap.bundle.min.js" },
             // { src: "assets/libs/metismenu/metisMenu.min.js" },
             // { src: "assets/libs/simplebar/simplebar.min.js" },
             // { src: "assets/libs/node-waves/waves.min.js" },

@@ -10,16 +10,16 @@ class Header extends Component {
 
                         {/* LOGO */}
                         <div className="navbar-brand-box">
-                            <a href="index.html" className="logo logo-dark">
+                            <a href="/" className="logo logo-dark">
                                 <span className="logo-sm">
                                     <img src="assets/images/logo-sm.png" alt="" height="22" />
                                 </span>
                                 <span className="logo-lg">
-                                    <img src="assets/images/logo-dark.png" alt="" height="17" />
+                                    <img src="assets/images/logo-dark.png" alt="" height="50" />
                                 </span>
                             </a>
 
-                            <a href="index.html" className="logo logo-light">
+                            <a href="/" className="logo logo-light">
                                 <span className="logo-sm">
                                     <img src="assets/images/logo-sm.png" alt="" height="22" />
                                 </span>
@@ -38,14 +38,14 @@ class Header extends Component {
 
                     <div className="d-flex">
 
-                        {/* fullscreen */}
+                        {/* Fullscreen */}
                         <div className="dropdown d-none d-lg-inline-block">
                             <button type="button" className="btn header-item noti-icon waves-effect" data-toggle="fullscreen">
                                 <i className="mdi mdi-fullscreen font-size-24"></i>
                             </button>
                         </div>
 
-                        {/* notification */}
+                        {/* Notification */}
                         <div className="dropdown d-inline-block ms-1">
                             <button type="button" className="btn header-item noti-icon waves-effect"
                                 id="page-header-notifications-dropdown" data-bs-toggle="dropdown" aria-haspopup="true"
@@ -161,14 +161,14 @@ class Header extends Component {
                             </div>
                         </div>
 
-                        {/* setting */}
+                        {/* Setting */}
                         <div className="dropdown d-inline-block">
                             <button type="button" className="btn header-item waves-effect" id="page-header-user-dropdown"
                                 data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <img className="rounded-circle header-profile-user" src="assets/images/users/user-4.jpg" alt="Header Avatar" />
                             </button>
                             <div className="dropdown-menu dropdown-menu-end">
-                                item
+                                {/* item */}
                                 <a className="dropdown-item" href="#link"><i
                                     className="mdi mdi-account-circle font-size-17 text-muted align-middle me-1"></i>
                                     Profile</a>
