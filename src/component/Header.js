@@ -9,10 +9,10 @@ class Header extends Component {
                     <div className="d-flex">
 
                         {/* LOGO */}
-                        <div className="navbar-brand-box">
+                        <div className="navbar-brand-box px-1">
                             <a href="/" className="logo logo-dark">
                                 <span className="logo-sm">
-                                    <img src="assets/images/logo-sm.png" alt="" height="22" />
+                                    <img src="assets/images/logo-sm.png" alt="" height="17" />
                                 </span>
                                 <span className="logo-lg">
                                     <img src="assets/images/logo-dark.png" alt="" height="50" />

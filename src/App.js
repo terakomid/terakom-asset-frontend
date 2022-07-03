@@ -10,10 +10,13 @@ import Header from './component/Header';
 import Sidebar from './component/Sidebar';
 
 // Content
-import Content from './content/home/Content';
+import Content from './content/dashboard/Content';
 
 // Footer
 import Footer from './component/Footer';
+
+// CSS
+import './App.css'
 
 class App extends Component {
 

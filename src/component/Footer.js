@@ -2,8 +2,6 @@
 
 import React, { Component } from 'react';
 
-// import { Helmet } from 'react-helmet';
-
 class Footer extends Component {
 
     componentDidMount() {
@@ -18,7 +16,6 @@ class Footer extends Component {
             // { src: "assets/libs/jquery-sparkline/jquery.sparkline.min.js" },
             // { src: "assets/libs/raphael/raphael.min.js" },
             // { src: "assets/libs/morris.js/morris.min.js" },
-            { src: "assets/js/pages/dashboard.init.js" },
             { src: "assets/js/app.js" }
         ]
         scripts.forEach(item => {
