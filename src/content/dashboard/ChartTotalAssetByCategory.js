@@ -31,8 +31,8 @@ export const options = {
       display: true,
       color: '#5F6368',
       font: {
-        size: 19,
-        weight: 'bold'
+        size: 19.5,
+        weight: '600'
       },
       text: 'Total Asset Per Category',
       padding: {

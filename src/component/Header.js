@@ -1,8 +1,12 @@
 // Header.js
 import React, { Component } from 'react';
 
+import { Link } from "react-router-dom";
+
 class Header extends Component {
+
     render() {
+
         return (
             <header id="page-topbar">
                 <div className="navbar-header">
@@ -10,14 +14,14 @@ class Header extends Component {
 
                         {/* LOGO */}
                         <div className="navbar-brand-box px-1">
-                            <a href="/" className="logo logo-dark">
+                            <Link to="/" className="logo logo-dark">
                                 <span className="logo-sm">
                                     <img src="assets/images/logo-sm.png" alt="" height="17" />
                                 </span>
                                 <span className="logo-lg">
                                     <img src="assets/images/logo-dark.png" alt="" height="50" />
                                 </span>
-                            </a>
+                            </Link>
 
                             <a href="/" className="logo logo-light">
                                 <span className="logo-sm">
@@ -30,7 +34,7 @@ class Header extends Component {
                         </div>
 
                         <button type="button"
-                            className="btn btn-sm px-3 font-size-24 header-item waves-effect vertical-menu-btn">
+                            className="btn btn-sm px-3 font-size-24 header-item waves-effect vertical-menu-btn" onClick={this.openSideMenu}>
                             <i className="mdi mdi-menu"></i>
                         </button>
 

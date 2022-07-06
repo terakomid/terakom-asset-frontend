@@ -1,17 +1,36 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+} from "react-router-dom";
+import reportWebVitals from './reportWebVitals';
 
 // CSS
 import 'bootstrap-icons/font/bootstrap-icons.css';
-
+// Sider & Header
 import App from './App';
-import reportWebVitals from './reportWebVitals';
+// Dashboard
+import Dashboard from './content/dashboard/Content';
+// Asset Location
+import AssetLocation from './content/master-data/asset-location/Content';
+// Footer
+import Footer from './component/Footer';
 
 const root = ReactDOM.createRoot(document.getElementById('App'));
 root.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
+
+  <div id="layout-wrapper">
+    <BrowserRouter>
+      <App />
+      <Routes>
+        <Route path='dashboard' element={<Dashboard />} />
+        <Route path='asset-location' element={<AssetLocation />} />
+      </Routes>
+      <Footer />
+    </BrowserRouter>
+  </div>
 );
 
 // If you want to start measuring performance in your app, pass a function

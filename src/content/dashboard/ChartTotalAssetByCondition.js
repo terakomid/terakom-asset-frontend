@@ -6,6 +6,7 @@ ChartJS.register(ArcElement, Tooltip, Legend);
 
 export const options = {
   responsive: true,
+  maintainAspectRatio: false,
   plugins: {
     legend: {
       display: true,
@@ -19,8 +20,8 @@ export const options = {
       display: true,
       color: '#5F6368',
       font: {
-        size: 19,
-        weight: 'bold'
+        size: 19.5,
+        weight: '600'
       },
       text: 'Total Asset Per Condition',
       position: 'top',
@@ -59,7 +60,7 @@ class ChartTotalAssetByCondition extends Component {
   render() {
     return (
       <div className='card shadow-sm'>
-        <div className='card-body'>
+        <div className='card-body h-300px'>
           <Pie options={options} data={data} />
         </div>
       </div>

@@ -1,15 +1,39 @@
+.h-300px {
+    height: 300px
+}
+
 .h-500px {
     height: 500px
 }
 
-.bg-info, .text-info {
+.w-200px {
+    width: 200px;
+}
+
+.bg-info,
+.text-info {
     color: #07528f !important;
 }
 
-.bg-primary, .text-primary {
+.bg-primary,
+.text-primary {
     color: #00b4d7 !important;
 }
 
 .MuiAutocomplete-hasPopupIcon.css-16awh2u-MuiAutocomplete-root .MuiOutlinedInput-root {
     padding-bottom: 0
+}
+
+.fs-1-dashboard {
+    font-size: calc(4.32813rem + .9375vw) !important;
+}
+
+@media (min-width: 1200px) {
+    .fs-1-dashboard {
+        font-size: 4.03125rem !important;
+    }
+}
+
+.dropstart-custom {
+    transform: translate(-235.9px) !important;
 }
