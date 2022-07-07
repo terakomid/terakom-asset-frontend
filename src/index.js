@@ -4,6 +4,7 @@ import {
   BrowserRouter,
   Routes,
   Route,
+  Navigate,
 } from "react-router-dom";
 import reportWebVitals from './reportWebVitals';
 
@@ -20,13 +21,13 @@ import Footer from './component/Footer';
 
 const root = ReactDOM.createRoot(document.getElementById('App'));
 root.render(
-
   <div id="layout-wrapper">
     <BrowserRouter>
       <App />
       <Routes>
-        <Route path='dashboard' element={<Dashboard />} />
-        <Route path='asset-location' element={<AssetLocation />} />
+        <Route path='/' element={<Navigate to='/dashboard' />} />
+        <Route path='/dashboard' element={<Dashboard />} />
+        <Route path='/asset-location' element={<AssetLocation />} />
       </Routes>
       <Footer />
     </BrowserRouter>

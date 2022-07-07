@@ -16,9 +16,9 @@ class SelectLocation extends Component {
 }
 
 const dataLocations = [
-  { label: '65D1 - HO Jakarta', year: '65D1' },
-  { label: '65D1A - WH Cikarang', year: '65D1A' },
-  { label: '65D1C - DSC Bogor', year: '65D1C' }
+  { label: '65D1 - HO Jakarta', code: '65D1' },
+  { label: '65D1A - WH Cikarang', code: '65D1A' },
+  { label: '65D1C - DSC Bogor', code: '65D1C' }
 ];
 
 
