@@ -1,7 +1,5 @@
 // Sidebar.js
-
 import React, { Component } from 'react';
-
 import { Link } from "react-router-dom";
 
 class Sidebar extends Component {
@@ -28,7 +26,7 @@ class Sidebar extends Component {
                             </li>
 
                             {/* User Management */}
-                            <li role="menuitem">
+                            <li role="menuitem" style={{ display: 'none' }}>
                                 <Link to='/#' className="has-arrow waves-effect">
                                     <i className="mdi mdi-account-circle"></i>
                                     <span className="text-capitalize">user management</span>
@@ -49,16 +47,17 @@ class Sidebar extends Component {
                                     <li role="menuitem">
                                         <Link to="/asset-location" className='text-capitalize'>asset location</Link>
                                     </li>
-                                    <li role="menuitem"><Link to='/#' className='text-capitalize'>asset category</Link></li>
-                                    <li role="menuitem"><Link to='/#' className='text-capitalize'>asset condition</Link></li>
-                                    <li role="menuitem"><Link to='/#' className='text-capitalize'>cost center</Link></li>
-                                    <li role="menuitem"><Link to='/#' className='text-capitalize'>department</Link></li>
-                                    <li role="menuitem"><Link to='/#' className='text-capitalize'>vendor name</Link></li>
+                                    <li role="menuitem"><Link to='/asset-category' className='text-capitalize'>asset category</Link></li>
+                                    <li role="menuitem"><Link to='/asset-condition' className='text-capitalize'>asset condition</Link></li>
+                                    <li role="menuitem"><Link to='/cost-center' className='text-capitalize'>cost center</Link></li>
+                                    <li role="menuitem"><Link to='/department' className='text-capitalize'>department</Link></li>
+                                    <li role="menuitem"><Link to='/vendor' className='text-capitalize'>vendor</Link></li>
+                                    <li role="menuitem"><Link to='/it' className='text-capitalize'>IT</Link></li>
                                 </ul>
                             </li>
 
                             {/* Data Asset */}
-                            <li role="menuitem">
+                            <li role="menuitem" style={{ display: 'none' }}>
                                 <Link to='/#' className="has-arrow waves-effect">
                                     <i className="mdi mdi-folder-table"></i>
                                     <span className="text-capitalize">data asset</span>

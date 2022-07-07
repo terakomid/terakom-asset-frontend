@@ -1,11 +1,17 @@
-import React, { Component } from 'react';
+import React, { Component } from 'react'
+import { Link } from "react-router-dom"
 
 // import axios from 'axios'
 
 import Box from '@mui/material/Box';
 import { DataGrid } from '@mui/x-data-grid';
 
-function editLink(params) {
+function codeLink(params) {
+    // return (<Link to={`/asset-subcategory/${params.row.code ||''}`} key={params.row.code ||''} >{params.row.code || ''}</Link>)
+    return (<Link to={`/asset-subcategory`} >{params.row.code || ''}</Link>)
+}
+
+function editLink() {
     return (
         <div className="btn-group dropstart">
 
@@ -84,22 +90,18 @@ const columns = [
     {
         field: 'id',
         headerName: 'No',
-        width: 50,
+        width: 50
     },
     {
         field: 'code',
         headerName: 'Code',
-        width: 150,
-    },
-    {
-        field: 'location',
-        headerName: 'Location',
         width: 200,
+        renderCell: codeLink
     },
     {
-        field: 'parent',
-        headerName: 'Parent',
-        width: 130
+        field: 'category',
+        headerName: 'Category',
+        width: 280,
     },
     {
         field: 'uid',
@@ -110,11 +112,11 @@ const columns = [
 ];
 
 const rows = [
-    { id: 1, uid: 1, code: '65D1A', location: 'Kebayoran Baru', parent: 'Jakarta' },
-    { id: 2, uid: 2, code: '65D1', location: 'Jakarta', parent: '-' },
-    { id: 3, uid: 3, code: '65D4A', location: 'Bandung', parent: '-' },
-    { id: 4, uid: 4, code: '65D4', location: 'Lembang', parent: 'Bandung' },
-    { id: 5, uid: 5, code: '65DA', location: 'Bogor', parent: '-' },
+    { id: 1, uid: 1, code: 'ID09', category: 'Furniture & Fixture' },
+    { id: 2, uid: 2, code: 'ID02', category: 'Building' },
+    { id: 3, uid: 3, code: 'ID03', category: 'Tools' },
+    { id: 4, uid: 4, code: 'ID04', category: 'Equipment' },
+    { id: 5, uid: 5, code: 'ID05', category: 'Computers' }
 ];
 
 export default Table

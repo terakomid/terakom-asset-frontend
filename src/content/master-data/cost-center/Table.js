@@ -5,7 +5,7 @@ import React, { Component } from 'react';
 import Box from '@mui/material/Box';
 import { DataGrid } from '@mui/x-data-grid';
 
-function editLink(params) {
+function editLink() {
     return (
         <div className="btn-group dropstart">
 
@@ -16,7 +16,7 @@ function editLink(params) {
                 <li className='w-100 py-2'>
                     <div className="form-check text-end me-3">
                         <label className="form-check-label fs-5">
-                            Edit 
+                            Edit
                             <i className='bi bi-pencil-fill mx-2'></i>
                         </label>
                     </div>
@@ -24,7 +24,7 @@ function editLink(params) {
                 <li className='w-100 py-2'>
                     <div className="form-check text-end me-3">
                         <label className="form-check-label fs-5">
-                            Delete 
+                            Delete
                             <i className='bi bi-trash-fill mx-2'></i>
                         </label>
                     </div>
@@ -89,17 +89,12 @@ const columns = [
     {
         field: 'code',
         headerName: 'Code',
-        width: 150,
-    },
-    {
-        field: 'location',
-        headerName: 'Location',
         width: 200,
     },
     {
-        field: 'parent',
-        headerName: 'Parent',
-        width: 130
+        field: 'costCenter',
+        headerName: 'Cost Center',
+        width: 280,
     },
     {
         field: 'uid',
@@ -110,11 +105,11 @@ const columns = [
 ];
 
 const rows = [
-    { id: 1, uid: 1, code: '65D1A', location: 'Kebayoran Baru', parent: 'Jakarta' },
-    { id: 2, uid: 2, code: '65D1', location: 'Jakarta', parent: '-' },
-    { id: 3, uid: 3, code: '65D4A', location: 'Bandung', parent: '-' },
-    { id: 4, uid: 4, code: '65D4', location: 'Lembang', parent: 'Bandung' },
-    { id: 5, uid: 5, code: '65DA', location: 'Bogor', parent: '-' },
+    { id: 1, uid: 1, code: 'CS01', costCenter: 'HRGA & Purchasing' },
+    { id: 2, uid: 2, code: 'CS02', costCenter: 'Internal Audit' },
+    { id: 3, uid: 3, code: 'CS03', costCenter: 'Service & Spare Parts' },
+    { id: 4, uid: 4, code: 'CS04', costCenter: 'Finance' },
+    { id: 5, uid: 5, code: 'CS05', costCenter: 'Logistic & Import' },
 ];
 
 export default Table

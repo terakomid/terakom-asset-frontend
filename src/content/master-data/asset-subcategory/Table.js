@@ -5,7 +5,7 @@ import React, { Component } from 'react';
 import Box from '@mui/material/Box';
 import { DataGrid } from '@mui/x-data-grid';
 
-function editLink(params) {
+function editLink() {
     return (
         <div className="btn-group dropstart">
 
@@ -16,7 +16,7 @@ function editLink(params) {
                 <li className='w-100 py-2'>
                     <div className="form-check text-end me-3">
                         <label className="form-check-label fs-5">
-                            Edit 
+                            Edit
                             <i className='bi bi-pencil-fill mx-2'></i>
                         </label>
                     </div>
@@ -24,7 +24,7 @@ function editLink(params) {
                 <li className='w-100 py-2'>
                     <div className="form-check text-end me-3">
                         <label className="form-check-label fs-5">
-                            Delete 
+                            Delete
                             <i className='bi bi-trash-fill mx-2'></i>
                         </label>
                     </div>
@@ -41,7 +41,7 @@ class Table extends Component {
     }
 
     // componentDidMount() {
-    //     axios.get(`https://jsonplaceholder.typicode.com/users`)
+    //     axios.get(`https://jsonplaceholder.typisubCategory.com/users`)
     //         .then(res => {
     //             const rows = res.data;
     //             this.setState({ rows });
@@ -87,19 +87,14 @@ const columns = [
         width: 50,
     },
     {
-        field: 'code',
-        headerName: 'Code',
-        width: 150,
+        field: 'subCategory',
+        headerName: 'Sub Category',
+        width: 230,
     },
     {
-        field: 'location',
-        headerName: 'Location',
-        width: 200,
-    },
-    {
-        field: 'parent',
-        headerName: 'Parent',
-        width: 130
+        field: 'usefulLife',
+        headerName: 'Useful Life',
+        width: 250,
     },
     {
         field: 'uid',
@@ -110,11 +105,16 @@ const columns = [
 ];
 
 const rows = [
-    { id: 1, uid: 1, code: '65D1A', location: 'Kebayoran Baru', parent: 'Jakarta' },
-    { id: 2, uid: 2, code: '65D1', location: 'Jakarta', parent: '-' },
-    { id: 3, uid: 3, code: '65D4A', location: 'Bandung', parent: '-' },
-    { id: 4, uid: 4, code: '65D4', location: 'Lembang', parent: 'Bandung' },
-    { id: 5, uid: 5, code: '65DA', location: 'Bogor', parent: '-' },
+    { id: 1, uid: 1, subCategory: 'Meja', usefulLife: '60 Bulan' },
+    { id: 2, uid: 2, subCategory: 'Kursi', usefulLife: '60 Bulan' },
+    { id: 3, uid: 3, subCategory: 'Lemari', usefulLife: '60 Bulan' },
+    { id: 4, uid: 4, subCategory: 'Lampu', usefulLife: '24 Bulan' },
+    { id: 5, uid: 5, subCategory: 'Loker', usefulLife: '48 Bulan' },
+    { id: 6, uid: 6, subCategory: 'Kursi', usefulLife: '60 Bulan' },
+    { id: 7, uid: 7, subCategory: 'Lampu', usefulLife: '24 Bulan' },
+    { id: 8, uid: 8, subCategory: 'Lemari', usefulLife: '60 Bulan' },
+    { id: 9, uid: 9, subCategory: 'Loker', usefulLife: '48 Bulan' },
+    { id: 10, uid: 10, subCategory: 'Meja', usefulLife: '60 Bulan' }
 ];
 
 export default Table

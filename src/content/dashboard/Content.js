@@ -34,7 +34,7 @@ class Content extends Component {
 
                             <div className='card-body'>
 
-                                <div className='mb-5 pb-4'>
+                                <div className='mb-5'>
                                     <div className='float-end'>
                                         {/* FIlter Dashboard */}
                                         <FilterDashboard />

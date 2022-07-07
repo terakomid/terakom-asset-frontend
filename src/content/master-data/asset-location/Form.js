@@ -11,7 +11,7 @@ class Form extends Component {
         <div className='card-body'>
           <h2 className="card-title fw-bold">Add Asset Location</h2>
 
-          <div className='row'>
+          <div className='row mt-3'>
             <div className='col-xl-12 col-12 pt-3'>
               <TextField sx={{ width: '100%' }} id="outlined-basic" label="Code" variant="outlined" />
             </div>

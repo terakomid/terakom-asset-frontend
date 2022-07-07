@@ -26,7 +26,7 @@ class Content extends Component {
 
                                         {/* Title */}
                                         <div className='col-xl-8 col-12 mb-3'>
-                                            <h2 className="fw-bold">Asset Location</h2>
+                                            <h2 className="fw-bold">Asset Category</h2>
                                         </div>
 
                                         {/* Button Import & Export */}

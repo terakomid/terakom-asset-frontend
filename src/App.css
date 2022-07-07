@@ -1,3 +1,4 @@
+/* size */
 .h-300px {
     height: 300px
 }
@@ -10,6 +11,7 @@
     width: 200px;
 }
 
+/* color */
 .bg-info,
 .text-info {
     color: #07528f !important;
@@ -20,10 +22,7 @@
     color: #00b4d7 !important;
 }
 
-.MuiAutocomplete-hasPopupIcon.css-16awh2u-MuiAutocomplete-root .MuiOutlinedInput-root {
-    padding-bottom: 0
-}
-
+/* font */
 .fs-1-dashboard {
     font-size: calc(4.32813rem + .9375vw) !important;
 }
@@ -34,6 +33,22 @@
     }
 }
 
+/* dropdown */
 .dropstart-custom {
     transform: translate(-235.9px) !important;
+    position: fixed !important;
+}
+
+.dropstart-custom-table {
+    transform: translate(-165.9px) !important;
+    position: fixed !important;
+}
+
+/* table column */
+.css-1jbbcbn-MuiDataGrid-columnHeaderTitle {
+    font-weight: bold !important;
+}
+
+.css-f3jnds-MuiDataGrid-columnHeaders {
+    background-color: #eaeaea;
 }

@@ -5,7 +5,7 @@ import React, { Component } from 'react';
 import Box from '@mui/material/Box';
 import { DataGrid } from '@mui/x-data-grid';
 
-function editLink(params) {
+function editLink() {
     return (
         <div className="btn-group dropstart">
 
@@ -16,7 +16,7 @@ function editLink(params) {
                 <li className='w-100 py-2'>
                     <div className="form-check text-end me-3">
                         <label className="form-check-label fs-5">
-                            Edit 
+                            Edit
                             <i className='bi bi-pencil-fill mx-2'></i>
                         </label>
                     </div>
@@ -24,7 +24,7 @@ function editLink(params) {
                 <li className='w-100 py-2'>
                     <div className="form-check text-end me-3">
                         <label className="form-check-label fs-5">
-                            Delete 
+                            Delete
                             <i className='bi bi-trash-fill mx-2'></i>
                         </label>
                     </div>
@@ -92,14 +92,19 @@ const columns = [
         width: 150,
     },
     {
-        field: 'location',
-        headerName: 'Location',
+        field: 'name',
+        headerName: 'Vendor Name',
+        width: 300,
+    },
+    {
+        field: 'address',
+        headerName: 'Vendor Address',
         width: 200,
     },
     {
-        field: 'parent',
-        headerName: 'Parent',
-        width: 130
+        field: 'contact',
+        headerName: 'Vendor Contact',
+        width: 200,
     },
     {
         field: 'uid',
@@ -110,11 +115,11 @@ const columns = [
 ];
 
 const rows = [
-    { id: 1, uid: 1, code: '65D1A', location: 'Kebayoran Baru', parent: 'Jakarta' },
-    { id: 2, uid: 2, code: '65D1', location: 'Jakarta', parent: '-' },
-    { id: 3, uid: 3, code: '65D4A', location: 'Bandung', parent: '-' },
-    { id: 4, uid: 4, code: '65D4', location: 'Lembang', parent: 'Bandung' },
-    { id: 5, uid: 5, code: '65DA', location: 'Bogor', parent: '-' },
+    { id: 1, uid: 1, code: '35071', name: 'Vendor A', address: 'Jakarta', contact: '081223334445' },
+    { id: 2, uid: 2, code: '35072', name: 'Vendor B', address: 'Jakarta', contact: '081223334445' },
+    { id: 3, uid: 3, code: '35073', name: 'Vendor C', address: 'Jakarta', contact: '081223334445' },
+    { id: 4, uid: 4, code: '35074', name: 'Vendor D', address: 'Jakarta', contact: '081223334445' },
+    { id: 5, uid: 5, code: '35075', name: 'Vendor E', address: 'Jakarta', contact: '081223334445' },
 ];
 
 export default Table

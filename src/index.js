@@ -16,6 +16,19 @@ import App from './App';
 import Dashboard from './content/dashboard/Content';
 // Asset Location
 import AssetLocation from './content/master-data/asset-location/Content';
+// Asset Category
+import AssetCategory from './content/master-data/asset-category/Content';
+// Asset SubCategory
+import AssetSubCategory from './content/master-data/asset-subcategory/Content';
+// Asset Condition
+import AssetCondition from './content/master-data/asset-condition/Content';
+// Cost Center
+import CostCenter from './content/master-data/cost-center/Content';
+// Department
+import Department from './content/master-data/department/Content';
+// Vendor
+import Vendor from './content/master-data/vendor/Content';
+
 // Footer
 import Footer from './component/Footer';
 
@@ -28,6 +41,13 @@ root.render(
         <Route path='/' element={<Navigate to='/dashboard' />} />
         <Route path='/dashboard' element={<Dashboard />} />
         <Route path='/asset-location' element={<AssetLocation />} />
+        <Route path='/asset-category' element={<AssetCategory />} />
+        <Route path='/asset-subcategory' element={<AssetSubCategory />} />
+        <Route path='/asset-condition' element={<AssetCondition />} />
+        <Route path='/cost-center' element={<CostCenter />} />
+        <Route path='/department' element={<Department />} />
+        <Route path='/vendor' element={<Vendor />} />
+        <Route path='/it' element={<AssetCondition />} />
       </Routes>
       <Footer />
     </BrowserRouter>
