@@ -1,12 +1,11 @@
-import React, { Component } from 'react';
+import React, { Component } from 'react'
+
+// import axios from 'axios'
 
 import Box from '@mui/material/Box';
 import { DataGrid } from '@mui/x-data-grid';
-// API
-import TableApi from './API/TableApi';
 
-// edit button
-function editLink(params) {
+function editLink() {
     return (
         <div className="btn-group dropstart">
 
@@ -17,7 +16,7 @@ function editLink(params) {
                 <li className='w-100 py-2'>
                     <div className="form-check text-end me-3">
                         <label className="form-check-label fs-5">
-                            Edit
+                            Edit 
                             <i className='bi bi-pencil-fill mx-2'></i>
                         </label>
                     </div>
@@ -25,7 +24,7 @@ function editLink(params) {
                 <li className='w-100 py-2'>
                     <div className="form-check text-end me-3">
                         <label className="form-check-label fs-5">
-                            Delete
+                            Delete 
                             <i className='bi bi-trash-fill mx-2'></i>
                         </label>
                     </div>
@@ -41,17 +40,22 @@ class Table extends Component {
         rows: []
     }
 
-    componentDidMount() {
-        <TableApi />
-    }
+    // componentDidMount() {
+    //     axios.get(`https://jsonplaceholder.typicode.com/users`)
+    //         .then(res => {
+    //             const rows = res.data;
+    //             this.setState({ rows });
+
+    //             console.log(rows)
+    //         })
+    // }
 
     render() {
         return (
             < div className='card shadow-none border-1' >
                 <div className='card-body'>
                     {/* Table */}
-                    <TableApi />
-                    <div style={{ height: 400, width: '100%' }}>
+                    <div style={{ height: 400, width: '100%', id: 1 }}>
                         <Box sx={{
                             height: 400,
                             width: '100%'
@@ -62,7 +66,6 @@ class Table extends Component {
                                     border: 0,
                                 }}
                                 disableColumnMenu
-                                checkboxSelection
                                 columns={columns}
                                 pageSize={5}
                                 rows={rows}
@@ -80,37 +83,29 @@ const columns = [
     {
         field: 'id',
         headerName: 'No',
-        width: 50,
+        width: 50
     },
     {
-        field: 'code',
-        headerName: 'Code',
-        width: 150,
-    },
-    {
-        field: 'location',
-        headerName: 'Location',
-        width: 200,
-    },
-    {
-        field: 'parent',
-        headerName: 'Parent',
-        width: 130
+        field: 'type',
+        headerName: 'Type',
+        width: 480,
     },
     {
         field: 'uid',
         headerName: '',
+        hide: true,
         width: 50,
         renderCell: editLink
     }
 ];
 
 const rows = [
-    { id: 1, uid: 1, code: '65D1A', location: 'Kebayoran Baru', parent: 'Jakarta' },
-    { id: 2, uid: 2, code: '65D1', location: 'Jakarta', parent: '-' },
-    { id: 3, uid: 3, code: '65D4A', location: 'Bandung', parent: '-' },
-    { id: 4, uid: 4, code: '65D4', location: 'Lembang', parent: 'Bandung' },
-    { id: 5, uid: 5, code: '65DA', location: 'Bogor', parent: '-' },
+    { id: 1, type: 'Device', uid: 1 },
+    { id: 2, type: 'Brand', uid: 2 },
+    { id: 3, type: 'Processor', uid: 3 },
+    { id: 4, type: 'Windows OS', uid: 4 },
+    { id: 5, type: 'Office', uid: 5 },
+    { id: 6, type: 'Antivirus', uid: 6 }
 ];
 
 export default Table

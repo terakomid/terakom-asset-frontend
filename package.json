@@ -20,6 +20,7 @@
     "gulp-sourcemaps": "^2.6.5",
     "gulp-uglify": "3.0.2",
     "gulp-useref-plus": "0.0.8",
+    "react-axios": "^2.0.6",
     "rtlcss": "^3.0.0"
   },
   "dependencies": {

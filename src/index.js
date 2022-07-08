@@ -28,6 +28,8 @@ import CostCenter from './content/master-data/cost-center/Content';
 import Department from './content/master-data/department/Content';
 // Vendor
 import Vendor from './content/master-data/vendor/Content';
+// IT
+import It from './content/master-data/it/Content';
 
 // Footer
 import Footer from './component/Footer';
@@ -47,7 +49,7 @@ root.render(
         <Route path='/cost-center' element={<CostCenter />} />
         <Route path='/department' element={<Department />} />
         <Route path='/vendor' element={<Vendor />} />
-        <Route path='/it' element={<AssetCondition />} />
+        <Route path='/it' element={<It />} />
       </Routes>
       <Footer />
     </BrowserRouter>

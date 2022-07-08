@@ -26,15 +26,15 @@ class Content extends Component {
 
                                         {/* Title */}
                                         <div className='col-xl-7 col-12 mb-3'>
-                                            <h2 className="fw-bold">Vendor</h2>
+                                            <h2 className="fw-bold">Master Vendor</h2>
                                         </div>
 
                                         {/* Button Import & Export */}
                                         <div className='col-xl-5 col-12'>
                                             <div className='d-flex justify-content-evenly'>
-                                                <Button variant="contained" startIcon={<FileDownload />}>Import</Button>
-                                                <Button variant="contained" startIcon={<FileUpload />}>Export</Button>
-                                                <Button variant="contained" startIcon={<Add />}>Export</Button>
+                                                <Button variant="contained" size='small' startIcon={<FileDownload />}>Import</Button>
+                                                <Button variant="contained" size='small' startIcon={<FileUpload />}>Export</Button>
+                                                <Button variant="contained" size='small' startIcon={<Add />}>Add Vendor</Button>
                                             </div>
                                         </div>
 

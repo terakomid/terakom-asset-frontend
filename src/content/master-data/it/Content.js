@@ -26,15 +26,7 @@ class Content extends Component {
 
                                         {/* Title */}
                                         <div className='col-xl-8 col-12 mb-3'>
-                                            <h2 className="fw-bold">Master Asset Location</h2>
-                                        </div>
-
-                                        {/* Button Import & Export */}
-                                        <div className='col-xl-4 col-12'>
-                                            <div className='d-flex justify-content-evenly'>
-                                                <Button variant="contained" startIcon={<FileDownload />}>Import</Button>
-                                                <Button variant="contained" startIcon={<FileUpload />}>Export</Button>
-                                            </div>
+                                            <h2 className="fw-bold">Master IT</h2>
                                         </div>
 
                                         {/* Table */}
@@ -43,7 +35,7 @@ class Content extends Component {
                                         </div>
 
                                         {/* Form */}
-                                        <div className='col-xl-4 col-12 mt-3'>
+                                        <div className='col-xl-4 col-12 mt-3' style={{display: 'none'}}>
                                             <Form />
                                         </div>
 

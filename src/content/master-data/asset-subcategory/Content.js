@@ -27,7 +27,7 @@ class Content extends Component {
 
                                         {/* Title */}
                                         <div className='col-xl-8 col-12 mb-3'>
-                                            <h2 className="fw-bold">Asset Sub Category</h2>
+                                            <h2 className="fw-bold">Master Asset Sub Category</h2>
                                         </div>
 
                                         {/* Button Import & Export */}

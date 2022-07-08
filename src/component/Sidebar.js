@@ -45,14 +45,14 @@ class Sidebar extends Component {
                                 </Link>
                                 <ul className="sub-menu" role="menu">
                                     <li role="menuitem">
-                                        <Link to="/asset-location" className='text-capitalize'>asset location</Link>
+                                        <Link to="/asset-location" className='text-capitalize py-2'>master asset location</Link>
                                     </li>
-                                    <li role="menuitem"><Link to='/asset-category' className='text-capitalize'>asset category</Link></li>
-                                    <li role="menuitem"><Link to='/asset-condition' className='text-capitalize'>asset condition</Link></li>
-                                    <li role="menuitem"><Link to='/cost-center' className='text-capitalize'>cost center</Link></li>
-                                    <li role="menuitem"><Link to='/department' className='text-capitalize'>department</Link></li>
-                                    <li role="menuitem"><Link to='/vendor' className='text-capitalize'>vendor</Link></li>
-                                    <li role="menuitem"><Link to='/it' className='text-capitalize'>IT</Link></li>
+                                    <li role="menuitem"><Link to='/asset-category' className='text-capitalize py-2'>master asset category</Link></li>
+                                    <li role="menuitem"><Link to='/vendor' className='text-capitalize py-2'>master vendor</Link></li>
+                                    <li role="menuitem"><Link to='/cost-center' className='text-capitalize py-2'>master cost center</Link></li>
+                                    <li role="menuitem"><Link to='/department' className='text-capitalize py-2'>master department</Link></li>
+                                    <li role="menuitem"><Link to='/asset-condition' className='text-capitalize py-2'>master asset condition</Link></li>
+                                    <li role="menuitem"><Link to='/it' className='text-capitalize py-2'>master IT</Link></li>
                                 </ul>
                             </li>
 
