@@ -47,13 +47,8 @@ class Content extends Component {
                                     <h4 className="card-title fs-4 fw-bold">Filter</h4>
 
                                     {/* Filter By Location */}
-                                    <div className="col-xl-5 col-sm-6 py-3">
+                                    <div className="col-xl-10 col-sm-6 py-3">
                                         <SelectLocation />
-                                    </div>
-
-                                    {/* Filter By Category */}
-                                    <div className="col-xl-5 col-sm-6 py-3">
-                                        <SelectCategory />
                                     </div>
 
                                     {/* Btn Apply */}
