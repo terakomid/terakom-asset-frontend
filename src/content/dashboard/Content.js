@@ -7,8 +7,6 @@ import React, { Component } from 'react';
 import FilterDashboard from './FilterDashboard';
 // Select Location
 import SelectLocation from './SelectLocation';
-// Select Category
-import SelectCategory from './SelectCategory';
 // Button Apply
 import ButtonApply from './ButtonApply';
 // Chart total asset by category

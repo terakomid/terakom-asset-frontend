@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import Box from '@mui/material/Box';
 import { DataGrid } from '@mui/x-data-grid';
 // API
-import TableApi from './API/TableApi';
+import { dataTable } from './API/TableApi';
 
 // edit button
 function editLink(params) {
@@ -38,11 +38,11 @@ function editLink(params) {
 class Table extends Component {
 
     state = {
-        rows: []
+        rows: [],
     }
 
     componentDidMount() {
-        <TableApi />
+        console.log(dataTable)
     }
 
     render() {
@@ -50,7 +50,7 @@ class Table extends Component {
             < div className='card shadow-none border-1' >
                 <div className='card-body'>
                     {/* Table */}
-                    <TableApi />
+                    {dataTable()}
                     <div style={{ height: 400, width: '100%' }}>
                         <Box sx={{
                             height: 400,

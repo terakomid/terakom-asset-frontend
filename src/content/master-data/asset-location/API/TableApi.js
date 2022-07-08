@@ -3,7 +3,7 @@ import React, { Component } from 'react'
 import axios from "axios"
 import { Get } from "react-axios"
 
-export const axiosInstance = axios.create({
+const axiosInstance = axios.create({
     baseURL: 'http://10.54.8.30:8000/api/',
     timeout: 2000,
     headers: {
@@ -11,21 +11,13 @@ export const axiosInstance = axios.create({
     }
 });
 
-class TableApi extends Component {
+export function dataTable() {
+    
+    <Get url="location" instance={axiosInstance}>
+        {(error, response, isLoading, makeRequest, axios) => {
+            console.log(isLoading)
 
-    render() {
-        return (
-            <div className='response'>
-
-                <Get url="location" instance={axiosInstance}>
-                    {(error, response, isLoading, makeRequest, axios) => {
-                        console.log(response)
-                    }}
-                </Get>
-            </div>
-        )
-    }
-
+            return isLoading
+        }}
+    </Get>
 }
-
-export default TableApi

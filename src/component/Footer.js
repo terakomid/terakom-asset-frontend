@@ -32,9 +32,7 @@ class Footer extends Component {
                 <div className="container-fluid">
                     <div className="row">
                         <div className="col-sm-12">
-                            ©
-                            <script>document.write(new Date().getFullYear())</script> Lexa <span
-                                className="d-none d-sm-inline-block"> - Terakom.</span>
+                            ©<span className="d-none d-sm-inline-block"> - Terakom.</span>
                         </div>
                     </div>
                 </div>
