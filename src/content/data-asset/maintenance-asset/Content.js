@@ -1,7 +1,6 @@
 // Content.js
 import React, { Component } from 'react'
-import { Add, FileDownload, FileUpload } from '@mui/icons-material';
-import Button from '@mui/material/Button';
+import { Add } from '@mui/icons-material';
 
 // Form
 import Form from './Form'

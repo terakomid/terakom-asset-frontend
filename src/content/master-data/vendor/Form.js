@@ -355,7 +355,7 @@ class Form extends Component {
         confirmButtonClass: 'bg-danger text-white',
       }).then(async (result) => {
         if (result.isConfirmed) {
-          const remove = await deleteData(param.id).then(result => {
+          await deleteData(param.id).then(result => {
             this.Table()
             Swal.fire("Succesfully Delete entry!", '', "success")
           }).catch(error => {

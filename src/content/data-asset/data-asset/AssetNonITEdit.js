@@ -4,7 +4,7 @@ import React, { Component } from 'react';
 import { TextValidator, ValidatorForm } from 'react-material-ui-form-validator';
 
 
-class AssetNonIT_ extends Component {
+class AssetNonITEdit extends Component {
 
     render() {
 
@@ -416,4 +416,4 @@ class AssetNonIT_ extends Component {
     }
 }
 
-export default AssetNonIT_
+export default AssetNonITEdit

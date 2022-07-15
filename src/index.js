@@ -36,7 +36,7 @@ import It from './content/master-data/it/Content';
 import DataAsset from './content/data-asset/data-asset/Content';
 import AssetIT from './content/data-asset/data-asset/AssetIT';
 import AssetNonIT from './content/data-asset/data-asset/AssetNonIT';
-import AssetNonIT_ from './content/data-asset/data-asset/AssetNonIT_';
+import AssetNonITEdit from './content/data-asset/data-asset/AssetNonITEdit';
 // History Asset
 import HistoryAsset from './content/data-asset/history-asset/Content';
 // Mutation Asset
@@ -73,7 +73,7 @@ root.render(
         <Route path='/data-asset' element={<DataAsset />} />
         <Route path='/data-asset-it' element={<AssetIT />} />
         <Route path='/data-asset-non-it' element={<AssetNonIT />} />
-        <Route path='/edit-data-asset-non-it' element={<AssetNonIT_ />} />
+        <Route path='/edit-data-asset-non-it' element={<AssetNonITEdit />} />
         {/* Data Asset */}
         <Route path='/history-asset' element={<HistoryAsset />} />
         <Route path='/mutation-asset' element={<MutationAsset />} />

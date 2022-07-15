@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 
 import Box from '@mui/material/Box';
-import { Button, ButtonBase, LinearProgress } from '@mui/material';
+import { LinearProgress } from '@mui/material';
 import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 
 import { Link } from 'react-router-dom';
@@ -42,11 +42,11 @@ class Table extends Component {
     render() {
 
         const rows = [
-            { id: 1, uid: 1, code: '1035', sap_code: '2022/FA/65D1/1D08/200000001037', pic: 'Abdul Ali', department: 'Logistik & Import', location: 'Jakarta', capitalize_on: '8 June 2022', year: '2022', category: 'Computer', name: 'Notebook', useful_life: '4 Tahun', value_book: '15.000.000', condition: 'Baik/Layak', pic: '' },
-            { id: 2, uid: 2, code: '1035', sap_code: '2022/FA/65D1/1D08/200000001037', pic: 'Abdul Ali', department: 'Logistik & Import', location: 'Jakarta', capitalize_on: '8 June 2022', year: '2022', category: 'Computer', name: 'Notebook', useful_life: '4 Tahun', value_book: '15.000.000', condition: 'Baik/Layak', pic: '' },
-            { id: 3, uid: 3, code: '1035', sap_code: '2022/FA/65D1/1D08/200000001037', pic: 'Abdul Ali', department: 'Logistik & Import', location: 'Jakarta', capitalize_on: '8 June 2022', year: '2022', category: 'Computer', name: 'Notebook', useful_life: '4 Tahun', value_book: '15.000.000', condition: 'Baik/Layak', pic: '' },
-            { id: 4, uid: 4, code: '1035', sap_code: '2022/FA/65D1/1D08/200000001037', pic: 'Abdul Ali', department: 'Logistik & Import', location: 'Jakarta', capitalize_on: '8 June 2022', year: '2022', category: 'Computer', name: 'Notebook', useful_life: '4 Tahun', value_book: '15.000.000', condition: 'Baik/Layak', pic: '' },
-            { id: 5, uid: 5, code: '1035', sap_code: '2022/FA/65D1/1D08/200000001037', pic: 'Abdul Ali', department: 'Logistik & Import', location: 'Jakarta', capitalize_on: '8 June 2022', year: '2022', category: 'Computer', name: 'Notebook', useful_life: '4 Tahun', value_book: '15.000.000', condition: 'Baik/Layak', pic: '' },
+            { id: 1, uid: 1, code: '1035', sap_code: '2022/FA/65D1/1D08/200000001037', pic: 'Abdul Ali', department: 'Logistik & Import', location: 'Jakarta', capitalize_on: '8 June 2022', year: '2022', category: 'Computer', name: 'Notebook', useful_life: '4 Tahun', value_book: '15.000.000', condition: 'Baik/Layak' },
+            { id: 2, uid: 2, code: '1035', sap_code: '2022/FA/65D1/1D08/200000001037', pic: 'Abdul Ali', department: 'Logistik & Import', location: 'Jakarta', capitalize_on: '8 June 2022', year: '2022', category: 'Computer', name: 'Notebook', useful_life: '4 Tahun', value_book: '15.000.000', condition: 'Baik/Layak' },
+            { id: 3, uid: 3, code: '1035', sap_code: '2022/FA/65D1/1D08/200000001037', pic: 'Abdul Ali', department: 'Logistik & Import', location: 'Jakarta', capitalize_on: '8 June 2022', year: '2022', category: 'Computer', name: 'Notebook', useful_life: '4 Tahun', value_book: '15.000.000', condition: 'Baik/Layak' },
+            { id: 4, uid: 4, code: '1035', sap_code: '2022/FA/65D1/1D08/200000001037', pic: 'Abdul Ali', department: 'Logistik & Import', location: 'Jakarta', capitalize_on: '8 June 2022', year: '2022', category: 'Computer', name: 'Notebook', useful_life: '4 Tahun', value_book: '15.000.000', condition: 'Baik/Layak' },
+            { id: 5, uid: 5, code: '1035', sap_code: '2022/FA/65D1/1D08/200000001037', pic: 'Abdul Ali', department: 'Logistik & Import', location: 'Jakarta', capitalize_on: '8 June 2022', year: '2022', category: 'Computer', name: 'Notebook', useful_life: '4 Tahun', value_book: '15.000.000', condition: 'Baik/Layak' },
         ];
 
         // const rows = (this.props.dataLocation) ? this.props.dataLocation : this.state.dataLocation
