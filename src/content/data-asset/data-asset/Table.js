@@ -4,7 +4,7 @@ import Box from '@mui/material/Box';
 import { LinearProgress } from '@mui/material';
 import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 
-import { deleteLocation } from './services/Data'
+import { Link } from 'react-router-dom';
 
 // edit button
 export const editLink = (param) => {
@@ -16,15 +16,15 @@ export const editLink = (param) => {
                 <i className='bi bi-three-dots-vertical fs-3'></i>
             </button>
             <ul className="dropdown-menu dropstart-custom-table w-auto" aria-labelledby="filterDashboard">
-                <li className='w-100 py-2' onClick={() => this.props.editData(param.row)}>
+                <li className='w-100 py-2'>
                     <div className="form-check text-end me-3">
-                        <label className="form-check-label fs-5">
+                        <Link to='/edit-data-asset-non-it' className="form-check-label fs-5">
                             Edit
                             <i className='bi bi-pencil-fill mx-2'></i>
-                        </label>
+                        </Link>
                     </div>
                 </li>
-                <li className='w-100 py-2' onClick={() => deleteData(param.row.code)}>
+                <li className='w-100 py-2'>
                     <div className="form-check text-end me-3">
                         <label className="form-check-label fs-5">
                             Delete
@@ -37,49 +37,62 @@ export const editLink = (param) => {
     )
 }
 
-export const deleteData = async (param) => {
-    const remove = await deleteLocation(param.code)
-
-    console.log(param)
-    console.log(remove)
-}
-
 class Table extends Component {
-
-    constructor(props) {
-        super(props)
-
-        this.state = {
-            dataLocation: (this.props.dataLocation) ? this.props.dataLocation : [],
-            isLoading: false
-        }
-    }
 
     render() {
 
-        const rows = (this.props.dataLocation) ? this.props.dataLocation : this.state.dataLocation
-        const isLoading = (this.props.isLoading) ? this.props.isLoading : this.state.isLoading
+        const rows = [
+            { id: 1, uid: 1, code: '2020/FA/65d1/ID08/2000001031', sap_code: '2000001031', name: 'Computer 1', category: 'ID08 - Computers', capitalize_on: '22 Juli 2022', useful_life: '48 Bulan', acquisition: '15.0000.000' },
+            { id: 2, uid: 2, code: '2020/FA/65d1/ID08/2000001032', sap_code: '2000001032', name: 'Computer 2', category: 'ID08 - Computers', capitalize_on: '22 Juli 2022', useful_life: '48 Bulan', acquisition: '15.0000.000' },
+            { id: 3, uid: 3, code: '2020/FA/65d1/ID08/2000001033', sap_code: '2000001033', name: 'Computer 3', category: 'ID08 - Computers', capitalize_on: '22 Juli 2022', useful_life: '48 Bulan', acquisition: '15.0000.000' },
+            { id: 4, uid: 4, code: '2020/FA/65d1/ID08/2000001034', sap_code: '2000001034', name: 'Computer 4', category: 'ID08 - Computers', capitalize_on: '22 Juli 2022', useful_life: '48 Bulan', acquisition: '15.0000.000' },
+            { id: 5, uid: 5, code: '2020/FA/65d1/ID08/2000001035', sap_code: '2000001035', name: 'Computer 5', category: 'ID08 - Computers', capitalize_on: '22 Juli 2022', useful_life: '48 Bulan', acquisition: '15.0000.000' },
+        ];
+
+        // const rows = (this.props.dataLocation) ? this.props.dataLocation : this.state.dataLocation
+        // const isLoading = (this.props.isLoading) ? this.props.isLoading : this.state.isLoading
+        const isLoading = false
 
         const columns = [
             {
-                field: 'number',
+                field: 'uid',
                 headerName: 'No',
                 width: 50,
                 type: 'number'
             },
             {
                 field: 'code',
-                headerName: 'Code',
+                headerName: 'Code Asset',
+                width: 250,
+            },
+            {
+                field: 'sap_code',
+                headerName: 'SAP Code',
                 width: 150,
             },
             {
-                field: 'location',
-                headerName: 'Location',
-                width: 180,
+                field: 'name',
+                headerName: 'Asset Name',
+                width: 200,
             },
             {
-                field: 'parent_location',
-                headerName: 'Parent Location',
+                field: 'category',
+                headerName: 'Category Asset',
+                width: 150,
+            },
+            {
+                field: 'capitalize_on',
+                headerName: 'Capitalize On',
+                width: 150,
+            },
+            {
+                field: 'useful_life',
+                headerName: 'Useful Life',
+                width: 100,
+            },
+            {
+                field: 'acquisition',
+                headerName: 'Acquisition Value',
                 width: 150,
             },
             {
@@ -108,7 +121,6 @@ class Table extends Component {
                                     border: 0,
                                 }}
                                 loading={isLoading}
-                                dataLocation={this.Table}
                                 disableColumnMenu
                                 disableColumnFilter
                                 disableColumnSelector

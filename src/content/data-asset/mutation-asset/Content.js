@@ -1,15 +1,18 @@
 // Content.js
 import React, { Component } from 'react'
+import { Add, FileDownload, FileUpload } from '@mui/icons-material';
+import Button from '@mui/material/Button';
 
-// Table
-import Table from './Table'
 // Form
 import Form from './Form'
+import { Link } from 'react-router-dom';
 
 
 class Content extends Component {
 
+
     render() {
+
         return (
 
             <div className='main-content'>
@@ -23,17 +26,17 @@ class Content extends Component {
                                     <div className='row'>
 
                                         {/* Title */}
-                                        <div className='col-xl-8 col-12 mb-3'>
-                                            <h2 className="fw-bold">Master IT</h2>
+                                        <div className='col-xl-12 col-12 mb-3'>
+                                            <h2 className="fw-bold">Mutation Asset</h2>
                                         </div>
 
-                                        {/* Table */}
-                                        <div className='col-xl-8 col-12 mt-3'>
-                                            <Table />
+                                        {/* Button Import & Export */}
+                                        <div className='col-xl-12 col-12 text-end'>
+                                            <Link to='/mutation-asset-add' className='text-capitalize fw-bold btn btn-lg btn-primary' variant="contained"><Add /> Create Mutation Asset</Link>
                                         </div>
 
-                                        {/* Form */}
-                                        <div className='col-xl-4 col-12 mt-3' style={{display: 'none'}}>
+                                        {/* Table & Form */}
+                                        <div className='col-xl-12 col-12 mt-3'>
                                             <Form />
                                         </div>
 

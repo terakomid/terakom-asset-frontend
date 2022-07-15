@@ -52,7 +52,7 @@ class Table extends Component {
 
     render() {
         return (
-            < div className='card shadow-none border-1' >
+            <div className='card shadow-none border-1' >
                 <div className='card-body'>
                     {/* Table */}
                     <div style={{ height: 400, width: '100%' }}>

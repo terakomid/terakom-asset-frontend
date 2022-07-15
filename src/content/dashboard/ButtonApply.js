@@ -6,7 +6,7 @@ class ButtonApply extends Component {
 
   render() {
     return (
-      <Button className='w-100' variant="contained">Apply</Button>
+      <Button className='w-100 btn-primary text-capitalize fw-bold' size='small' variant="contained">Apply</Button>
     );
   }
 }

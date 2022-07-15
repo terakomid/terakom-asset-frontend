@@ -57,15 +57,15 @@ class Sidebar extends Component {
                             </li>
 
                             {/* Data Asset */}
-                            <li role="menuitem" style={{ display: 'none' }}>
-                                <Link to='/#' className="has-arrow waves-effect">
+                            <li role="menuitem">
+                                <Link to='/' onClick={(e) => e.preventDefault()} className="has-arrow waves-effect">
                                     <i className="mdi mdi-folder-table"></i>
                                     <span className="text-capitalize">data asset</span>
                                 </Link>
                                 <ul className="sub-menu" role="menu">
-                                    <li role="menuitem"><Link to='/#' className='text-capitalize'>data asset</Link></li>
-                                    <li role="menuitem"><Link to='/#' className='text-capitalize'>history asset</Link></li>
-                                    <li role="menuitem"><Link to='/#' className='text-capitalize'>purchase request</Link></li>
+                                    <li role="menuitem" ><Link to='/data-asset' className='text-capitalize'>data asset</Link></li>
+                                    <li role="menuitem"><Link to='/history-asset' className='text-capitalize'>history asset</Link></li>
+                                    <li role="menuitem"><Link to='/reception-asset' className='text-capitalize'>reception asset</Link></li>
                                 </ul>
                             </li>
 

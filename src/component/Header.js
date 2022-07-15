@@ -176,12 +176,12 @@ class Header extends Component {
                                 <a className="dropdown-item" href="#link"><i
                                     className="mdi mdi-account-circle font-size-17 text-muted align-middle me-1"></i>
                                     Profile</a>
-                                <a className="dropdown-item" href="#link"><i
+                                <a className="dropdown-item" style={{display: 'none'}}  href="#link"><i
                                     className="mdi mdi-wallet font-size-17 text-muted align-middle me-1"></i> My Wallet</a>
-                                <a className="dropdown-item d-block" href="#link"><span
+                                <a className="dropdown-item d-block" style={{display: 'none'}} href="#link"><span
                                     className="badge bg-success float-end">11</span><i
                                         className="mdi mdi-cog font-size-17 text-muted align-middle me-1"></i> Settings</a>
-                                <a className="dropdown-item" href="#link"><i
+                                <a className="dropdown-item" style={{display: 'none'}}  href="#link"><i
                                     className="mdi mdi-lock-open-outline font-size-17 text-muted align-middle me-1"></i>
                                     Lock screen</a>
                                 <div className="dropdown-divider"></div>

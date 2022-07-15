@@ -32,11 +32,9 @@ class Content extends Component {
 
                             <div className='card-body'>
 
-                                <div className='mb-5'>
-                                    <div className='float-end'>
-                                        {/* FIlter Dashboard */}
-                                        <FilterDashboard />
-                                    </div>
+                                <div className='float-end'>
+                                    {/* FIlter Dashboard */}
+                                    <FilterDashboard />
                                 </div>
 
                                 <div className='row'>
@@ -45,12 +43,12 @@ class Content extends Component {
                                     <h4 className="card-title fs-4 fw-bold">Filter</h4>
 
                                     {/* Filter By Location */}
-                                    <div className="col-xl-10 col-sm-6 py-3">
+                                    <div className="col-xl-5 col-md-6 col-sm-8 py-3">
                                         <SelectLocation />
                                     </div>
 
                                     {/* Btn Apply */}
-                                    <div className="col-xl-2 col-sm-12 m-auto py-3">
+                                    <div className="col-xl-2 col-md-2 col-sm-4 py-3 my-auto">
                                         <ButtonApply />
                                     </div>
 

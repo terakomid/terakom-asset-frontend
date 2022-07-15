@@ -32,7 +32,7 @@ class Footer extends Component {
                 <div className="container-fluid">
                     <div className="row">
                         <div className="col-sm-12">
-                            ©<span className="d-none d-sm-inline-block"> - Terakom.</span>
+                            ©<span className="d-none d-sm-inline-block">2022 - Terakom Teams.</span>
                         </div>
                     </div>
                 </div>

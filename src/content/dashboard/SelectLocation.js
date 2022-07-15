@@ -8,6 +8,7 @@ class SelectLocation extends Component {
   render() {
     return (
       <Autocomplete
+        size='small'
         options={dataLocations}
         renderInput={(params) => <TextField {...params} label="Location" />}
       />
