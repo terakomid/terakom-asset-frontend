@@ -65,7 +65,7 @@ class Sidebar extends Component {
                                 <ul className="sub-menu" role="menu">
                                     <li role="menuitem" ><Link to='/data-asset' className='text-capitalize'>data asset</Link></li>
                                     <li role="menuitem"><Link to='/history-asset' className='text-capitalize'>history asset</Link></li>
-                                    <li role="menuitem"><Link to='/reception-asset' className='text-capitalize'>reception asset</Link></li>
+                                    <li role="menuitem"><Link to='/reception-asset' className='text-capitalize'>asset receipt</Link></li>
                                 </ul>
                             </li>
 
