@@ -36,17 +36,29 @@ export const editLink = (param) => {
         </div>
     )
 }
+export const status = (param) => {
+    var bg = 'badge text-capitalize p-2 fw-bold bg-success'
+    if(param.row.status === 'belum diterima') {
+        bg = 'badge text-capitalize p-2 fw-bold bg-warning'
+    }
+
+    return (
+        <div className={bg}>
+            {param.row.status}
+        </div>
+    )
+}
 
 class Table extends Component {
 
     render() {
 
         const rows = [
-            { id: 1, uid: 1, code: '1035', invoice: '1000200000001037', vendor_name: 'Vendor 1', department: 'Logistik & Import', location: 'Jakarta', date: '8 June 2022', status: 'Belum Diterima' },
-            { id: 2, uid: 2, code: '1035', invoice: '1000200000001037', vendor_name: 'Vendor 1', department: 'Logistik & Import', location: 'Jakarta', date: '8 June 2022', status: 'Belum Diterima' },
-            { id: 3, uid: 3, code: '1035', invoice: '1000200000001037', vendor_name: 'Vendor 1', department: 'Logistik & Import', location: 'Jakarta', date: '8 June 2022', status: 'Belum Diterima' },
-            { id: 4, uid: 4, code: '1035', invoice: '1000200000001037', vendor_name: 'Vendor 1', department: 'Logistik & Import', location: 'Jakarta', date: '8 June 2022', status: 'Belum Diterima' },
-            { id: 5, uid: 5, code: '1035', invoice: '1000200000001037', vendor_name: 'Vendor 1', department: 'Logistik & Import', location: 'Jakarta', date: '8 June 2022', status: 'Belum Diterima' },
+            { id: 1, code: '1035', invoice: '1000200000001037', vendor_name: 'Vendor 1', department: 'Logistik & Import', location: 'Jakarta', date: '8 June 2022', status: 'belum diterima' },
+            { id: 2, code: '1035', invoice: '1000200000001037', vendor_name: 'Vendor 1', department: 'Logistik & Import', location: 'Jakarta', date: '8 June 2022', status: 'sudah diterima' },
+            { id: 3, code: '1035', invoice: '1000200000001037', vendor_name: 'Vendor 1', department: 'Logistik & Import', location: 'Jakarta', date: '8 June 2022', status: 'belum diterima' },
+            { id: 4, code: '1035', invoice: '1000200000001037', vendor_name: 'Vendor 1', department: 'Logistik & Import', location: 'Jakarta', date: '8 June 2022', status: 'sudah diterima' },
+            { id: 5, code: '1035', invoice: '1000200000001037', vendor_name: 'Vendor 1', department: 'Logistik & Import', location: 'Jakarta', date: '8 June 2022', status: 'belum diterima' },
         ];
 
         // const rows = (this.props.dataLocation) ? this.props.dataLocation : this.state.dataLocation
@@ -88,12 +100,13 @@ class Table extends Component {
             {
                 field: 'status',
                 headerName: 'Status',
+                renderCell: status,
                 width: 150,
             },
             {
                 field: 'id',
-                headerName: ' ',
-                width: 50,
+                headerName: 'Action',
+                width: 70,
                 renderCell: editLink,
                 sortable: false
             }

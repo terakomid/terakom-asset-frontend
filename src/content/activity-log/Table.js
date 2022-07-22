@@ -6,35 +6,6 @@ import Box from '@mui/material/Box';
 import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 import { LinearProgress } from '@mui/material';
 
-function editLink() {
-    return (
-        <div className="btn-group dropstart">
-
-            <button className="btn dropdown-toggle p-0" type="button" id="filterDashboard" data-bs-toggle="dropdown" aria-expanded="false">
-                <i className='bi bi-three-dots-vertical fs-3'></i>
-            </button>
-            <ul className="dropdown-menu dropstart-custom-table w-auto" aria-labelledby="filterDashboard">
-                <li className='w-100 py-2'>
-                    <div className="form-check text-end me-3">
-                        <label className="form-check-label fs-5">
-                            Edit 
-                            <i className='bi bi-pencil-fill mx-2'></i>
-                        </label>
-                    </div>
-                </li>
-                <li className='w-100 py-2'>
-                    <div className="form-check text-end me-3">
-                        <label className="form-check-label fs-5">
-                            Delete 
-                            <i className='bi bi-trash-fill mx-2'></i>
-                        </label>
-                    </div>
-                </li>
-            </ul>
-        </div>
-    )
-}
-
 class Table extends Component {
 
     state = {
@@ -67,7 +38,6 @@ class Table extends Component {
                                     border: 0,
                                 }}
                                 disableColumnMenu
-                                checkboxSelection
                                 columns={columns}
                                 pageSize={5}
                                 rows={rows}
@@ -98,24 +68,53 @@ const columns = [
         width: 50
     },
     {
-        field: 'condition',
-        headerName: 'Condition',
-        width: 480,
+        field: 'name',
+        headerName: 'User Name',
+        width: 200,
     },
     {
-        field: 'uid',
-        headerName: '',
-        width: 50,
-        renderCell: editLink
-    }
+        field: 'type_activity',
+        headerName: 'Type Activity',
+        width: 150,
+    },
+    {
+        field: 'activity',
+        headerName: 'Activity',
+        width: 150,
+    },
+    {
+        field: 'data',
+        headerName: 'Data',
+        width: 250,
+    },
+    {
+        field: 'date',
+        headerName: 'Date',
+        width: 150,
+    },
+    {
+        field: 'ip_address',
+        headerName: 'IP Adress',
+        width: 150,
+    },
+    {
+        field: 'browser',
+        headerName: 'Browser',
+        width: 200,
+    },
+    {
+        field: 'os',
+        headerName: 'Operating System',
+        width: 150,
+    },
 ];
 
 const rows = [
-    { id: 1, condition: 'Baik/Layak', uid: 1 },
-    { id: 2, condition: 'Rusak', uid: 2 },
-    { id: 3, condition: 'Write Off SAP', uid: 3 },
-    { id: 4, condition: 'Disposal', uid: 4 },
-    { id: 5, condition: 'Not Identify/Lost', uid: 5 }
+    { id: 1, name: 'Bambang Priadi', type_activity: 'Tambah', activity: 'Tambah Data Asset', data: 'Asset Code 3300/014/16/VI22/2593 | Printer', date: '30 Mei 2022 15:30:00', ip_address: '127.0.0.1', browser: 'Google Chrome 101.4', os: 'Windows'  },
+    { id: 2, name: 'Bambang Priadi', type_activity: 'Tambah', activity: 'Tambah Data Asset', data: 'Asset Code 3300/014/16/VI22/2593 | Printer', date: '30 Mei 2022 15:30:00', ip_address: '127.0.0.1', browser: 'Google Chrome 101.4', os: 'Windows'  },
+    { id: 3, name: 'Bambang Priadi', type_activity: 'Tambah', activity: 'Tambah Data Asset', data: 'Asset Code 3300/014/16/VI22/2593 | Printer', date: '30 Mei 2022 15:30:00', ip_address: '127.0.0.1', browser: 'Google Chrome 101.4', os: 'Windows'  },
+    { id: 4, name: 'Bambang Priadi', type_activity: 'Tambah', activity: 'Tambah Data Asset', data: 'Asset Code 3300/014/16/VI22/2593 | Printer', date: '30 Mei 2022 15:30:00', ip_address: '127.0.0.1', browser: 'Google Chrome 101.4', os: 'Windows'  },
+    { id: 5, name: 'Bambang Priadi', type_activity: 'Tambah', activity: 'Tambah Data Asset', data: 'Asset Code 3300/014/16/VI22/2593 | Printer', date: '30 Mei 2022 15:30:00', ip_address: '127.0.0.1', browser: 'Google Chrome 101.4', os: 'Windows'  },
 ];
 
 export default Table

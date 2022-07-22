@@ -27,7 +27,7 @@ class AssetNonIT extends Component {
 
                                             <ValidatorForm
                                                 ref={this.form}
-                                                onsubmit={this.handleSubmit}
+                                                onSubmit={this.handleSubmit}
                                             >
                                                 {/* asset information */}
                                                 <div className='col-xl-12 col-12'>

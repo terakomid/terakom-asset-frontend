@@ -4,8 +4,6 @@ import Box from '@mui/material/Box';
 import { LinearProgress } from '@mui/material';
 import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 
-import { Link } from 'react-router-dom';
-
 // edit button
 export const editLink = (param) => {
 
@@ -18,10 +16,10 @@ export const editLink = (param) => {
             <ul className="dropdown-menu dropstart-custom-table w-auto" aria-labelledby="filterDashboard">
                 <li className='w-100 py-2'>
                     <div className="form-check text-end me-3">
-                        <Link to='/edit-data-asset-non-it' className="form-check-label fs-5">
+                        {/* <Link to='/edit-data-asset-non-it' className="form-check-label fs-5"> */}
                             Edit
                             <i className='bi bi-pencil-fill mx-2'></i>
-                        </Link>
+                        {/* </Link> */}
                     </div>
                 </li>
                 <li className='w-100 py-2'>
@@ -36,17 +34,29 @@ export const editLink = (param) => {
         </div>
     )
 }
+export const status = (param) => {
+    var bg = 'badge text-capitalize p-2 fw-bold bg-info'
+    if(param.row.status === 'close') {
+        bg = 'badge text-capitalize p-2 fw-bold bg-danger'
+    }
+
+    return (
+        <div className={bg}>
+            {param.row.status}
+        </div>
+    )
+}
 
 class Table extends Component {
 
     render() {
 
         const rows = [
-            { id: 1, code: '1035', pic: 'Abdul Ali', department: 'Logistik & Import', applicant_date: '8 June 2022', request_repair_date: '15 June 2022', request_finish_date: '17 June 2022' },
-            { id: 2, code: '1035', pic: 'Abdul Ali', department: 'Logistik & Import', applicant_date: '8 June 2022', request_repair_date: '15 June 2022', request_finish_date: '17 June 2022' },
-            { id: 3, code: '1035', pic: 'Abdul Ali', department: 'Logistik & Import', applicant_date: '8 June 2022', request_repair_date: '15 June 2022', request_finish_date: '17 June 2022' },
-            { id: 4, code: '1035', pic: 'Abdul Ali', department: 'Logistik & Import', applicant_date: '8 June 2022', request_repair_date: '15 June 2022', request_finish_date: '17 June 2022' },
-            { id: 5, code: '1035', pic: 'Abdul Ali', department: 'Logistik & Import', applicant_date: '8 June 2022', request_repair_date: '15 June 2022', request_finish_date: '17 June 2022' },
+            { id: 1, title: 'Licensi Windows', description: 'Mohon disediakan installer untuk Windows terbaru', date: '23 July 2022 15:30:30', user_name: 'Rahmat', status: 'open' },
+            { id: 2, title: 'Licensi Windows', description: 'Mohon disediakan installer untuk Windows terbaru', date: '23 July 2022 15:30:30', user_name: 'Rahmat', status: 'open' },
+            { id: 3, title: 'Licensi Windows', description: 'Mohon disediakan installer untuk Windows terbaru', date: '23 July 2022 15:30:30', user_name: 'Rahmat', status: 'close' },
+            { id: 4, title: 'Licensi Windows', description: 'Mohon disediakan installer untuk Windows terbaru', date: '23 July 2022 15:30:30', user_name: 'Rahmat', status: 'open' },
+            { id: 5, title: 'Licensi Windows', description: 'Mohon disediakan installer untuk Windows terbaru', date: '23 July 2022 15:30:30', user_name: 'Rahmat', status: 'open' },
         ];
 
         // const rows = (this.props.dataLocation) ? this.props.dataLocation : this.state.dataLocation
@@ -61,39 +71,32 @@ class Table extends Component {
                 type: 'number'
             },
             {
-                field: 'code',
-                headerName: 'Maintenance Code',
-                width: 150,
-                align: 'left',
-                type: 'number'
-            },
-            {
-                field: 'pic',
-                headerName: 'PIC Asset',
+                field: 'title',
+                headerName: 'Title',
                 width: 200,
             },
             {
-                field: 'department',
-                headerName: 'Department',
-                width: 150,
-            },
-            {
-                field: 'applicant_date',
-                headerName: 'Applicant Date',
-                width: 150,
-            },
-            {
-                field: 'request_repair_date',
-                headerName: 'Request Date Repair',
+                field: 'description',
+                headerName: 'Description',
                 width: 200,
             },
             {
-                field: 'request_finish_date',
-                headerName: 'Request Time To Finish',
+                field: 'date',
+                headerName: 'Date',
                 width: 200,
             },
             {
-                align: 'center',
+                field: 'user_name',
+                headerName: 'User Name',
+                width: 200,
+            },
+            {
+                field: 'status',
+                headerName: 'Status',
+                renderCell: status,
+                width: 100,
+            },
+            {
                 field: '',
                 headerName: 'Action',
                 width: 70,

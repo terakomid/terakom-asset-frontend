@@ -1,17 +1,12 @@
 // Content.js
 import React, { Component } from 'react'
-import { Add } from '@mui/icons-material';
 
-// Form
-import Form from './Form'
-import { Link } from 'react-router-dom';
-
+// Table
+import Table from './Table'
 
 class Content extends Component {
 
-
     render() {
-
         return (
 
             <div className='main-content'>
@@ -25,20 +20,14 @@ class Content extends Component {
                                     <div className='row'>
 
                                         {/* Title */}
-                                        <div className='col-xl-12 col-12 mb-3'>
-                                            <h2 className="fw-bold">Asset Receipt</h2>
+                                        <div className='col-xl-8 col-12 mb-3'>
+                                            <h2 className="fw-bold">Activity Log</h2>
                                         </div>
 
-                                        {/* Link Import & Export */}
-                                        <div className='col-xl-12 col-12 text-end'>
-                                            <Link to='/reception-asset-add' className='text-capitalize fw-bold btn btn-md btn-primary' variant="contained"><Add /> Add reception asset</Link>
-                                        </div>
-
-                                        {/* Table & Form */}
+                                        {/* Table */}
                                         <div className='col-xl-12 col-12 mt-3'>
-                                            <Form />
+                                            <Table />
                                         </div>
-
                                     </div>
                                 </div>
                             </div>

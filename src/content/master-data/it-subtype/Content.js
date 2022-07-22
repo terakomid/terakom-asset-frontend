@@ -1,17 +1,17 @@
 // Content.js
 import React, { Component } from 'react'
-import { Add } from '@mui/icons-material';
+import { FileDownload, FileUpload } from '@mui/icons-material';
+import Button from '@mui/material/Button';
 
+// Table
+import Table from './Table'
 // Form
 import Form from './Form'
-import { Link } from 'react-router-dom';
 
 
 class Content extends Component {
 
-
     render() {
-
         return (
 
             <div className='main-content'>
@@ -25,17 +25,25 @@ class Content extends Component {
                                     <div className='row'>
 
                                         {/* Title */}
-                                        <div className='col-xl-12 col-12 mb-3'>
-                                            <h2 className="fw-bold">Maintenance Asset</h2>
+                                        <div className='col-xl-8 col-12 mb-3'>
+                                            <h2 className="fw-bold">Master IT Sub Type [type]</h2>
                                         </div>
 
                                         {/* Button Import & Export */}
-                                        <div className='col-xl-12 col-12 text-end'>
-                                            <Link to='/maintenance-asset-add' className='text-capitalize fw-bold btn btn-lg btn-primary' variant="contained"><Add /> Add Maintenance Asset</Link>
+                                        <div className='col-xl-4 col-12'>
+                                            <div className='d-flex justify-content-evenly'>
+                                                <Button variant="contained" startIcon={<FileDownload />}>Import</Button>
+                                                <Button variant="contained" startIcon={<FileUpload />}>Export</Button>
+                                            </div>
                                         </div>
 
-                                        {/* Table & Form */}
-                                        <div className='col-xl-12 col-12 mt-3'>
+                                        {/* Table */}
+                                        <div className='col-xl-8 col-12 mt-3'>
+                                            <Table />
+                                        </div>
+
+                                        {/* Form */}
+                                        <div className='col-xl-4 col-12 mt-3'>
                                             <Form />
                                         </div>
 

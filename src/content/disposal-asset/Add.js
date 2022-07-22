@@ -46,7 +46,7 @@ class Add extends Component {
           id="btnCancel"
           className='text-capitalize float-end btn btn-secondary'
           variant="contained"
-          to='/reception-asset'
+          to='/disposal-asset'
         >Cancel</Link>
       </div>
     )
@@ -64,11 +64,11 @@ class Add extends Component {
 
 
     const rows = [
-      { id: 1, code: '2020/FA/65d1/ID08/2000001031', name: 'Notebook', specification: 'Asus Core i5', condition: 'Baik/Layak', status: 'purcase', },
-      { id: 2, code: '2020/FA/65d1/ID08/2000001032', name: 'Notebook', specification: 'Asus Core i5', condition: 'Baik/Layak', status: 'purcase', },
-      { id: 3, code: '2020/FA/65d1/ID08/2000001033', name: 'Notebook', specification: 'Asus Core i5', condition: 'Baik/Layak', status: 'rent', },
-      { id: 4, code: '2020/FA/65d1/ID08/2000001034', name: 'Notebook', specification: 'Asus Core i5', condition: 'Baik/Layak', status: 'purcase', },
-      { id: 5, code: '2020/FA/65d1/ID08/2000001035', name: 'Notebook', specification: 'Asus Core i5', condition: 'Baik/Layak', status: 'rent', },
+      { id: 1, code: '2020/FA/65d1/ID08/2000001031', category: 'ID08 - Computer', acquisition_target: '15.000.000', name: 'Asus Core i5', economic_age: '7 year', usage_period: '36 Month', acquisition_value: '15.000.000', },
+      { id: 2, code: '2020/FA/65d1/ID08/2000001032', category: 'ID08 - Computer', acquisition_target: '15.000.000', name: 'Asus Core i5', economic_age: '7 year', usage_period: '36 Month', acquisition_value: '15.000.000', },
+      { id: 3, code: '2020/FA/65d1/ID08/2000001033', category: 'ID08 - Computer', acquisition_target: '15.000.000', name: 'Asus Core i5', economic_age: '7 year', usage_period: '36 Month', acquisition_value: '15.000.000', },
+      { id: 4, code: '2020/FA/65d1/ID08/2000001034', category: 'ID08 - Computer', acquisition_target: '15.000.000', name: 'Asus Core i5', economic_age: '7 year', usage_period: '36 Month', acquisition_value: '15.000.000', },
+      { id: 5, code: '2020/FA/65d1/ID08/2000001035', category: 'ID08 - Computer', acquisition_target: '15.000.000', name: 'Asus Core i5', economic_age: '7 year', usage_period: '36 Month', acquisition_value: '15.000.000', },
     ];
 
     const isLoading = false
@@ -81,28 +81,38 @@ class Add extends Component {
         type: 'number'
       },
       {
-        field: 'name',
-        headerName: 'Asset Name',
-        width: 150,
-      },
-      {
         field: 'code',
         headerName: 'Asset Code',
         width: 250,
       },
       {
-        field: 'specification',
-        headerName: 'Specification',
+        field: 'name',
+        headerName: 'Asset Name',
         width: 150,
       },
       {
-        field: 'condition',
-        headerName: 'Condition',
+        field: 'category',
+        headerName: 'Asset Category',
+        width: 150,
+      },
+      {
+        field: 'acquisition_target',
+        headerName: 'Acquisition Target',
         width: 100,
       },
       {
-        field: 'status',
-        headerName: 'Purcase/Rent',
+        field: 'economic_age',
+        headerName: 'Economic Age',
+        width: 150,
+      },
+      {
+        field: 'usage_period',
+        headerName: 'Usage Period',
+        width: 150,
+      },
+      {
+        field: 'acquisition_value',
+        headerName: 'Acquisition Value',
         width: 150,
       },
       {
@@ -136,43 +146,19 @@ class Add extends Component {
                     >
                       <div className='row'>
                         {/* Form */}
-                        <h4 className="fw-bold">Create reception Asset</h4>
+                        <h4 className="fw-bold">Create Disposal Asset</h4>
 
                         <div className='col-xl-12 col-12 my-3'>
                           <div className='card shadow-sm border-1'>
                             <div className='card-body mx-3'>
 
                               <div className='row mt-3'>
-                                <div className='col-xl-4 col-12 pt-3'>
-                                  <Autocomplete
-                                    sx={{ width: '100%' }}
-                                    name='location'
-                                    options={options}
-                                    renderInput={(params) => <TextValidator {...params} label='Location' />}
-                                  />
-                                </div>
-                                <div className='col-xl-4 col-12 pt-3'>
-                                  <Autocomplete
-                                    sx={{ width: '100%' }}
-                                    name='department'
-                                    options={options}
-                                    renderInput={(params) => <TextValidator {...params} label='Department' />}
-                                  />
-                                </div>
-                                <div className='col-xl-4 col-12 pt-3'>
-                                  <Autocomplete
-                                    sx={{ width: '100%' }}
-                                    name='vendor'
-                                    options={options}
-                                    renderInput={(params) => <TextValidator {...params} label='Vendor Name' />}
-                                  />
-                                </div>
                                 <div className='col-xl-6 col-12 pt-3'>
                                   <TextValidator
                                     sx={{ width: '100%' }}
                                     id="outlined-basic"
-                                    label="PO Number"
-                                    name='po_number'
+                                    label="SK Number"
+                                    name='sk_number'
                                     variant="outlined"
 
                                     validators={['required']}
@@ -182,41 +168,42 @@ class Add extends Component {
                                 <div className='col-xl-6 col-12 pt-3'>
                                   <TextValidator
                                     sx={{ width: '100%' }}
-                                    InputLabelProps={{ shrink: true }}
                                     id="outlined-basic"
-                                    label="Date"
-                                    name='date'
+                                    label="Letter of Statement"
+                                    name='letter_statement'
                                     variant="outlined"
-                                    type='date'
 
                                     validators={['required']}
                                     errorMessages={['This Field is Required']}
                                   />
                                 </div>
-                                <div className='col-xl-6 col-12 pt-3'>
+                                <div className='col-xl-12 col-12 pt-3'>
+                                  <TextValidator
+                                    sx={{ width: '100%' }}
+                                    id="outlined-basic"
+                                    label="Description"
+                                    name='description'
+                                    variant="outlined"
+
+                                    validators={['required']}
+                                    errorMessages={['This Field is Required']}
+                                  />
+                                </div>
+                                <div className='col-xl-12 col-12 pt-3'>
                                   <Autocomplete
                                     sx={{ width: '100%' }}
                                     name='asset'
                                     options={options}
-                                    renderInput={(params) => <TextValidator {...params} label='Asset' />}
+                                    renderInput={(params) => <TextValidator {...params} label='Choose Asset' />}
                                   />
                                 </div>
-                                <div className='col-xl-6 col-12 pt-3'>
-                                  <Autocomplete
-                                    sx={{ width: '100%' }}
-                                    name='purcase_status'
-                                    options={options}
-                                    renderInput={(params) => <TextValidator {...params} label='Purcase/Rent' />}
-                                  />
+                                <div className='col-xl-12 col-12 pb-5 text-end pt-3'>
+                                  <ButtonCreate />
                                 </div>
                               </div>
 
                             </div>
                           </div>
-                        </div>
-
-                        <div className='col-xl-12 col-12 pb-5 text-end'>
-                          <ButtonCreate />
                         </div>
 
                         {/* Table */}

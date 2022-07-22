@@ -26,12 +26,12 @@ class Content extends Component {
 
                                         {/* Title */}
                                         <div className='col-xl-12 col-12 mb-3'>
-                                            <h2 className="fw-bold">Asset Receipt</h2>
+                                            <h2 className="fw-bold">Help</h2>
                                         </div>
 
                                         {/* Link Import & Export */}
                                         <div className='col-xl-12 col-12 text-end'>
-                                            <Link to='/reception-asset-add' className='text-capitalize fw-bold btn btn-md btn-primary' variant="contained"><Add /> Add reception asset</Link>
+                                            <Link to='/help-add' className='text-capitalize fw-bold btn btn-md btn-primary' variant="contained"><Add /> Ticket</Link>
                                         </div>
 
                                         {/* Table & Form */}

@@ -4,7 +4,8 @@ import { Link } from "react-router-dom"
 // import axios from 'axios'
 
 import Box from '@mui/material/Box';
-import { DataGrid } from '@mui/x-data-grid';
+import { DataGrid, GridToolbar } from '@mui/x-data-grid';
+import { LinearProgress } from '@mui/material';
 
 function codeLink(params) {
     // return (<Link to={`/asset-subcategory/${params.row.code ||''}`} key={params.row.code ||''} >{params.row.code || ''}</Link>)
@@ -77,6 +78,16 @@ class Table extends Component {
                                 pageSize={5}
                                 rows={rows}
                                 rowsPerPageOptions={[5]}
+                                components={{
+                                    LoadingOverlay: LinearProgress,
+                                    Toolbar: GridToolbar
+                                }}
+                                componentsProps={{
+                                    toolbar: {
+                                        quickFilterProps: { debounceMs: 500 },
+                                        showQuickFilter: true,
+                                    },
+                                }}
                             />
                         </Box>
                     </div >

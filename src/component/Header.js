@@ -9,8 +9,8 @@ class Header extends Component {
 
         return (
             <header id="page-topbar">
-                <div className="navbar-header">
-                    <div className="d-flex">
+                <div className="navbar-header bg-primary">
+                    <div className="d-flex bg-white">
 
                         {/* LOGO */}
                         <div className="navbar-brand-box px-1">
@@ -45,7 +45,7 @@ class Header extends Component {
                         {/* Fullscreen */}
                         <div className="dropdown d-none d-lg-inline-block">
                             <button type="button" className="btn header-item noti-icon waves-effect" data-toggle="fullscreen">
-                                <i className="mdi mdi-fullscreen font-size-24"></i>
+                                <i className="mdi mdi-fullscreen font-size-24 text-white"></i>
                             </button>
                         </div>
 
@@ -54,7 +54,7 @@ class Header extends Component {
                             <button type="button" className="btn header-item noti-icon waves-effect"
                                 id="page-header-notifications-dropdown" data-bs-toggle="dropdown" aria-haspopup="true"
                                 aria-expanded="false">
-                                <i className="ti-bell"></i>
+                                <i className="ti-bell text-white"></i>
                                 <span className="badge bg-danger rounded-pill">3</span>
                             </button>
                             <div className="dropdown-menu dropdown-menu-lg dropdown-menu-end p-0"

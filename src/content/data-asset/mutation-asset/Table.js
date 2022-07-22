@@ -48,9 +48,7 @@ class Table extends Component {
             { id: 4, uid: 4, code: '2020/FA/65d1/ID08/2000001034', pic: 'Abdul Ali', receiver: 'Raka', name: 'Notebook', quantity: '1', from_branch: '65D1 - HO Jakarta', from_room: 'Meeting Room', to_branch: '651A - Cikarang', to_room: 'Office Room', },
             { id: 5, uid: 5, code: '2020/FA/65d1/ID08/2000001035', pic: 'Abdul Ali', receiver: 'Raka', name: 'Notebook', quantity: '1', from_branch: '65D1 - HO Jakarta', from_room: 'Meeting Room', to_branch: '651A - Cikarang', to_room: 'Office Room', },
         ];
-
-        // const rows = (this.props.dataLocation) ? this.props.dataLocation : this.state.dataLocation
-        // const isLoading = (this.props.isLoading) ? this.props.isLoading : this.state.isLoading
+        
         const isLoading = false
 
         const columns = [

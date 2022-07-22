@@ -36,17 +36,29 @@ export const editLink = (param) => {
         </div>
     )
 }
+export const status = (param) => {
+    var bg = 'badge text-capitalize p-2 fw-bold bg-success'
+    if(param.row.status === 'banned') {
+        bg = 'badge text-capitalize p-2 fw-bold bg-danger'
+    }
+
+    return (
+        <div className={bg}>
+            {param.row.status}
+        </div>
+    )
+}
 
 class Table extends Component {
 
     render() {
 
         const rows = [
-            { id: 1, code: '1035', pic: 'Abdul Ali', department: 'Logistik & Import', applicant_date: '8 June 2022', request_repair_date: '15 June 2022', request_finish_date: '17 June 2022' },
-            { id: 2, code: '1035', pic: 'Abdul Ali', department: 'Logistik & Import', applicant_date: '8 June 2022', request_repair_date: '15 June 2022', request_finish_date: '17 June 2022' },
-            { id: 3, code: '1035', pic: 'Abdul Ali', department: 'Logistik & Import', applicant_date: '8 June 2022', request_repair_date: '15 June 2022', request_finish_date: '17 June 2022' },
-            { id: 4, code: '1035', pic: 'Abdul Ali', department: 'Logistik & Import', applicant_date: '8 June 2022', request_repair_date: '15 June 2022', request_finish_date: '17 June 2022' },
-            { id: 5, code: '1035', pic: 'Abdul Ali', department: 'Logistik & Import', applicant_date: '8 June 2022', request_repair_date: '15 June 2022', request_finish_date: '17 June 2022' },
+            { id: 1, name: 'Abdul Rozaq', company: 'Aqua Japan Sunter', department: 'Technology Information', role: 'General Afair', status: 'active' },
+            { id: 2, name: 'Abdul Rozaq', company: 'Aqua Japan Sunter', department: 'Technology Information', role: 'General Afair', status: 'active' },
+            { id: 3, name: 'Abdul Rozaq', company: 'Aqua Japan Sunter', department: 'Technology Information', role: 'General Afair', status: 'banned' },
+            { id: 4, name: 'Abdul Rozaq', company: 'Aqua Japan Sunter', department: 'Technology Information', role: 'General Afair', status: 'active' },
+            { id: 5, name: 'Abdul Rozaq', company: 'Aqua Japan Sunter', department: 'Technology Information', role: 'General Afair', status: 'active' },
         ];
 
         // const rows = (this.props.dataLocation) ? this.props.dataLocation : this.state.dataLocation
@@ -61,39 +73,32 @@ class Table extends Component {
                 type: 'number'
             },
             {
-                field: 'code',
-                headerName: 'Maintenance Code',
-                width: 150,
-                align: 'left',
-                type: 'number'
+                field: 'name',
+                headerName: 'Name',
+                width: 200,
             },
             {
-                field: 'pic',
-                headerName: 'PIC Asset',
+                field: 'company',
+                headerName: 'Company',
                 width: 200,
             },
             {
                 field: 'department',
                 headerName: 'Department',
-                width: 150,
-            },
-            {
-                field: 'applicant_date',
-                headerName: 'Applicant Date',
-                width: 150,
-            },
-            {
-                field: 'request_repair_date',
-                headerName: 'Request Date Repair',
                 width: 200,
             },
             {
-                field: 'request_finish_date',
-                headerName: 'Request Time To Finish',
-                width: 200,
+                field: 'role',
+                headerName: 'Role',
+                width: 120,
             },
             {
-                align: 'center',
+                field: 'status',
+                headerName: 'Status',
+                renderCell: status,
+                width: 100,
+            },
+            {
                 field: '',
                 headerName: 'Action',
                 width: 70,

@@ -4,8 +4,6 @@ import Box from '@mui/material/Box';
 import { LinearProgress } from '@mui/material';
 import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 
-import { Link } from 'react-router-dom';
-
 // edit button
 export const editLink = (param) => {
 
@@ -18,10 +16,10 @@ export const editLink = (param) => {
             <ul className="dropdown-menu dropstart-custom-table w-auto" aria-labelledby="filterDashboard">
                 <li className='w-100 py-2'>
                     <div className="form-check text-end me-3">
-                        <Link to='/edit-data-asset-non-it' className="form-check-label fs-5">
+                        {/* <Link to='/edit-data-asset-non-it' className="form-check-label fs-5"> */}
                             Edit
                             <i className='bi bi-pencil-fill mx-2'></i>
-                        </Link>
+                        {/* </Link> */}
                     </div>
                 </li>
                 <li className='w-100 py-2'>
@@ -36,17 +34,32 @@ export const editLink = (param) => {
         </div>
     )
 }
+export const status = (param) => {
+    var bg = 'badge text-capitalize p-2 fw-bold bg-success'
+    if(param.row.status === 'waiting approval') {
+        bg = 'badge text-capitalize p-2 fw-bold bg-warning'
+    }
+    if(param.row.status === 'approval rejected') {
+        bg = 'badge text-capitalize p-2 fw-bold bg-danger'
+    }
+
+    return (
+        <div className={bg}>
+            {param.row.status}
+        </div>
+    )
+}
 
 class Table extends Component {
 
     render() {
 
         const rows = [
-            { id: 1, code: '1035', pic: 'Abdul Ali', department: 'Logistik & Import', applicant_date: '8 June 2022', request_repair_date: '15 June 2022', request_finish_date: '17 June 2022' },
-            { id: 2, code: '1035', pic: 'Abdul Ali', department: 'Logistik & Import', applicant_date: '8 June 2022', request_repair_date: '15 June 2022', request_finish_date: '17 June 2022' },
-            { id: 3, code: '1035', pic: 'Abdul Ali', department: 'Logistik & Import', applicant_date: '8 June 2022', request_repair_date: '15 June 2022', request_finish_date: '17 June 2022' },
-            { id: 4, code: '1035', pic: 'Abdul Ali', department: 'Logistik & Import', applicant_date: '8 June 2022', request_repair_date: '15 June 2022', request_finish_date: '17 June 2022' },
-            { id: 5, code: '1035', pic: 'Abdul Ali', department: 'Logistik & Import', applicant_date: '8 June 2022', request_repair_date: '15 June 2022', request_finish_date: '17 June 2022' },
+            { id: 1, created_date: '30 Oktober 2022 16:00:00', sk_number: '007/SK/Hapus/11/2022', informarion: 'Dihapus karena asset sudah rusak', supporting_docucment: 'doc.doc', amount_delete: 1, total_value: '3.500.000', updated_date: '01 November 2022 13:00:00', status: 'approval disetujui' },
+            { id: 2, created_date: '30 Oktober 2022 16:00:00', sk_number: '007/SK/Hapus/11/2022', informarion: 'Dihapus karena asset sudah rusak', supporting_docucment: 'doc.doc', amount_delete: 1, total_value: '3.500.000', updated_date: '01 November 2022 13:00:00', status: 'approval rejected' },
+            { id: 3, created_date: '30 Oktober 2022 16:00:00', sk_number: '007/SK/Hapus/11/2022', informarion: 'Dihapus karena asset sudah rusak', supporting_docucment: 'doc.doc', amount_delete: 1, total_value: '3.500.000', updated_date: '01 November 2022 13:00:00', status: 'approval disetujui' },
+            { id: 4, created_date: '30 Oktober 2022 16:00:00', sk_number: '007/SK/Hapus/11/2022', informarion: 'Dihapus karena asset sudah rusak', supporting_docucment: 'doc.doc', amount_delete: 1, total_value: '3.500.000', updated_date: '01 November 2022 13:00:00', status: 'waiting approval' },
+            { id: 5, created_date: '30 Oktober 2022 16:00:00', sk_number: '007/SK/Hapus/11/2022', informarion: 'Dihapus karena asset sudah rusak', supporting_docucment: 'doc.doc', amount_delete: 1, total_value: '3.500.000', updated_date: '01 November 2022 13:00:00', status: 'approval disetujui' },
         ];
 
         // const rows = (this.props.dataLocation) ? this.props.dataLocation : this.state.dataLocation
@@ -61,39 +74,47 @@ class Table extends Component {
                 type: 'number'
             },
             {
-                field: 'code',
-                headerName: 'Maintenance Code',
-                width: 150,
-                align: 'left',
-                type: 'number'
-            },
-            {
-                field: 'pic',
-                headerName: 'PIC Asset',
+                field: 'created_date',
+                headerName: 'Created Date',
                 width: 200,
             },
             {
-                field: 'department',
-                headerName: 'Department',
-                width: 150,
-            },
-            {
-                field: 'applicant_date',
-                headerName: 'Applicant Date',
-                width: 150,
-            },
-            {
-                field: 'request_repair_date',
-                headerName: 'Request Date Repair',
+                field: 'sk_number',
+                headerName: 'SK Number',
                 width: 200,
             },
             {
-                field: 'request_finish_date',
-                headerName: 'Request Time To Finish',
+                field: 'informarion',
+                headerName: 'Informarion',
+                width: 250,
+            },
+            {
+                field: 'supporting_docucment',
+                headerName: 'Supporting Docucment',
                 width: 200,
             },
             {
-                align: 'center',
+                field: 'amount_delete',
+                headerName: 'Amount Delete',
+                width: 150,
+            },
+            {
+                field: 'total_value',
+                headerName: 'Total Value',
+                width: 200,
+            },
+            {
+                field: 'updated_date',
+                headerName: 'Updated Date',
+                width: 200,
+            },
+            {
+                field: 'status',
+                headerName: 'Status',
+                renderCell: status,
+                width: 150,
+            },
+            {
                 field: '',
                 headerName: 'Action',
                 width: 70,

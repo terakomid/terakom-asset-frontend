@@ -1,10 +1,9 @@
-import React, { Component } from 'react'
+import React, { Component } from 'react';
 
 // import axios from 'axios'
 
 import Box from '@mui/material/Box';
-import { DataGrid, GridToolbar } from '@mui/x-data-grid';
-import { LinearProgress } from '@mui/material';
+import { DataGrid } from '@mui/x-data-grid';
 
 function editLink() {
     return (
@@ -17,7 +16,7 @@ function editLink() {
                 <li className='w-100 py-2'>
                     <div className="form-check text-end me-3">
                         <label className="form-check-label fs-5">
-                            Edit 
+                            Edit
                             <i className='bi bi-pencil-fill mx-2'></i>
                         </label>
                     </div>
@@ -25,7 +24,7 @@ function editLink() {
                 <li className='w-100 py-2'>
                     <div className="form-check text-end me-3">
                         <label className="form-check-label fs-5">
-                            Delete 
+                            Delete
                             <i className='bi bi-trash-fill mx-2'></i>
                         </label>
                     </div>
@@ -56,7 +55,7 @@ class Table extends Component {
             < div className='card shadow-none border-1' >
                 <div className='card-body'>
                     {/* Table */}
-                    <div style={{ height: 400, width: '100%', id: 1 }}>
+                    <div style={{ height: 400, width: '100%' }}>
                         <Box sx={{
                             height: 400,
                             width: '100%'
@@ -72,16 +71,6 @@ class Table extends Component {
                                 pageSize={5}
                                 rows={rows}
                                 rowsPerPageOptions={[5]}
-                                components={{
-                                    LoadingOverlay: LinearProgress,
-                                    Toolbar: GridToolbar
-                                }}
-                                componentsProps={{
-                                    toolbar: {
-                                        quickFilterProps: { debounceMs: 500 },
-                                        showQuickFilter: true,
-                                    },
-                                }}
                             />
                         </Box>
                     </div >
@@ -95,15 +84,15 @@ const columns = [
     {
         field: 'id',
         headerName: 'No',
-        width: 50
+        width: 50,
     },
     {
-        field: 'condition',
-        headerName: 'Condition',
+        field: 'type',
+        headerName: 'type',
         width: 480,
     },
     {
-        field: 'uid',
+        field: '',
         headerName: '',
         width: 50,
         renderCell: editLink
@@ -111,11 +100,11 @@ const columns = [
 ];
 
 const rows = [
-    { id: 1, condition: 'Baik/Layak', uid: 1 },
-    { id: 2, condition: 'Rusak', uid: 2 },
-    { id: 3, condition: 'Write Off SAP', uid: 3 },
-    { id: 4, condition: 'Disposal', uid: 4 },
-    { id: 5, condition: 'Not Identify/Lost', uid: 5 }
+    { id: 1, type: 'Computer' },
+    { id: 2, type: 'Laptop' },
+    { id: 3, type: 'Notebook' },
+    { id: 4, type: 'Printer' },
+    { id: 5, type: 'Scanner' },
 ];
 
 export default Table

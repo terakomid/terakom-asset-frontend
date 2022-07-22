@@ -3,7 +3,14 @@ import React, { Component } from 'react'
 // import axios from 'axios'
 
 import Box from '@mui/material/Box';
-import { DataGrid } from '@mui/x-data-grid';
+import { DataGrid, GridToolbar } from '@mui/x-data-grid';
+import { Link } from 'react-router-dom';
+import { LinearProgress } from '@mui/material';
+
+function linkSubcategory(params) {
+    return (<Link to={`/it-subtype`} >{params.row.type || ''}</Link>)
+}
+
 
 function editLink() {
     return (
@@ -70,6 +77,16 @@ class Table extends Component {
                                 pageSize={5}
                                 rows={rows}
                                 rowsPerPageOptions={[5]}
+                                components={{
+                                    LoadingOverlay: LinearProgress,
+                                    Toolbar: GridToolbar
+                                }}
+                                componentsProps={{
+                                    toolbar: {
+                                        quickFilterProps: { debounceMs: 500 },
+                                        showQuickFilter: true,
+                                    },
+                                }}
                             />
                         </Box>
                     </div >
@@ -89,6 +106,7 @@ const columns = [
         field: 'type',
         headerName: 'Type',
         width: 480,
+        renderCell: linkSubcategory
     },
     {
         field: 'uid',

@@ -26,14 +26,14 @@ class Sidebar extends Component {
                             </li>
 
                             {/* User Management */}
-                            <li role="menuitem" style={{ display: 'none' }}>
-                                <Link to='/#' className="has-arrow waves-effect">
+                            <li role="menuitem">
+                                <Link to='/' onClick={(e) => e.preventDefault()} className="has-arrow waves-effect">
                                     <i className="mdi mdi-account-circle"></i>
                                     <span className="text-capitalize">user management</span>
                                 </Link>
                                 <ul className="sub-menu" role="menu">
-                                    <li role="menuitem"><Link to='/#' className='text-capitalize'>user level</Link></li>
-                                    <li role="menuitem"><Link to='/#' className='text-capitalize'>user list</Link></li>
+                                    <li role="menuitem"><Link to='/user-role' className='text-capitalize'>user role</Link></li>
+                                    <li role="menuitem"><Link to='/user-list' className='text-capitalize'>user list</Link></li>
                                 </ul>
                             </li>
 
@@ -79,11 +79,11 @@ class Sidebar extends Component {
                             </li>
 
                             {/* Penghapusan Asset */}
-                            <li role="menuitem" style={{ display: 'none' }}>
-                                <Link to='/#' className="waves-effect">
+                            <li role="menuitem">
+                                <Link to='/disposal-asset' className="waves-effect">
                                     <i className="mdi mdi-trash-can"></i>
                                     {/* <span className="badge rounded-pill bg-primary float-end">2</span> */}
-                                    <span className="text-capitalize">penghapusan asset</span>
+                                    <span className="text-capitalize">disposal asset</span>
                                 </Link>
                             </li>
 
@@ -105,8 +105,8 @@ class Sidebar extends Component {
                             </li>
 
                             {/* Help */}
-                            <li role="menuitem" style={{ display: 'none' }}>
-                                <Link to='/#' className="waves-effect">
+                            <li role="menuitem">
+                                <Link to='/help' className="waves-effect">
                                     <i className="mdi mdi-help-circle"></i>
                                     {/* <span className="badge rounded-pill bg-primary float-end">2</span> */}
                                     <span className="text-capitalize">help</span>
@@ -114,8 +114,8 @@ class Sidebar extends Component {
                             </li>
 
                             {/* Activity Log */}
-                            <li role="menuitem" style={{ display: 'none' }}>
-                                <Link to='/#' className="waves-effect">
+                            <li role="menuitem">
+                                <Link to='/activity-log' className="waves-effect">
                                     <i className="mdi mdi-login"></i>
                                     {/* <span className="badge rounded-pill bg-primary float-end">2</span> */}
                                     <span className="text-capitalize">activity log</span>

@@ -3,7 +3,8 @@ import React, { Component } from 'react';
 // import axios from 'axios'
 
 import Box from '@mui/material/Box';
-import { DataGrid } from '@mui/x-data-grid';
+import { DataGrid, GridToolbar } from '@mui/x-data-grid';
+import { LinearProgress } from '@mui/material';
 
 function editLink() {
     return (
@@ -71,6 +72,16 @@ class Table extends Component {
                                 pageSize={5}
                                 rows={rows}
                                 rowsPerPageOptions={[5]}
+                                components={{
+                                    LoadingOverlay: LinearProgress,
+                                    Toolbar: GridToolbar
+                                }}
+                                componentsProps={{
+                                    toolbar: {
+                                        quickFilterProps: { debounceMs: 500 },
+                                        showQuickFilter: true,
+                                    },
+                                }}
                             />
                         </Box>
                     </div >
