@@ -32,11 +32,11 @@ class Add extends Component {
           id="btnCancel"
           className='text-capitalize float-end btn btn-secondary'
           variant="contained"
-          to='/reception-asset'
+          to='/user-list'
         >Cancel</Link>
       </div>
     )
-    
+
     const options = [
       { code: 1, label: 'Dummy 1' },
       { code: 2, label: 'Dummy 2' },
