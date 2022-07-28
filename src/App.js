@@ -1,30 +1,19 @@
-// App.js
+import React, { Component } from "react";
 
-// React component
-import React, { Component } from 'react';
+import Header from "./component/Header";
+import Sidebar from "./component/Sidebar";
 
-// Header
-import Header from './component/Header';
-// Sidebar
-import Sidebar from './component/Sidebar';
-
-// CSS
-import './App.css'
+import "./App.css";
 
 class App extends Component {
-
-  render() {
-    return (
-      <div>
-        {/* Header */}
-        <Header />
-
-        {/* Sidebar */}
-        <Sidebar />
-
-      </div>
-    );
-  }
+   render() {
+      return (
+         <>
+            <Header />
+            <Sidebar />
+         </>
+      );
+   }
 }
 
 export default App;
