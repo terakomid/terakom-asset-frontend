@@ -23,13 +23,10 @@ import { AddRounded, CloseRounded, Delete, Edit, FileDownload, FileUpload, MoreV
 
 import http from "../../../component/api/Api";
 import { Link as RouterLink } from "react-router-dom";
-import { apiUrl } from "../../../variable/Url";
 import Loading from "../../../component/Loading";
 import ModalDelete from "../../../component/Delete";
 
 export default function Vendor() {
-   const token = localStorage.getItem("token");
-
    const [rows, setRows] = useState();
    const [params, setParams] = useState({
       search: "",
@@ -37,11 +34,8 @@ export default function Vendor() {
 
    const getData = async () => {
       http
-         .get(`${apiUrl}/vendor`, {
+         .get(`/vendor`, {
             params: params,
-            headers: {
-               Authorization: "Bearer " + token,
-            },
          })
          .then((res) => {
             // console.log(res.data.data);
@@ -88,11 +82,7 @@ export default function Vendor() {
 
    const onDelete = async () => {
       http
-         .delete(`${apiUrl}/vendor/${staging.id}`, {
-            headers: {
-               Authorization: "Bearer " + token,
-            },
-         })
+         .delete(`/vendor/${staging.id}`, {})
          .then((res) => {
             getData();
             handleMenu();

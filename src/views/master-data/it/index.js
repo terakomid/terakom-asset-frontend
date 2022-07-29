@@ -21,20 +21,13 @@ import { CloseRounded, FileDownload, FileUpload, MoreVert, Search } from "@mui/i
 
 import http from "../../../component/api/Api";
 import { Link as RouterLink } from "react-router-dom";
-import { apiUrl } from "../../../variable/Url";
 import Loading from "../../../component/Loading";
 
 export default function AssetCategory() {
-   const token = localStorage.getItem("token");
-
    const [rows, setRows] = useState();
    const getData = async () => {
       http
-         .get(`${apiUrl}/master_it`, {
-            headers: {
-               Authorization: "Bearer " + token,
-            },
-         })
+         .get(`/master_it`)
          .then((res) => {
             // console.log(res.data.data);
             setRows(res.data.data);

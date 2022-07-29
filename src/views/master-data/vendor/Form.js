@@ -3,11 +3,9 @@ import { Box, Card, CardContent, TextField, Stack, Grid } from "@mui/material";
 import { LoadingButton } from "@mui/lab";
 
 import http from "../../../component/api/Api";
-import { apiUrl } from "../../../variable/Url";
 import { useNavigate, useParams } from "react-router-dom";
 
 export default function VendorForm() {
-   const token = localStorage.getItem("token");
    const { id } = useParams();
    const navigate = useNavigate();
 
@@ -21,11 +19,7 @@ export default function VendorForm() {
 
    const getData = async (id) => {
       http
-         .get(`${apiUrl}/vendor/${id}`, {
-            headers: {
-               Authorization: "Bearer " + token,
-            },
-         })
+         .get(`/vendor/${id}`, {})
          .then((res) => {
             // console.log(res.data.data);
             setData(res.data.data);
@@ -52,11 +46,7 @@ export default function VendorForm() {
          formData.append("contact", data.contact);
          // console.log(Object.fromEntries(formData));
          http
-            .post(`${apiUrl}/vendor`, formData, {
-               headers: {
-                  Authorization: "Bearer " + token,
-               },
-            })
+            .post(`/vendor`, formData, {})
             .then((res) => {
                // console.log(res.data.data);
                navigate("/vendor");
@@ -74,11 +64,7 @@ export default function VendorForm() {
          formData.append("pic_contact", data.pic_contact);
          formData.append("contact", data.contact);
          http
-            .post(`${apiUrl}/vendor/${data.id}`, formData, {
-               headers: {
-                  Authorization: "Bearer " + token,
-               },
-            })
+            .post(`/vendor/${data.id}`, formData, {})
             .then((res) => {
                // console.log(res.data.data);
                navigate("/vendor");

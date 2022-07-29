@@ -26,13 +26,10 @@ import { CloseRounded, Delete, Edit, FileDownload, FileUpload, MoreVert, Search 
 import { LoadingButton } from "@mui/lab";
 
 import http from "../../../component/api/Api";
-import { apiUrl } from "../../../variable/Url";
 import Loading from "../../../component/Loading";
 import ModalDelete from "../../../component/Delete";
 
 export default function AssetCondition() {
-   const token = localStorage.getItem("token");
-
    const [rows, setRows] = useState();
    const [data, setData] = useState({
       condition: "",
@@ -43,11 +40,8 @@ export default function AssetCondition() {
 
    const getData = async () => {
       http
-         .get(`${apiUrl}/condition`, {
+         .get(`/condition`, {
             params: params,
-            headers: {
-               Authorization: "Bearer " + token,
-            },
          })
          .then((res) => {
             // console.log(res.data.data);
@@ -77,11 +71,7 @@ export default function AssetCondition() {
          formData.append("condition", data.condition);
          // console.log(Object.fromEntries(formData));
          http
-            .post(`${apiUrl}/condition`, formData, {
-               headers: {
-                  Authorization: "Bearer " + token,
-               },
-            })
+            .post(`/condition`, formData, {})
             .then((res) => {
                // console.log(res.data.data);
                setLoading(false);
@@ -97,11 +87,7 @@ export default function AssetCondition() {
          formData.append("_method", "PUT");
          formData.append("condition", data.condition);
          http
-            .post(`${apiUrl}/condition/${data.id}`, formData, {
-               headers: {
-                  Authorization: "Bearer " + token,
-               },
-            })
+            .post(`/condition/${data.id}`, formData, {})
             .then((res) => {
                // console.log(res.data.data);
                setMethod("create");
@@ -162,11 +148,7 @@ export default function AssetCondition() {
 
    const onDelete = async () => {
       http
-         .delete(`${apiUrl}/condition/${staging.id}`, {
-            headers: {
-               Authorization: "Bearer " + token,
-            },
-         })
+         .delete(`/condition/${staging.id}`, {})
          .then((res) => {
             getData();
             handleMenu();

@@ -26,13 +26,10 @@ import { CloseRounded, Delete, Edit, FileDownload, FileUpload, MoreVert, Search 
 import { LoadingButton } from "@mui/lab";
 
 import http from "../../../component/api/Api";
-import { apiUrl } from "../../../variable/Url";
 import Loading from "../../../component/Loading";
 import ModalDelete from "../../../component/Delete";
 
 export default function AssetLocation() {
-   const token = localStorage.getItem("token");
-
    const [rows, setRows] = useState();
    const [data, setData] = useState({
       code: "",
@@ -45,11 +42,8 @@ export default function AssetLocation() {
 
    const getData = async () => {
       http
-         .get(`${apiUrl}/location`, {
+         .get(`/location`, {
             params: params,
-            headers: {
-               Authorization: "Bearer " + token,
-            },
          })
          .then((res) => {
             // console.log(res.data.data);
@@ -63,12 +57,9 @@ export default function AssetLocation() {
    const [listParent, setListParent] = useState([]);
    const getListParent = async () => {
       http
-         .get(`${apiUrl}/location`, {
+         .get(`/location`, {
             params: {
                parent: 1,
-            },
-            headers: {
-               Authorization: "Bearer " + token,
             },
          })
          .then((res) => {
@@ -83,11 +74,7 @@ export default function AssetLocation() {
    const [parent, setParent] = useState(null);
    const getParent = async (code) => {
       http
-         .get(`${apiUrl}/location/${code}`, {
-            headers: {
-               Authorization: "Bearer " + token,
-            },
-         })
+         .get(`/location/${code}`, {})
          .then((res) => {
             // console.log(res.data.data);
             setParent(res.data.data);
@@ -123,11 +110,7 @@ export default function AssetLocation() {
          formData.append("parent_id", parent !== null ? parent.id : "");
          // console.log(Object.fromEntries(formData));
          http
-            .post(`${apiUrl}/location`, formData, {
-               headers: {
-                  Authorization: "Bearer " + token,
-               },
-            })
+            .post(`/location`, formData, {})
             .then((res) => {
                // console.log(res.data.data);
                setParent(null);
@@ -146,11 +129,7 @@ export default function AssetLocation() {
          formData.append("location", data.location);
          formData.append("parent_id", parent !== null ? parent.id : "");
          http
-            .post(`${apiUrl}/location/${data.id}`, formData, {
-               headers: {
-                  Authorization: "Bearer " + token,
-               },
-            })
+            .post(`/location/${data.id}`, formData, {})
             .then((res) => {
                // console.log(res.data.data);
                setMethod("create");
@@ -219,11 +198,7 @@ export default function AssetLocation() {
 
    const onDelete = async () => {
       http
-         .delete(`${apiUrl}/location/${staging.id}`, {
-            headers: {
-               Authorization: "Bearer " + token,
-            },
-         })
+         .delete(`/location/${staging.id}`, {})
          .then((res) => {
             getData();
             handleMenu();

@@ -26,13 +26,10 @@ import { CloseRounded, Delete, Edit, FileDownload, FileUpload, MoreVert, Search 
 import { LoadingButton } from "@mui/lab";
 
 import http from "../../../component/api/Api";
-import { apiUrl } from "../../../variable/Url";
 import Loading from "../../../component/Loading";
 import ModalDelete from "../../../component/Delete";
 
 export default function CostCenter() {
-   const token = localStorage.getItem("token");
-
    const [rows, setRows] = useState();
    const [data, setData] = useState({
       code: "",
@@ -44,11 +41,8 @@ export default function CostCenter() {
 
    const getData = async () => {
       http
-         .get(`${apiUrl}/cost`, {
+         .get(`/cost`, {
             params: params,
-            headers: {
-               Authorization: "Bearer " + token,
-            },
          })
          .then((res) => {
             // console.log(res.data.data);
@@ -79,11 +73,7 @@ export default function CostCenter() {
          formData.append("name", data.name);
          // console.log(Object.fromEntries(formData));
          http
-            .post(`${apiUrl}/cost`, formData, {
-               headers: {
-                  Authorization: "Bearer " + token,
-               },
-            })
+            .post(`/cost`, formData, {})
             .then((res) => {
                // console.log(res.data.data);
                setLoading(false);
@@ -100,11 +90,7 @@ export default function CostCenter() {
          formData.append("code", data.code);
          formData.append("name", data.name);
          http
-            .post(`${apiUrl}/cost/${data.id}`, formData, {
-               headers: {
-                  Authorization: "Bearer " + token,
-               },
-            })
+            .post(`/cost/${data.id}`, formData, {})
             .then((res) => {
                // console.log(res.data.data);
                setMethod("create");
@@ -166,11 +152,7 @@ export default function CostCenter() {
 
    const onDelete = async () => {
       http
-         .delete(`${apiUrl}/cost/${staging.id}`, {
-            headers: {
-               Authorization: "Bearer " + token,
-            },
-         })
+         .delete(`/cost/${staging.id}`, {})
          .then((res) => {
             getData();
             handleMenu();

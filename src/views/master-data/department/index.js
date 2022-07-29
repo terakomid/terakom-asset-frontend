@@ -26,13 +26,10 @@ import { CloseRounded, Delete, Edit, FileDownload, FileUpload, MoreVert, Search 
 import { LoadingButton } from "@mui/lab";
 
 import http from "../../../component/api/Api";
-import { apiUrl } from "../../../variable/Url";
 import Loading from "../../../component/Loading";
 import ModalDelete from "../../../component/Delete";
 
 export default function Department() {
-   const token = localStorage.getItem("token");
-
    const [rows, setRows] = useState();
    const [data, setData] = useState({
       dept: "",
@@ -43,11 +40,8 @@ export default function Department() {
 
    const getData = async () => {
       http
-         .get(`${apiUrl}/dept`, {
+         .get(`/dept`, {
             params: params,
-            headers: {
-               Authorization: "Bearer " + token,
-            },
          })
          .then((res) => {
             // console.log(res.data.data);
@@ -77,11 +71,7 @@ export default function Department() {
          formData.append("dept", data.dept);
          // console.log(Object.fromEntries(formData));
          http
-            .post(`${apiUrl}/dept`, formData, {
-               headers: {
-                  Authorization: "Bearer " + token,
-               },
-            })
+            .post(`/dept`, formData, {})
             .then((res) => {
                // console.log(res.data.data);
                setLoading(false);
@@ -97,11 +87,7 @@ export default function Department() {
          formData.append("_method", "PUT");
          formData.append("dept", data.dept);
          http
-            .post(`${apiUrl}/dept/${data.id}`, formData, {
-               headers: {
-                  Authorization: "Bearer " + token,
-               },
-            })
+            .post(`/dept/${data.id}`, formData, {})
             .then((res) => {
                // console.log(res.data.data);
                setMethod("create");
@@ -162,11 +148,7 @@ export default function Department() {
 
    const onDelete = async () => {
       http
-         .delete(`${apiUrl}/dept/${staging.id}`, {
-            headers: {
-               Authorization: "Bearer " + token,
-            },
-         })
+         .delete(`/dept/${staging.id}`, {})
          .then((res) => {
             getData();
             handleMenu();

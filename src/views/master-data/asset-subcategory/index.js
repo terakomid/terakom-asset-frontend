@@ -27,12 +27,10 @@ import { LoadingButton } from "@mui/lab";
 
 import http from "../../../component/api/Api";
 import { useParams } from "react-router-dom";
-import { apiUrl } from "../../../variable/Url";
 import Loading from "../../../component/Loading";
 import ModalDelete from "../../../component/Delete";
 
 export default function AssetSubCategory() {
-   const token = localStorage.getItem("token");
    const { id } = useParams();
 
    const [rows, setRows] = useState();
@@ -47,11 +45,8 @@ export default function AssetSubCategory() {
 
    const getData = async () => {
       http
-         .get(`${apiUrl}/sub_category`, {
+         .get(`/sub_category`, {
             params: params,
-            headers: {
-               Authorization: "Bearer " + token,
-            },
          })
          .then((res) => {
             // console.log(res.data.data);
@@ -65,11 +60,7 @@ export default function AssetSubCategory() {
    const [category, setCategory] = useState();
    const getCategory = async () => {
       http
-         .get(`${apiUrl}/category/${id}`, {
-            headers: {
-               Authorization: "Bearer " + token,
-            },
-         })
+         .get(`/category/${id}`, {})
          .then((res) => {
             // console.log(res.data.data);
             setCategory(res.data.data);
@@ -104,11 +95,7 @@ export default function AssetSubCategory() {
          formData.append("useful_life", data.useful_life);
          // console.log(Object.fromEntries(formData));
          http
-            .post(`${apiUrl}/sub_category`, formData, {
-               headers: {
-                  Authorization: "Bearer " + token,
-               },
-            })
+            .post(`/sub_category`, formData, {})
             .then((res) => {
                // console.log(res.data.data);
                setLoading(false);
@@ -126,11 +113,7 @@ export default function AssetSubCategory() {
          formData.append("sub_category", data.sub_category);
          formData.append("useful_life", data.useful_life);
          http
-            .post(`${apiUrl}/sub_category/${data.id}`, formData, {
-               headers: {
-                  Authorization: "Bearer " + token,
-               },
-            })
+            .post(`/sub_category/${data.id}`, formData, {})
             .then((res) => {
                // console.log(res.data.data);
                setMethod("create");
@@ -192,11 +175,7 @@ export default function AssetSubCategory() {
 
    const onDelete = async () => {
       http
-         .delete(`${apiUrl}/sub_category/${staging.id}`, {
-            headers: {
-               Authorization: "Bearer " + token,
-            },
-         })
+         .delete(`/sub_category/${staging.id}`, {})
          .then((res) => {
             getData();
             handleMenu();

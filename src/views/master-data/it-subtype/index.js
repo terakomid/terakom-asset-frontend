@@ -26,13 +26,11 @@ import { CloseRounded, Delete, Edit, FileDownload, FileUpload, MoreVert, Search 
 import { LoadingButton } from "@mui/lab";
 
 import http from "../../../component/api/Api";
-import { apiUrl } from "../../../variable/Url";
 import Loading from "../../../component/Loading";
 import ModalDelete from "../../../component/Delete";
 import { useParams } from "react-router-dom";
 
 export default function ItSubType() {
-   const token = localStorage.getItem("token");
    const { id } = useParams();
 
    const [rows, setRows] = useState();
@@ -46,11 +44,8 @@ export default function ItSubType() {
 
    const getData = async () => {
       http
-         .get(`${apiUrl}/sub_master_it`, {
+         .get(`/sub_master_it`, {
             params: params,
-            headers: {
-               Authorization: "Bearer " + token,
-            },
          })
          .then((res) => {
             // console.log(res.data.data);
@@ -81,11 +76,7 @@ export default function ItSubType() {
          formData.append("sub_type", data.sub_type);
          // console.log(Object.fromEntries(formData));
          http
-            .post(`${apiUrl}/sub_master_it`, formData, {
-               headers: {
-                  Authorization: "Bearer " + token,
-               },
-            })
+            .post(`/sub_master_it`, formData, {})
             .then((res) => {
                // console.log(res.data.data);
                setLoading(false);
@@ -102,11 +93,7 @@ export default function ItSubType() {
          formData.append("master_it_id", id);
          formData.append("sub_type", data.sub_type);
          http
-            .post(`${apiUrl}/sub_master_it/${data.id}`, formData, {
-               headers: {
-                  Authorization: "Bearer " + token,
-               },
-            })
+            .post(`/sub_master_it/${data.id}`, formData, {})
             .then((res) => {
                // console.log(res.data.data);
                setMethod("create");
@@ -167,11 +154,7 @@ export default function ItSubType() {
 
    const onDelete = async () => {
       http
-         .delete(`${apiUrl}/sub_master_it/${staging.id}`, {
-            headers: {
-               Authorization: "Bearer " + token,
-            },
-         })
+         .delete(`/sub_master_it/${staging.id}`, {})
          .then((res) => {
             getData();
             handleMenu();

@@ -28,13 +28,10 @@ import { LoadingButton } from "@mui/lab";
 
 import http from "../../../component/api/Api";
 import { Link as RouterLink } from "react-router-dom";
-import { apiUrl } from "../../../variable/Url";
 import Loading from "../../../component/Loading";
 import ModalDelete from "../../../component/Delete";
 
 export default function AssetCategory() {
-   const token = localStorage.getItem("token");
-
    const [rows, setRows] = useState();
    const [data, setData] = useState({
       code: "",
@@ -46,11 +43,8 @@ export default function AssetCategory() {
 
    const getData = async () => {
       http
-         .get(`${apiUrl}/category`, {
+         .get(`/category`, {
             params: params,
-            headers: {
-               Authorization: "Bearer " + token,
-            },
          })
          .then((res) => {
             // console.log(res.data.data);
@@ -81,11 +75,7 @@ export default function AssetCategory() {
          formData.append("category", data.category);
          // console.log(Object.fromEntries(formData));
          http
-            .post(`${apiUrl}/category`, formData, {
-               headers: {
-                  Authorization: "Bearer " + token,
-               },
-            })
+            .post(`/category`, formData, {})
             .then((res) => {
                console.log(res.data.data);
                setLoading(false);
@@ -102,11 +92,7 @@ export default function AssetCategory() {
          formData.append("code", data.code);
          formData.append("category", data.category);
          http
-            .post(`${apiUrl}/category/${data.id}`, formData, {
-               headers: {
-                  Authorization: "Bearer " + token,
-               },
-            })
+            .post(`/category/${data.id}`, formData, {})
             .then((res) => {
                console.log(res.data.data);
                setMethod("create");
@@ -168,11 +154,7 @@ export default function AssetCategory() {
 
    const onDelete = async () => {
       http
-         .delete(`${apiUrl}/category/${staging.id}`, {
-            headers: {
-               Authorization: "Bearer " + token,
-            },
-         })
+         .delete(`/category/${staging.id}`, {})
          .then((res) => {
             getData();
             handleMenu();
