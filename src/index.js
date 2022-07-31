@@ -15,8 +15,9 @@ import Dashboard from "./views/dashboard/Content";
 
 // User management
 import UserRole from "./views/user-management/user-role/Content";
-import ListUser from "./views/user-management/user-list/Content";
+import ListUser from "./views/user-management/user-list/Index";
 import ListUserAdd from "./views/user-management/user-list/Add";
+import ListUserEdit from "./views/user-management/user-list/Edit";
 
 import AssetLocation from "./views/master-data/asset-location";
 import AssetCategory from "./views/master-data/asset-category";
@@ -29,10 +30,10 @@ import AssetCondition from "./views/master-data/asset-condition";
 import It from "./views/master-data/it";
 import ItSubType from "./views/master-data/it-subtype";
 
-import DataAsset from "./views/data-asset/data-asset/Content";
-import AssetIT from "./views/data-asset/data-asset/AssetIT";
-import AssetNonIT from "./views/data-asset/data-asset/AssetNonIT";
-import AssetNonITEdit from "./views/data-asset/data-asset/AssetNonITEdit";
+import DataAsset from "./views/data-asset/data-asset";
+import AssetIT from "./views/data-asset/data-asset/IT/Add";
+import AssetNonIT from "./views/data-asset/data-asset/NonIT/Add";
+import AssetNonITEdit from "./views/data-asset/data-asset/NonIT/Edit";
 import HistoryAsset from "./views/data-asset/history-asset/Content";
 import MutationAsset from "./views/data-asset/mutation-asset/Content";
 import AddMutationAsset from "./views/data-asset/mutation-asset/Add";
@@ -125,6 +126,7 @@ root.render(
                <Route path="/user-role" element={<UserRole />} />
                <Route path="/user-list" element={<ListUser />} />
                <Route path="/user-list-add" element={<ListUserAdd />} />
+               <Route path="/user-list-edit/:id" element={<ListUserEdit />} />
                {/* Master Data */}
                <Route path="/asset-location" element={<AssetLocation />} />
                <Route path="/asset-category" element={<AssetCategory />} />
