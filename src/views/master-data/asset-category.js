@@ -21,18 +21,21 @@ import {
    ListItemIcon,
    FormControl,
    TablePagination,
+   Link,
 } from "@mui/material";
 import { CloseRounded, Delete, Edit, FileDownload, FileUpload, MoreVert, Search } from "@mui/icons-material";
 import { LoadingButton } from "@mui/lab";
 
-import http from "../../../component/api/Api";
-import Loading from "../../../component/Loading";
-import ModalDelete from "../../../component/Delete";
+import http from "../../component/api/Api";
+import { Link as RouterLink } from "react-router-dom";
+import Loading from "../../component/Loading";
+import ModalDelete from "../../component/Delete";
 
-export default function Department() {
+export default function AssetCategory() {
    const [rows, setRows] = useState();
    const [data, setData] = useState({
-      dept: "",
+      code: "",
+      category: "",
    });
    const [params, setParams] = useState({
       search: "",
@@ -40,7 +43,7 @@ export default function Department() {
 
    const getData = async () => {
       http
-         .get(`/dept`, {
+         .get(`/category`, {
             params: params,
          })
          .then((res) => {
@@ -68,10 +71,11 @@ export default function Department() {
       setLoading(true);
       if (method === "create") {
          let formData = new FormData();
-         formData.append("dept", data.dept);
+         formData.append("code", data.code);
+         formData.append("category", data.category);
          // console.log(Object.fromEntries(formData));
          http
-            .post(`/dept`, formData, {})
+            .post(`/category`, formData, {})
             .then((res) => {
                // console.log(res.data.data);
                setLoading(false);
@@ -85,9 +89,10 @@ export default function Department() {
       } else {
          let formData = new FormData();
          formData.append("_method", "PUT");
-         formData.append("dept", data.dept);
+         formData.append("code", data.code);
+         formData.append("category", data.category);
          http
-            .post(`/dept/${data.id}`, formData, {})
+            .post(`/category/${data.id}`, formData, {})
             .then((res) => {
                // console.log(res.data.data);
                setMethod("create");
@@ -116,7 +121,8 @@ export default function Department() {
    const handleClear = (e) => {
       setMethod("create");
       setData({
-         dept: "",
+         code: "",
+         category: "",
       });
    };
 
@@ -148,7 +154,7 @@ export default function Department() {
 
    const onDelete = async () => {
       http
-         .delete(`/dept/${staging.id}`, {})
+         .delete(`/category/${staging.id}`, {})
          .then((res) => {
             getData();
             handleMenu();
@@ -177,7 +183,7 @@ export default function Department() {
          <div className="page-content">
             <div className="container">
                <div className="d-flex align-items-center justify-content-between my-2">
-                  <h3 className="fw-bold mb-0">Master Department</h3>
+                  <h3 className="fw-bold mb-0">Master Asset Category</h3>
                   <Stack direction="row" spacing={1}>
                      <Button variant="contained" startIcon={<FileDownload />}>
                         Import
@@ -228,7 +234,8 @@ export default function Department() {
                                        }}
                                     >
                                        <TableCell align="center">No.</TableCell>
-                                       <TableCell>Department</TableCell>
+                                       <TableCell>Code</TableCell>
+                                       <TableCell>Category</TableCell>
                                        <TableCell align="center">Action</TableCell>
                                     </TableRow>
                                  </TableHead>
@@ -240,7 +247,12 @@ export default function Department() {
                                                 <TableCell component="th" scope="row" align="center">
                                                    {page * rowsPerPage + key + 1}.
                                                 </TableCell>
-                                                <TableCell>{value.dept}</TableCell>
+                                                <TableCell>
+                                                   <Link component={RouterLink} to={`/asset-subcategory/${value.id}`}>
+                                                      {value.code}
+                                                   </Link>
+                                                </TableCell>
+                                                <TableCell>{value.category}</TableCell>
                                                 <TableCell align="center">
                                                    <IconButton onClick={(e) => handleClick(e, value)}>
                                                       <MoreVert />
@@ -289,15 +301,27 @@ export default function Department() {
                      <Card>
                         <CardContent>
                            <Typography variant="subtitle1" fontWeight="bold" mb={2}>
-                              Form Department
+                              Form Asset Category
                            </Typography>
                            <Box component="form" onSubmit={handleSubmit}>
                               <TextField
-                                 name="dept"
-                                 label="Department"
+                                 name="code"
+                                 label="Code"
                                  margin="normal"
                                  variant="outlined"
-                                 value={data.dept}
+                                 value={data.code}
+                                 onChange={handleChange}
+                                 fullWidth
+                                 required
+                                 // error={this.state.errorCode}
+                                 // helperText={this.state.errorTextUniqueCode}
+                              />
+                              <TextField
+                                 name="category"
+                                 label="Category"
+                                 margin="normal"
+                                 variant="outlined"
+                                 value={data.category}
                                  onChange={handleChange}
                                  fullWidth
                                  required

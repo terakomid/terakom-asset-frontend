@@ -25,23 +25,26 @@ import {
 import { CloseRounded, Delete, Edit, FileDownload, FileUpload, MoreVert, Search } from "@mui/icons-material";
 import { LoadingButton } from "@mui/lab";
 
-import http from "../../../component/api/Api";
-import Loading from "../../../component/Loading";
-import ModalDelete from "../../../component/Delete";
+import { useParams } from "react-router-dom";
+import http from "../../component/api/Api";
+import Loading from "../../component/Loading";
+import ModalDelete from "../../component/Delete";
 
-export default function CostCenter() {
+export default function ItSubType() {
+   const { id } = useParams();
+
    const [rows, setRows] = useState();
    const [data, setData] = useState({
-      code: "",
-      name: "",
+      sub_type: "",
    });
    const [params, setParams] = useState({
+      master_it_id: id,
       search: "",
    });
 
    const getData = async () => {
       http
-         .get(`/cost`, {
+         .get(`/sub_master_it`, {
             params: params,
          })
          .then((res) => {
@@ -69,11 +72,11 @@ export default function CostCenter() {
       setLoading(true);
       if (method === "create") {
          let formData = new FormData();
-         formData.append("code", data.code);
-         formData.append("name", data.name);
+         formData.append("master_it_id", id);
+         formData.append("sub_type", data.sub_type);
          // console.log(Object.fromEntries(formData));
          http
-            .post(`/cost`, formData, {})
+            .post(`/sub_master_it`, formData, {})
             .then((res) => {
                // console.log(res.data.data);
                setLoading(false);
@@ -87,10 +90,10 @@ export default function CostCenter() {
       } else {
          let formData = new FormData();
          formData.append("_method", "PUT");
-         formData.append("code", data.code);
-         formData.append("name", data.name);
+         formData.append("master_it_id", id);
+         formData.append("sub_type", data.sub_type);
          http
-            .post(`/cost/${data.id}`, formData, {})
+            .post(`/sub_master_it/${data.id}`, formData, {})
             .then((res) => {
                // console.log(res.data.data);
                setMethod("create");
@@ -119,8 +122,7 @@ export default function CostCenter() {
    const handleClear = (e) => {
       setMethod("create");
       setData({
-         code: "",
-         name: "",
+         sub_type: "",
       });
    };
 
@@ -152,14 +154,13 @@ export default function CostCenter() {
 
    const onDelete = async () => {
       http
-         .delete(`/cost/${staging.id}`, {})
+         .delete(`/sub_master_it/${staging.id}`, {})
          .then((res) => {
             getData();
             handleMenu();
             handleModal();
          })
          .catch((err) => {
-            console.log(err.response.data);
             setLoading(false);
          });
    };
@@ -181,7 +182,7 @@ export default function CostCenter() {
          <div className="page-content">
             <div className="container">
                <div className="d-flex align-items-center justify-content-between my-2">
-                  <h3 className="fw-bold mb-0">Master Cost Center</h3>
+                  <h3 className="fw-bold mb-0">Sub Master IT</h3>
                   <Stack direction="row" spacing={1}>
                      <Button variant="contained" startIcon={<FileDownload />}>
                         Import
@@ -232,8 +233,7 @@ export default function CostCenter() {
                                        }}
                                     >
                                        <TableCell align="center">No.</TableCell>
-                                       <TableCell>Cost Center Code</TableCell>
-                                       <TableCell>Cost Center Name</TableCell>
+                                       <TableCell>Sub Type</TableCell>
                                        <TableCell align="center">Action</TableCell>
                                     </TableRow>
                                  </TableHead>
@@ -245,8 +245,7 @@ export default function CostCenter() {
                                                 <TableCell component="th" scope="row" align="center">
                                                    {page * rowsPerPage + key + 1}.
                                                 </TableCell>
-                                                <TableCell>{value.code}</TableCell>
-                                                <TableCell>{value.name}</TableCell>
+                                                <TableCell>{value.sub_type}</TableCell>
                                                 <TableCell align="center">
                                                    <IconButton onClick={(e) => handleClick(e, value)}>
                                                       <MoreVert />
@@ -295,27 +294,15 @@ export default function CostCenter() {
                      <Card>
                         <CardContent>
                            <Typography variant="subtitle1" fontWeight="bold" mb={2}>
-                              Form Cost Center
+                              Form Sub Master IT
                            </Typography>
                            <Box component="form" onSubmit={handleSubmit}>
                               <TextField
-                                 name="code"
-                                 label="Cost Center Code"
+                                 name="sub_type"
+                                 label="Sub Type"
                                  margin="normal"
                                  variant="outlined"
-                                 value={data.code}
-                                 onChange={handleChange}
-                                 fullWidth
-                                 required
-                                 // error={this.state.errorCode}
-                                 // helperText={this.state.errorTextUniqueCode}
-                              />
-                              <TextField
-                                 name="name"
-                                 label="Cost Center Name"
-                                 margin="normal"
-                                 variant="outlined"
-                                 value={data.name}
+                                 value={data.sub_type}
                                  onChange={handleChange}
                                  fullWidth
                                  required

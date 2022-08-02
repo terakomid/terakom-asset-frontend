@@ -25,24 +25,22 @@ import {
 import { CloseRounded, Delete, Edit, FileDownload, FileUpload, MoreVert, Search } from "@mui/icons-material";
 import { LoadingButton } from "@mui/lab";
 
-import http from "../../../component/api/Api";
-import Loading from "../../../component/Loading";
-import ModalDelete from "../../../component/Delete";
+import http from "../../component/api/Api";
+import Loading from "../../component/Loading";
+import ModalDelete from "../../component/Delete";
 
-export default function AssetLocation() {
+export default function Department() {
    const [rows, setRows] = useState();
    const [data, setData] = useState({
-      code: "",
-      location: "",
+      dept: "",
    });
    const [params, setParams] = useState({
       search: "",
-      parent_id: "",
    });
 
    const getData = async () => {
       http
-         .get(`/location`, {
+         .get(`/dept`, {
             params: params,
          })
          .then((res) => {
@@ -54,37 +52,6 @@ export default function AssetLocation() {
          });
    };
 
-   const [listParent, setListParent] = useState([]);
-   const getListParent = async () => {
-      http
-         .get(`/location`, {
-            params: {
-               parent: 1,
-            },
-         })
-         .then((res) => {
-            // console.log(res.data.data);
-            setListParent(res.data.data);
-         })
-         .catch((err) => {
-            // console.log(err.response);
-         });
-   };
-
-   const [parent, setParent] = useState(null);
-   const getParent = async (code) => {
-      http
-         .get(`/location/${code}`, {})
-         .then((res) => {
-            // console.log(res.data.data);
-            setParent(res.data.data);
-         })
-         .catch((err) => {
-            // console.log(err.response);
-            setParent(null);
-         });
-   };
-
    useEffect(() => {
       setRows(undefined);
       let timer = setTimeout(() => {
@@ -93,10 +60,6 @@ export default function AssetLocation() {
       return () => clearTimeout(timer);
       // eslint-disable-next-line react-hooks/exhaustive-deps
    }, [params]);
-   useEffect(() => {
-      getListParent();
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-   }, []);
 
    const [method, setMethod] = useState("create");
    const [loading, setLoading] = useState(false);
@@ -105,15 +68,12 @@ export default function AssetLocation() {
       setLoading(true);
       if (method === "create") {
          let formData = new FormData();
-         formData.append("code", data.code);
-         formData.append("location", data.location);
-         formData.append("parent_id", parent !== null ? parent.id : "");
+         formData.append("dept", data.dept);
          // console.log(Object.fromEntries(formData));
          http
-            .post(`/location`, formData, {})
+            .post(`/dept`, formData, {})
             .then((res) => {
                // console.log(res.data.data);
-               setParent(null);
                setLoading(false);
                handleClear();
                getData();
@@ -125,15 +85,12 @@ export default function AssetLocation() {
       } else {
          let formData = new FormData();
          formData.append("_method", "PUT");
-         formData.append("code", data.code);
-         formData.append("location", data.location);
-         formData.append("parent_id", parent !== null ? parent.id : "");
+         formData.append("dept", data.dept);
          http
-            .post(`/location/${data.id}`, formData, {})
+            .post(`/dept/${data.id}`, formData, {})
             .then((res) => {
                // console.log(res.data.data);
                setMethod("create");
-               setParent(null);
                setLoading(false);
                handleClear();
                getData();
@@ -158,18 +115,12 @@ export default function AssetLocation() {
 
    const handleClear = (e) => {
       setMethod("create");
-      setParent(null);
       setData({
-         code: "",
-         location: "",
+         dept: "",
       });
    };
 
    const handleChange = (e) => {
-      if (e.target.name === "code") {
-         let last = e.target.value.substring(0, e.target.value.length - 1);
-         getParent(last);
-      }
       setData({
          ...data,
          [e.target.name]: e.target.value,
@@ -188,7 +139,6 @@ export default function AssetLocation() {
    const handleEdit = () => {
       setData(staging);
       handleMenu();
-      staging.parent !== null ? setParent(staging.parent) : setParent(null);
    };
 
    const [openModal, setOpenModal] = useState(false);
@@ -198,7 +148,7 @@ export default function AssetLocation() {
 
    const onDelete = async () => {
       http
-         .delete(`/location/${staging.id}`, {})
+         .delete(`/dept/${staging.id}`, {})
          .then((res) => {
             getData();
             handleMenu();
@@ -227,7 +177,7 @@ export default function AssetLocation() {
          <div className="page-content">
             <div className="container">
                <div className="d-flex align-items-center justify-content-between my-2">
-                  <h3 className="fw-bold mb-0">Master Asset Location</h3>
+                  <h3 className="fw-bold mb-0">Master Department</h3>
                   <Stack direction="row" spacing={1}>
                      <Button variant="contained" startIcon={<FileDownload />}>
                         Import
@@ -242,25 +192,6 @@ export default function AssetLocation() {
                      <Card>
                         <CardContent>
                            <Grid container spacing={2} sx={{ mb: 2 }}>
-                              <Grid item xs={4}>
-                                 <TextField
-                                    name="parent_id"
-                                    variant="outlined"
-                                    label="Parent"
-                                    value={params.parent_id}
-                                    onChange={handleSearch}
-                                    defaultValue=""
-                                    select
-                                    fullWidth
-                                 >
-                                    <MenuItem value={""}>{"All Parent"}</MenuItem>
-                                    {listParent.map((v) => (
-                                       <MenuItem key={v.id} value={v.id}>
-                                          {v.location}
-                                       </MenuItem>
-                                    ))}
-                                 </TextField>
-                              </Grid>
                               <Grid item xs>
                                  <TextField
                                     name="search"
@@ -297,9 +228,7 @@ export default function AssetLocation() {
                                        }}
                                     >
                                        <TableCell align="center">No.</TableCell>
-                                       <TableCell>Code</TableCell>
-                                       <TableCell>Location</TableCell>
-                                       <TableCell>Parent</TableCell>
+                                       <TableCell>Department</TableCell>
                                        <TableCell align="center">Action</TableCell>
                                     </TableRow>
                                  </TableHead>
@@ -311,9 +240,7 @@ export default function AssetLocation() {
                                                 <TableCell component="th" scope="row" align="center">
                                                    {page * rowsPerPage + key + 1}.
                                                 </TableCell>
-                                                <TableCell>{value.code}</TableCell>
-                                                <TableCell>{value.location}</TableCell>
-                                                <TableCell>{value.parent !== null && value.parent.location}</TableCell>
+                                                <TableCell>{value.dept}</TableCell>
                                                 <TableCell align="center">
                                                    <IconButton onClick={(e) => handleClick(e, value)}>
                                                       <MoreVert />
@@ -362,41 +289,18 @@ export default function AssetLocation() {
                      <Card>
                         <CardContent>
                            <Typography variant="subtitle1" fontWeight="bold" mb={2}>
-                              Form Asset Location
+                              Form Department
                            </Typography>
                            <Box component="form" onSubmit={handleSubmit}>
                               <TextField
-                                 name="code"
-                                 label="Code"
+                                 name="dept"
+                                 label="Department"
                                  margin="normal"
                                  variant="outlined"
-                                 value={data.code}
+                                 value={data.dept}
                                  onChange={handleChange}
                                  fullWidth
                                  required
-                                 // error={this.state.errorCode}
-                                 // helperText={this.state.errorTextUniqueCode}
-                              />
-                              <TextField
-                                 name="location"
-                                 label="Location"
-                                 margin="normal"
-                                 variant="outlined"
-                                 value={data.location}
-                                 onChange={handleChange}
-                                 fullWidth
-                                 required
-                                 // error={this.state.errorCode}
-                                 // helperText={this.state.errorTextUniqueCode}
-                              />
-                              <TextField
-                                 name="parent_id"
-                                 label="Parent"
-                                 margin="normal"
-                                 variant="outlined"
-                                 value={parent !== null ? parent.location : ""}
-                                 fullWidth
-                                 disabled
                                  // error={this.state.errorCode}
                                  // helperText={this.state.errorTextUniqueCode}
                               />

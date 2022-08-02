@@ -21,21 +21,18 @@ import {
    ListItemIcon,
    FormControl,
    TablePagination,
-   Link,
 } from "@mui/material";
 import { CloseRounded, Delete, Edit, FileDownload, FileUpload, MoreVert, Search } from "@mui/icons-material";
 import { LoadingButton } from "@mui/lab";
 
-import http from "../../../component/api/Api";
-import { Link as RouterLink } from "react-router-dom";
-import Loading from "../../../component/Loading";
-import ModalDelete from "../../../component/Delete";
+import http from "../../component/api/Api";
+import Loading from "../../component/Loading";
+import ModalDelete from "../../component/Delete";
 
-export default function AssetCategory() {
+export default function AssetCondition() {
    const [rows, setRows] = useState();
    const [data, setData] = useState({
-      code: "",
-      category: "",
+      condition: "",
    });
    const [params, setParams] = useState({
       search: "",
@@ -43,7 +40,7 @@ export default function AssetCategory() {
 
    const getData = async () => {
       http
-         .get(`/category`, {
+         .get(`/condition`, {
             params: params,
          })
          .then((res) => {
@@ -71,37 +68,35 @@ export default function AssetCategory() {
       setLoading(true);
       if (method === "create") {
          let formData = new FormData();
-         formData.append("code", data.code);
-         formData.append("category", data.category);
+         formData.append("condition", data.condition);
          // console.log(Object.fromEntries(formData));
          http
-            .post(`/category`, formData, {})
+            .post(`/condition`, formData, {})
             .then((res) => {
-               console.log(res.data.data);
+               // console.log(res.data.data);
                setLoading(false);
                handleClear();
                getData();
             })
             .catch((err) => {
-               console.log(err.response.data);
+               // console.log(err.response.data);
                setLoading(false);
             });
       } else {
          let formData = new FormData();
          formData.append("_method", "PUT");
-         formData.append("code", data.code);
-         formData.append("category", data.category);
+         formData.append("condition", data.condition);
          http
-            .post(`/category/${data.id}`, formData, {})
+            .post(`/condition/${data.id}`, formData, {})
             .then((res) => {
-               console.log(res.data.data);
+               // console.log(res.data.data);
                setMethod("create");
                setLoading(false);
                handleClear();
                getData();
             })
             .catch((err) => {
-               console.log(err.response.data);
+               // console.log(err.response.data);
                setLoading(false);
             });
       }
@@ -121,8 +116,7 @@ export default function AssetCategory() {
    const handleClear = (e) => {
       setMethod("create");
       setData({
-         code: "",
-         category: "",
+         condition: "",
       });
    };
 
@@ -154,7 +148,7 @@ export default function AssetCategory() {
 
    const onDelete = async () => {
       http
-         .delete(`/category/${staging.id}`, {})
+         .delete(`/condition/${staging.id}`, {})
          .then((res) => {
             getData();
             handleMenu();
@@ -183,7 +177,7 @@ export default function AssetCategory() {
          <div className="page-content">
             <div className="container">
                <div className="d-flex align-items-center justify-content-between my-2">
-                  <h3 className="fw-bold mb-0">Master Asset Category</h3>
+                  <h3 className="fw-bold mb-0">Master Asset Condition</h3>
                   <Stack direction="row" spacing={1}>
                      <Button variant="contained" startIcon={<FileDownload />}>
                         Import
@@ -234,8 +228,7 @@ export default function AssetCategory() {
                                        }}
                                     >
                                        <TableCell align="center">No.</TableCell>
-                                       <TableCell>Code</TableCell>
-                                       <TableCell>Category</TableCell>
+                                       <TableCell>Asset Condition</TableCell>
                                        <TableCell align="center">Action</TableCell>
                                     </TableRow>
                                  </TableHead>
@@ -247,12 +240,7 @@ export default function AssetCategory() {
                                                 <TableCell component="th" scope="row" align="center">
                                                    {page * rowsPerPage + key + 1}.
                                                 </TableCell>
-                                                <TableCell>
-                                                   <Link component={RouterLink} to={`/asset-subcategory/${value.id}`}>
-                                                      {value.code}
-                                                   </Link>
-                                                </TableCell>
-                                                <TableCell>{value.category}</TableCell>
+                                                <TableCell>{value.condition}</TableCell>
                                                 <TableCell align="center">
                                                    <IconButton onClick={(e) => handleClick(e, value)}>
                                                       <MoreVert />
@@ -301,27 +289,15 @@ export default function AssetCategory() {
                      <Card>
                         <CardContent>
                            <Typography variant="subtitle1" fontWeight="bold" mb={2}>
-                              Form Asset Category
+                              Form Asset Condition
                            </Typography>
                            <Box component="form" onSubmit={handleSubmit}>
                               <TextField
-                                 name="code"
-                                 label="Code"
+                                 name="condition"
+                                 label="Asset Condition"
                                  margin="normal"
                                  variant="outlined"
-                                 value={data.code}
-                                 onChange={handleChange}
-                                 fullWidth
-                                 required
-                                 // error={this.state.errorCode}
-                                 // helperText={this.state.errorTextUniqueCode}
-                              />
-                              <TextField
-                                 name="category"
-                                 label="Category"
-                                 margin="normal"
-                                 variant="outlined"
-                                 value={data.category}
+                                 value={data.condition}
                                  onChange={handleChange}
                                  fullWidth
                                  required
