@@ -63,7 +63,7 @@ let theme = createTheme({
    },
 });
 
-const root = ReactDOM.createRoot(document.getElementById("App"));
+const root = ReactDOM.createRoot(document.getElementById("app"));
 root.render(
    <div id="layout-wrapper">
       <ThemeProvider theme={theme}>
