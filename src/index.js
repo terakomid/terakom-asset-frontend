@@ -32,7 +32,7 @@ import ItSubType from "./views/master-data/it-subtype";
 
 import DataAsset from "./views/data-asset/data-asset";
 import AssetIT from "./views/data-asset/data-asset/IT/Add";
-import AssetNonIT from "./views/data-asset/data-asset/NonIT/Add";
+// import AssetNonIT from "./views/data-asset/data-asset/NonIT/Add";
 import AssetNonITEdit from "./views/data-asset/data-asset/NonIT/Edit";
 import HistoryAsset from "./views/data-asset/history-asset/Content";
 import MutationAsset from "./views/data-asset/mutation-asset/Content";
@@ -142,7 +142,7 @@ root.render(
                {/* Data Asset */}
                <Route path="/data-asset" element={<DataAsset />} />
                <Route path="/data-asset-it" element={<AssetIT />} />
-               <Route path="/data-asset-non-it" element={<AssetNonIT />} />
+               {/* <Route path="/data-asset-non-it" element={<AssetNonIT />} /> */}
                <Route path="/edit-data-asset-non-it" element={<AssetNonITEdit />} />
                <Route path="/history-asset" element={<HistoryAsset />} />
                <Route path="/mutation-asset" element={<MutationAsset />} />

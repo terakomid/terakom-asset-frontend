@@ -43,7 +43,7 @@ export default function AssetCategory() {
 
    const getData = async () => {
       http
-         .get(`/category`, {
+         .get(`category`, {
             params: params,
          })
          .then((res) => {
