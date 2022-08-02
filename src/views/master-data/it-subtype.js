@@ -25,10 +25,10 @@ import {
 import { CloseRounded, Delete, Edit, FileDownload, FileUpload, MoreVert, Search } from "@mui/icons-material";
 import { LoadingButton } from "@mui/lab";
 
-import http from "../../../component/api/Api";
-import Loading from "../../../component/Loading";
-import ModalDelete from "../../../component/Delete";
 import { useParams } from "react-router-dom";
+import http from "../../component/api/Api";
+import Loading from "../../component/Loading";
+import ModalDelete from "../../component/Delete";
 
 export default function ItSubType() {
    const { id } = useParams();

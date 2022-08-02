@@ -3,11 +3,12 @@ import axios from "axios";
 // let apiURL = "http://localhost:8000/api/";
 let apiURL = "http://api-asset.terakom.id/api/";
 
+let token = localStorage.getItem("token");
+
 const axiosInstance = axios.create({
    baseURL: apiURL,
    headers: {
-      Authorization:
-         "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIxIiwianRpIjoiZGJiZWJhOWRhNDZlMmIwOTQ2MDY3YzI5Yjk1OThhZmNhN2VhM2M4NWM2OTZkNDJhYzQyOWNhYTcxOTEzMmVmZWJkMDkyNmI5YmYyNDczZTEiLCJpYXQiOjE2NTk0MTQxODMuMzgzODg1LCJuYmYiOjE2NTk0MTQxODMuMzgzODg5LCJleHAiOjE2OTA5NTAxODMuMzUwOTgyLCJzdWIiOiIxIiwic2NvcGVzIjpbXX0.IWELFn0oicOI_JCGO7oySMkbr0zGm6JsI5EMOC8NYA0pGrJdpAvBzWYuZ93pS88V4Ptqi1Ttp_XNzwPqFMrr8BbpNf-kKUdVz7eu3QYlcTHbuReARVh7FOXWmqsUEzgpQLdKX9df6plXvssGT2vB4fHidfWD9MXdB-vRtU2xp4Rgmn7M4XCm4Wtiz6t96Cc2mtRtZD4fnL72Jy5F2aYcDkaJ4_7efalEGIuXSHvd9Uo0Hy6QFkYi5GhQ8R1si6K15331EMiZDsFfPhipoYvlFryaD-6-MVsb2b7gKSJcWU9buji0ctybUHRKfBg6heKtv7zsTn4ahMU8I65le9zTXjPs-wIHFXZAMPZHhucfCbTar_7aiSmFLNH7oL1T48QBTxi45E4CInMdTEHyUlkIm87jA9_V34BjYseWBkQuViJTCD02l-vxjuobaSgOxximYFQzIXBU5Wl5xl4lmn60keJpB7ItWnlvbNAAemyMBvFJHNdwmh6lbDD9752yx6crdRuQzoG6NGYLvJVEMbZDuownraSuc1R0O40rScu_3hNcxwzmnUJLanaDwdkP9k-sTMca6kQSLS5sm6fG0288rifIxCEat9Kv7Hx9TW8x3ZSvDPef7zYgrBPmMHwKFCIMvVbmobq9qZIPS9OKi8EGrjwPkM26MfiApvgzbnlozFE",
+      Authorization: "Bearer " + token,
       "Content-Type": "application/json",
    },
 });

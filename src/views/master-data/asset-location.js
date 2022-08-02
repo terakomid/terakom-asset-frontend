@@ -21,29 +21,28 @@ import {
    ListItemIcon,
    FormControl,
    TablePagination,
-   Link,
 } from "@mui/material";
 import { CloseRounded, Delete, Edit, FileDownload, FileUpload, MoreVert, Search } from "@mui/icons-material";
 import { LoadingButton } from "@mui/lab";
 
-import http from "../../../component/api/Api";
-import { Link as RouterLink } from "react-router-dom";
-import Loading from "../../../component/Loading";
-import ModalDelete from "../../../component/Delete";
+import http from "../../component/api/Api";
+import Loading from "../../component/Loading";
+import ModalDelete from "../../component/Delete";
 
-export default function AssetCategory() {
+export default function AssetLocation() {
    const [rows, setRows] = useState();
    const [data, setData] = useState({
       code: "",
-      category: "",
+      location: "",
    });
    const [params, setParams] = useState({
       search: "",
+      parent_id: "",
    });
 
    const getData = async () => {
       http
-         .get(`category`, {
+         .get(`/location`, {
             params: params,
          })
          .then((res) => {
@@ -55,6 +54,37 @@ export default function AssetCategory() {
          });
    };
 
+   const [listParent, setListParent] = useState([]);
+   const getListParent = async () => {
+      http
+         .get(`/location`, {
+            params: {
+               parent: 1,
+            },
+         })
+         .then((res) => {
+            // console.log(res.data.data);
+            setListParent(res.data.data);
+         })
+         .catch((err) => {
+            // console.log(err.response);
+         });
+   };
+
+   const [parent, setParent] = useState(null);
+   const getParent = async (code) => {
+      http
+         .get(`/location/${code}`, {})
+         .then((res) => {
+            // console.log(res.data.data);
+            setParent(res.data.data);
+         })
+         .catch((err) => {
+            // console.log(err.response);
+            setParent(null);
+         });
+   };
+
    useEffect(() => {
       setRows(undefined);
       let timer = setTimeout(() => {
@@ -63,6 +93,10 @@ export default function AssetCategory() {
       return () => clearTimeout(timer);
       // eslint-disable-next-line react-hooks/exhaustive-deps
    }, [params]);
+   useEffect(() => {
+      getListParent();
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+   }, []);
 
    const [method, setMethod] = useState("create");
    const [loading, setLoading] = useState(false);
@@ -72,36 +106,40 @@ export default function AssetCategory() {
       if (method === "create") {
          let formData = new FormData();
          formData.append("code", data.code);
-         formData.append("category", data.category);
+         formData.append("location", data.location);
+         formData.append("parent_id", parent !== null ? parent.id : "");
          // console.log(Object.fromEntries(formData));
          http
-            .post(`/category`, formData, {})
+            .post(`/location`, formData)
             .then((res) => {
-               console.log(res.data.data);
+               // console.log(res.data.data);
+               setParent(null);
                setLoading(false);
                handleClear();
                getData();
             })
             .catch((err) => {
-               console.log(err.response.data);
+               // console.log(err.response.data);
                setLoading(false);
             });
       } else {
          let formData = new FormData();
          formData.append("_method", "PUT");
          formData.append("code", data.code);
-         formData.append("category", data.category);
+         formData.append("location", data.location);
+         formData.append("parent_id", parent !== null ? parent.id : "");
          http
-            .post(`/category/${data.id}`, formData, {})
+            .post(`/location/${data.id}`, formData, {})
             .then((res) => {
-               console.log(res.data.data);
+               // console.log(res.data.data);
                setMethod("create");
+               setParent(null);
                setLoading(false);
                handleClear();
                getData();
             })
             .catch((err) => {
-               console.log(err.response.data);
+               // console.log(err.response.data);
                setLoading(false);
             });
       }
@@ -120,13 +158,18 @@ export default function AssetCategory() {
 
    const handleClear = (e) => {
       setMethod("create");
+      setParent(null);
       setData({
          code: "",
-         category: "",
+         location: "",
       });
    };
 
    const handleChange = (e) => {
+      if (e.target.name === "code") {
+         let last = e.target.value.substring(0, e.target.value.length - 1);
+         getParent(last);
+      }
       setData({
          ...data,
          [e.target.name]: e.target.value,
@@ -145,6 +188,7 @@ export default function AssetCategory() {
    const handleEdit = () => {
       setData(staging);
       handleMenu();
+      staging.parent !== null ? setParent(staging.parent) : setParent(null);
    };
 
    const [openModal, setOpenModal] = useState(false);
@@ -154,7 +198,7 @@ export default function AssetCategory() {
 
    const onDelete = async () => {
       http
-         .delete(`/category/${staging.id}`, {})
+         .delete(`/location/${staging.id}`, {})
          .then((res) => {
             getData();
             handleMenu();
@@ -183,7 +227,7 @@ export default function AssetCategory() {
          <div className="page-content">
             <div className="container">
                <div className="d-flex align-items-center justify-content-between my-2">
-                  <h3 className="fw-bold mb-0">Master Asset Category</h3>
+                  <h3 className="fw-bold mb-0">Master Asset Location</h3>
                   <Stack direction="row" spacing={1}>
                      <Button variant="contained" startIcon={<FileDownload />}>
                         Import
@@ -198,6 +242,25 @@ export default function AssetCategory() {
                      <Card>
                         <CardContent>
                            <Grid container spacing={2} sx={{ mb: 2 }}>
+                              <Grid item xs={4}>
+                                 <TextField
+                                    name="parent_id"
+                                    variant="outlined"
+                                    label="Parent"
+                                    value={params.parent_id}
+                                    onChange={handleSearch}
+                                    defaultValue=""
+                                    select
+                                    fullWidth
+                                 >
+                                    <MenuItem value={""}>{"All Parent"}</MenuItem>
+                                    {listParent.map((v) => (
+                                       <MenuItem key={v.id} value={v.id}>
+                                          {v.location}
+                                       </MenuItem>
+                                    ))}
+                                 </TextField>
+                              </Grid>
                               <Grid item xs>
                                  <TextField
                                     name="search"
@@ -235,7 +298,8 @@ export default function AssetCategory() {
                                     >
                                        <TableCell align="center">No.</TableCell>
                                        <TableCell>Code</TableCell>
-                                       <TableCell>Category</TableCell>
+                                       <TableCell>Location</TableCell>
+                                       <TableCell>Parent</TableCell>
                                        <TableCell align="center">Action</TableCell>
                                     </TableRow>
                                  </TableHead>
@@ -247,12 +311,9 @@ export default function AssetCategory() {
                                                 <TableCell component="th" scope="row" align="center">
                                                    {page * rowsPerPage + key + 1}.
                                                 </TableCell>
-                                                <TableCell>
-                                                   <Link component={RouterLink} to={`/asset-subcategory/${value.id}`}>
-                                                      {value.code}
-                                                   </Link>
-                                                </TableCell>
-                                                <TableCell>{value.category}</TableCell>
+                                                <TableCell>{value.code}</TableCell>
+                                                <TableCell>{value.location}</TableCell>
+                                                <TableCell>{value.parent !== null && value.parent.location}</TableCell>
                                                 <TableCell align="center">
                                                    <IconButton onClick={(e) => handleClick(e, value)}>
                                                       <MoreVert />
@@ -301,7 +362,7 @@ export default function AssetCategory() {
                      <Card>
                         <CardContent>
                            <Typography variant="subtitle1" fontWeight="bold" mb={2}>
-                              Form Asset Category
+                              Form Asset Location
                            </Typography>
                            <Box component="form" onSubmit={handleSubmit}>
                               <TextField
@@ -317,14 +378,25 @@ export default function AssetCategory() {
                                  // helperText={this.state.errorTextUniqueCode}
                               />
                               <TextField
-                                 name="category"
-                                 label="Category"
+                                 name="location"
+                                 label="Location"
                                  margin="normal"
                                  variant="outlined"
-                                 value={data.category}
+                                 value={data.location}
                                  onChange={handleChange}
                                  fullWidth
                                  required
+                                 // error={this.state.errorCode}
+                                 // helperText={this.state.errorTextUniqueCode}
+                              />
+                              <TextField
+                                 name="parent_id"
+                                 label="Parent"
+                                 margin="normal"
+                                 variant="outlined"
+                                 value={parent !== null ? parent.location : ""}
+                                 fullWidth
+                                 disabled
                                  // error={this.state.errorCode}
                                  // helperText={this.state.errorTextUniqueCode}
                               />

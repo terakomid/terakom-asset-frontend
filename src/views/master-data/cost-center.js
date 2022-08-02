@@ -25,45 +25,28 @@ import {
 import { CloseRounded, Delete, Edit, FileDownload, FileUpload, MoreVert, Search } from "@mui/icons-material";
 import { LoadingButton } from "@mui/lab";
 
-import http from "../../../component/api/Api";
-import { useParams } from "react-router-dom";
-import Loading from "../../../component/Loading";
-import ModalDelete from "../../../component/Delete";
+import http from "../../component/api/Api";
+import Loading from "../../component/Loading";
+import ModalDelete from "../../component/Delete";
 
-export default function AssetSubCategory() {
-   const { id } = useParams();
-
+export default function CostCenter() {
    const [rows, setRows] = useState();
    const [data, setData] = useState({
-      useful_life: "",
-      sub_category: "",
+      code: "",
+      name: "",
    });
    const [params, setParams] = useState({
-      category_id: id,
       search: "",
    });
 
    const getData = async () => {
       http
-         .get(`/sub_category`, {
+         .get(`/cost`, {
             params: params,
          })
          .then((res) => {
             // console.log(res.data.data);
             setRows(res.data.data);
-         })
-         .catch((err) => {
-            // console.log(err.response);
-         });
-   };
-
-   const [category, setCategory] = useState();
-   const getCategory = async () => {
-      http
-         .get(`/category/${id}`, {})
-         .then((res) => {
-            // console.log(res.data.data);
-            setCategory(res.data.data);
          })
          .catch((err) => {
             // console.log(err.response);
@@ -79,10 +62,6 @@ export default function AssetSubCategory() {
       // eslint-disable-next-line react-hooks/exhaustive-deps
    }, [params]);
 
-   useEffect(() => {
-      getCategory();
-   }, []);
-
    const [method, setMethod] = useState("create");
    const [loading, setLoading] = useState(false);
    const handleSubmit = async (e) => {
@@ -90,12 +69,11 @@ export default function AssetSubCategory() {
       setLoading(true);
       if (method === "create") {
          let formData = new FormData();
-         formData.append("category_id", id);
-         formData.append("sub_category", data.sub_category);
-         formData.append("useful_life", data.useful_life);
+         formData.append("code", data.code);
+         formData.append("name", data.name);
          // console.log(Object.fromEntries(formData));
          http
-            .post(`/sub_category`, formData, {})
+            .post(`/cost`, formData, {})
             .then((res) => {
                // console.log(res.data.data);
                setLoading(false);
@@ -109,11 +87,10 @@ export default function AssetSubCategory() {
       } else {
          let formData = new FormData();
          formData.append("_method", "PUT");
-         formData.append("category_id", id);
-         formData.append("sub_category", data.sub_category);
-         formData.append("useful_life", data.useful_life);
+         formData.append("code", data.code);
+         formData.append("name", data.name);
          http
-            .post(`/sub_category/${data.id}`, formData, {})
+            .post(`/cost/${data.id}`, formData, {})
             .then((res) => {
                // console.log(res.data.data);
                setMethod("create");
@@ -142,8 +119,8 @@ export default function AssetSubCategory() {
    const handleClear = (e) => {
       setMethod("create");
       setData({
-         sub_category: "",
-         useful_life: "",
+         code: "",
+         name: "",
       });
    };
 
@@ -175,7 +152,7 @@ export default function AssetSubCategory() {
 
    const onDelete = async () => {
       http
-         .delete(`/sub_category/${staging.id}`, {})
+         .delete(`/cost/${staging.id}`, {})
          .then((res) => {
             getData();
             handleMenu();
@@ -204,7 +181,7 @@ export default function AssetSubCategory() {
          <div className="page-content">
             <div className="container">
                <div className="d-flex align-items-center justify-content-between my-2">
-                  <h3 className="fw-bold mb-0">Master Asset Sub Category {category !== undefined && ` - ${category.category}`}</h3>
+                  <h3 className="fw-bold mb-0">Master Cost Center</h3>
                   <Stack direction="row" spacing={1}>
                      <Button variant="contained" startIcon={<FileDownload />}>
                         Import
@@ -255,8 +232,8 @@ export default function AssetSubCategory() {
                                        }}
                                     >
                                        <TableCell align="center">No.</TableCell>
-                                       <TableCell>Sub Category</TableCell>
-                                       <TableCell>Useful Life</TableCell>
+                                       <TableCell>Cost Center Code</TableCell>
+                                       <TableCell>Cost Center Name</TableCell>
                                        <TableCell align="center">Action</TableCell>
                                     </TableRow>
                                  </TableHead>
@@ -268,8 +245,8 @@ export default function AssetSubCategory() {
                                                 <TableCell component="th" scope="row" align="center">
                                                    {page * rowsPerPage + key + 1}.
                                                 </TableCell>
-                                                <TableCell>{value.sub_category}</TableCell>
-                                                <TableCell>{value.useful_life} Bulan</TableCell>
+                                                <TableCell>{value.code}</TableCell>
+                                                <TableCell>{value.name}</TableCell>
                                                 <TableCell align="center">
                                                    <IconButton onClick={(e) => handleClick(e, value)}>
                                                       <MoreVert />
@@ -318,15 +295,15 @@ export default function AssetSubCategory() {
                      <Card>
                         <CardContent>
                            <Typography variant="subtitle1" fontWeight="bold" mb={2}>
-                              Form Asset Sub Category
+                              Form Cost Center
                            </Typography>
                            <Box component="form" onSubmit={handleSubmit}>
                               <TextField
-                                 name="sub_category"
-                                 label="Sub Category"
+                                 name="code"
+                                 label="Cost Center Code"
                                  margin="normal"
                                  variant="outlined"
-                                 value={data.sub_category}
+                                 value={data.code}
                                  onChange={handleChange}
                                  fullWidth
                                  required
@@ -334,17 +311,12 @@ export default function AssetSubCategory() {
                                  // helperText={this.state.errorTextUniqueCode}
                               />
                               <TextField
-                                 name="useful_life"
-                                 label="Useful Life"
+                                 name="name"
+                                 label="Cost Center Name"
                                  margin="normal"
-                                 type="tel"
                                  variant="outlined"
-                                 value={data.useful_life}
+                                 value={data.name}
                                  onChange={handleChange}
-                                 endadornment={<InputAdornment position="end">Bulan</InputAdornment>}
-                                 // InputProps={{
-                                 //    endAdornment: <InputAdornment position="end">Bulan</InputAdornment>,
-                                 // }}
                                  fullWidth
                                  required
                                  // error={this.state.errorCode}

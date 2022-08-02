@@ -1,19 +1,6 @@
-import React, { Component } from "react";
+import React from "react";
+import Router from "./router";
 
-import Header from "./component/Header";
-import Sidebar from "./component/Sidebar";
-
-import "./App.css";
-
-class App extends Component {
-   render() {
-      return (
-         <>
-            <Header />
-            <Sidebar />
-         </>
-      );
-   }
+export default function App() {
+   return <Router />;
 }
-
-export default App;

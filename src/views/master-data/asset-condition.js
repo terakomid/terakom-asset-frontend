@@ -25,15 +25,14 @@ import {
 import { CloseRounded, Delete, Edit, FileDownload, FileUpload, MoreVert, Search } from "@mui/icons-material";
 import { LoadingButton } from "@mui/lab";
 
-import http from "../../../component/api/Api";
-import Loading from "../../../component/Loading";
-import ModalDelete from "../../../component/Delete";
+import http from "../../component/api/Api";
+import Loading from "../../component/Loading";
+import ModalDelete from "../../component/Delete";
 
-export default function CostCenter() {
+export default function AssetCondition() {
    const [rows, setRows] = useState();
    const [data, setData] = useState({
-      code: "",
-      name: "",
+      condition: "",
    });
    const [params, setParams] = useState({
       search: "",
@@ -41,7 +40,7 @@ export default function CostCenter() {
 
    const getData = async () => {
       http
-         .get(`/cost`, {
+         .get(`/condition`, {
             params: params,
          })
          .then((res) => {
@@ -69,11 +68,10 @@ export default function CostCenter() {
       setLoading(true);
       if (method === "create") {
          let formData = new FormData();
-         formData.append("code", data.code);
-         formData.append("name", data.name);
+         formData.append("condition", data.condition);
          // console.log(Object.fromEntries(formData));
          http
-            .post(`/cost`, formData, {})
+            .post(`/condition`, formData, {})
             .then((res) => {
                // console.log(res.data.data);
                setLoading(false);
@@ -87,10 +85,9 @@ export default function CostCenter() {
       } else {
          let formData = new FormData();
          formData.append("_method", "PUT");
-         formData.append("code", data.code);
-         formData.append("name", data.name);
+         formData.append("condition", data.condition);
          http
-            .post(`/cost/${data.id}`, formData, {})
+            .post(`/condition/${data.id}`, formData, {})
             .then((res) => {
                // console.log(res.data.data);
                setMethod("create");
@@ -119,8 +116,7 @@ export default function CostCenter() {
    const handleClear = (e) => {
       setMethod("create");
       setData({
-         code: "",
-         name: "",
+         condition: "",
       });
    };
 
@@ -152,7 +148,7 @@ export default function CostCenter() {
 
    const onDelete = async () => {
       http
-         .delete(`/cost/${staging.id}`, {})
+         .delete(`/condition/${staging.id}`, {})
          .then((res) => {
             getData();
             handleMenu();
@@ -181,7 +177,7 @@ export default function CostCenter() {
          <div className="page-content">
             <div className="container">
                <div className="d-flex align-items-center justify-content-between my-2">
-                  <h3 className="fw-bold mb-0">Master Cost Center</h3>
+                  <h3 className="fw-bold mb-0">Master Asset Condition</h3>
                   <Stack direction="row" spacing={1}>
                      <Button variant="contained" startIcon={<FileDownload />}>
                         Import
@@ -232,8 +228,7 @@ export default function CostCenter() {
                                        }}
                                     >
                                        <TableCell align="center">No.</TableCell>
-                                       <TableCell>Cost Center Code</TableCell>
-                                       <TableCell>Cost Center Name</TableCell>
+                                       <TableCell>Asset Condition</TableCell>
                                        <TableCell align="center">Action</TableCell>
                                     </TableRow>
                                  </TableHead>
@@ -245,8 +240,7 @@ export default function CostCenter() {
                                                 <TableCell component="th" scope="row" align="center">
                                                    {page * rowsPerPage + key + 1}.
                                                 </TableCell>
-                                                <TableCell>{value.code}</TableCell>
-                                                <TableCell>{value.name}</TableCell>
+                                                <TableCell>{value.condition}</TableCell>
                                                 <TableCell align="center">
                                                    <IconButton onClick={(e) => handleClick(e, value)}>
                                                       <MoreVert />
@@ -295,27 +289,15 @@ export default function CostCenter() {
                      <Card>
                         <CardContent>
                            <Typography variant="subtitle1" fontWeight="bold" mb={2}>
-                              Form Cost Center
+                              Form Asset Condition
                            </Typography>
                            <Box component="form" onSubmit={handleSubmit}>
                               <TextField
-                                 name="code"
-                                 label="Cost Center Code"
+                                 name="condition"
+                                 label="Asset Condition"
                                  margin="normal"
                                  variant="outlined"
-                                 value={data.code}
-                                 onChange={handleChange}
-                                 fullWidth
-                                 required
-                                 // error={this.state.errorCode}
-                                 // helperText={this.state.errorTextUniqueCode}
-                              />
-                              <TextField
-                                 name="name"
-                                 label="Cost Center Name"
-                                 margin="normal"
-                                 variant="outlined"
-                                 value={data.name}
+                                 value={data.condition}
                                  onChange={handleChange}
                                  fullWidth
                                  required

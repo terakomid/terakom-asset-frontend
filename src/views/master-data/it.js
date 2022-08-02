@@ -1,27 +1,10 @@
 import React, { useEffect, useState } from "react";
-import {
-   Button,
-   Card,
-   CardContent,
-   Grid,
-   IconButton,
-   InputAdornment,
-   Table,
-   TableBody,
-   TableCell,
-   TableContainer,
-   TableHead,
-   TableRow,
-   TextField,
-   Stack,
-   TablePagination,
-   Link,
-} from "@mui/material";
-import { CloseRounded, FileDownload, FileUpload, MoreVert, Search } from "@mui/icons-material";
+import { Button, Card, CardContent, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Stack, TablePagination, Link } from "@mui/material";
+import { FileDownload, FileUpload } from "@mui/icons-material";
 
-import http from "../../../component/api/Api";
 import { Link as RouterLink } from "react-router-dom";
-import Loading from "../../../component/Loading";
+import http from "../../component/api/Api";
+import Loading from "../../component/Loading";
 
 export default function AssetCategory() {
    const [rows, setRows] = useState();

@@ -25,14 +25,14 @@ import {
 import { CloseRounded, Delete, Edit, FileDownload, FileUpload, MoreVert, Search } from "@mui/icons-material";
 import { LoadingButton } from "@mui/lab";
 
-import http from "../../../component/api/Api";
-import Loading from "../../../component/Loading";
-import ModalDelete from "../../../component/Delete";
+import http from "../../component/api/Api";
+import Loading from "../../component/Loading";
+import ModalDelete from "../../component/Delete";
 
-export default function AssetCondition() {
+export default function Department() {
    const [rows, setRows] = useState();
    const [data, setData] = useState({
-      condition: "",
+      dept: "",
    });
    const [params, setParams] = useState({
       search: "",
@@ -40,7 +40,7 @@ export default function AssetCondition() {
 
    const getData = async () => {
       http
-         .get(`/condition`, {
+         .get(`/dept`, {
             params: params,
          })
          .then((res) => {
@@ -68,10 +68,10 @@ export default function AssetCondition() {
       setLoading(true);
       if (method === "create") {
          let formData = new FormData();
-         formData.append("condition", data.condition);
+         formData.append("dept", data.dept);
          // console.log(Object.fromEntries(formData));
          http
-            .post(`/condition`, formData, {})
+            .post(`/dept`, formData, {})
             .then((res) => {
                // console.log(res.data.data);
                setLoading(false);
@@ -85,9 +85,9 @@ export default function AssetCondition() {
       } else {
          let formData = new FormData();
          formData.append("_method", "PUT");
-         formData.append("condition", data.condition);
+         formData.append("dept", data.dept);
          http
-            .post(`/condition/${data.id}`, formData, {})
+            .post(`/dept/${data.id}`, formData, {})
             .then((res) => {
                // console.log(res.data.data);
                setMethod("create");
@@ -116,7 +116,7 @@ export default function AssetCondition() {
    const handleClear = (e) => {
       setMethod("create");
       setData({
-         condition: "",
+         dept: "",
       });
    };
 
@@ -148,7 +148,7 @@ export default function AssetCondition() {
 
    const onDelete = async () => {
       http
-         .delete(`/condition/${staging.id}`, {})
+         .delete(`/dept/${staging.id}`, {})
          .then((res) => {
             getData();
             handleMenu();
@@ -177,7 +177,7 @@ export default function AssetCondition() {
          <div className="page-content">
             <div className="container">
                <div className="d-flex align-items-center justify-content-between my-2">
-                  <h3 className="fw-bold mb-0">Master Asset Condition</h3>
+                  <h3 className="fw-bold mb-0">Master Department</h3>
                   <Stack direction="row" spacing={1}>
                      <Button variant="contained" startIcon={<FileDownload />}>
                         Import
@@ -228,7 +228,7 @@ export default function AssetCondition() {
                                        }}
                                     >
                                        <TableCell align="center">No.</TableCell>
-                                       <TableCell>Asset Condition</TableCell>
+                                       <TableCell>Department</TableCell>
                                        <TableCell align="center">Action</TableCell>
                                     </TableRow>
                                  </TableHead>
@@ -240,7 +240,7 @@ export default function AssetCondition() {
                                                 <TableCell component="th" scope="row" align="center">
                                                    {page * rowsPerPage + key + 1}.
                                                 </TableCell>
-                                                <TableCell>{value.condition}</TableCell>
+                                                <TableCell>{value.dept}</TableCell>
                                                 <TableCell align="center">
                                                    <IconButton onClick={(e) => handleClick(e, value)}>
                                                       <MoreVert />
@@ -289,15 +289,15 @@ export default function AssetCondition() {
                      <Card>
                         <CardContent>
                            <Typography variant="subtitle1" fontWeight="bold" mb={2}>
-                              Form Asset Condition
+                              Form Department
                            </Typography>
                            <Box component="form" onSubmit={handleSubmit}>
                               <TextField
-                                 name="condition"
-                                 label="Asset Condition"
+                                 name="dept"
+                                 label="Department"
                                  margin="normal"
                                  variant="outlined"
-                                 value={data.condition}
+                                 value={data.dept}
                                  onChange={handleChange}
                                  fullWidth
                                  required

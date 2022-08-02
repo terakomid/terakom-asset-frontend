@@ -2,15 +2,16 @@
 import React, { Component } from "react";
 
 import { Link } from "react-router-dom";
+import "../App.css";
 
 class Header extends Component {
    render() {
       return (
          <header id="page-topbar">
             <div className="navbar-header bg-primary">
-               <div className="d-flex bg-white">
+               <div className="d-flex">
                   {/* LOGO */}
-                  <div className="navbar-brand-box px-1">
+                  <div className="navbar-brand-box bg-white px-1">
                      <Link to="/" className="logo logo-dark">
                         <span className="logo-sm">
                            <img src="/assets/images/logo-sm.png" alt="" height="17" />
@@ -30,7 +31,11 @@ class Header extends Component {
                      </a>
                   </div>
 
-                  <button type="button" className="btn btn-sm px-3 font-size-24 header-item waves-effect vertical-menu-btn" onClick={this.openSideMenu}>
+                  <button
+                     type="button"
+                     className="btn btn-sm px-3 font-size-24 header-item waves-effect vertical-menu-btn text-white"
+                     onClick={this.openSideMenu}
+                  >
                      <i className="mdi mdi-menu"></i>
                   </button>
                </div>
