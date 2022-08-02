@@ -1,7 +1,7 @@
 import axios from "axios";
 
-let apiURL = "http://localhost:8000/api/";
-// let apiURL = "http://api-asset.terakom.id/api/";
+// let apiURL = "http://localhost:8000/api/";
+let apiURL = "http://api-asset.terakom.id/api/";
 
 let token = localStorage.getItem("token");
 

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Grid, Card, CardContent, CardHeader, Typography, TextField, MenuItem, Box, Stack, FormControl, FormLabel, RadioGroup, FormControlLabel, Radio } from '@mui/material'
+import { Grid, Card, CardContent, CardHeader, Typography, TextField, MenuItem, Box, Stack, FormControl, FormLabel, RadioGroup, FormControlLabel, Radio, Chip } from '@mui/material'
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { MobileDatePicker } from '@mui/x-date-pickers/MobileDatePicker';
@@ -8,6 +8,11 @@ import { useNavigate } from 'react-router-dom'
 import Loading from '../../../../component/Loading';
 import { DatePicker } from '@mui/x-date-pickers';
 import moment from 'moment'
+import { produce } from "immer";
+import InsertPhotoOutlinedIcon from '@mui/icons-material/InsertPhotoOutlined';
+import { AssignmentIndOutlined, DescriptionOutlined, InsertPhotoOutlined } from '@mui/icons-material';
+import { LoadingButton } from '@mui/lab';
+
 const Form = (props) => {
     //form 
     const [form, setForm] = useState({
@@ -80,6 +85,12 @@ const Form = (props) => {
     const [assetConditions, setAssetConditions] = useState([])
     const [assetCost, setAssetCost] = useState([]);
     const [assetVendor, setAssetVendor] = useState([])
+    const [masterDevices, setMasterDevices] = useState([])
+    const [masterBrands, setMasterBrands] = useState([])
+    const [masterProcessors, setMasterProcessors] = useState([])
+    const [masterWindowOS, setMasterWindowOS] = useState([])
+    const [masterOffices, setMasterOffices] = useState([])
+    const [masterAntiVirus, setMasterAntiVirus] = useState([])
 
     //loading select
     const [subCategoriesLoading, setSubCategoriesLoading] = useState(false)
@@ -92,6 +103,19 @@ const Form = (props) => {
         pic_contact: '',
     })
 
+    //picture and evidence
+    const [pictures, setPictures] = useState([
+        {
+            image_file: '',
+            image_preview: ''
+        }
+    ])
+    const [evidences, setEvidences] = useState([
+        {
+            file: '',
+        }
+    ])
+
     //get data from API
     const getAssetCategories = async () => {
         const res = await http.get(`category`)
@@ -102,7 +126,6 @@ const Form = (props) => {
     const getSubCategory = async (category_id) => {
         setSubCategoriesLoading(true)
         const res = await http.get(`sub_category?category_id=${category_id}`)
-        console.log(res.data)
         setSubCategories([...res.data.data])
         setSubCategoriesLoading(false)
     }
@@ -120,7 +143,6 @@ const Form = (props) => {
             }
         })
         setEmployees([...res.data.data.data])
-        console.log(res.data)
         return 1
     }
 
@@ -138,6 +160,28 @@ const Form = (props) => {
     const getVendor = async () => {
         const res = await http.get(`vendor`)
         setAssetVendor([...res.data.data])
+    }
+
+    const getAssetMasterIt = async (master_it_id) => {
+        const res = await http.get(`sub_master_it`, {
+            params: {
+                master_it_id,
+            }
+        })
+        if(master_it_id === 1){
+            setMasterDevices([...res.data.data])
+        }else if(master_it_id === 2){
+            setMasterBrands([...res.data.data])
+        }else if(master_it_id === 3){
+            setMasterProcessors([...res.data.data])
+        }else if(master_it_id === 4){
+            setMasterWindowOS([...res.data.data])
+        }else if(master_it_id === 5){
+            setMasterOffices([...res.data.data])
+        }else if(master_it_id === 6){
+            setMasterAntiVirus([...res.data.data])
+        }
+        return 1
     }
 
     // event handler
@@ -174,11 +218,36 @@ const Form = (props) => {
             })
         }
     }
+
+    const onSubmit = (e) => {
+        e.preventDefault();
+        let url = ""
+        const formData = new FormData();
+
+        if(props.title === 'it'){
+            formData.append("asset_type", "it")
+        }else{
+            formData.append("asset_type", "non-it")
+        }
+    }
     
     useEffect(() => {
         let mounted = true
         if(mounted){
-            Promise.all([getAssetCategories(), getAssetLocations(), getEmployees(), getAssetCondition(), getAssetCost(), getVendor()]).then(res => {
+            Promise.all([
+                getAssetCategories(), 
+                getAssetLocations(), 
+                getEmployees(), 
+                getAssetCondition(), 
+                getAssetCost(), 
+                getVendor(),
+                getAssetMasterIt(1),
+                getAssetMasterIt(2),
+                getAssetMasterIt(3),
+                getAssetMasterIt(4),
+                getAssetMasterIt(5),
+                getAssetMasterIt(6)
+            ]).then(res => {
                 setIsComplete(true)
             })
         }
@@ -186,7 +255,7 @@ const Form = (props) => {
         return () => mounted = false
     }, [props])
     return (
-        <Box component="form">
+        <Box component="form" onSubmit={onSubmit}>
             <Grid container spacing={4}>
                 {isComplete &&
                 <>
@@ -215,7 +284,7 @@ const Form = (props) => {
                                         select
                                     >
                                         {assetCategories.length > 0 && assetCategories.map(v => (
-                                            <MenuItem key={v.id} value={v.id}>{v.code}</MenuItem>
+                                            <MenuItem key={v.id} value={v.id}>{`${v.code}-${v.category}`}</MenuItem>
                                         ))}
                                         {assetCategories.length == 0 && 
                                             <MenuItem disabled>Kosong</MenuItem>
@@ -233,7 +302,7 @@ const Form = (props) => {
                                     >
                                         {subCategoriesLoading && <MenuItem disabled> <Loading /> </MenuItem>}
                                         {subCategories.length > 0 && subCategories.map(v => (
-                                            <MenuItem key={v.id} value={v.id}>{v.code}</MenuItem>
+                                            <MenuItem key={v.id} value={v.id}>{v.sub_category}</MenuItem>
                                         ))}
                                         {subCategories.length == 0 && !subCategoriesLoading &&
                                             <MenuItem disabled>Kosong</MenuItem>
@@ -308,7 +377,7 @@ const Form = (props) => {
                                         select
                                     >
                                         {employees.length > 0 && employees.map(v => (
-                                            <MenuItem key={v.id} value={v.id}>{v.name}</MenuItem>
+                                            <MenuItem key={v.id} value={v.id}>{`${v.code}-${v.name}`}</MenuItem>
                                         ))}
                                         {employees.length == 0 && 
                                             <MenuItem disabled>Kosong</MenuItem>
@@ -334,7 +403,7 @@ const Form = (props) => {
                                         select
                                     >
                                         {assetLocations.length > 0 && assetLocations.map(v => (
-                                            <MenuItem key={v.id} value={v.id}>{v.location}</MenuItem>
+                                            <MenuItem key={v.id} value={v.id}>{`${v.code}-${v.location}`}</MenuItem>
                                         ))}
                                         {assetLocations.length == 0 && 
                                             <MenuItem disabled>Kosong</MenuItem>
@@ -358,7 +427,7 @@ const Form = (props) => {
                                         }
                                     </TextField>
                                 </Grid>
-                                <Grid item md={12} xs={12}>
+                                <Grid item md={6} xs={12}>
                                     <TextField
                                         value={form.latitude} 
                                         onChange={handleChange}
@@ -368,7 +437,7 @@ const Form = (props) => {
                                         
                                     />
                                 </Grid>
-                                <Grid item md={12} xs={12}>
+                                <Grid item md={6} xs={12}>
                                     <TextField 
                                         value={form.longitude}
                                         onChange={handleChange}
@@ -399,7 +468,7 @@ const Form = (props) => {
                                         select
                                     >
                                         {assetCost.length > 0 && assetCost.map(v => (
-                                            <MenuItem key={v.id} value={v.id}>{v.name}</MenuItem>
+                                            <MenuItem key={v.id} value={v.id}>{`${v.code}-${v.name}`}</MenuItem>
                                         ))}
                                         {assetCost.length == 0 && 
                                             <MenuItem disabled>Kosong</MenuItem>
@@ -475,7 +544,7 @@ const Form = (props) => {
                                         select
                                     >
                                         {assetVendor.length > 0 && assetVendor.map(v => (
-                                            <MenuItem key={v.id} value={v.id}>{v.name}</MenuItem>
+                                            <MenuItem key={v.id} value={v.id}>{`${v.code}-${v.name}`}</MenuItem>
                                         ))}
                                         {assetVendor.length == 0 && 
                                             <MenuItem disabled>Kosong</MenuItem>
@@ -522,13 +591,25 @@ const Form = (props) => {
                             <Grid container mt={2} spacing={2}>
                                 <Grid Grid item md={4} xs={12}>
                                     <TextField 
-                                        name="device"
+                                        onChange={handleChange}
+                                        value={form.device_id}
+                                        name="device_id"
                                         fullWidth
                                         label="Device"
-                                    />
+                                        select
+                                    >
+                                        {masterDevices.length > 0 && masterDevices.map(v => (
+                                            <MenuItem key={v.id} value={v.id}>{v.sub_type}</MenuItem>
+                                        ))}
+                                        {masterDevices.length == 0 && 
+                                            <MenuItem disabled>Kosong</MenuItem>
+                                        }
+                                    </TextField>
                                 </Grid>
                                 <Grid Grid item md={4} xs={12}>
-                                    <TextField 
+                                    <TextField
+                                        onChange={handleChange}
+                                        value={form.type} 
                                         name="type"
                                         fullWidth
                                         label="Type"
@@ -536,52 +617,70 @@ const Form = (props) => {
                                 </Grid>
                                 <Grid Grid item md={4} xs={12}>
                                     <TextField 
-                                        name="brand"
+                                        onChange={handleChange}
+                                        value={form.brand_id}
+                                        name="brand_id"
                                         fullWidth
                                         label="Brand"
-                                    />
+                                        select
+                                    >
+                                        {masterBrands.length > 0 && masterBrands.map(v => (
+                                            <MenuItem key={v.id} value={v.id}>{v.sub_type}</MenuItem>
+                                        ))}
+                                        {masterBrands.length == 0 && 
+                                            <MenuItem disabled>Kosong</MenuItem>
+                                        }
+                                    </TextField>
                                 </Grid>
                                 <Grid Grid item md={4} xs={12}>
                                     <TextField 
+                                        onChange={handleChange}
+                                        value={form.monitor_inch} 
                                         name="monitor_inch"
                                         fullWidth
                                         label="Monitor Inch"
                                     />
                                 </Grid>
                                 <Grid Grid item md={4} xs={12}>
-                                    <TextField 
+                                    <TextField
+                                        onChange={handleChange}
+                                        value={form.model_brand}  
                                         name="model_brand"
                                         fullWidth
                                         label="Model Brand"
                                     />
                                 </Grid>
                                 <Grid Grid item md={4} xs={12}>
-                                    <TextField 
+                                    <TextField
+                                        onChange={handleChange}
+                                        value={form.mac_address}   
                                         name="mac_address"
                                         fullWidth
                                         label="Mac Address"
                                     />
                                 </Grid>
                                 <Grid Grid item md={6} xs={12}>
-                                <LocalizationProvider dateAdapter={AdapterDateFns}>
-                                    <DatePicker
-                                        value={form.warranty}
-                                        name="warranty"
-                                        label="Warranty Expiry"
-                                        inputFormat="yyyy/MM/dd"
-                                        mask='____/__/__'
-                                        onChange={(newValue) => {
-                                            setForm({
-                                                ...form,
-                                                warranty: newValue
-                                            })
-                                        }}
-                                        renderInput={(params) => <TextField fullWidth {...params} />}
-                                    />
+                                    <LocalizationProvider dateAdapter={AdapterDateFns}>
+                                        <DatePicker
+                                            value={form.warranty}
+                                            name="warranty"
+                                            label="Warranty Expiry"
+                                            inputFormat="yyyy/MM/dd"
+                                            mask='____/__/__'
+                                            onChange={(newValue) => {
+                                                setForm({
+                                                    ...form,
+                                                    warranty: newValue
+                                                })
+                                            }}
+                                            renderInput={(params) => <TextField fullWidth {...params} />}
+                                        />
                                     </LocalizationProvider>
                                 </Grid>
                                 <Grid Grid item md={6} xs={12}>
-                                    <TextField 
+                                    <TextField
+                                        onChange={handleChange}
+                                        value={form.computer_name}
                                         name="computer_name"
                                         fullWidth
                                         label="Computer Name"
@@ -599,14 +698,18 @@ const Form = (props) => {
                             <Typography>Hardware</Typography>
                             <Grid container mt={2} spacing={2}>
                                 <Grid Grid item md={4} xs={12}>
-                                    <TextField 
+                                    <TextField
+                                        onChange={handleChange}
+                                        value={form.dlp}
                                         name="dlp"
                                         fullWidth
                                         label="DLP"
                                     />
                                 </Grid>
                                 <Grid Grid item md={4} xs={12}>
-                                    <TextField 
+                                    <TextField
+                                        onChange={handleChange}
+                                        value={form.soc} 
                                         name="soc"
                                         fullWidth
                                         label="SOC"
@@ -614,20 +717,34 @@ const Form = (props) => {
                                 </Grid>
                                 <Grid Grid item md={4} xs={12}>
                                     <TextField 
-                                        name="sn_nb_pc"
+                                        onChange={handleChange}
+                                        value={form.snnbpc} 
+                                        name="snnbpc"
                                         fullWidth
                                         label="SN NB & PC"
                                     />
                                 </Grid>
                                 <Grid Grid item md={6} xs={12}>
                                     <TextField 
-                                        name="processor"
+                                        onChange={handleChange}
+                                        value={form.processor_id}
+                                        name="processor_id"
                                         fullWidth
                                         label="Processor"
-                                    />
+                                        select
+                                    >
+                                        {masterProcessors.length > 0 && masterProcessors.map(v => (
+                                            <MenuItem key={v.id} value={v.id}>{v.sub_type}</MenuItem>
+                                        ))}
+                                        {masterProcessors.length == 0 && 
+                                            <MenuItem disabled>Kosong</MenuItem>
+                                        }
+                                    </TextField>
                                 </Grid>
                                 <Grid Grid item md={6} xs={12}>
-                                    <TextField 
+                                    <TextField
+                                        onChange={handleChange}
+                                        value={form.hardware} 
                                         name="hardware"
                                         fullWidth
                                         label="Hardware"
@@ -644,40 +761,65 @@ const Form = (props) => {
                         <CardContent>
                             <Typography>Software</Typography>
                             <Grid container mt={2} spacing={2}>
-                                <Grid Grid item md={4} xs={12}>
+                                <Grid Grid item md={6} xs={12}>
                                     <TextField 
-                                        name="os"
+                                        onChange={handleChange}
+                                        value={form.os_id}
+                                        name="os_id"
                                         fullWidth
                                         label="OS"
-                                    />
+                                        select
+                                    >
+                                        {masterWindowOS.length > 0 && masterWindowOS.map(v => (
+                                            <MenuItem key={v.id} value={v.id}>{v.sub_type}</MenuItem>
+                                        ))}
+                                        {masterWindowOS.length == 0 && 
+                                            <MenuItem disabled>Kosong</MenuItem>
+                                        }
+                                    </TextField>
                                 </Grid>
-                                <Grid Grid item md={4} xs={12}>
-                                    <TextField 
+                                <Grid Grid item md={6} xs={12}>
+                                    <TextField
+                                        onChange={handleChange}
+                                        value={form.sn_windows} 
                                         name="sn_windows"
                                         fullWidth
-                                        label="SB Windows"
+                                        label="SN Windows"
                                     />
                                 </Grid>
-                                <Grid Grid item md={4} xs={12}>
+                                <Grid Grid item md={6} xs={12}>
                                     <TextField 
-                                        name="ms_office"
+                                        onChange={handleChange}
+                                        value={form.office_id}
+                                        name="office_id"
                                         fullWidth
                                         label="MS Office"
-                                    />
+                                        select
+                                    >
+                                        {masterOffices.length > 0 && masterOffices.map(v => (
+                                            <MenuItem key={v.id} value={v.id}>{v.sub_type}</MenuItem>
+                                        ))}
+                                        {masterOffices.length == 0 && 
+                                            <MenuItem disabled>Kosong</MenuItem>
+                                        }
+                                    </TextField>
                                 </Grid>
                                 <Grid Grid item md={6} xs={12}>
                                     <TextField 
-                                        name="sn_office"
+                                        onChange={handleChange}
+                                        value={form.antivirus_id}
+                                        name="antivirus_id"
                                         fullWidth
-                                        label="SN Office"
-                                    />
-                                </Grid>
-                                <Grid Grid item md={6} xs={12}>
-                                    <TextField 
-                                        name="antivirus"
-                                        fullWidth
-                                        label="Antivirus"
-                                    />
+                                        label="Anti Virus"
+                                        select
+                                    >
+                                        {masterAntiVirus.length > 0 && masterAntiVirus.map(v => (
+                                            <MenuItem key={v.id} value={v.id}>{v.sub_type}</MenuItem>
+                                        ))}
+                                        {masterAntiVirus.length == 0 && 
+                                            <MenuItem disabled>Kosong</MenuItem>
+                                        }
+                                    </TextField>
                                 </Grid>
                             </Grid>
                         </CardContent>
@@ -688,10 +830,12 @@ const Form = (props) => {
                 <Grid item xs={12} md={12}>
                     <Card>
                         <CardContent>
-                            <Typography>Software</Typography>
+                            <Typography>Information Support</Typography>
                             <Grid container mt={2} spacing={2}>
                                 <Grid Grid item md={12} xs={12}>
-                                    <TextField 
+                                    <TextField
+                                        onChange={handleChange} 
+                                        value={form.note}
                                         name="note"
                                         fullWidth
                                         label="Note"
@@ -702,30 +846,127 @@ const Form = (props) => {
                                 <Grid Grid item md={12} xs={12}>
                                     <Typography>Picture</Typography>
                                     <Grid container>
-                                        <Grid item xs={4} md={2}>
-                                            <img src={"https://images.pexels.com/photos/20787/pexels-photo.jpg?auto=compress&cs=tinysrgb&h=80"} alt  />
+                                        {pictures.map((v, i) => {
+                                            return (
+                                                <Grid key={i} item xs={6} md={4}>
+                                                    <Stack spacing={2} alignItems="center">
+                                                        <Box component="label" sx={{ mt: { xs: 2 } }} htmlFor={`img-${i}`}>
+                                                            {v.image_preview == "" ? 
+                                                            <InsertPhotoOutlined sx={{ fontSize: '100px' }} />
+                                                            :
+                                                            <img style={{ height: '100px' }} src={v.image_preview} alt="test"  />
+                                                            }
+                                                        </Box>
+                                                        <input 
+                                                            type="file" 
+                                                            style={{ display: 'none' }} 
+                                                            id={`img-${i}`}
+                                                            onChange={e => {
+                                                                let image_file = e.target.files[0]
+                                                                let image_preview = URL.createObjectURL(e.target.files[0])
+                                                                setPictures(currentAnswers => 
+                                                                    produce(currentAnswers, v => {
+                                                                        v[i] = {
+                                                                            image_file,
+                                                                            image_preview
+                                                                        }
+                                                                    })
+                                                                );
+                                                            }} 
+                                                        />
+                                                        {pictures.length > 1 &&
+                                                            <Chip
+                                                                color="error" 
+                                                                label="delete" 
+                                                                onClick={() => {
+                                                                    setPictures(currentAnswers => currentAnswers.filter((v, x) => x !== i))
+                                                                }} 
+                                                            />
+                                                        }
+                                                    </Stack>
+                                                    
+                                                </Grid>
+                                            )
+                                        })}
+                                        <Grid item md={12} xs={12}>
+                                            <Chip
+                                                color="primary"
+                                                sx={{ width: { xs: '100%', md: 'auto' }, mt: { xs: 2, md: 5 } }} 
+                                                label="Tambah Image" 
+                                                onClick={() => {
+                                                    setPictures(currentAnswers => [
+                                                        ...currentAnswers, 
+                                                        { 
+                                                            image_file: '',
+                                                            image_preview: ''
+                                                        }
+                                                    ])
+                                                }}
+                                            />
                                         </Grid>
-                                        <Grid item xs={4} md={2}>
-                                            <img src={"https://images.pexels.com/photos/20787/pexels-photo.jpg?auto=compress&cs=tinysrgb&h=80"} alt  />
-                                        </Grid>
-                                        <Grid item xs={4} md={2}>
-                                            <img src={"https://images.pexels.com/photos/20787/pexels-photo.jpg?auto=compress&cs=tinysrgb&h=80"} alt  />
-                                        </Grid>
+                                        
 
                                     </Grid>
                                 </Grid>
                                 <Grid Grid item md={12} xs={12}>
-                                    <Typography>Document</Typography>
+                                    <Typography>Evidences</Typography>
                                     <Grid container>
-                                        <Grid item xs={4} md={2}>
-                                            <img src={"https://images.pexels.com/photos/20787/pexels-photo.jpg?auto=compress&cs=tinysrgb&h=80"} alt  />
+                                        {evidences.map((v, i) => {
+                                            return (
+                                                <Grid key={i} item xs={6} md={4}>
+                                                    <Stack spacing={2} alignItems="center">
+                                                        <Box component="label" sx={{ mt: { xs: 2 } }} htmlFor={`ev-${i}`}>
+                                                            {v.file == "" ? 
+                                                            <DescriptionOutlined sx={{ fontSize: '100px' }} />
+                                                            :
+                                                            <Typography sx={{ height: '100px' }}>{v.file.name}</Typography>
+                                                            }
+                                                        </Box>
+                                                        <input 
+                                                            type="file" 
+                                                            style={{ display: 'none' }} 
+                                                            id={`ev-${i}`}
+                                                            onChange={e => {
+                                                                let file = e.target.files[0]
+                                                                setEvidences(currentAnswers => 
+                                                                    produce(currentAnswers, v => {
+                                                                        v[i] = {
+                                                                            file
+                                                                        }
+                                                                    })
+                                                                );
+                                                            }} 
+                                                        />
+                                                        {evidences.length > 1 &&
+                                                            <Chip
+                                                                color="error" 
+                                                                label="delete" 
+                                                                onClick={() => {
+                                                                    setEvidences(currentAnswers => currentAnswers.filter((v, x) => x !== i))
+                                                                }} 
+                                                            />
+                                                        }
+                                                    </Stack>
+                                                    
+                                                </Grid>
+                                            )
+                                        })}
+                                        <Grid item md={12} xs={12}>
+                                            <Chip
+                                                color="primary"
+                                                sx={{ width: { xs: '100%', md: 'auto' }, mt: { xs: 2, md: 5 } }} 
+                                                label="Tambah Document" 
+                                                onClick={() => {
+                                                    setEvidences(currentAnswers => [
+                                                        ...currentAnswers, 
+                                                        { 
+                                                            file: '',
+                                                        }
+                                                    ])
+                                                }}
+                                            />
                                         </Grid>
-                                        <Grid item xs={4} md={2}>
-                                            <img src={"https://images.pexels.com/photos/20787/pexels-photo.jpg?auto=compress&cs=tinysrgb&h=80"} alt  />
-                                        </Grid>
-                                        <Grid item xs={4} md={2}>
-                                            <img src={"https://images.pexels.com/photos/20787/pexels-photo.jpg?auto=compress&cs=tinysrgb&h=80"} alt  />
-                                        </Grid>
+                                        
 
                                     </Grid>
                                 </Grid>
@@ -733,6 +974,19 @@ const Form = (props) => {
                         </CardContent>
                     </Card>
                 </Grid>
+                
+                {/* Button */}
+                <Grid item xs={12} md={12}>
+                    <Card>
+                        <CardContent>
+                            <LoadingButton sx={{ display: 'flex', mt: 2, borderRadius: 25, mx: 'auto', width: '50%'  }} type="submit" loading={loading} variant="contained">
+                                {props.title !== 'add' ? "Save" : "Create" }
+                            </LoadingButton>
+                        </CardContent>
+                    </Card>
+
+                </Grid>
+
                 </>
                 }
                 {!isComplete && 

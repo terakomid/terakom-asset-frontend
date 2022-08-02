@@ -3,6 +3,7 @@
    "version": "0.1.0",
    "private": true,
    "devDependencies": {
+      "@vitejs/plugin-react": "2.0.0",
       "browser-sync": "^2.26.7",
       "chart.js": "^3.8.0",
       "del": "4.1.1",
@@ -21,7 +22,6 @@
       "gulp-uglify": "3.0.2",
       "gulp-useref-plus": "0.0.8",
       "react-axios": "^2.0.6",
-      "@vitejs/plugin-react": "2.0.0",
       "vite": "3.0.4"
    },
    "dependencies": {
@@ -46,6 +46,7 @@
       "date-fns": "^2.29.1",
       "flot-charts": "^0.8.3",
       "flot.curvedlines": "^1.1.1",
+      "immer": "^9.0.15",
       "inputmask": "^4.0.9",
       "ion-rangeslider": "^2.3.1",
       "jquery": "^3.6.0",
