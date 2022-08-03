@@ -212,21 +212,6 @@ export default function Router() {
             />
 
             {/* Data Asset */}
-<<<<<<< HEAD
-            <Route path="/data-asset" element={<Layout render={<DataAsset />} />} />
-            <Route path="/data-asset-it" element={<Layout render={<AssetIT />} />} />
-            <Route path="/data-asset-it/:id" element={<Layout render={<AssetITEdit />} />} />
-            <Route path="/data-asset-non-it" element={<Layout render={<AssetNonIT />} />} />
-            <Route path="/edit-data-asset-non-it" element={<Layout render={<AssetNonITEdit />} />} />
-            <Route path="/history-asset" element={<Layout render={<HistoryAsset />} />} />
-            <Route path="/mutation-asset" element={<Layout render={<MutationAsset />} />} />
-            <Route path="/mutation-asset-add" element={<Layout render={<AddMutationAsset />} />} />
-            <Route path="/maintenance-asset" element={<Layout render={<MaintenanceAsset />} />} />
-            <Route path="/maintenance-asset-add" element={<Layout render={<AddMaintenanceAsset />} />} />
-            <Route path="/stock-opname" element={<Layout render={<StockOpname />} />} />
-            <Route path="/reception-asset" element={<Layout render={<ReceptionAsset />} />} />
-            <Route path="/reception-asset-add" element={<Layout render={<AddReceptionAsset />} />} />
-=======
             <Route
                path="/data-asset"
                element={
@@ -323,7 +308,6 @@ export default function Router() {
                   </Middleware.After>
                }
             />
->>>>>>> 7c72269aaacea2ca5d08fe34916cf24ab5cc86cb
 
             {/* Disposal Asset */}
             <Route
