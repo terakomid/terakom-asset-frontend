@@ -39,7 +39,7 @@ export default function AssetCategory() {
       <div className="main-content mb-5">
          <div className="page-content">
             <div className="container">
-               <div className="d-flex align-items-center justify-content-between mt-2 mb-3">
+               <div className="d-flex align-items-center justify-content-between mt-2 mb-4">
                   <h3 className="fw-bold mb-0">Master IT</h3>
                   <Stack direction="row" spacing={1}>
                      <Button variant="contained" startIcon={<FileDownload />}>
@@ -74,7 +74,7 @@ export default function AssetCategory() {
                                              {page * rowsPerPage + key + 1}.
                                           </TableCell>
                                           <TableCell>
-                                             <Link component={RouterLink} to={`/it-subtype/${value.id}`}>
+                                             <Link component={RouterLink} to={`/master-data/it-subtype/${value.id}`}>
                                                 {value.type}
                                              </Link>
                                           </TableCell>
