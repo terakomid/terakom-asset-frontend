@@ -49,7 +49,7 @@ export default function VendorForm() {
             .post(`/vendor`, formData, {})
             .then((res) => {
                // console.log(res.data.data);
-               navigate("/vendor");
+               navigate("/master-data/vendor");
             })
             .catch((err) => {
                // console.log(err.response.data);
@@ -67,7 +67,7 @@ export default function VendorForm() {
             .post(`/vendor/${data.id}`, formData, {})
             .then((res) => {
                // console.log(res.data.data);
-               navigate("/vendor");
+               navigate("/master-data/vendor");
             })
             .catch((err) => {
                // console.log(err.response.data);

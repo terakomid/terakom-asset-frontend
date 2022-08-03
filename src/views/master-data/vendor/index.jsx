@@ -117,7 +117,7 @@ export default function Vendor() {
                      <Button variant="contained" startIcon={<FileUpload />}>
                         Export
                      </Button>
-                     <Button variant="contained" startIcon={<AddRounded />} component={RouterLink} to="./create">
+                     <Button variant="contained" startIcon={<AddRounded />} component={RouterLink} to="./add">
                         Add Vendor
                      </Button>
                   </Stack>
@@ -233,7 +233,7 @@ export default function Vendor() {
                   transformOrigin={{ horizontal: "right", vertical: "top" }}
                   anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
                >
-                  <MenuItem component={RouterLink} to={`/vendor/edit/${staging?.id}`}>
+                  <MenuItem component={RouterLink} to={`/master-data/vendor/edit/${staging?.id}`}>
                      <ListItemIcon>
                         <Edit />
                      </ListItemIcon>

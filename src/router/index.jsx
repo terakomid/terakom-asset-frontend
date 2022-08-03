@@ -1,5 +1,6 @@
 import React from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import * as Middleware from "../middleware";
 
 import Auth from "../component/Auth";
 import Layout from "../component/Layout";
@@ -33,7 +34,7 @@ import DataAsset from "../views/data-asset/data-asset";
 import AssetIT from "../views/data-asset/data-asset/IT/Add";
 import AssetNonIT from "../views/data-asset/data-asset/NonIT/Add";
 import AssetNonITEdit from "../views/data-asset/data-asset/NonIT/Edit";
-import HistoryAsset from "../views/data-asset/history-asset/Content";
+import HistoryAsset from "../views/data-asset/history-asset";
 import MutationAsset from "../views/data-asset/mutation-asset/Content";
 import AddMutationAsset from "../views/data-asset/mutation-asset/Add";
 import MaintenanceAsset from "../views/data-asset/maintenance-asset/Content";
@@ -57,56 +58,301 @@ export default function Router() {
    return (
       <BrowserRouter>
          <Routes>
-            <Route exact index path="/" element={<Navigate to="/login" />} />
-            <Route path="/login" element={<Auth render={<Login />} />} />
-            <Route path="/forgot-password" element={<Auth render={<ForgotPassword />} />} />
+            <Route exact path="/" element={<Navigate to="/login" />} />
+            <Route
+               path="/login"
+               element={
+                  <Middleware.Before>
+                     <Auth render={<Login />} />
+                  </Middleware.Before>
+               }
+            />
+            <Route
+               path="/forgot-password"
+               element={
+                  <Middleware.Before>
+                     <Auth render={<ForgotPassword />} />
+                  </Middleware.Before>
+               }
+            />
 
             {/* Dashboard */}
-            <Route path="/dashboard" element={<Layout render={<Dashboard />} />} />
+            <Route
+               path="/dashboard"
+               element={
+                  <Middleware.After>
+                     <Layout render={<Dashboard />} />
+                  </Middleware.After>
+               }
+            />
 
             {/* User Management */}
-            <Route path="/user-role" element={<Layout render={<UserRole />} />} />
-            <Route path="/user-list" element={<Layout render={<ListUser />} />} />
-            <Route path="/user-list-add" element={<Layout render={<ListUserAdd />} />} />
-            <Route path="/user-list-edit/:id" element={<Layout render={<ListUserEdit />} />} />
+            <Route
+               path="/user-role"
+               element={
+                  <Middleware.After>
+                     <Layout render={<UserRole />} />
+                  </Middleware.After>
+               }
+            />
+            <Route
+               path="/user-list"
+               element={
+                  <Middleware.After>
+                     <Layout render={<ListUser />} />
+                  </Middleware.After>
+               }
+            />
+            <Route
+               path="/user-list-add"
+               element={
+                  <Middleware.After>
+                     <Layout render={<ListUserAdd />} />
+                  </Middleware.After>
+               }
+            />
+            <Route
+               path="/user-list-edit/:id"
+               element={
+                  <Middleware.After>
+                     <Layout render={<ListUserEdit />} />
+                  </Middleware.After>
+               }
+            />
 
             {/* Master Data */}
-            <Route path="/master-data/asset-location" element={<Layout render={<AssetLocation />} />} />
-            <Route path="/master-data/asset-category" element={<Layout render={<AssetCategory />} />} />
-            <Route path="/master-data/asset-subcategory/:id" element={<Layout render={<AssetSubCategory />} />} />
-            <Route path="/master-data/vendor" element={<Layout render={<Vendor />} />} />
-            <Route path="/master-data/vendor/create" element={<Layout render={<VendorForm />} />} />
-            <Route path="/master-data/vendor/edit/:id" element={<Layout render={<VendorForm />} />} />
-            <Route path="/master-data/cost-center" element={<Layout render={<CostCenter />} />} />
-            <Route path="/master-data/department" element={<Layout render={<Department />} />} />
-            <Route path="/master-data/asset-condition" element={<Layout render={<AssetCondition />} />} />
-            <Route path="/master-data/it" element={<Layout render={<It />} />} />
-            <Route path="/master-data/it-subtype/:id" element={<Layout render={<ItSubType />} />} />
+            <Route
+               path="/master-data/asset-location"
+               element={
+                  <Middleware.After>
+                     <Layout render={<AssetLocation />} />
+                  </Middleware.After>
+               }
+            />
+            <Route
+               path="/master-data/asset-category"
+               element={
+                  <Middleware.After>
+                     <Layout render={<AssetCategory />} />
+                  </Middleware.After>
+               }
+            />
+            <Route
+               path="/master-data/asset-subcategory/:id"
+               element={
+                  <Middleware.After>
+                     <Layout render={<AssetSubCategory />} />
+                  </Middleware.After>
+               }
+            />
+            <Route
+               path="/master-data/vendor"
+               element={
+                  <Middleware.After>
+                     <Layout render={<Vendor />} />
+                  </Middleware.After>
+               }
+            />
+            <Route
+               path="/master-data/vendor/add"
+               element={
+                  <Middleware.After>
+                     <Layout render={<VendorForm />} />
+                  </Middleware.After>
+               }
+            />
+            <Route
+               path="/master-data/vendor/edit/:id"
+               element={
+                  <Middleware.After>
+                     <Layout render={<VendorForm />} />
+                  </Middleware.After>
+               }
+            />
+            <Route
+               path="/master-data/cost-center"
+               element={
+                  <Middleware.After>
+                     <Layout render={<CostCenter />} />
+                  </Middleware.After>
+               }
+            />
+            <Route
+               path="/master-data/department"
+               element={
+                  <Middleware.After>
+                     <Layout render={<Department />} />
+                  </Middleware.After>
+               }
+            />
+            <Route
+               path="/master-data/asset-condition"
+               element={
+                  <Middleware.After>
+                     <Layout render={<AssetCondition />} />
+                  </Middleware.After>
+               }
+            />
+            <Route
+               path="/master-data/it"
+               element={
+                  <Middleware.After>
+                     <Layout render={<It />} />
+                  </Middleware.After>
+               }
+            />
+            <Route
+               path="/master-data/it-subtype/:id"
+               element={
+                  <Middleware.After>
+                     <Layout render={<ItSubType />} />
+                  </Middleware.After>
+               }
+            />
 
             {/* Data Asset */}
-            <Route path="/data-asset" element={<Layout render={<DataAsset />} />} />
-            <Route path="/data-asset-it" element={<Layout render={<AssetIT />} />} />
-            <Route path="/data-asset-non-it" element={<Layout render={<AssetNonIT />} />} />
-            <Route path="/edit-data-asset-non-it" element={<Layout render={<AssetNonITEdit />} />} />
-            <Route path="/history-asset" element={<Layout render={<HistoryAsset />} />} />
-            <Route path="/mutation-asset" element={<Layout render={<MutationAsset />} />} />
-            <Route path="/mutation-asset-add" element={<Layout render={<AddMutationAsset />} />} />
-            <Route path="/maintenance-asset" element={<Layout render={<MaintenanceAsset />} />} />
-            <Route path="/maintenance-asset-add" element={<Layout render={<AddMaintenanceAsset />} />} />
-            <Route path="/stock-opname" element={<Layout render={<StockOpname />} />} />
-            <Route path="/reception-asset" element={<Layout render={<ReceptionAsset />} />} />
-            <Route path="/reception-asset-add" element={<Layout render={<AddReceptionAsset />} />} />
+            <Route
+               path="/data-asset"
+               element={
+                  <Middleware.After>
+                     <Layout render={<DataAsset />} />
+                  </Middleware.After>
+               }
+            />
+            <Route
+               path="/data-asset-it"
+               element={
+                  <Middleware.After>
+                     <Layout render={<AssetIT />} />
+                  </Middleware.After>
+               }
+            />
+            <Route
+               path="/data-asset-non-it"
+               element={
+                  <Middleware.After>
+                     <Layout render={<AssetNonIT />} />
+                  </Middleware.After>
+               }
+            />
+            <Route
+               path="/edit-data-asset-non-it"
+               element={
+                  <Middleware.After>
+                     <Layout render={<AssetNonITEdit />} />
+                  </Middleware.After>
+               }
+            />
+            <Route
+               path="/history-asset"
+               element={
+                  <Middleware.After>
+                     <Layout render={<HistoryAsset />} />
+                  </Middleware.After>
+               }
+            />
+            <Route
+               path="/history-asset/mutation-asset"
+               element={
+                  <Middleware.After>
+                     <Layout render={<MutationAsset />} />
+                  </Middleware.After>
+               }
+            />
+            <Route
+               path="/history-asset/mutation-asset/add"
+               element={
+                  <Middleware.After>
+                     <Layout render={<AddMutationAsset />} />
+                  </Middleware.After>
+               }
+            />
+            <Route
+               path="/history-asset/maintenance-asset"
+               element={
+                  <Middleware.After>
+                     <Layout render={<MaintenanceAsset />} />
+                  </Middleware.After>
+               }
+            />
+            <Route
+               path="/history-asset/maintenance-asset/add"
+               element={
+                  <Middleware.After>
+                     <Layout render={<AddMaintenanceAsset />} />
+                  </Middleware.After>
+               }
+            />
+            <Route
+               path="/history-asset/stock-opname"
+               element={
+                  <Middleware.After>
+                     <Layout render={<StockOpname />} />
+                  </Middleware.After>
+               }
+            />
+            <Route
+               path="/reception-asset"
+               element={
+                  <Middleware.After>
+                     <Layout render={<ReceptionAsset />} />
+                  </Middleware.After>
+               }
+            />
+            <Route
+               path="/reception-asset-add"
+               element={
+                  <Middleware.After>
+                     <Layout render={<AddReceptionAsset />} />
+                  </Middleware.After>
+               }
+            />
 
             {/* Disposal Asset */}
-            <Route path="/disposal-asset" element={<Layout render={<DisposalAsset />} />} />
-            <Route path="/disposal-asset-add" element={<Layout render={<AddDisposalAsset />} />} />
+            <Route
+               path="/disposal-asset"
+               element={
+                  <Middleware.After>
+                     <Layout render={<DisposalAsset />} />
+                  </Middleware.After>
+               }
+            />
+            <Route
+               path="/disposal-asset-add"
+               element={
+                  <Middleware.After>
+                     <Layout render={<AddDisposalAsset />} />
+                  </Middleware.After>
+               }
+            />
 
             {/* Activity Log */}
-            <Route path="/activity-log" element={<Layout render={<ActivityLog />} />} />
+            <Route
+               path="/activity-log"
+               element={
+                  <Middleware.After>
+                     <Layout render={<ActivityLog />} />
+                  </Middleware.After>
+               }
+            />
 
             {/* Help */}
-            <Route path="/help" element={<Layout render={<Help />} />} />
-            <Route path="/help-add" element={<Layout render={<HelpAdd />} />} />
+            <Route
+               path="/help"
+               element={
+                  <Middleware.After>
+                     <Layout render={<Help />} />
+                  </Middleware.After>
+               }
+            />
+            <Route
+               path="/help-add"
+               element={
+                  <Middleware.After>
+                     <Layout render={<HelpAdd />} />
+                  </Middleware.After>
+               }
+            />
          </Routes>
       </BrowserRouter>
    );
