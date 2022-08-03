@@ -397,12 +397,12 @@ const Index = () => {
                            </ListItemIcon>
                            Edit
                         </MenuItem>
-                        <MenuItem onClick={handleModal}>
+                        {/* <MenuItem onClick={handleModal}>
                            <ListItemIcon>
                               <Delete />
                            </ListItemIcon>
                            Delete
-                        </MenuItem>
+                        </MenuItem> */}
                      </Menu>
                   </div>
                </div>
