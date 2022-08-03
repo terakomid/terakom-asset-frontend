@@ -35,6 +35,7 @@ import { useNavigate } from 'react-router-dom'
 import http from "../../../component/api/Api";
 import Loading from "../../../component/Loading";
 import ModalDelete from "../../../component/Delete";
+import moment from 'moment';
 
 const ModalFilter = (props) => {
    const [roleOptions, setRoleOptions] = useState([])
@@ -127,21 +128,20 @@ const Index = () => {
    });
    const [params, setParams] = useState({
       search: "",
-      department_id: "", 
-      role: "",
-      limit: 5,
-      paginate: 0
+      order_by_name: 0,
+      limit: 1,
+      page: 1,
    });
    const [loading, setLoading] = useState(false)
 
    const getData = async () => {
       http
-            .get(`user`, {
+            .get(`/asset`, {
                params: params,
             })
             .then((res) => {
                //  console.log(res.data.data);
-               setRows(res.data.data.data);
+               setRows(res.data.data);
             })
             .catch((err) => {
                //  console.log(err.response);
@@ -161,31 +161,35 @@ const Index = () => {
 
   
 
-   const [page, setPage] = React.useState(0);
-   const [rowsPerPage, setRowsPerPage] = React.useState(5);
+   const [page, setPage] = useState(0);
+   const [rowsPerPage, setRowsPerPage] = useState(5);
+   const handleSearch = (e) => {
+      setParams({
+         ...params,
+         page: 1,
+         [e.target.name]: e.target.value,
+      });
+   };
+
    const handleChangePage = (event, newPage) => {
-      setPage(newPage);
+      setParams({
+         ...params,
+         page: newPage + 1,
+      });
    };
 
    const handleChangeRowsPerPage = (event) => {
-      setRowsPerPage(parseInt(event.target.value, 10));
-      setPage(0);
-   };
-
-
-   const handleSearch = (e) => {
-      setPage(0);
       setParams({
-            ...params,
-            page: 1,
-            [e.target.name]: e.target.value,
+         ...params,
+         page: 1,
+         limit: +event.target.value,
       });
    };
 
    const handleEdit = () => {
       setData(staging);
       handleMenu();
-      navigate(`/user-list-edit/${staging.id}`)
+      navigate(`/data-asset-it/${staging.id}`)
    };
 
    const [openModal, setOpenModal] = useState(false);
@@ -296,36 +300,33 @@ const Index = () => {
                                        }}
                                     >
                                        <TableCell align="center">No.</TableCell>
-                                       <TableCell>Name</TableCell>
-                                       <TableCell>Code</TableCell>
-                                       <TableCell>Phone Number</TableCell>
-                                       <TableCell>Department</TableCell>
-                                       <TableCell>Role</TableCell>
-                                       <TableCell>Status</TableCell>
+                                       <TableCell>Code Asset</TableCell>
+                                       <TableCell>SAP Code </TableCell>
+                                       <TableCell>Asset Name</TableCell>
+                                       <TableCell>Category Asset</TableCell>
+                                       <TableCell>Capitalized On</TableCell>
+                                       <TableCell>Useful Life</TableCell>
+                                       <TableCell>Acquisition Value</TableCell>
                                        <TableCell align="center">Action</TableCell>
                                     </TableRow>
                                  </TableHead>
                                  <TableBody>
                                     {rows !== undefined ? (
-                                       rows.length > 0 ? (
-                                          rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((value, key) => (
+                                       rows.data.length > 0 ? (
+                                          rows.data.map((value, key) => (
                                              <TableRow key={key}>
                                                 <TableCell component="th" scope="row" align="center">
-                                                   {page * rowsPerPage + key + 1}.
+                                                   {rows.meta.from + key}.
                                                 </TableCell>
                                                 <TableCell>
-                                                   <Stack direction="row" >
-                                                      <Avatar src={value.photo_url} sx={{ height: '5vh', width: '5vh' }} />
-                                                      <Typography sx={{ ml: 1 }}>
-                                                         {value.name}
-                                                      </Typography>
-                                                   </Stack>
+                                                  {value.asset_code}
                                                 </TableCell>
-                                                <TableCell>{value.code}</TableCell>
-                                                <TableCell>{value.phone_number}</TableCell>
-                                                <TableCell>{value.dept.dept}</TableCell>
-                                                <TableCell>{value.role}</TableCell>
-                                                <TableCell>{value.status == 1 ? "Active" : "Not Active"}</TableCell>
+                                                <TableCell>{value.sap_code}</TableCell>
+                                                <TableCell>{value.asset_name}</TableCell>
+                                                <TableCell>{value.category.category}</TableCell>
+                                                <TableCell>{moment(value.capitalized).format('ddd, MM yyyy') }</TableCell>
+                                                <TableCell>{value.sub_category.useful_life}</TableCell>
+                                                <TableCell>{value.acquisition_value}</TableCell>
                                                 <TableCell align="center">
                                                    <IconButton onClick={(e) => handleClick(e, value)}>
                                                       <MoreVert />
@@ -356,16 +357,18 @@ const Index = () => {
                                  </TableBody>
                               </Table>
                            </TableContainer>
-                           {rows !== undefined && rows.length > 0 && (
+                           {rows !== undefined && rows.data.length > 0 && (
                               <TablePagination
-                                 rowsPerPageOptions={[5, 10, 25]}
                                  component="div"
-                                 count={rows.length}
-                                 page={page}
-                                 rowsPerPage={rowsPerPage}
+                                 count={rows.meta.total}
+                                 page={params.page - 1}
+                                 rowsPerPage={params.limit}
                                  onPageChange={handleChangePage}
                                  onRowsPerPageChange={handleChangeRowsPerPage}
-                              />
+                                 rowsPerPageOptions={[1, 10, 25, 50, 100]}
+                                 showFirstButton
+                                 showLastButton
+                           />
                            )}
                         </CardContent>
                      </Card>

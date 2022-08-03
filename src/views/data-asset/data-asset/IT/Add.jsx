@@ -1,5 +1,5 @@
 import React from 'react';
-import Form from './Form';
+import Form from '../Form';
 
 const Add = () => {
 
@@ -8,7 +8,7 @@ const Add = () => {
       <div className="page-content">
         <div className="container-fluid">
           <div className='row'>
-            <Form title="add" />
+            <Form title="add" type="it" />
           </div >
         </div >
       </div >

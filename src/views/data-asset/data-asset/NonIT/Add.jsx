@@ -1,5 +1,19 @@
-import React from "react";
+import React from 'react';
+import Form from '../Form';
 
-export default function Add() {
-   return <div>Add</div>;
+const Add = () => {
+
+  return (
+    <div className='main-content'>
+      <div className="page-content">
+        <div className="container-fluid">
+          <div className='row'>
+            <Form title="add" type="non-it" />
+          </div >
+        </div >
+      </div >
+    </div >
+  )
 }
+
+export default Add

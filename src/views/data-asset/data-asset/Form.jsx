@@ -3,9 +3,9 @@ import { Grid, Card, CardContent, CardHeader, Typography, TextField, MenuItem, B
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { MobileDatePicker } from '@mui/x-date-pickers/MobileDatePicker';
-import http from '../../../../component/api/Api'
+import http from '../../../component/api/Api'
 import { useNavigate } from 'react-router-dom'
-import Loading from '../../../../component/Loading';
+import Loading from '../../../component/Loading'
 import { DatePicker } from '@mui/x-date-pickers';
 import moment from 'moment'
 import { produce } from "immer";
@@ -21,12 +21,12 @@ const Form = (props) => {
         category_id: "",
         sub_category_id: "",
         asset_name: "",
-        spesification: "",
+        specification: "",
         capitalized: null,
         sap_code: "",
 
         // asset holder
-        employ_id: "",
+        employee_id: "",
         department_id: "",
         location_id: "",
         condition_id: "",
@@ -102,6 +102,7 @@ const Form = (props) => {
         contact: '',
         pic_contact: '',
     })
+    const [useful, setUseFul] = useState('')
 
     //picture and evidence
     const [pictures, setPictures] = useState([
@@ -192,7 +193,7 @@ const Form = (props) => {
                 ...form,
                 [e.target.name]: e.target.value
             })
-        }else if(e.target.name === 'employ_id'){
+        }else if(e.target.name === 'employee_id'){
             const user = employees.find(v => v.id == e.target.value)
             setForm({
                 ...form,
@@ -211,6 +212,13 @@ const Form = (props) => {
                 contact: vendor.contact,
                 pic_contact: vendor.pic_contact,
             })
+        }else if(e.target.name === 'sub_category_id'){
+            const sub_category = subCategories.find(v => v.id == e.target.value)
+            setForm({
+                ...form,
+                [e.target.name]: e.target.value
+            })
+            setUseFul(sub_category.useful_life)
         }else{
             setForm({
                 ...form,
@@ -219,15 +227,124 @@ const Form = (props) => {
         }
     }
 
+    const store = async (formData) => {
+        try{
+            const res = await http.post('asset', formData)
+            console.log(res.data.data)    
+            navigate('/data-asset')      
+        }catch(err) {
+            console.log(err.response)
+        }
+    }
+
     const onSubmit = (e) => {
         e.preventDefault();
         let url = ""
         const formData = new FormData();
 
-        if(props.title === 'it'){
+        //asset Information
+        formData.append('asset_code', form.asset_code)
+        formData.append('category_id', form.category_id)
+        formData.append('sub_category_id', form.sub_category_id)
+        formData.append('asset_name', form.asset_name)
+        formData.append('specification', form.specification)
+        formData.append('capitalized', moment(form.capitalized).format('yyyy/MM/DD'))
+        formData.append('sap_code', form.sap_code)
+        
+
+        //asset holder
+        formData.append('employee_id', form.employee_id)
+        formData.append('department_id', form.department_id)
+        formData.append('location_id', form.location_id)
+        formData.append('condition_id', form.condition_id)
+        formData.append('latitude', form.latitude)
+        formData.append('longitude', form.longitude)
+
+        //depreciation asset
+        formData.append('cost_id', form.cost_id)
+        formData.append('acquisition_value', form.acquisition_value)
+        formData.append('depreciation_value', form.depreciation_value)
+        formData.append('value_book', form.value_book)
+        formData.append('depreciation', form.depreciation)
+
+        //Vendor information
+        formData.append('vendor_id', form.vendor_id)
+        formData.append('notes', form.notes)
+
+        if(props.title === 'add') {
+            pictures.map((v, i) => {
+                if(i === 0){
+                    formData.append(`picture[${i}][file]`, v.image_file)
+                    formData.append(`picture[${i}][main]`, 1)
+                }else{
+                    formData.append(`picture[${i}][file]`, v.image_file)
+                    formData.append(`picture[${i}][main]`, 1)
+                }
+            })
+            evidences.map((v, i) => {
+                if(i === 0){
+                    formData.append(`evidence[${i}][file]`, v.file)
+                }else{
+                    formData.append(`evidence[${i}][file]`, v.file)
+                }
+            })
+        }else{
+
+        }
+
+        
+
+        if(props.type === 'it'){
             formData.append("asset_type", "it")
+            //Device information
+            formData.append('device_id', form.device_id)
+            formData.append('type', form.type)
+            formData.append('brand_id', form.brand_id)
+            formData.append('monitor_inch', form.monitor_inch)
+            formData.append('model_brand', form.model_brand)
+            formData.append('mac_address', form.mac_address)
+            formData.append('warranty', moment(form.warranty).format('yyyy/MM/DD'))
+            formData.append('computer_name', form.computer_name)
+
+            //Hardware
+            formData.append('dlp', form.dlp)
+            formData.append('soc', form.soc)
+            formData.append('snnbpc', form.snnbpc)
+            formData.append('processor_id', form.processor_id)
+            formData.append('hardware', form.hardware)
+
+            //Sofware
+            formData.append('os_id', form.os_id)
+            formData.append('sn_windows', form.sn_windows)
+            formData.append('office_id', form.office_id)
+            formData.append('antivirus_id', form.antivirus_id)
+            store(formData)
+            console.log(Object.fromEntries(formData))
         }else{
             formData.append("asset_type", "non-it")
+
+            // formData.append('device_id', '')
+            // formData.append('type', '')
+            // formData.append('brand_id', '')
+            // formData.append('monitor_inch', '')
+            // formData.append('model_brand', '')
+            // formData.append('mac_address', '')
+            // formData.append('warranty', '')
+            // formData.append('computer_name', '')
+
+            // //Hardware
+            // formData.append('dlp', '')
+            // formData.append('soc', '')
+            // formData.append('snnbpc', '')
+            // formData.append('processor_id', '')
+            // formData.append('hardware', '')
+
+            // //Sofware
+            // formData.append('os_id', '')
+            // formData.append('sn_windows', '')
+            // formData.append('office_id', '')
+            // formData.append('antivirus_id', '')
+            store(formData)
         }
     }
     
@@ -248,6 +365,65 @@ const Form = (props) => {
                 getAssetMasterIt(5),
                 getAssetMasterIt(6)
             ]).then(res => {
+                if(props.data){
+                    const data = props.data
+                    if(props.type === "it"){
+                        setForm({
+                            ...form,
+
+                            // asset information
+                            asset_code: data.asset_code,
+                            category_id: data.category.id,
+                            sub_category_id: data.sub_category,
+                            asset_name: data.asset_name,
+                            specification: data.specification,
+                            capitalized: moment(data.specification).format('yyyy/MM/DD'),
+                            sap_code: data.sap_code,
+
+                            // asset holder
+                            employee_id: data.employee.id,
+                            department_id: data.department.id,
+                            location_id: data.location.id,
+                            condition_id: data.condition.id,
+                            latitude: data.latitude,
+                            longitude: data.longitude,
+
+                            // depreciation asset
+                            cost_id: data.cost.id,
+                            acquisition_value: data.acquisition_value,
+                            depreciation_value: data.depreciation_value,
+                            value_book: data.value_book,
+                            depreciation: data.depreciation,
+
+                            // Vendor information
+                            vendor_id: data.vendor.id,
+
+                            // Device information
+                            device_id: data.device.id,
+                            type: data.type,
+                            brand_id: data.brand.id,
+                            monitor_inch: data.monitor_inch,
+                            model_brand: data.model_brand,
+                            mac_address: data.mac_address,
+                            warranty: moment(data.warranty).format('yyyy/MM/DD'),
+                            computer_name: data.computer_name,
+
+                            // Hardware
+                            dlp: data.dlp,
+                            soc: data.soc,
+                            snnbpc: data.snnbpc,
+                            processor_id: data.processor.id,
+                            hardware: data.hardware,
+
+                            //Sofware
+                            os_id: data.os.id,
+                            sn_windows: data.sn_windows,
+                            office_id: data.office.id,
+                            antivirus_id: data.antivirus.id,
+                            notes: data.notes,
+                        })
+                    }
+                }
                 setIsComplete(true)
             })
         }
@@ -321,14 +497,24 @@ const Form = (props) => {
                                 <Grid item md={4} xs={12}>
                                     <TextField
                                         onChange={handleChange}
-                                        value={form.spesification}
-                                        name="spesification"
+                                        value={form.specification}
+                                        name="specification"
                                         fullWidth
-                                        label="Spesification"
+                                        label="specification"
                                         
                                     />
                                 </Grid>
                                 <Grid item md={4} xs={12}>
+                                    <TextField
+                                        onChange={handleChange}
+                                        value={useful}
+                                        name="specification"
+                                        fullWidth
+                                        label="Useful Life"
+                                        disabled
+                                    />
+                                </Grid>
+                                <Grid item md={6} xs={12}>
                                     <LocalizationProvider dateAdapter={AdapterDateFns}>
                                     <DatePicker
                                         value={form.capitalized}
@@ -346,7 +532,7 @@ const Form = (props) => {
                                     />
                                     </LocalizationProvider>
                                 </Grid>
-                                <Grid item md={12} xs={12}>
+                                <Grid item md={6} xs={12}>
                                     <TextField
                                         onChange={handleChange}
                                         value={form.sap_code} 
@@ -370,8 +556,8 @@ const Form = (props) => {
                                 <Grid item md={6} xs={12}>
                                     <TextField
                                         onChange={handleChange}
-                                        value={form.employ_id}
-                                        name="employ_id"
+                                        value={form.employee_id}
+                                        name="employee_id"
                                         fullWidth
                                         label="Employ Name / PIC"
                                         select
@@ -582,7 +768,9 @@ const Form = (props) => {
                         </CardContent>
                     </Card>
                 </Grid>
-
+                
+                {props.type === "it" && 
+                <>
                 {/* Device Information */}
                 <Grid item xs={12} md={12}>
                     <Card>
@@ -825,6 +1013,8 @@ const Form = (props) => {
                         </CardContent>
                     </Card>
                 </Grid>
+                </>
+                }
 
                 {/* Information Support */}
                 <Grid item xs={12} md={12}>
@@ -835,10 +1025,10 @@ const Form = (props) => {
                                 <Grid Grid item md={12} xs={12}>
                                     <TextField
                                         onChange={handleChange} 
-                                        value={form.note}
-                                        name="note"
+                                        value={form.notes}
+                                        name="notes"
                                         fullWidth
-                                        label="Note"
+                                        label="Notes"
                                         multiline
                                         rows={5}
                                     />

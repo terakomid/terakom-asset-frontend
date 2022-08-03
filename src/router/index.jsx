@@ -31,6 +31,7 @@ import ItSubType from "../views/master-data/it-subtype";
 
 import DataAsset from "../views/data-asset/data-asset";
 import AssetIT from "../views/data-asset/data-asset/IT/Add";
+import AssetITEdit from "../views/data-asset/data-asset/IT/Edit";
 import AssetNonIT from "../views/data-asset/data-asset/NonIT/Add";
 import AssetNonITEdit from "../views/data-asset/data-asset/NonIT/Edit";
 import HistoryAsset from "../views/data-asset/history-asset/Content";
@@ -86,6 +87,7 @@ export default function Router() {
             {/* Data Asset */}
             <Route path="/data-asset" element={<Layout render={<DataAsset />} />} />
             <Route path="/data-asset-it" element={<Layout render={<AssetIT />} />} />
+            <Route path="/data-asset-it/:id" element={<Layout render={<AssetITEdit />} />} />
             <Route path="/data-asset-non-it" element={<Layout render={<AssetNonIT />} />} />
             <Route path="/edit-data-asset-non-it" element={<Layout render={<AssetNonITEdit />} />} />
             <Route path="/history-asset" element={<Layout render={<HistoryAsset />} />} />
