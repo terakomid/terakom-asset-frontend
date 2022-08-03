@@ -29,7 +29,7 @@ import {
    DialogActions,
 
 } from "@mui/material";
-import { Add, CloseRounded, Delete, Edit, FileDownload, FileUpload, MoreVert, Search } from "@mui/icons-material";
+import { Add, CloseRounded, Delete, Edit, FileDownload, FileUpload, FilterListRounded, MoreVert, Search } from "@mui/icons-material";
 import { useNavigate } from 'react-router-dom'
 
 import http from "../../../component/api/Api";
@@ -129,7 +129,7 @@ const Index = () => {
    const [params, setParams] = useState({
       search: "",
       order_by_name: 0,
-      limit: 1,
+      limit: 10,
       page: 1,
    });
    const [loading, setLoading] = useState(false)
@@ -262,7 +262,7 @@ const Index = () => {
                   <div className="col-xl-12 col-12 mt-3">
                      <Card>
                         <CardContent>
-                           <Grid container spacing={2} sx={{ mb: 2 }}>
+                           <Grid container spacing={2} sx={{ mb: 2 }} alignItems="center">
                               <Grid item xs>
                                  <TextField
                                     name="search"
@@ -289,7 +289,7 @@ const Index = () => {
                                  />
                               </Grid>
                               <Grid item xs={2}>
-                                 <Button onClick={handleModalFilter} variant="contained">
+                                 <Button variant="link" startIcon={<FilterListRounded />}>
                                     Filter
                                  </Button>
                               </Grid>
@@ -328,7 +328,7 @@ const Index = () => {
                                                 <TableCell>{value.sap_code}</TableCell>
                                                 <TableCell>{value.asset_name}</TableCell>
                                                 <TableCell>{value.category.category}</TableCell>
-                                                <TableCell>{moment(value.capitalized).format('ddd, MM yyyy') }</TableCell>
+                                                <TableCell>{moment(value.capitalized).format('ll') }</TableCell>
                                                 <TableCell>{value.sub_category.useful_life}</TableCell>
                                                 <TableCell>{value.acquisition_value}</TableCell>
                                                 <TableCell align="center">
@@ -369,7 +369,7 @@ const Index = () => {
                                  rowsPerPage={params.limit}
                                  onPageChange={handleChangePage}
                                  onRowsPerPageChange={handleChangeRowsPerPage}
-                                 rowsPerPageOptions={[1, 10, 25, 50, 100]}
+                                 rowsPerPageOptions={[10, 25, 50, 100]}
                                  showFirstButton
                                  showLastButton
                            />

@@ -30,7 +30,7 @@ import {
    Chip,
 
 } from "@mui/material";
-import { Add, CloseRounded, Delete, Edit, FileDownload, FileUpload, MoreVert, Search } from "@mui/icons-material";
+import { Add, CloseRounded, Delete, Edit, FileDownload, FileUpload, FilterListRounded, MoreVert, Search } from "@mui/icons-material";
 import { useNavigate } from 'react-router-dom'
 
 import http from "../../../component/api/Api";
@@ -246,7 +246,7 @@ const Index = () => {
                   <div className="col-xl-12 col-12 mt-3">
                      <Card>
                         <CardContent>
-                           <Grid container spacing={2} sx={{ mb: 2 }}>
+                           <Grid container spacing={2} sx={{ mb: 2 }} alignItems="center">
                               <Grid item xs>
                                  <TextField
                                     name="search"
@@ -273,7 +273,7 @@ const Index = () => {
                                  />
                               </Grid>
                               <Grid item xs={2}>
-                                 <Button onClick={handleModalFilter} variant="contained">
+                                 <Button variant="link" startIcon={<FilterListRounded />}>
                                     Filter
                                  </Button>
                               </Grid>

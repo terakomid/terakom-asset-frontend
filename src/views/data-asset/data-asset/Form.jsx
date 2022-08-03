@@ -274,7 +274,8 @@ const Form = (props) => {
     const store = async (formData) => {
         try{
             const res = await http.post('asset', formData)
-            // console.log(res.data.data)    
+            // console.log(res.data.data)
+            setLoading(false)    
             navigate('/data-asset')      
         }catch(err) {
             console.log(err.response)
@@ -284,7 +285,8 @@ const Form = (props) => {
     const edit = async (formData, id) => {
         try{
             const res = await http.post(`asset/${id}`, formData)
-            // console.log(res.data.data)    
+            // console.log(res.data.data) 
+            setLoading(false)   
             navigate('/data-asset')      
         }catch(err) {
             console.log(err.response)
@@ -293,6 +295,7 @@ const Form = (props) => {
 
     const onSubmit = (e) => {
         e.preventDefault();
+        setLoading(true)
         let url = ""
         const formData = new FormData();
 

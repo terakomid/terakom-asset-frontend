@@ -40,7 +40,7 @@ import MutationAsset from "../views/data-asset/mutation-asset/Content";
 import AddMutationAsset from "../views/data-asset/mutation-asset/Add";
 import MaintenanceAsset from "../views/data-asset/maintenance-asset/Content";
 import AddMaintenanceAsset from "../views/data-asset/maintenance-asset/Add";
-import StockOpname from "../views/data-asset/stock-opname/Content";
+import StockOpname from "../views/data-asset/stock-opname/Index";
 import ReceptionAsset from "../views/data-asset/reception-asset/Content";
 import AddReceptionAsset from "../views/data-asset/reception-asset/Add";
 
