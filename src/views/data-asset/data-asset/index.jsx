@@ -189,7 +189,11 @@ const Index = () => {
    const handleEdit = () => {
       setData(staging);
       handleMenu();
-      navigate(`/data-asset-it/${staging.id}`)
+      if(staging.asset_type === "it"){
+         navigate(`/edit-data-asset-it/${staging.id}`)
+      }else{
+         navigate(`/edit-data-asset-non-it/${staging.id}`)
+      }
    };
 
    const [openModal, setOpenModal] = useState(false);
@@ -204,7 +208,7 @@ const Index = () => {
 
    const onDelete = async () => {
       http
-            .delete(`/user/${staging.id}`, {})
+            .delete(`/asset/${staging.id}`, {})
             .then((res) => {
                getData();
                handleMenu();
@@ -238,7 +242,7 @@ const Index = () => {
                         <Card>
                             <CardContent>
                                 <Typography>Asset IT</Typography>
-                                <Button onClick={() => navigate('/data-asset-it')} variant="contained">Create Asset IT</Button>
+                                <Button sx={{ mt: 1 }} onClick={() => navigate('/data-asset-it')} variant="contained">Create Asset IT</Button>
                             </CardContent>
                         </Card>
                      
@@ -247,7 +251,7 @@ const Index = () => {
                         <Card>
                             <CardContent>
                                 <Typography>Asset Non IT</Typography>
-                                <Button onClick={() => navigate('/data-asset-non-it')} variant="contained">Create Asset Non IT</Button>
+                                <Button sx={{ mt: 1 }} onClick={() => navigate('/data-asset-non-it')} variant="contained">Create Asset Non IT</Button>
                             </CardContent>
                         </Card>
                     </Grid>

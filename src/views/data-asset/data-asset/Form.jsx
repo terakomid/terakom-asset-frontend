@@ -1,19 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { Grid, Card, CardContent, CardHeader, Typography, TextField, MenuItem, Box, Stack, FormControl, FormLabel, RadioGroup, FormControlLabel, Radio, Chip } from '@mui/material'
+import { Grid, Card, CardContent, Typography, TextField, MenuItem, Box, Stack, FormControl, FormLabel, RadioGroup, FormControlLabel, Radio, Chip } from '@mui/material'
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { MobileDatePicker } from '@mui/x-date-pickers/MobileDatePicker';
 import http from '../../../component/api/Api'
 import { useNavigate } from 'react-router-dom'
 import Loading from '../../../component/Loading'
 import { DatePicker } from '@mui/x-date-pickers';
 import moment from 'moment'
 import { produce } from "immer";
-import InsertPhotoOutlinedIcon from '@mui/icons-material/InsertPhotoOutlined';
-import { AssignmentIndOutlined, DescriptionOutlined, InsertPhotoOutlined } from '@mui/icons-material';
+import {  AssignmentLateOutlined, AssignmentTurnedInOutlined, DescriptionOutlined, DownloadForOffline, DownloadForOfflineOutlined, InsertPhotoOutlined } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
 
 const Form = (props) => {
+    const [id, setId] = useState('')
+
     //form 
     const [form, setForm] = useState({
         // asset information
@@ -68,6 +68,8 @@ const Form = (props) => {
         sn_windows: "",
         office_id: "",
         antivirus_id: "",
+
+        // information support
         notes: "",
 
     })
@@ -107,13 +109,16 @@ const Form = (props) => {
     //picture and evidence
     const [pictures, setPictures] = useState([
         {
+            id: '',
             image_file: '',
             image_preview: ''
         }
     ])
     const [evidences, setEvidences] = useState([
         {
+            id: '',
             file: '',
+            file_url: '',
         }
     ])
 
@@ -227,10 +232,59 @@ const Form = (props) => {
         }
     }
 
+    //Automatic value for edit
+    const setAutomatic = (data) => {
+        setId(data.id)
+        setDepartment(data.department.dept)
+        setUseFul(data.sub_category.useful_life)
+        setVendor({
+            vendor_address: data.vendor.address,
+            contact: data.vendor.contact,
+            pic_contact: data.vendor.pic_contact,
+        })
+    }
+
+    //set image and evidence 
+    const setPictureFromApi = (data) => {
+        let temp = []
+        data.picture.map((v, i) => {
+            temp.push({
+                id: v.id,
+                image_preview: v.file,
+                image_file: ''
+            })
+        })
+        // console.log(temp)
+        setPictures([...temp])
+    }
+
+    const setEvidenceFromApi = (data) => {
+        let temp = []
+        data.evidence.map((v, i) => {
+            temp.push({
+                id: v.id,
+                file: '',
+                file_url: v.file
+            })
+        })
+        // console.log(temp)
+        setEvidences([...temp])
+    }
+
     const store = async (formData) => {
         try{
             const res = await http.post('asset', formData)
-            console.log(res.data.data)    
+            // console.log(res.data.data)    
+            navigate('/data-asset')      
+        }catch(err) {
+            console.log(err.response)
+        }
+    }
+
+    const edit = async (formData, id) => {
+        try{
+            const res = await http.post(`asset/${id}`, formData)
+            // console.log(res.data.data)    
             navigate('/data-asset')      
         }catch(err) {
             console.log(err.response)
@@ -289,7 +343,30 @@ const Form = (props) => {
                 }
             })
         }else{
-
+            pictures.map((v, i) => {
+                if(i === 0){
+                    if(v.image_file === ''){
+                        formData.append(`picture[${i}][id]`, v.id)
+                    }else{
+                        formData.append(`picture[${i}][file]`, v.image_file)
+                    }
+                    formData.append(`picture[${i}][main]`, 1)
+                }else{
+                    if(v.image_file === ''){
+                        formData.append(`picture[${i}][id]`, v.id)
+                    }else{
+                        formData.append(`picture[${i}][file]`, v.image_file)
+                    }
+                    formData.append(`picture[${i}][main]`, 0)
+                }
+            })
+            evidences.map((v, i) => {
+                if(v.file === ""){
+                    formData.append(`evidence[${i}][id]`, v.id)
+                }else{
+                    formData.append(`evidence[${i}][file]`, v.file)
+                }
+            })
         }
 
         
@@ -318,33 +395,22 @@ const Form = (props) => {
             formData.append('sn_windows', form.sn_windows)
             formData.append('office_id', form.office_id)
             formData.append('antivirus_id', form.antivirus_id)
-            store(formData)
-            console.log(Object.fromEntries(formData))
+            if(props.title === 'add'){
+                store(formData)
+            }else{
+                formData.append('_method', 'PUT')
+                edit(formData, id)
+                // console.log(Object.fromEntries(formData))
+            }
         }else{
             formData.append("asset_type", "non-it")
-
-            // formData.append('device_id', '')
-            // formData.append('type', '')
-            // formData.append('brand_id', '')
-            // formData.append('monitor_inch', '')
-            // formData.append('model_brand', '')
-            // formData.append('mac_address', '')
-            // formData.append('warranty', '')
-            // formData.append('computer_name', '')
-
-            // //Hardware
-            // formData.append('dlp', '')
-            // formData.append('soc', '')
-            // formData.append('snnbpc', '')
-            // formData.append('processor_id', '')
-            // formData.append('hardware', '')
-
-            // //Sofware
-            // formData.append('os_id', '')
-            // formData.append('sn_windows', '')
-            // formData.append('office_id', '')
-            // formData.append('antivirus_id', '')
-            store(formData)
+            if(props.title === 'add'){
+                store(formData)
+            }else{
+                formData.append('_method', 'PUT')
+                edit(formData, id)
+                console.log(Object.fromEntries(formData))
+            }
         }
     }
     
@@ -367,64 +433,113 @@ const Form = (props) => {
             ]).then(res => {
                 if(props.data){
                     const data = props.data
-                    if(props.type === "it"){
-                        setForm({
-                            ...form,
+                    //otomatic value
+                    setAutomatic(data)
+                    setPictureFromApi(data)
+                    setEvidenceFromApi(data)
+                    getSubCategory(data.category.id).then(res => {
+                        if(props.type === "it"){
+                            setForm({
+                                ...form,
+    
+                                // asset information
+                                asset_code: data.asset_code,
+                                category_id: data.category.id,
+                                sub_category_id: data.sub_category.id,
+                                asset_name: data.asset_name,
+                                specification: data.specification,
+                                capitalized: moment(data.capitalized).format('yyyy/MM/DD'),
+                                sap_code: data.sap_code,
+    
+                                // asset holder
+                                employee_id: data.employee.id,
+                                department_id: data.department.id,
+                                location_id: data.location.id,
+                                condition_id: data.condition.id,
+                                latitude: data.latitude,
+                                longitude: data.longitude,
+    
+                                // depreciation asset
+                                cost_id: data.cost.id,
+                                acquisition_value: data.acquisition_value,
+                                depreciation_value: data.depreciation_value,
+                                value_book: data.value_book,
+                                depreciation: data.depreciation,
+    
+                                // Vendor information
+                                vendor_id: data.vendor.id,
+    
+                                // Device information
+                                device_id: data.device.id,
+                                type: data.type,
+                                brand_id: data.brand.id,
+                                monitor_inch: data.monitor_inch,
+                                model_brand: data.model_brand,
+                                mac_address: data.mac_address,
+                                warranty: moment(data.warranty).format('yyyy/MM/DD'),
+                                computer_name: data.computer_name,
+    
+                                // Hardware
+                                dlp: data.dlp,
+                                soc: data.soc,
+                                snnbpc: data.snnbpc,
+                                processor_id: data.processor.id,
+                                hardware: data.hardware,
+    
+                                //Sofware
+                                os_id: data.os.id,
+                                sn_windows: data.sn_windows,
+                                office_id: data.office.id,
+                                antivirus_id: data.antivirus.id,
 
-                            // asset information
-                            asset_code: data.asset_code,
-                            category_id: data.category.id,
-                            sub_category_id: data.sub_category,
-                            asset_name: data.asset_name,
-                            specification: data.specification,
-                            capitalized: moment(data.specification).format('yyyy/MM/DD'),
-                            sap_code: data.sap_code,
+                                // information support
+                                notes: data.notes,
+                            })
+                        }else{
+                            setForm({
+                                ...form,
+    
+                                // asset information
+                                asset_code: data.asset_code,
+                                category_id: data.category.id,
+                                sub_category_id: data.sub_category.id,
+                                asset_name: data.asset_name,
+                                specification: data.specification,
+                                capitalized: moment(data.capitalized).format('yyyy/MM/DD'),
+                                sap_code: data.sap_code,
+    
+                                // asset holder
+                                employee_id: data.employee.id,
+                                department_id: data.department.id,
+                                location_id: data.location.id,
+                                condition_id: data.condition.id,
+                                latitude: data.latitude,
+                                longitude: data.longitude,
+    
+                                // depreciation asset
+                                cost_id: data.cost.id,
+                                acquisition_value: data.acquisition_value,
+                                depreciation_value: data.depreciation_value,
+                                value_book: data.value_book,
+                                depreciation: data.depreciation,
+    
+                                // Vendor information
+                                vendor_id: data.vendor.id,
 
-                            // asset holder
-                            employee_id: data.employee.id,
-                            department_id: data.department.id,
-                            location_id: data.location.id,
-                            condition_id: data.condition.id,
-                            latitude: data.latitude,
-                            longitude: data.longitude,
+                                // information support
+                                notes: data.notes,
 
-                            // depreciation asset
-                            cost_id: data.cost.id,
-                            acquisition_value: data.acquisition_value,
-                            depreciation_value: data.depreciation_value,
-                            value_book: data.value_book,
-                            depreciation: data.depreciation,
+                            })
 
-                            // Vendor information
-                            vendor_id: data.vendor.id,
+                        }
+                            setIsComplete(true)
 
-                            // Device information
-                            device_id: data.device.id,
-                            type: data.type,
-                            brand_id: data.brand.id,
-                            monitor_inch: data.monitor_inch,
-                            model_brand: data.model_brand,
-                            mac_address: data.mac_address,
-                            warranty: moment(data.warranty).format('yyyy/MM/DD'),
-                            computer_name: data.computer_name,
+                    })
 
-                            // Hardware
-                            dlp: data.dlp,
-                            soc: data.soc,
-                            snnbpc: data.snnbpc,
-                            processor_id: data.processor.id,
-                            hardware: data.hardware,
+                }else{
+                    setIsComplete(true)
 
-                            //Sofware
-                            os_id: data.os.id,
-                            sn_windows: data.sn_windows,
-                            office_id: data.office.id,
-                            antivirus_id: data.antivirus.id,
-                            notes: data.notes,
-                        })
-                    }
                 }
-                setIsComplete(true)
             })
         }
 
@@ -460,7 +575,7 @@ const Form = (props) => {
                                         select
                                     >
                                         {assetCategories.length > 0 && assetCategories.map(v => (
-                                            <MenuItem key={v.id} value={v.id}>{`${v.code}-${v.category}`}</MenuItem>
+                                            <MenuItem key={v.id} value={v.id}>{`${v.code} - ${v.category}`}</MenuItem>
                                         ))}
                                         {assetCategories.length == 0 && 
                                             <MenuItem disabled>Kosong</MenuItem>
@@ -563,7 +678,7 @@ const Form = (props) => {
                                         select
                                     >
                                         {employees.length > 0 && employees.map(v => (
-                                            <MenuItem key={v.id} value={v.id}>{`${v.code}-${v.name}`}</MenuItem>
+                                            <MenuItem key={v.id} value={v.id}>{`${v.code} - ${v.name}`}</MenuItem>
                                         ))}
                                         {employees.length == 0 && 
                                             <MenuItem disabled>Kosong</MenuItem>
@@ -589,7 +704,7 @@ const Form = (props) => {
                                         select
                                     >
                                         {assetLocations.length > 0 && assetLocations.map(v => (
-                                            <MenuItem key={v.id} value={v.id}>{`${v.code}-${v.location}`}</MenuItem>
+                                            <MenuItem key={v.id} value={v.id}>{`${v.code} - ${v.location}`}</MenuItem>
                                         ))}
                                         {assetLocations.length == 0 && 
                                             <MenuItem disabled>Kosong</MenuItem>
@@ -654,7 +769,7 @@ const Form = (props) => {
                                         select
                                     >
                                         {assetCost.length > 0 && assetCost.map(v => (
-                                            <MenuItem key={v.id} value={v.id}>{`${v.code}-${v.name}`}</MenuItem>
+                                            <MenuItem key={v.id} value={v.id}>{`${v.code} - ${v.name}`}</MenuItem>
                                         ))}
                                         {assetCost.length == 0 && 
                                             <MenuItem disabled>Kosong</MenuItem>
@@ -730,7 +845,7 @@ const Form = (props) => {
                                         select
                                     >
                                         {assetVendor.length > 0 && assetVendor.map(v => (
-                                            <MenuItem key={v.id} value={v.id}>{`${v.code}-${v.name}`}</MenuItem>
+                                            <MenuItem key={v.id} value={v.id}>{`${v.code} - ${v.name}`}</MenuItem>
                                         ))}
                                         {assetVendor.length == 0 && 
                                             <MenuItem disabled>Kosong</MenuItem>
@@ -1040,7 +1155,7 @@ const Form = (props) => {
                                             return (
                                                 <Grid key={i} item xs={6} md={4}>
                                                     <Stack spacing={2} alignItems="center">
-                                                        <Box component="label" sx={{ mt: { xs: 2 } }} htmlFor={`img-${i}`}>
+                                                        <Box component="label" sx={{ mt: { xs: 2 }, cursor: 'pointer' }} htmlFor={`img-${i}`}>
                                                             {v.image_preview == "" ? 
                                                             <InsertPhotoOutlined sx={{ fontSize: '100px' }} />
                                                             :
@@ -1057,6 +1172,7 @@ const Form = (props) => {
                                                                 setPictures(currentAnswers => 
                                                                     produce(currentAnswers, v => {
                                                                         v[i] = {
+                                                                            id: '',
                                                                             image_file,
                                                                             image_preview
                                                                         }
@@ -1087,6 +1203,7 @@ const Form = (props) => {
                                                     setPictures(currentAnswers => [
                                                         ...currentAnswers, 
                                                         { 
+                                                            id: '',
                                                             image_file: '',
                                                             image_preview: ''
                                                         }
@@ -1105,11 +1222,11 @@ const Form = (props) => {
                                             return (
                                                 <Grid key={i} item xs={6} md={4}>
                                                     <Stack spacing={2} alignItems="center">
-                                                        <Box component="label" sx={{ mt: { xs: 2 } }} htmlFor={`ev-${i}`}>
-                                                            {v.file == "" ? 
+                                                        <Box component="label" sx={{ mt: { xs: 2 }, cursor: 'pointer' }} htmlFor={`ev-${i}`}>
+                                                            {v.file_url == "" ? 
                                                             <DescriptionOutlined sx={{ fontSize: '100px' }} />
                                                             :
-                                                            <Typography sx={{ height: '100px' }}>{v.file.name}</Typography>
+                                                            <AssignmentTurnedInOutlined sx={{ fontSize: '100px' }} />
                                                             }
                                                         </Box>
                                                         <input 
@@ -1118,24 +1235,33 @@ const Form = (props) => {
                                                             id={`ev-${i}`}
                                                             onChange={e => {
                                                                 let file = e.target.files[0]
+                                                                let file_url = URL.createObjectURL(e.target.files[0])
                                                                 setEvidences(currentAnswers => 
                                                                     produce(currentAnswers, v => {
                                                                         v[i] = {
-                                                                            file
+                                                                            id: '',
+                                                                            file,
+                                                                            file_url
                                                                         }
                                                                     })
                                                                 );
                                                             }} 
                                                         />
-                                                        {evidences.length > 1 &&
-                                                            <Chip
-                                                                color="error" 
-                                                                label="delete" 
-                                                                onClick={() => {
-                                                                    setEvidences(currentAnswers => currentAnswers.filter((v, x) => x !== i))
-                                                                }} 
-                                                            />
-                                                        }
+                                                        <Stack direction="row" justifyContent={'center'} alignContent="center">
+                                                            <a target="_blank" href={v.file_url} style={{ cursor: 'pointer' }}>
+                                                                <DownloadForOfflineOutlined  sx={{ fontSize: '10x', marginTop: '3px', marginRight: '3px' }} />
+                                                            </a>
+                                                                
+                                                            {evidences.length > 1 &&
+                                                                <Chip
+                                                                    color="error" 
+                                                                    label="delete" 
+                                                                    onClick={() => {
+                                                                        setEvidences(currentAnswers => currentAnswers.filter((v, x) => x !== i))
+                                                                    }} 
+                                                                />
+                                                            }
+                                                        </Stack>
                                                     </Stack>
                                                     
                                                 </Grid>
@@ -1150,7 +1276,9 @@ const Form = (props) => {
                                                     setEvidences(currentAnswers => [
                                                         ...currentAnswers, 
                                                         { 
+                                                            id: '',
                                                             file: '',
+                                                            file_url: '',
                                                         }
                                                     ])
                                                 }}

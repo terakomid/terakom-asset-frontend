@@ -229,6 +229,14 @@ export default function Router() {
                }
             />
             <Route
+               path="/edit-data-asset-it/:id"
+               element={
+                  <Middleware.After>
+                     <Layout render={<AssetITEdit />} />
+                  </Middleware.After>
+               }
+            />
+            <Route
                path="/data-asset-non-it"
                element={
                   <Middleware.After>
@@ -237,7 +245,7 @@ export default function Router() {
                }
             />
             <Route
-               path="/edit-data-asset-non-it"
+               path="/edit-data-asset-non-it/:id"
                element={
                   <Middleware.After>
                      <Layout render={<AssetNonITEdit />} />

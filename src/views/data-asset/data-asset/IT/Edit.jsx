@@ -15,9 +15,8 @@ const Edit = () => {
                 by: 'id'
             }
         })
-        setData(res.data)
+        setData(res.data.data)
         setIsComplete(true)
-        console.log(res.data)
     }
 
     useEffect(() => {
