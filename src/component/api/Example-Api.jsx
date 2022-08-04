@@ -3,14 +3,11 @@ import axios from "axios";
 // let apiURL = "http://localhost:8000/api/";
 let apiURL = "http://api-asset.terakom.id/api/";
 
-let token = localStorage.getItem("token");
-
-const axiosInstance = axios.create({
-   baseURL: apiURL,
-   headers: {
-      Authorization: "Bearer " + token,
-      "Content-Type": "application/json",
-   },
+axios.defaults.baseURL = apiURL;
+axios.interceptors.request.use((config) => {
+   const token = localStorage.getItem("token");
+   if (token) config.headers.Authorization = `Bearer ${token}`;
+   return config;
 });
 
-export default axiosInstance;
+export default axios;
