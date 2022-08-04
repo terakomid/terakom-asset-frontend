@@ -130,7 +130,6 @@ const Index = () => {
     });
     const [params, setParams] = useState({
         search: "",
-        order_by_name: 0,
         limit: 10,
         page: 1,
         paginate: 1
@@ -139,7 +138,7 @@ const Index = () => {
 
     const getData = async () => {
         http
-            .get(`/asset_disposal`, {
+            .get(`/help`, {
             params: params,
             })
             .then((res) => {
@@ -189,10 +188,10 @@ const Index = () => {
         });
     };
 
-    const handleEdit = () => {
+    const handleDetail = () => {
         setData(staging);
         handleMenu();
-        navigate(`/disposal-asset-edit/${staging.id}`)
+        navigate(`/help-detail/${staging.id}`)
     };
 
     const [openModal, setOpenModal] = useState(false);
@@ -207,7 +206,7 @@ const Index = () => {
 
     const onDelete = async () => {
         http
-            .delete(`/asset_disposal/${staging.id}`, {})
+            .delete(`/help/${staging.id}`, {})
                 .then((res) => {
                     getData();
                     handleMenu();
@@ -229,13 +228,8 @@ const Index = () => {
     const handleMenu = () => {
         setAnchorEl(null);
     };
-    const handleReject = async () => {
-        const res = await http.patch(`/asset_disposal/${staging.id}/update_status?status=rejected`)
-        getData();
-        handleMenu();
-    }
-    const handleAccept = async () => {
-        const res = await http.patch(`/asset_disposal/${staging.id}/update_status?status=accepted`)
+    const handleClose = async () => {
+        const res = await http.patch(`/help/${staging.id}?status=close`)
         getData();
         handleMenu();
     }
@@ -246,9 +240,9 @@ const Index = () => {
                 <div className="container">
                     <div className="my-2">
                         <Stack direction="row" justifyContent={"space-between"}>
-                            <h3 className="fw-bold mb-2">Disposal Asset</h3>
-                            <Button onClick={() => navigate('/disposal-asset-add')} variant="contained" startIcon={<Add />}>
-                                Add Disposal
+                            <h3 className="fw-bold mb-2">Help</h3>
+                            <Button onClick={() => navigate('/help-add')} variant="contained" startIcon={<Add />}>
+                                Ticket
                             </Button>
                         </Stack>
                         
@@ -298,13 +292,10 @@ const Index = () => {
                                             }}
                                             >
                                             <TableCell align="center">No.</TableCell>
-                                            <TableCell>Date Created</TableCell>
-                                            <TableCell>SK Number</TableCell>
-                                            <TableCell>Description</TableCell>
-                                            <TableCell>Supporting Document</TableCell>
-                                            <TableCell>Amount Delete</TableCell>
-                                            <TableCell>Total Value</TableCell>
-                                            <TableCell>Update</TableCell>
+                                            <TableCell>Title</TableCell>
+                                            <TableCell>Purpose</TableCell>
+                                            <TableCell>Created At</TableCell>
+                                            <TableCell>Created By</TableCell>
                                             <TableCell>Status</TableCell>
                                             <TableCell align="center">Action</TableCell>
                                             </TableRow>
@@ -317,26 +308,18 @@ const Index = () => {
                                                         <TableCell component="th" scope="row" align="center">
                                                             {rows.meta.from + key}.
                                                         </TableCell>
+                                                        <TableCell>{value.title}</TableCell>
+                                                        <TableCell>{value.purpose}</TableCell>
                                                         <TableCell>{moment(value.created_at).format('ll') }</TableCell>
-                                                        <TableCell>{value.sk_number}</TableCell>
-                                                        <TableCell>{value.description}</TableCell>
+                                                        <TableCell>{value.created_by.name}</TableCell>
                                                         <TableCell>
-                                                            <Button startIcon={<DownloadOutlined />}>
-                                                                Download
-                                                            </Button>
-                                                        </TableCell>
-                                                        <TableCell>{value.amount_delete}</TableCell>
-                                                        <TableCell>{value.total_value}</TableCell>
-                                                        <TableCell>{moment(value.updated_at).format('ll') }</TableCell>
-                                                        <TableCell>
-                                                            {value.status === "process" && <Chip label="Process" color="warning" />}
-                                                            {value.status === "accepted" && <Chip label="Accepted" color="success" />}
-                                                            {value.status === "rejected" && <Chip label="Rejected" color="error" />}
+                                                            {value.status === "open" && <Chip label="Open" color="primary" />}
+                                                            {value.status === "close" && <Chip label="Close" color="error" />}
                                                         </TableCell>
                                                         <TableCell align="center">
-                                                        <IconButton onClick={(e) => handleClick(e, value)}>
-                                                            <MoreVert />
-                                                        </IconButton>
+                                                            <IconButton onClick={(e) => handleClick(e, value)}>
+                                                                <MoreVert />
+                                                            </IconButton>
                                                         </TableCell>
                                                     </TableRow>
                                                 ))
@@ -393,11 +376,11 @@ const Index = () => {
                                 transformOrigin={{ horizontal: "right", vertical: "top" }}
                                 anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
                             >
-                                <MenuItem onClick={handleEdit}>
+                                <MenuItem onClick={handleDetail}>
                                     <ListItemIcon>
                                         <Edit />
                                     </ListItemIcon>
-                                        Edit
+                                        Detail
                                     </MenuItem>
                                 <MenuItem onClick={handleModal}>
                                     <ListItemIcon>
@@ -405,36 +388,12 @@ const Index = () => {
                                     </ListItemIcon>
                                         Delete
                                 </MenuItem>
-                                {staging !== undefined && staging.status === 'process' &&
-                                <>
-                                    <MenuItem onClick={handleAccept}>
-                                        <ListItemIcon>
-                                            <DoneOutline />
-                                        </ListItemIcon>
-                                            Accept
-                                    </MenuItem>
-                                    <MenuItem onClick={handleReject}>
-                                        <ListItemIcon>
-                                            <Close />
-                                        </ListItemIcon>
-                                            Reject
-                                    </MenuItem>
-                                </> 
-                                }
-                                {staging !== undefined && staging.status === 'accepted' && 
-                                <MenuItem onClick={handleReject}>
+                                {staging !== undefined && staging.status === 'open' && 
+                                <MenuItem onClick={handleClose}>
                                     <ListItemIcon>
                                         <Close />
                                     </ListItemIcon>
-                                        Reject
-                                </MenuItem>
-                                }
-                                {staging !== undefined && staging.status === 'rejected' && 
-                                <MenuItem onClick={handleAccept}>
-                                    <ListItemIcon>
-                                        <DoneOutline />
-                                    </ListItemIcon>
-                                        Accept
+                                        Close
                                 </MenuItem>
                                 }
                             </Menu>

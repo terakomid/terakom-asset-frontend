@@ -660,12 +660,11 @@ const Form = (props) => {
                                 </Grid>
                                 <Grid item md={4} xs={12}>
                                     <TextField
-                                        onChange={handleChange}
                                         value={useful}
-                                        name="specification"
+                                        name="useful"
                                         fullWidth
                                         label="Useful Life"
-                                        disabled={props.detail}
+                                        disabled
                                     />
                                 </Grid>
                                 <Grid item md={6} xs={12}>

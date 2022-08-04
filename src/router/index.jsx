@@ -55,8 +55,9 @@ import EditDisposalAsset from "../views/disposal-asset/Edit";
 import ActivityLog from "../views/activity-log/Content";
 
 // Help
-import Help from "../views/help/Content";
+import Help from "../views/help/Index";
 import HelpAdd from "../views/help/Add";
+import HelpDetail from "../views/help/Detail";
 
 export default function Router() {
    return (
@@ -386,6 +387,14 @@ export default function Router() {
                element={
                   <Middleware.After>
                      <Layout render={<HelpAdd />} />
+                  </Middleware.After>
+               }
+            />
+            <Route
+               path="/help-detail/:id"
+               element={
+                  <Middleware.After>
+                     <Layout render={<HelpDetail />} />
                   </Middleware.After>
                }
             />
