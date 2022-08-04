@@ -38,13 +38,20 @@ import AssetNonIT from "../views/data-asset/data-asset/NonIT/Add";
 import AssetNonITEdit from "../views/data-asset/data-asset/NonIT/Edit";
 import AssetNonITDetail from "../views/data-asset/data-asset/NonIT/Detail";
 import HistoryAsset from "../views/data-asset/history-asset";
-import MutationAsset from "../views/data-asset/mutation-asset/Content";
+
+import MutationAsset from "../views/data-asset/mutation-asset";
 import AddMutationAsset from "../views/data-asset/mutation-asset/Add";
-import MaintenanceAsset from "../views/data-asset/maintenance-asset/Content";
+import EditMutationAsset from "../views/data-asset/mutation-asset/Edit";
+
+import MaintenanceAsset from "../views/data-asset/maintenance-asset";
 import AddMaintenanceAsset from "../views/data-asset/maintenance-asset/Add";
-import StockOpname from "../views/data-asset/stock-opname/Index";
-import ReceptionAsset from "../views/data-asset/reception-asset/Content";
-import AddReceptionAsset from "../views/data-asset/reception-asset/Add";
+import EditMaintenanceAsset from "../views/data-asset/maintenance-asset/Edit";
+
+import StockOpname from "../views/data-asset/stock-opname";
+
+import AcceptanceAsset from "../views/data-asset/acceptance-asset";
+import AddAcceptanceAsset from "../views/data-asset/acceptance-asset/Add";
+import EditAcceptanceAsset from "../views/data-asset/acceptance-asset/Edit";
 
 // Disposal
 import DisposalAsset from "../views/disposal-asset/Index";
@@ -297,6 +304,14 @@ export default function Router() {
                }
             />
             <Route
+               path="/history-asset/mutation-asset/edit/:id"
+               element={
+                  <Middleware.After>
+                     <Layout render={<EditMutationAsset />} />
+                  </Middleware.After>
+               }
+            />
+            <Route
                path="/history-asset/maintenance-asset"
                element={
                   <Middleware.After>
@@ -313,6 +328,14 @@ export default function Router() {
                }
             />
             <Route
+               path="/history-asset/maintenance-asset/edit/:id"
+               element={
+                  <Middleware.After>
+                     <Layout render={<EditMaintenanceAsset />} />
+                  </Middleware.After>
+               }
+            />
+            <Route
                path="/history-asset/stock-opname"
                element={
                   <Middleware.After>
@@ -321,18 +344,26 @@ export default function Router() {
                }
             />
             <Route
-               path="/reception-asset"
+               path="/acceptance-asset"
                element={
                   <Middleware.After>
-                     <Layout render={<ReceptionAsset />} />
+                     <Layout render={<AcceptanceAsset />} />
                   </Middleware.After>
                }
             />
             <Route
-               path="/reception-asset-add"
+               path="/acceptance-asset/add"
                element={
                   <Middleware.After>
-                     <Layout render={<AddReceptionAsset />} />
+                     <Layout render={<AddAcceptanceAsset />} />
+                  </Middleware.After>
+               }
+            />
+            <Route
+               path="/acceptance-asset/edit/:id"
+               element={
+                  <Middleware.After>
+                     <Layout render={<EditAcceptanceAsset />} />
                   </Middleware.After>
                }
             />

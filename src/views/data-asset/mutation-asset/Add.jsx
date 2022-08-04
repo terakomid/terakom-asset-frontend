@@ -1,397 +1,465 @@
-import { Autocomplete, TextareaAutosize } from "@mui/material";
-import React, { Component } from "react";
+import React, { useEffect, useState } from "react";
+import {
+   Box,
+   Card,
+   CardContent,
+   TextField,
+   Stack,
+   Grid,
+   Typography,
+   MenuItem,
+   Button,
+   TableContainer,
+   Table,
+   TableHead,
+   TableRow,
+   TableCell,
+   TableBody,
+   IconButton,
+   InputAdornment,
+   Tooltip,
+} from "@mui/material";
+import { Close, Delete, Edit, FileUploadOutlined, InsertDriveFile } from "@mui/icons-material";
+import { LoadingButton } from "@mui/lab";
+import { Link as RouterLink, useNavigate } from "react-router-dom";
 
-import Box from "@mui/material/Box";
-import { LinearProgress } from "@mui/material";
-import { DataGrid, GridToolbar } from "@mui/x-data-grid";
+import http from "../../../component/api/Api";
+import Loading from "../../../component/Loading";
 
-import { Button, FormLabel } from "react-bootstrap";
-import { TextValidator, ValidatorForm } from "react-material-ui-form-validator";
-import { Link } from "react-router-dom";
+export default function AddMutationAsset() {
+   const navigate = useNavigate();
 
-class Add extends Component {
-   render() {
-      /**
-       * ==========================================================
-       * Form Button
-       * ==========================================================
-       */
+   const [rows, setRows] = useState([]);
+   const [data, setData] = useState();
 
-      const ButtonCreate = () => (
-         <div id="create">
-            <Button id="btnCreate" className="text-capitalize float-end bg-primary text-white" variant="contained" type="submit">
-               add asset
-            </Button>
-         </div>
-      );
-      const ButtonSave = () => (
-         <div id="save px-3">
-            <Button id="btnSave" className="text-capitalize float-end bg-primary text-white" variant="contained" type="submit">
-               save
-            </Button>
-         </div>
-      );
+   const [user, setUser] = useState();
+   const getUser = async () => {
+      http
+         .get(`user`)
+         .then((res) => {
+            // console.log(res.data.data);
+            setUser(res.data.data);
+         })
+         .catch((err) => {
+            // console.log(err.response);
+         });
+   };
 
-      const ButtonCancel = () => (
-         <div id="cancel px-3">
-            <Link id="btnCancel" className="text-capitalize float-end btn btn-secondary" variant="contained" to="/history-asset/mutation-asset">
-               Cancel
-            </Link>
-         </div>
-      );
+   const [location, setLocation] = useState();
+   const getLocation = async () => {
+      http
+         .get(`location`)
+         .then((res) => {
+            // console.log(res.data.data);
+            setLocation(res.data.data);
+         })
+         .catch((err) => {
+            // console.log(err.response);
+         });
+   };
 
-      const editLink = (param) => {
-         return (
-            <div className="form-check text-end text-danger me-3">
-               <label className="form-check-label fs-5">
-                  <i className="bi bi-trash-fill mx-2"></i>
-               </label>
-            </div>
-         );
-      };
+   const getAsset = async (employee) => {
+      http
+         .get(`asset?employee_id=${employee.id}`)
+         .then((res) => {
+            // console.log(res.data.data.data);
+            setData({
+               ...data,
+               pic: employee,
+               pic_dept: employee.dept.dept,
+               master_asset: res.data.data.data,
+            });
+         })
+         .catch((err) => {
+            // console.log(err.response);
+         });
+   };
 
-      const rows = [
-         {
-            id: 1,
-            code: "2020/FA/65d1/ID08/2000001031",
-            receiver: "Raka",
-            department: "Internal Audit",
-            name: "Notebook",
-            quantity: "1",
-            from_branch: "65D1 - HO Jakarta",
-            from_room: "Meeting Room",
-            to_branch: "651A - Cikarang",
-            to_room: "Office Room",
-         },
-         {
-            id: 2,
-            code: "2020/FA/65d1/ID08/2000001032",
-            receiver: "Raka",
-            department: "Internal Audit",
-            name: "Notebook",
-            quantity: "1",
-            from_branch: "65D1 - HO Jakarta",
-            from_room: "Meeting Room",
-            to_branch: "651A - Cikarang",
-            to_room: "Office Room",
-         },
-         {
-            id: 3,
-            code: "2020/FA/65d1/ID08/2000001033",
-            receiver: "Raka",
-            department: "Internal Audit",
-            name: "Notebook",
-            quantity: "1",
-            from_branch: "65D1 - HO Jakarta",
-            from_room: "Meeting Room",
-            to_branch: "651A - Cikarang",
-            to_room: "Office Room",
-         },
-         {
-            id: 4,
-            code: "2020/FA/65d1/ID08/2000001034",
-            receiver: "Raka",
-            department: "Internal Audit",
-            name: "Notebook",
-            quantity: "1",
-            from_branch: "65D1 - HO Jakarta",
-            from_room: "Meeting Room",
-            to_branch: "651A - Cikarang",
-            to_room: "Office Room",
-         },
-         {
-            id: 5,
-            code: "2020/FA/65d1/ID08/2000001035",
-            receiver: "Raka",
-            department: "Internal Audit",
-            name: "Notebook",
-            quantity: "1",
-            from_branch: "65D1 - HO Jakarta",
-            from_room: "Meeting Room",
-            to_branch: "651A - Cikarang",
-            to_room: "Office Room",
-         },
-      ];
+   useEffect(() => {
+      window.scrollTo(0, 0);
+      getUser();
+      getLocation();
+      handleReset();
+   }, []);
 
-      const isLoading = false;
+   const handleReset = (e) => {
+      setData({
+         pic: "",
+         pic_dept: "",
+         receive: "",
+         receive_dept: "",
+         reason: "",
+         asset: "",
+         master_asset: [],
+         from_branch: "",
+         from_room: "",
+         to_branch: "",
+         to_room: "",
+         document: null,
+      });
+   };
 
-      const columns = [
-         {
-            field: "id",
-            headerName: "No",
-            width: 50,
-            type: "number",
-         },
-         {
-            field: "name",
-            headerName: "Asset Name",
-            width: 150,
-         },
-         {
-            field: "code",
-            headerName: "Asset Code",
-            width: 250,
-         },
-         {
-            field: "quantity",
-            headerName: "Quantity",
-            width: 100,
-         },
-         {
-            field: "from_branch",
-            headerName: "From Branch",
-            width: 150,
-         },
-         {
-            field: "from_room",
-            headerName: "From Room",
-            width: 150,
-         },
-         {
-            field: "receiver",
-            headerName: "Receiver Name",
-            width: 200,
-         },
-         {
-            field: "department",
-            headerName: "Department",
-            width: 150,
-         },
-         {
-            field: "to_branch",
-            headerName: "To Branch",
-            width: 150,
-         },
-         {
-            field: "to_room",
-            headerName: "To Room",
-            width: 150,
-         },
-         {
-            field: "",
-            headerName: "Action",
-            width: 100,
-            renderCell: editLink,
-            sortable: false,
-         },
-      ];
+   const handleStaging = (e) => {
+      e.preventDefault();
+      let newState = rows.concat(data);
+      setRows(newState);
+      handleReset();
+   };
 
-      const options = [
-         { code: 1, label: "Dummy 1" },
-         { code: 2, label: "Dummy 2" },
-         { code: 3, label: "Dummy 3" },
-      ];
+   const handleEdit = (value, key) => {
+      setRows([...rows.slice(0, key), ...rows.slice(key + 1, rows.length)]);
+      setData(value);
+   };
 
-      return (
-         <div className="main-content">
-            <div className="page-content">
-               <div className="container-fluid">
-                  <div className="row">
-                     <div className="card">
-                        <div className="card-body p-3">
-                           <div className="row">
-                              <ValidatorForm onSubmit={this}>
-                                 <div className="row">
-                                    {/* Form */}
-                                    <h4 className="fw-bold">Create Mutation Asset</h4>
+   const handleDelete = (key) => {
+      setRows([...rows.slice(0, key), ...rows.slice(key + 1, rows.length)]);
+   };
 
-                                    <div className="col-xl-12 col-12 my-3">
-                                       <div className="card shadow-sm border-1">
-                                          <div className="card-body mx-3">
-                                             <div className="row mt-3">
-                                                <div className="col-xl-12 col-12 pt-3">
-                                                   <Autocomplete
-                                                      sx={{ width: "100%" }}
-                                                      name="to"
-                                                      options={options}
-                                                      renderInput={(params) => <TextValidator {...params} label="To" />}
-                                                   />
-                                                </div>
-                                                <div className="col-xl-4 col-12 pt-3">
-                                                   <Autocomplete
-                                                      sx={{ width: "100%" }}
-                                                      name="pi"
-                                                      options={options}
-                                                      renderInput={(params) => <TextValidator {...params} label="PIC Asset" />}
-                                                   />
-                                                </div>
-                                                <div className="col-xl-4 col-12 pt-3">
-                                                   <TextValidator
-                                                      sx={{ width: "100%" }}
-                                                      id="outlined-basic"
-                                                      label="Department"
-                                                      name="department"
-                                                      variant="outlined"
-                                                      validators={["required"]}
-                                                      errorMessages={["This Field is Required"]}
-                                                   />
-                                                </div>
-                                                <div className="col-xl-4 col-12 pt-3">
-                                                   <TextValidator
-                                                      sx={{ width: "100%" }}
-                                                      id="outlined-basic"
-                                                      label="Suporting Document"
-                                                      name="suporting_document"
-                                                      variant="outlined"
-                                                      validators={["required"]}
-                                                      errorMessages={["This Field is Required"]}
-                                                   />
-                                                </div>
-                                                <div className="col-xl-12 col-12 pt-3">
-                                                   <FormLabel>Request Time to Finish:</FormLabel>
-                                                   <TextareaAutosize
-                                                      className="form-control"
-                                                      placeholder="Request Time to Finish"
-                                                      minRows={5}
-                                                      style={{ width: "100%", boxSizing: "border-box" }}
-                                                   />
-                                                </div>
-                                             </div>
-                                          </div>
-                                       </div>
-                                    </div>
+   const handleChange = (e) => {
+      if (e.target.type === "file") {
+         if (e.target.files[0] !== undefined) {
+            setData({
+               ...data,
+               [e.target.name]: e.target.files[0],
+            });
+            e.target.value = null;
+         }
+      } else {
+         if (e.target.name === "pic") {
+            getAsset(e.target.value);
+         } else if (e.target.name === "receive") {
+            setData({
+               ...data,
+               [e.target.name]: e.target.value,
+               receive_dept: e.target.value.dept.dept,
+            });
+         } else {
+            setData({
+               ...data,
+               [e.target.name]: e.target.value,
+            });
+         }
+      }
+   };
 
-                                    <div className="col-xl-12 col-12 my-3">
-                                       <div className="card shadow-sm border-1">
-                                          <div className="card-body mx-3">
-                                             <div className="row mt-3">
-                                                <div className="col-xl-12 col-12 pt-3">
-                                                   <Autocomplete
-                                                      sx={{ width: "100%" }}
-                                                      name="asset"
-                                                      options={options}
-                                                      renderInput={(params) => <TextValidator {...params} label="Choose Asset" />}
-                                                   />
-                                                </div>
-                                                <div className="col-xl-12 col-12 pt-3">
-                                                   <TextValidator
-                                                      sx={{ width: "100%" }}
-                                                      id="outlined-basic"
-                                                      label="Quantity"
-                                                      name="quantity"
-                                                      variant="outlined"
-                                                      validators={["required", "matchRegexp:^[a-zA-Z0-9\\s]+$"]}
-                                                      errorMessages={["This Field is Required", "Only Number and Text(Alphabet)"]}
-                                                   />
-                                                </div>
-                                                <div className="col-xl-6 col-12 pt-3">
-                                                   <Autocomplete
-                                                      sx={{ width: "100%" }}
-                                                      name="branch"
-                                                      options={options}
-                                                      renderInput={(params) => <TextValidator {...params} label="From Branch" />}
-                                                   />
-                                                </div>
-                                                <div className="col-xl-6 col-12 pt-3">
-                                                   <Autocomplete
-                                                      sx={{ width: "100%" }}
-                                                      name="room"
-                                                      options={options}
-                                                      renderInput={(params) => <TextValidator {...params} label="From Room" />}
-                                                   />
-                                                </div>
-                                                <div className="col-xl-6 col-12 pt-3">
-                                                   <Autocomplete
-                                                      sx={{ width: "100%" }}
-                                                      name="receiver"
-                                                      options={options}
-                                                      renderInput={(params) => <TextValidator {...params} label="Receiver Name" />}
-                                                   />
-                                                </div>
-                                                <div className="col-xl-6 col-12 pt-3">
-                                                   <Autocomplete
-                                                      sx={{ width: "100%" }}
-                                                      name="department"
-                                                      options={options}
-                                                      renderInput={(params) => <TextValidator {...params} label="Department" />}
-                                                   />
-                                                </div>
-                                                <div className="col-xl-6 col-12 pt-3">
-                                                   <Autocomplete
-                                                      sx={{ width: "100%" }}
-                                                      name="to_branch"
-                                                      options={options}
-                                                      renderInput={(params) => <TextValidator {...params} label="To Branch" />}
-                                                   />
-                                                </div>
-                                                <div className="col-xl-6 col-12 pt-3">
-                                                   <Autocomplete
-                                                      sx={{ width: "100%" }}
-                                                      name="to_room"
-                                                      options={options}
-                                                      renderInput={(params) => <TextValidator {...params} label="To Room" />}
-                                                   />
-                                                </div>
-                                             </div>
-                                          </div>
-                                       </div>
-                                    </div>
+   const [loading, setLoading] = useState(false);
+   const handleSubmit = async (e) => {
+      e.preventDefault();
+      setLoading(true);
+      let formData = new FormData();
+      rows.map((value, index) => {
+         formData.append(`asset_mutation[${index}][pic_id]`, value.pic.id);
+         formData.append(`asset_mutation[${index}][receive_id]`, value.receive.id);
+         formData.append(`asset_mutation[${index}][reason]`, value.reason);
+         formData.append(`asset_mutation[${index}][asset_id]`, value.asset.id);
+         formData.append(`asset_mutation[${index}][quantity]`, 1);
+         formData.append(`asset_mutation[${index}][from_branch_id]`, value.from_branch.id);
+         formData.append(`asset_mutation[${index}][from_room]`, value.from_room);
+         formData.append(`asset_mutation[${index}][to_branch_id]`, value.to_branch.id);
+         formData.append(`asset_mutation[${index}][to_room]`, value.to_room);
+         formData.append(`asset_mutation[${index}][document]`, value.document);
+      });
+      // console.log(Object.fromEntries(formData));
+      http
+         .post(`asset_mutation`, formData)
+         .then((res) => {
+            // console.log(res.data.data);
+            navigate("/history-asset/mutation-asset");
+         })
+         .catch((err) => {
+            // console.log(err.response.data);
+            setLoading(false);
+         });
+   };
 
-                                    <div className="col-xl-12 col-12 pb-5 text-end">
-                                       <ButtonCreate />
-                                    </div>
-
-                                    {/* Table */}
-                                    <div className="col-xl-12 col-12 mt-3">
-                                       <div className="card shadow-none border-1">
-                                          <div className="card-body">
-                                             {/* Table */}
-
-                                             <div>
-                                                <Box
-                                                   sx={{
-                                                      height: 450,
-                                                      width: "100%",
-                                                   }}
-                                                >
-                                                   <DataGrid
-                                                      sx={{
-                                                         boxShadow: 0,
-                                                         border: 0,
-                                                      }}
-                                                      loading={isLoading}
-                                                      disableColumnMenu
-                                                      disableColumnFilter
-                                                      disableColumnSelector
-                                                      disableColumnButton
-                                                      disableDensitySelector
-                                                      checkboxSelection
-                                                      columns={columns}
-                                                      pageSize={5}
-                                                      rows={rows}
-                                                      rowsPerPageOptions={[5]}
-                                                      components={{
-                                                         LoadingOverlay: LinearProgress,
-                                                         Toolbar: GridToolbar,
-                                                      }}
-                                                      componentsProps={{
-                                                         toolbar: {
-                                                            quickFilterProps: { debounceMs: 500 },
-                                                            showQuickFilter: true,
-                                                         },
-                                                      }}
-                                                   />
-                                                </Box>
-                                             </div>
-                                          </div>
-                                       </div>
-                                    </div>
-
-                                    <div className="col-xl-12 col-12 pt-3 d-flex justify-content-start">
-                                       <ButtonSave />
-                                       <ButtonCancel />
-                                    </div>
-                                 </div>
-                              </ValidatorForm>
-                           </div>
-                        </div>
-                     </div>
-                  </div>
+   return (
+      <div className="main-content mb-5">
+         <div className="page-content">
+            <div className="container">
+               <div className="d-flex align-items-center justify-content-between my-2 mb-4" style={{ height: "36px" }}>
+                  <h3 className="fw-bold mb-0">Add Mutation Asset</h3>
                </div>
+               {data !== undefined && user !== undefined && location !== undefined ? (
+                  <>
+                     <Card sx={{ mb: 3 }}>
+                        <CardContent>
+                           <Box component="form" onSubmit={handleStaging}>
+                              <Grid container spacing={2}>
+                                 <Grid item xs={12}>
+                                    <Typography color="primary" pb={2}>
+                                       To:
+                                    </Typography>
+                                 </Grid>
+                                 <Grid item xs={12} sm={6}>
+                                    <TextField
+                                       name="pic"
+                                       label="PIC Asset"
+                                       variant="outlined"
+                                       value={data.pic}
+                                       onChange={handleChange}
+                                       defaultValue=""
+                                       select
+                                       fullWidth
+                                       required
+                                    >
+                                       {user.data.map((value, index) => (
+                                          <MenuItem value={value} key={index}>
+                                             {value.code} - {value.name}
+                                          </MenuItem>
+                                       ))}
+                                    </TextField>
+                                 </Grid>
+                                 <Grid item xs={12} sm={6}>
+                                    <TextField label="Department" variant="outlined" value={data.pic_dept} fullWidth disabled />
+                                 </Grid>
+                                 <Grid item xs={12} sm={6}>
+                                    <TextField
+                                       name="receive"
+                                       label="Receive Name"
+                                       variant="outlined"
+                                       value={data.receive}
+                                       onChange={handleChange}
+                                       defaultValue=""
+                                       select
+                                       fullWidth
+                                       required
+                                    >
+                                       {user.data.map((value, index) => (
+                                          <MenuItem value={value} key={index} disabled={data.pic.id === value.id}>
+                                             {value.code} - {value.name}
+                                          </MenuItem>
+                                       ))}
+                                    </TextField>
+                                 </Grid>
+                                 <Grid item xs={12} sm={6}>
+                                    <TextField label="Department" variant="outlined" value={data.receive_dept} fullWidth disabled />
+                                 </Grid>
+                                 <Grid item xs={12}>
+                                    <TextField
+                                       name="reason"
+                                       label="Reason"
+                                       variant="outlined"
+                                       value={data.reason}
+                                       onChange={handleChange}
+                                       rows={4}
+                                       multiline
+                                       fullWidth
+                                       required
+                                    />
+                                 </Grid>
+                                 <Grid item xs={12}>
+                                    <TextField
+                                       name="asset"
+                                       label="Choose Asset"
+                                       variant="outlined"
+                                       value={data.asset}
+                                       onChange={handleChange}
+                                       defaultValue=""
+                                       select
+                                       fullWidth
+                                       required
+                                       disabled={data.master_asset.length < 1}
+                                    >
+                                       {data.master_asset.length > 0 ? (
+                                          data.master_asset.map((value, index) => (
+                                             <MenuItem
+                                                value={value}
+                                                key={index}
+                                                disabled={rows.find(function (row) {
+                                                   return row.asset.asset_code === value.asset_code;
+                                                })}
+                                             >
+                                                {value.asset_code} - {value.asset_name}
+                                             </MenuItem>
+                                          ))
+                                       ) : (
+                                          <MenuItem value="">Pilih</MenuItem>
+                                       )}
+                                    </TextField>
+                                 </Grid>
+                                 <Grid item xs={12} sm={6}>
+                                    <TextField
+                                       name="from_branch"
+                                       label="From Branch"
+                                       variant="outlined"
+                                       value={data.from_branch}
+                                       onChange={handleChange}
+                                       defaultValue=""
+                                       select
+                                       fullWidth
+                                       required
+                                    >
+                                       {location.map((value, index) => (
+                                          <MenuItem value={value} key={index}>
+                                             {value.code} - {value.location}
+                                          </MenuItem>
+                                       ))}
+                                    </TextField>
+                                 </Grid>
+                                 <Grid item xs={12} sm={6}>
+                                    <TextField
+                                       name="from_room"
+                                       label="From Room"
+                                       variant="outlined"
+                                       value={data.from_room}
+                                       onChange={handleChange}
+                                       fullWidth
+                                       required
+                                    />
+                                 </Grid>
+                                 <Grid item xs={12} sm={6}>
+                                    <TextField
+                                       name="to_branch"
+                                       label="To Branch"
+                                       variant="outlined"
+                                       value={data.to_branch}
+                                       onChange={handleChange}
+                                       defaultValue=""
+                                       select
+                                       fullWidth
+                                       required
+                                    >
+                                       {location.map((value, index) => (
+                                          <MenuItem value={value} key={index}>
+                                             {value.code} - {value.location}
+                                          </MenuItem>
+                                       ))}
+                                    </TextField>
+                                 </Grid>
+                                 <Grid item xs={12} sm={6}>
+                                    <TextField
+                                       name="to_room"
+                                       label="To Room"
+                                       variant="outlined"
+                                       value={data.to_room}
+                                       onChange={handleChange}
+                                       fullWidth
+                                       required
+                                    />
+                                 </Grid>
+                                 <Grid item xs={12} sm={6}>
+                                    {data.document !== null ? (
+                                       <TextField
+                                          variant="outlined"
+                                          label="Supporting Document *"
+                                          value={data.document.name}
+                                          disabled
+                                          InputProps={{
+                                             startAdornment: (
+                                                <InputAdornment position="start">
+                                                   <InsertDriveFile />
+                                                </InputAdornment>
+                                             ),
+                                             endAdornment: (
+                                                <InputAdornment position="end">
+                                                   <Tooltip title="Delete">
+                                                      <IconButton onClick={() => setData({ ...data, document: null })}>
+                                                         <Close />
+                                                      </IconButton>
+                                                   </Tooltip>
+                                                </InputAdornment>
+                                             ),
+                                          }}
+                                          fullWidth
+                                       />
+                                    ) : (
+                                       <Button size="large" variant="outlined" component="label" fullWidth startIcon={<FileUploadOutlined />}>
+                                          Supporting Document *
+                                          <input name="document" type="file" onChange={handleChange} hidden required />
+                                       </Button>
+                                    )}
+                                 </Grid>
+                                 <Grid item xs={12}>
+                                    <Stack direction="row" justifyContent="flex-end" spacing={1}>
+                                       <LoadingButton type="submit" variant="contained">
+                                          Add
+                                       </LoadingButton>
+                                    </Stack>
+                                 </Grid>
+                              </Grid>
+                           </Box>
+                        </CardContent>
+                     </Card>
+                     <Card>
+                        <CardContent>
+                           <TableContainer>
+                              <Table>
+                                 <TableHead>
+                                    <TableRow
+                                       sx={{
+                                          "& th:first-of-type": { borderRadius: "0.5em 0 0 0.5em" },
+                                          "& th:last-of-type": { borderRadius: "0 0.5em 0.5em 0" },
+                                       }}
+                                    >
+                                       <TableCell align="center">No.</TableCell>
+                                       <TableCell>PIC Asset</TableCell>
+                                       <TableCell>Receive Name</TableCell>
+                                       <TableCell>Asset Code</TableCell>
+                                       <TableCell>Asset Name</TableCell>
+                                       <TableCell>From Branch</TableCell>
+                                       <TableCell>From Room</TableCell>
+                                       <TableCell>To Branch</TableCell>
+                                       <TableCell>To Room</TableCell>
+                                       <TableCell align="center">Action</TableCell>
+                                    </TableRow>
+                                 </TableHead>
+                                 <TableBody>
+                                    {rows.length > 0 ? (
+                                       rows.map((value, key) => (
+                                          <TableRow key={key}>
+                                             <TableCell component="th" scope="row" align="center">
+                                                {key + 1}.
+                                             </TableCell>
+                                             <TableCell>{value.pic.name}</TableCell>
+                                             <TableCell>{value.receive.name}</TableCell>
+                                             <TableCell>{value.asset.asset_code}</TableCell>
+                                             <TableCell>{value.asset.asset_name}</TableCell>
+                                             <TableCell>{value.from_branch.location}</TableCell>
+                                             <TableCell>{value.from_room}</TableCell>
+                                             <TableCell>{value.to_branch.location}</TableCell>
+                                             <TableCell>{value.to_room}</TableCell>
+                                             <TableCell align="center">
+                                                <Stack direction="row">
+                                                   <Tooltip title="Edit">
+                                                      <IconButton onClick={() => handleEdit(value, key)}>
+                                                         <Edit />
+                                                      </IconButton>
+                                                   </Tooltip>
+                                                   <Tooltip title="Delete">
+                                                      <IconButton onClick={() => handleDelete(key)}>
+                                                         <Delete />
+                                                      </IconButton>
+                                                   </Tooltip>
+                                                </Stack>
+                                             </TableCell>
+                                          </TableRow>
+                                       ))
+                                    ) : (
+                                       <TableRow>
+                                          <TableCell component="th" scope="row" sx={{ textAlign: "center", py: 10 }} colSpan={100}>
+                                             No data added.
+                                          </TableCell>
+                                       </TableRow>
+                                    )}
+                                 </TableBody>
+                              </Table>
+                           </TableContainer>
+                        </CardContent>
+                     </Card>
+                     <Stack direction="row" spacing={1} sx={{ mt: 3 }}>
+                        <LoadingButton type="submit" disabled={rows.length < 1} loading={loading} onClick={handleSubmit} variant="contained">
+                           Save
+                        </LoadingButton>
+                        <LoadingButton variant="outlined" component={RouterLink} to="/history-asset/mutation-asset">
+                           Back
+                        </LoadingButton>
+                     </Stack>
+                  </>
+               ) : (
+                  <Loading />
+               )}
             </div>
          </div>
-      );
-   }
+      </div>
+   );
 }
-
-export default Add;

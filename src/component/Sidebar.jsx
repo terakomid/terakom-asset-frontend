@@ -102,8 +102,8 @@ export default function Sidebar() {
                            </Link>
                         </li>
                         <li role="menuitem">
-                           <Link to="/reception-asset" className="text-capitalize">
-                              asset receipt
+                           <Link to="/acceptance-asset" className="text-capitalize">
+                              acceptance asset
                            </Link>
                         </li>
                      </ul>
