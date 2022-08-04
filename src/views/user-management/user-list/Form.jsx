@@ -52,18 +52,10 @@ const Form = (props) => {
    const [loading, setLoading] = useState(false);
    const [isComplete, setIsComplete] = useState(false);
    const [errors, setErrors] = useState({});
-   const [showOld, setShowOld] = useState("password");
    const [showNew, setShowNew] = useState("password");
    const [showCon, setShowCon] = useState("password");
 
-   const onShowOld = (e) => {
-      if (showOld === "password") {
-         setShowOld("text");
-      } else {
-         setShowOld("password");
-      }
-   };
-
+  
    const onShowNew = (e) => {
       if (showNew === "password") {
          setShowNew("text");
@@ -167,7 +159,10 @@ const Form = (props) => {
                navigate("/user-list");
             })
             .catch((err) => {
-               // console.log(err.response)
+               console.log(err.response)
+               if(err.response){
+                  setErrors(err.response.data.errors)
+               }
             })
             .finally((res) => {
                setLoading(false);
@@ -195,6 +190,7 @@ const Form = (props) => {
          {isComplete && (
             <>
                <Grid item md={4} xs={12}>
+                  {console.log(errors)}
                   <Card>
                      <CardContent>
                         <Stack direction="column" alignItems={"center"}>
@@ -205,6 +201,7 @@ const Form = (props) => {
                               style={{ display: "none" }}
                               id="image"
                               accept="image/png, image/gif, image/jpeg, image/jpg"
+                              required
                            />
                            <Box component="label" htmlFor="image">
                               <Avatar
@@ -227,16 +224,49 @@ const Form = (props) => {
                         <Box component="form" onSubmit={onSubmit} autoComplete="off">
                            <Grid container spacing={3}>
                               <Grid item xs={12} md={6}>
-                                 <TextField name="employ_code" label="Employe code" fullWidth value={form.employ_code} onChange={onChange} />
+                                 <TextField 
+                                    name="employ_code" 
+                                    label="Employe code" 
+                                    fullWidth 
+                                    value={form.employ_code} 
+                                    onChange={onChange}
+                                    required
+                                    helperText={typeof errors?.code !== 'undefined' ? errors.code[0] : ''}
+                                    error={typeof errors?.code !== 'undefined' ? true : false} 
+                                 />
                               </Grid>
                               <Grid item xs={12} md={6}>
-                                 <TextField name="full_name" label="Full Name" fullWidth value={form.full_name} onChange={onChange} />
+                                 <TextField 
+                                    name="full_name" 
+                                    label="Full Name" 
+                                    fullWidth 
+                                    value={form.full_name} 
+                                    onChange={onChange} 
+                                    helperText={typeof errors?.full_name !== 'undefined' ? errors.full_name[0] : ''}
+                                    error={typeof errors?.full_name !== 'undefined' ? true : false} 
+                                 />
                               </Grid>
                               <Grid item xs={12} md={6}>
-                                 <TextField name="phone_number" label="Phone Number" fullWidth value={form.phone_number} onChange={onChange} />
+                                 <TextField 
+                                    name="phone_number" 
+                                    label="Phone Number" 
+                                    fullWidth 
+                                    value={form.phone_number} 
+                                    onChange={onChange} 
+                                    helperText={typeof errors?.phone_number !== 'undefined' ? errors.phone_number[0] : ''}
+                                    error={typeof errors?.phone_number !== 'undefined' ? true : false}
+                                 />
                               </Grid>
                               <Grid item xs={12} md={6}>
-                                 <TextField name="email" label="Email" fullWidth value={form.email} onChange={onChange} />
+                                 <TextField 
+                                    name="email" 
+                                    label="Email" 
+                                    fullWidth 
+                                    value={form.email} 
+                                    onChange={onChange} 
+                                    helperText={typeof errors?.email !== 'undefined' ? errors.email[0] : ''}
+                                    error={typeof errors?.email !== 'undefined' ? true : false}
+                                 />
                               </Grid>
                               <Grid item xs={12} md={6}>
                                  <TextField
@@ -247,6 +277,7 @@ const Form = (props) => {
                                     value={form.department}
                                     onChange={onChange}
                                     disabled={!isComplete}
+                                    required
                                  >
                                     {departmentOptions.length > 0 &&
                                        departmentOptions.map((v) => (
@@ -258,7 +289,7 @@ const Form = (props) => {
                                  </TextField>
                               </Grid>
                               <Grid item xs={12} md={6}>
-                                 <TextField name="role" label="Role" fullWidth select value={form.role} onChange={onChange} disabled={!isComplete}>
+                                 <TextField name="role" label="Role" fullWidth select value={form.role} onChange={onChange} disabled={!isComplete} required>
                                     {roleOptions.length > 0 &&
                                        roleOptions.map((v) => (
                                           <MenuItem key={v.id} value={v.name}>
@@ -269,7 +300,17 @@ const Form = (props) => {
                                  </TextField>
                               </Grid>
                               <Grid item xs={12} md={12}>
-                                 <TextField name="address" label="Address" fullWidth multiline rows={4} value={form.address} onChange={onChange} />
+                                 <TextField 
+                                    name="address" 
+                                    label="Address" 
+                                    fullWidth 
+                                    multiline 
+                                    rows={4} 
+                                    value={form.address} 
+                                    onChange={onChange} 
+                                    helperText={typeof errors?.address !== 'undefined' ? errors.address[0] : ''}
+                                    error={typeof errors?.address !== 'undefined' ? true : false}
+                                 />
                               </Grid>
 
                               {props.title === "add" && (
@@ -278,7 +319,7 @@ const Form = (props) => {
                                     <Grid item xs={12} md={6}>
                                        <FormControl error={typeof errors?.password !== "undefined" ? true : false} fullWidth>
                                           <InputLabel size="small" htmlFor="password">
-                                             Password Baru
+                                             Password
                                           </InputLabel>
                                           <OutlinedInput
                                              id="password"

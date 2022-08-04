@@ -246,7 +246,7 @@ const Index = () => {
                   <div className="col-xl-12 col-12 mt-3">
                      <Card>
                         <CardContent>
-                           <Grid container spacing={2} sx={{ mb: 2 }} alignItems="center">
+                           <Grid container spacing={2} sx={{ mb: 2 }} >
                               <Grid item xs>
                                  <TextField
                                     name="search"
