@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Grid, Card, CardContent, Typography, TextField, MenuItem, Box, Stack, FormControl, FormLabel, RadioGroup, FormControlLabel, Radio, Chip } from '@mui/material'
+import { Grid, Card, CardContent, Typography, TextField, MenuItem, Box, Stack, FormControl, FormLabel, RadioGroup, FormControlLabel, Radio, Chip, Button, Divider } from '@mui/material'
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import http from '../../../component/api/Api'
@@ -105,6 +105,7 @@ const Form = (props) => {
         pic_contact: '',
     })
     const [useful, setUseFul] = useState('')
+    const [mainPicture, setMainPicture] = useState({})
 
     //picture and evidence
     const [pictures, setPictures] = useState([
@@ -256,6 +257,8 @@ const Form = (props) => {
         })
         // console.log(temp)
         setPictures([...temp])
+        let main = data.picture.find(v => v.main === 1)
+        setMainPicture(main)
     }
 
     const setEvidenceFromApi = (data) => {
@@ -553,6 +556,34 @@ const Form = (props) => {
             <Grid container spacing={4}>
                 {isComplete &&
                 <>
+                {/* Print Label*/}
+                {props.detail && 
+                <Grid item xs={12} md={12} alignItems="center" justifyContent="center" display="flex" flexDirection={'column'}>
+                    <Stack direction={"row"} spacing={3}>
+                        <img alt="label" style={{ height: '150px' }} src={'/assets/images/logo-sm.png'}/>
+                        <Box sx={{ border: 1,  height: '150px', display: 'flex', alignItems: "center" }}>
+                            <Box sx={{ border: 1 }}>
+                                <Stack direction={"row"} spacing={3} justifyContent="center" >
+                                    <Typography>QR</Typography>
+                                    <Stack border={1} alignItems="center">
+                                        <Typography sx={{ fontWeight: 'bold', color: 'black' }}>PT. Haier Sales Indonesia</Typography>
+                                        <Stack my={2} divider={<Divider orientation="vertical" flexItem />} direction={"row"} spacing={2} border={1}>
+                                            <Typography>2020</Typography>
+                                            <Typography>FA</Typography>
+                                            <Typography>65D1</Typography>
+                                            <Typography>ID08</Typography>
+                                            <Typography>200000202920</Typography>
+                                        </Stack>
+                                        <Typography sx={{ fontWeight: 'bold', color: 'black' }}>Laptop - Pak Daeng - IT</Typography>
+                                    </Stack>
+                                    
+                                </Stack>
+                            </Box>
+                        </Box>
+                    </Stack>
+                    <Button sx={{ mt: 2 }} variant="contained">Print Label</Button>    
+                </Grid>
+                }
                 {/* Asset Information */}
                 <Grid item xs={12} md={12}>
                     <Card>
@@ -561,6 +592,7 @@ const Form = (props) => {
                             <Grid container mt={2} spacing={2}>
                                 <Grid item md={4} xs={12}>
                                     <TextField
+                                        disabled={props.detail}
                                         onChange={handleChange}
                                         value={form.asset_code} 
                                         name="asset_code"
@@ -572,6 +604,7 @@ const Form = (props) => {
                                     <TextField 
                                         name="category_id"
                                         value={form.category_id}
+                                        disabled={props.detail}
                                         onChange={handleChange}
                                         fullWidth
                                         label="Category Code"
@@ -589,6 +622,7 @@ const Form = (props) => {
                                     <TextField 
                                         name="sub_category_id"
                                         value={form.sub_category_id}
+                                        disabled={props.detail}
                                         onChange={handleChange}
                                         fullWidth
                                         label="Sub Category Code"
@@ -605,6 +639,7 @@ const Form = (props) => {
                                 </Grid>
                                 <Grid item md={4} xs={12}>
                                     <TextField
+                                        disabled={props.detail}
                                         onChange={handleChange}
                                         value={form.asset_name} 
                                         name="asset_name"
@@ -614,6 +649,7 @@ const Form = (props) => {
                                 </Grid>
                                 <Grid item md={4} xs={12}>
                                     <TextField
+                                        disabled={props.detail}
                                         onChange={handleChange}
                                         value={form.specification}
                                         name="specification"
@@ -629,7 +665,7 @@ const Form = (props) => {
                                         name="specification"
                                         fullWidth
                                         label="Useful Life"
-                                        disabled
+                                        disabled={props.detail}
                                     />
                                 </Grid>
                                 <Grid item md={6} xs={12}>
@@ -640,6 +676,7 @@ const Form = (props) => {
                                         label="Capitalized On"
                                         inputFormat="yyyy/MM/dd"
                                         mask='____/__/__'
+                                        disabled={props.detail}
                                         onChange={(newValue) => {
                                             setForm({
                                                 ...form,
@@ -652,6 +689,7 @@ const Form = (props) => {
                                 </Grid>
                                 <Grid item md={6} xs={12}>
                                     <TextField
+                                        disabled={props.detail}
                                         onChange={handleChange}
                                         value={form.sap_code} 
                                         name="sap_code"
@@ -673,6 +711,7 @@ const Form = (props) => {
                             <Grid container mt={2} spacing={2}>
                                 <Grid item md={6} xs={12}>
                                     <TextField
+                                        disabled={props.detail}
                                         onChange={handleChange}
                                         value={form.employee_id}
                                         name="employee_id"
@@ -701,6 +740,7 @@ const Form = (props) => {
                                     <TextField 
                                         name="location_id"
                                         fullWidth
+                                        disabled={props.detail}
                                         onChange={handleChange}
                                         value={form.location_id}
                                         label="Asset Location"
@@ -716,6 +756,7 @@ const Form = (props) => {
                                 </Grid>
                                 <Grid item md={6} xs={12}>
                                     <TextField
+                                        disabled={props.detail}
                                         onChange={handleChange}
                                         value={form.condition_id} 
                                         name="condition_id"
@@ -734,6 +775,7 @@ const Form = (props) => {
                                 <Grid item md={6} xs={12}>
                                     <TextField
                                         value={form.latitude} 
+                                        disabled={props.detail}
                                         onChange={handleChange}
                                         name="latitude"
                                         fullWidth
@@ -744,6 +786,7 @@ const Form = (props) => {
                                 <Grid item md={6} xs={12}>
                                     <TextField 
                                         value={form.longitude}
+                                        disabled={props.detail}
                                         onChange={handleChange}
                                         name="longitude"
                                         fullWidth
@@ -765,6 +808,7 @@ const Form = (props) => {
                                 <Grid item md={6} xs={12}>
                                     <TextField
                                         value={form.cost_id}
+                                        disabled={props.detail}
                                         onChange={handleChange} 
                                         name="cost_id"
                                         fullWidth
@@ -782,6 +826,7 @@ const Form = (props) => {
                                 <Grid item md={6} xs={12}>
                                     <TextField
                                         value={form.acquisition_value}
+                                        disabled={props.detail}
                                         onChange={handleChange}  
                                         name="acquisition_value"
                                         fullWidth
@@ -792,6 +837,7 @@ const Form = (props) => {
                                 <Grid item md={6} xs={12}>
                                     <TextField
                                         value={form.depreciation_value}
+                                        disabled={props.detail}
                                         onChange={handleChange}   
                                         name="depreciation_value"
                                         fullWidth
@@ -802,6 +848,7 @@ const Form = (props) => {
                                 <Grid item md={6} xs={12}>
                                     <TextField
                                         value={form.value_book}
+                                        disabled={props.detail}
                                         onChange={handleChange}   
                                         name="value_book"
                                         fullWidth
@@ -817,11 +864,12 @@ const Form = (props) => {
                                             aria-labelledby="demo-row-radio-buttons-group-label"
                                             name="depreciation"
                                             value={form.depreciation}
+                                            disabled={props.detail}
                                             onChange={handleChange}
                                             
                                         >
-                                            <FormControlLabel value={"1"} control={<Radio />} label="Yes" />
-                                            <FormControlLabel value={"0"} control={<Radio />} label="No" />
+                                            <FormControlLabel disabled={props.detail} value={"1"} control={<Radio />} label="Yes" />
+                                            <FormControlLabel disabled={props.detail} value={"0"} control={<Radio />} label="No" />
                                            
                                         </RadioGroup>
                                     </FormControl>
@@ -840,6 +888,7 @@ const Form = (props) => {
                             <Grid container mt={2} spacing={2}>
                                 <Grid item md={6} xs={12}>
                                     <TextField 
+                                        disabled={props.detail}
                                         onChange={handleChange}
                                         value={form.vendor_id}
                                         name="vendor_id"
@@ -897,6 +946,7 @@ const Form = (props) => {
                             <Grid container mt={2} spacing={2}>
                                 <Grid Grid item md={4} xs={12}>
                                     <TextField 
+                                        disabled={props.detail}
                                         onChange={handleChange}
                                         value={form.device_id}
                                         name="device_id"
@@ -914,6 +964,7 @@ const Form = (props) => {
                                 </Grid>
                                 <Grid Grid item md={4} xs={12}>
                                     <TextField
+                                        disabled={props.detail}
                                         onChange={handleChange}
                                         value={form.type} 
                                         name="type"
@@ -923,6 +974,7 @@ const Form = (props) => {
                                 </Grid>
                                 <Grid Grid item md={4} xs={12}>
                                     <TextField 
+                                        disabled={props.detail}
                                         onChange={handleChange}
                                         value={form.brand_id}
                                         name="brand_id"
@@ -940,6 +992,7 @@ const Form = (props) => {
                                 </Grid>
                                 <Grid Grid item md={4} xs={12}>
                                     <TextField 
+                                        disabled={props.detail}
                                         onChange={handleChange}
                                         value={form.monitor_inch} 
                                         name="monitor_inch"
@@ -949,6 +1002,7 @@ const Form = (props) => {
                                 </Grid>
                                 <Grid Grid item md={4} xs={12}>
                                     <TextField
+                                        disabled={props.detail}
                                         onChange={handleChange}
                                         value={form.model_brand}  
                                         name="model_brand"
@@ -958,6 +1012,7 @@ const Form = (props) => {
                                 </Grid>
                                 <Grid Grid item md={4} xs={12}>
                                     <TextField
+                                        disabled={props.detail}
                                         onChange={handleChange}
                                         value={form.mac_address}   
                                         name="mac_address"
@@ -973,6 +1028,7 @@ const Form = (props) => {
                                             label="Warranty Expiry"
                                             inputFormat="yyyy/MM/dd"
                                             mask='____/__/__'
+                                            disabled={props.detail}
                                             onChange={(newValue) => {
                                                 setForm({
                                                     ...form,
@@ -985,6 +1041,7 @@ const Form = (props) => {
                                 </Grid>
                                 <Grid Grid item md={6} xs={12}>
                                     <TextField
+                                        disabled={props.detail}
                                         onChange={handleChange}
                                         value={form.computer_name}
                                         name="computer_name"
@@ -1005,6 +1062,7 @@ const Form = (props) => {
                             <Grid container mt={2} spacing={2}>
                                 <Grid Grid item md={4} xs={12}>
                                     <TextField
+                                        disabled={props.detail}
                                         onChange={handleChange}
                                         value={form.dlp}
                                         name="dlp"
@@ -1014,6 +1072,7 @@ const Form = (props) => {
                                 </Grid>
                                 <Grid Grid item md={4} xs={12}>
                                     <TextField
+                                        disabled={props.detail}
                                         onChange={handleChange}
                                         value={form.soc} 
                                         name="soc"
@@ -1023,6 +1082,7 @@ const Form = (props) => {
                                 </Grid>
                                 <Grid Grid item md={4} xs={12}>
                                     <TextField 
+                                        disabled={props.detail}
                                         onChange={handleChange}
                                         value={form.snnbpc} 
                                         name="snnbpc"
@@ -1032,6 +1092,7 @@ const Form = (props) => {
                                 </Grid>
                                 <Grid Grid item md={6} xs={12}>
                                     <TextField 
+                                        disabled={props.detail}
                                         onChange={handleChange}
                                         value={form.processor_id}
                                         name="processor_id"
@@ -1049,6 +1110,7 @@ const Form = (props) => {
                                 </Grid>
                                 <Grid Grid item md={6} xs={12}>
                                     <TextField
+                                        disabled={props.detail}
                                         onChange={handleChange}
                                         value={form.hardware} 
                                         name="hardware"
@@ -1068,7 +1130,8 @@ const Form = (props) => {
                             <Typography>Software</Typography>
                             <Grid container mt={2} spacing={2}>
                                 <Grid Grid item md={6} xs={12}>
-                                    <TextField 
+                                    <TextField
+                                        disabled={props.detail} 
                                         onChange={handleChange}
                                         value={form.os_id}
                                         name="os_id"
@@ -1086,6 +1149,7 @@ const Form = (props) => {
                                 </Grid>
                                 <Grid Grid item md={6} xs={12}>
                                     <TextField
+                                        disabled={props.detail}
                                         onChange={handleChange}
                                         value={form.sn_windows} 
                                         name="sn_windows"
@@ -1095,6 +1159,7 @@ const Form = (props) => {
                                 </Grid>
                                 <Grid Grid item md={6} xs={12}>
                                     <TextField 
+                                        disabled={props.detail}
                                         onChange={handleChange}
                                         value={form.office_id}
                                         name="office_id"
@@ -1112,6 +1177,7 @@ const Form = (props) => {
                                 </Grid>
                                 <Grid Grid item md={6} xs={12}>
                                     <TextField 
+                                        disabled={props.detail}
                                         onChange={handleChange}
                                         value={form.antivirus_id}
                                         name="antivirus_id"
@@ -1142,6 +1208,7 @@ const Form = (props) => {
                             <Grid container mt={2} spacing={2}>
                                 <Grid Grid item md={12} xs={12}>
                                     <TextField
+                                        disabled={props.detail}
                                         onChange={handleChange} 
                                         value={form.notes}
                                         name="notes"
@@ -1165,7 +1232,8 @@ const Form = (props) => {
                                                             <img style={{ height: '100px' }} src={v.image_preview} alt="test"  />
                                                             }
                                                         </Box>
-                                                        <input 
+                                                        <input
+                                                            disabled={props.detail} 
                                                             type="file" 
                                                             style={{ display: 'none' }} 
                                                             id={`img-${i}`}
@@ -1185,6 +1253,7 @@ const Form = (props) => {
                                                         />
                                                         {pictures.length > 1 &&
                                                             <Chip
+                                                                disabled={props.detail}
                                                                 color="error" 
                                                                 label="delete" 
                                                                 onClick={() => {
@@ -1199,6 +1268,7 @@ const Form = (props) => {
                                         })}
                                         <Grid item md={12} xs={12}>
                                             <Chip
+                                                disabled={props.detail}
                                                 color="primary"
                                                 sx={{ width: { xs: '100%', md: 'auto' }, mt: { xs: 2, md: 5 } }} 
                                                 label="Tambah Image" 
@@ -1233,7 +1303,8 @@ const Form = (props) => {
                                                             }
                                                         </Box>
                                                         <input 
-                                                            type="file" 
+                                                            type="file"
+                                                            disabled={props.detail} 
                                                             style={{ display: 'none' }} 
                                                             id={`ev-${i}`}
                                                             onChange={e => {
@@ -1272,6 +1343,7 @@ const Form = (props) => {
                                         })}
                                         <Grid item md={12} xs={12}>
                                             <Chip
+                                                disabled={props.detail}
                                                 color="primary"
                                                 sx={{ width: { xs: '100%', md: 'auto' }, mt: { xs: 2, md: 5 } }} 
                                                 label="Tambah Document" 
@@ -1297,6 +1369,7 @@ const Form = (props) => {
                 </Grid>
                 
                 {/* Button */}
+                {!props.detail && 
                 <Grid item xs={12} md={12}>
                     <Card>
                         <CardContent>
@@ -1307,6 +1380,7 @@ const Form = (props) => {
                     </Card>
 
                 </Grid>
+                }
 
                 </>
                 }

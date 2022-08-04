@@ -29,7 +29,7 @@ import {
    DialogActions,
 
 } from "@mui/material";
-import { Add, CloseRounded, Delete, Edit, FileDownload, FileUpload, FilterListRounded, MoreVert, Search } from "@mui/icons-material";
+import { Add, CloseRounded, Delete, Edit, FileDownload, FileUpload, FilterListRounded, InfoOutlined, MoreVert, Search } from "@mui/icons-material";
 import { useNavigate } from 'react-router-dom'
 
 import http from "../../../component/api/Api";
@@ -194,6 +194,16 @@ const Index = () => {
          navigate(`/edit-data-asset-it/${staging.id}`)
       }else{
          navigate(`/edit-data-asset-non-it/${staging.id}`)
+      }
+   };
+
+   const handleDetail = () => {
+      setData(staging);
+      handleMenu();
+      if(staging.asset_type === "it"){
+         navigate(`/detail-data-asset-it/${staging.id}`)
+      }else{
+         navigate(`/detail-data-asset-non-it/${staging.id}`)
       }
    };
 
@@ -397,6 +407,12 @@ const Index = () => {
                               <Edit />
                            </ListItemIcon>
                            Edit
+                        </MenuItem>
+                        <MenuItem onClick={handleDetail}>
+                           <ListItemIcon>
+                              <InfoOutlined />
+                           </ListItemIcon>
+                           Detail
                         </MenuItem>
                         {/* <MenuItem onClick={handleModal}>
                            <ListItemIcon>

@@ -123,7 +123,7 @@ export default function VendorForm() {
                               />
                            </Grid>
                            <Grid item xs={12} sm={6}>
-                              <TextField name="contact" label="Contact" variant="outlined" value={data.contact} onChange={handleChange} fullWidth required />
+                              <TextField name="contact" label="No. Telp/HP" variant="outlined" value={data.contact} onChange={handleChange} fullWidth required />
                            </Grid>
                            <Grid item xs={12}>
                               <Stack direction="row" justifyContent="flex-end" spacing={1}>

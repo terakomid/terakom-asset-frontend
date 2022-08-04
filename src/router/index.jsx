@@ -33,8 +33,10 @@ import ItSubType from "../views/master-data/it-subtype";
 import DataAsset from "../views/data-asset/data-asset";
 import AssetIT from "../views/data-asset/data-asset/IT/Add";
 import AssetITEdit from "../views/data-asset/data-asset/IT/Edit";
+import AssetITDetail from "../views/data-asset/data-asset/IT/Detail";
 import AssetNonIT from "../views/data-asset/data-asset/NonIT/Add";
 import AssetNonITEdit from "../views/data-asset/data-asset/NonIT/Edit";
+import AssetNonITDetail from "../views/data-asset/data-asset/NonIT/Detail";
 import HistoryAsset from "../views/data-asset/history-asset";
 import MutationAsset from "../views/data-asset/mutation-asset/Content";
 import AddMutationAsset from "../views/data-asset/mutation-asset/Add";
@@ -238,6 +240,14 @@ export default function Router() {
                }
             />
             <Route
+               path="/detail-data-asset-it/:id"
+               element={
+                  <Middleware.After>
+                     <Layout render={<AssetITDetail />} />
+                  </Middleware.After>
+               }
+            />
+            <Route
                path="/data-asset-non-it"
                element={
                   <Middleware.After>
@@ -250,6 +260,14 @@ export default function Router() {
                element={
                   <Middleware.After>
                      <Layout render={<AssetNonITEdit />} />
+                  </Middleware.After>
+               }
+            />
+            <Route
+               path="/detail-data-asset-non-it/:id"
+               element={
+                  <Middleware.After>
+                     <Layout render={<AssetNonITDetail />} />
                   </Middleware.After>
                }
             />
