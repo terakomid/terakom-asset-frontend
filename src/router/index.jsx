@@ -45,8 +45,9 @@ import ReceptionAsset from "../views/data-asset/reception-asset/Content";
 import AddReceptionAsset from "../views/data-asset/reception-asset/Add";
 
 // Disposal
-import DisposalAsset from "../views/disposal-asset/Content";
+import DisposalAsset from "../views/disposal-asset/Index";
 import AddDisposalAsset from "../views/disposal-asset/Add";
+import EditDisposalAsset from "../views/disposal-asset/Edit";
 
 // Activity Log
 import ActivityLog from "../views/activity-log/Content";
@@ -331,6 +332,14 @@ export default function Router() {
                element={
                   <Middleware.After>
                      <Layout render={<AddDisposalAsset />} />
+                  </Middleware.After>
+               }
+            />
+            <Route
+               path="/disposal-asset-edit/:id"
+               element={
+                  <Middleware.After>
+                     <Layout render={<EditDisposalAsset />} />
                   </Middleware.After>
                }
             />

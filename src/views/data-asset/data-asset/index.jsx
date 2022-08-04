@@ -131,6 +131,7 @@ const Index = () => {
       order_by_name: 0,
       limit: 10,
       page: 1,
+      paginate: 1,
    });
    const [loading, setLoading] = useState(false)
 
