@@ -38,6 +38,7 @@ const Form = (props) => {
       department: "",
       role: "",
       address: "",
+      location_id: "",
       status: "1",
       old_password: "",
       password: "",
@@ -49,6 +50,7 @@ const Form = (props) => {
    });
    const [departmentOptions, setDepartmentOptions] = useState([]);
    const [roleOptions, setRoleOptions] = useState([]);
+   const [locationOptions, setLocationOptions] = useState([]);
    const [loading, setLoading] = useState(false);
    const [isComplete, setIsComplete] = useState(false);
    const [errors, setErrors] = useState({});
@@ -84,10 +86,16 @@ const Form = (props) => {
       return 1;
    };
 
+   const getLocation = async () => {
+      const res = await http.get('location')
+      console.log(res.data)
+      setLocationOptions([...res.data.data])
+   }
+
    useEffect(() => {
       let mounted = true;
       if (mounted) {
-         Promise.all([getDepartment(), getRole()]).then((res) => {
+         Promise.all([getDepartment(), getRole(), getLocation()]).then((res) => {
             setIsComplete(true);
             if (props.data) {
                const data = props.data;
@@ -98,6 +106,7 @@ const Form = (props) => {
                   email: data.email,
                   department: data.dept.id,
                   role: data.role,
+                  location_id: data.location.id,
                   address: data.address,
                   status: data.status,
                   old_password: "",
@@ -140,6 +149,7 @@ const Form = (props) => {
       formData.append("phone_number", form.phone_number);
       formData.append("email", form.email);
       formData.append("department_id", form.department);
+      formData.append("location_id", form.location_id);
       formData.append("address", form.address);
       formData.append("status", form.status);
       formData.append("role", form.role);
@@ -159,7 +169,7 @@ const Form = (props) => {
                navigate("/user-list");
             })
             .catch((err) => {
-               console.log(err.response)
+               // console.log(err.response)
                if(err.response){
                   setErrors(err.response.data.errors)
                }
@@ -193,7 +203,6 @@ const Form = (props) => {
          {isComplete && (
             <>
                <Grid item md={4} xs={12}>
-                  {console.log(errors)}
                   <Card>
                      <CardContent>
                         <Stack direction="column" alignItems={"center"}>
@@ -304,6 +313,28 @@ const Form = (props) => {
                               </Grid>
                               <Grid item xs={12} md={12}>
                                  <TextField 
+                                    name="location_id" 
+                                    label="Location" 
+                                    fullWidth 
+                                    multiline 
+                                    rows={4} 
+                                    value={form.location_id} 
+                                    onChange={onChange} 
+                                    helperText={typeof errors?.location_id !== 'undefined' ? errors.location_id[0] : ''}
+                                    error={typeof errors?.location_id !== 'undefined' ? true : false}
+                                    select
+                                 >
+                                    {locationOptions.length > 0 &&
+                                       locationOptions.map((v) => (
+                                          <MenuItem key={v.id} value={v.id}>
+                                          {`${v.code} - ${v.location}`}
+                                          </MenuItem>
+                                       ))}
+                                    {locationOptions.length == 0 && <MenuItem disabled>Kosong</MenuItem>}
+                                 </TextField>
+                              </Grid>
+                              <Grid item xs={12} md={12}>
+                                 <TextField 
                                     name="address" 
                                     label="Address" 
                                     fullWidth 
@@ -321,13 +352,13 @@ const Form = (props) => {
                                     {/* password */}
                                     <Grid item xs={12} md={6}>
                                        <FormControl error={typeof errors?.password !== "undefined" ? true : false} fullWidth>
-                                          <InputLabel size="small" htmlFor="password">
+                                          <InputLabel htmlFor="password">
                                              Password
                                           </InputLabel>
                                           <OutlinedInput
                                              id="password"
                                              type={showNew}
-                                             label={"Password Baru"}
+                                             label={"Password"}
                                              variant="outlined"
                                              fullWidth
                                              name="password"
@@ -351,13 +382,13 @@ const Form = (props) => {
                                     {/* password confirmation */}
                                     <Grid item xs={12} md={6}>
                                        <FormControl error={typeof errors?.password_confirmation !== "undefined" ? true : false} fullWidth>
-                                          <InputLabel size="small" htmlFor="password_confirmation">
-                                             Ulangi Password Baru
+                                          <InputLabel htmlFor="password_confirmation">
+                                             Ulangi Password 
                                           </InputLabel>
                                           <OutlinedInput
                                              id="password_confirmation"
                                              type={showCon}
-                                             label={"Ulangi Password Baru"}
+                                             label={"Ulangi Password"}
                                              variant="outlined"
                                              fullWidth
                                              name="password_confirmation"

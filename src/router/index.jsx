@@ -52,7 +52,7 @@ import AddDisposalAsset from "../views/disposal-asset/Add";
 import EditDisposalAsset from "../views/disposal-asset/Edit";
 
 // Activity Log
-import ActivityLog from "../views/activity-log/Content";
+import ActivityLog from "../views/activity-log/Index";
 
 // Help
 import Help from "../views/help/Index";

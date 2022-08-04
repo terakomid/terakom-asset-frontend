@@ -27,15 +27,16 @@ import {
    DialogContent,
    DialogContentText,
    DialogActions,
+   Chip,
 
 } from "@mui/material";
-import { Add, CloseRounded, Delete, Edit, FileDownload, FileUpload, FilterListRounded, MoreVert, Search } from "@mui/icons-material";
+import { Add, CloseRounded, Delete, DownloadOutlined, Edit, FileDownload, FileUpload, FilterListRounded, MoreVert, Search, DoneOutline, Close } from "@mui/icons-material";
 import { useNavigate } from 'react-router-dom'
 import FileUploadIcon from '@mui/icons-material/FileUpload';
 
-import http from "../../../component/api/Api";
-import Loading from "../../../component/Loading";
-import ModalDelete from "../../../component/Delete";
+import http from "../../component/api/Api";
+import Loading from "../../component/Loading";
+import ModalDelete from "../../component/Delete";
 import moment from 'moment';
 
 const ModalFilter = (props) => {
@@ -132,13 +133,13 @@ const Index = () => {
         order_by_name: 0,
         limit: 10,
         page: 1,
-        paginate: 1,
+        paginate: 1
     });
     const [loading, setLoading] = useState(false)
 
     const getData = async () => {
         http
-            .get(`/asset`, {
+            .get(`/activity_log`, {
             params: params,
             })
             .then((res) => {
@@ -191,11 +192,7 @@ const Index = () => {
     const handleEdit = () => {
         setData(staging);
         handleMenu();
-        if(staging.asset_type === "it"){
-            navigate(`/edit-data-asset-it/${staging.id}`)
-        }else{
-            navigate(`/edit-data-asset-non-it/${staging.id}`)
-        }
+        navigate(`/disposal-asset-edit/${staging.id}`)
     };
 
     const [openModal, setOpenModal] = useState(false);
@@ -210,15 +207,15 @@ const Index = () => {
 
     const onDelete = async () => {
         http
-                .delete(`/asset/${staging.id}`, {})
+            .delete(`/asset_disposal/${staging.id}`, {})
                 .then((res) => {
-                getData();
-                handleMenu();
-                handleModal();
+                    getData();
+                    handleMenu();
+                    handleModal();
                 })
                 .catch((err) => {
-                console.log(err.response.data);
-                setLoading(false);
+                    console.log(err.response.data);
+                    setLoading(false);
                 });
     };
 
@@ -232,6 +229,16 @@ const Index = () => {
     const handleMenu = () => {
         setAnchorEl(null);
     };
+    const handleReject = async () => {
+        const res = await http.patch(`/asset_disposal/${staging.id}/update_status?status=rejected`)
+        getData();
+        handleMenu();
+    }
+    const handleAccept = async () => {
+        const res = await http.patch(`/asset_disposal/${staging.id}/update_status?status=accepted`)
+        getData();
+        handleMenu();
+    }
 
     return (
         <div className="main-content mb-5">
@@ -239,10 +246,7 @@ const Index = () => {
                 <div className="container">
                     <div className="my-2">
                         <Stack direction="row" justifyContent={"space-between"}>
-                            <h3 className="fw-bold mb-2">Stock Opname</h3>
-                            <Button variant="contained" startIcon={<FileUploadIcon />}>
-                                Export
-                            </Button>
+                            <h3 className="fw-bold mb-2">Activity Log</h3>
                         </Stack>
                         
                     </div>
@@ -278,7 +282,6 @@ const Index = () => {
                                     </Grid>
                                     <Grid item xs={2}>
                                         <Button variant="link" startIcon={<FilterListRounded />}>
-                                            Filter
                                         </Button>
                                     </Grid>
                                 </Grid>
@@ -292,14 +295,13 @@ const Index = () => {
                                             }}
                                             >
                                             <TableCell align="center">No.</TableCell>
-                                            <TableCell>Code Asset</TableCell>
-                                            <TableCell>SAP Code </TableCell>
-                                            <TableCell>Asset Name</TableCell>
-                                            <TableCell>Category Asset</TableCell>
-                                            <TableCell>Capitalized On</TableCell>
-                                            <TableCell>Useful Life</TableCell>
-                                            <TableCell>Acquisition Value</TableCell>
-                                            <TableCell align="center">Action</TableCell>
+                                            <TableCell>Log Name</TableCell>
+                                            <TableCell>Description</TableCell>
+                                            <TableCell>User</TableCell>
+                                            <TableCell>Ip</TableCell>
+                                            <TableCell>Browser</TableCell>
+                                            <TableCell>OS</TableCell>
+                                            <TableCell>Created At</TableCell>
                                             </TableRow>
                                         </TableHead>
                                         <TableBody>
@@ -308,22 +310,18 @@ const Index = () => {
                                                 rows.data.map((value, key) => (
                                                     <TableRow key={key}>
                                                         <TableCell component="th" scope="row" align="center">
-                                                        {rows.meta.from + key}.
+                                                            {rows.meta.from + key}.
                                                         </TableCell>
+                                                        <TableCell>{value.log_name}</TableCell>
+                                                        <TableCell>{value.description}</TableCell>
                                                         <TableCell>
-                                                        {value.asset_code}
+                                                            {value.user !== null && value.user}
                                                         </TableCell>
-                                                        <TableCell>{value.sap_code}</TableCell>
-                                                        <TableCell>{value.asset_name}</TableCell>
-                                                        <TableCell>{value.category.category}</TableCell>
-                                                        <TableCell>{moment(value.capitalized).format('ll') }</TableCell>
-                                                        <TableCell>{value.sub_category.useful_life}</TableCell>
-                                                        <TableCell>{value.acquisition_value}</TableCell>
-                                                        <TableCell align="center">
-                                                        <IconButton onClick={(e) => handleClick(e, value)}>
-                                                            <MoreVert />
-                                                        </IconButton>
-                                                        </TableCell>
+                                                        <TableCell>{value.ip}</TableCell>
+                                                        <TableCell>{value.browser}</TableCell>
+                                                        <TableCell>{value.os}</TableCell>
+                                                        <TableCell>{moment(value.created_at).format('ll') }</TableCell>
+                                                        
                                                     </TableRow>
                                                 ))
                                             ) : (
@@ -380,17 +378,49 @@ const Index = () => {
                                 anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
                             >
                                 <MenuItem onClick={handleEdit}>
-                                <ListItemIcon>
-                                    <Edit />
-                                </ListItemIcon>
-                                Edit
+                                    <ListItemIcon>
+                                        <Edit />
+                                    </ListItemIcon>
+                                        Edit
+                                    </MenuItem>
+                                <MenuItem onClick={handleModal}>
+                                    <ListItemIcon>
+                                        <Delete />
+                                    </ListItemIcon>
+                                        Delete
                                 </MenuItem>
-                                {/* <MenuItem onClick={handleModal}>
-                                <ListItemIcon>
-                                    <Delete />
-                                </ListItemIcon>
-                                Delete
-                                </MenuItem> */}
+                                {staging !== undefined && staging.status === 'process' &&
+                                <>
+                                    <MenuItem onClick={handleAccept}>
+                                        <ListItemIcon>
+                                            <DoneOutline />
+                                        </ListItemIcon>
+                                            Accept
+                                    </MenuItem>
+                                    <MenuItem onClick={handleReject}>
+                                        <ListItemIcon>
+                                            <Close />
+                                        </ListItemIcon>
+                                            Reject
+                                    </MenuItem>
+                                </> 
+                                }
+                                {staging !== undefined && staging.status === 'accepted' && 
+                                <MenuItem onClick={handleReject}>
+                                    <ListItemIcon>
+                                        <Close />
+                                    </ListItemIcon>
+                                        Reject
+                                </MenuItem>
+                                }
+                                {staging !== undefined && staging.status === 'rejected' && 
+                                <MenuItem onClick={handleAccept}>
+                                    <ListItemIcon>
+                                        <DoneOutline />
+                                    </ListItemIcon>
+                                        Accept
+                                </MenuItem>
+                                }
                             </Menu>
                         </div>
                     </div>
@@ -399,5 +429,4 @@ const Index = () => {
         </div>
     );
 };
-
 export default Index;
