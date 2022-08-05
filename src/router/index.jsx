@@ -47,7 +47,7 @@ import MaintenanceAsset from "../views/data-asset/maintenance-asset";
 import AddMaintenanceAsset from "../views/data-asset/maintenance-asset/Add";
 import EditMaintenanceAsset from "../views/data-asset/maintenance-asset/Edit";
 
-import StockOpname from "../views/data-asset/stock-opname";
+import StockOpname from "../views/data-asset/stock-opname/Index";
 
 import AcceptanceAsset from "../views/data-asset/acceptance-asset";
 import AddAcceptanceAsset from "../views/data-asset/acceptance-asset/Add";
