@@ -33,6 +33,7 @@ import {
 import { useNavigate } from 'react-router-dom'
 
 import http from "../../component/api/Api";
+import QrScanner from 'qr-scanner';
 
 const ModalFilter = (props) => {
     const [roleOptions, setRoleOptions] = useState([])
@@ -117,7 +118,51 @@ const ModalFilter = (props) => {
 }
 
 const Index = () => {
+    const [code, setCode] = useState('')
+    const [data, setData] = useState({})
+    const [display, setDisplay] = useState('block')
     const navigate = useNavigate()
+
+    const getDetailAsset = async (id) => {
+        const res = await http.get(`asset/${id}`, {
+            params: {
+                by: 'asset_code'
+            }
+        })
+        console.log(res.data)
+        setData(res.data.data)
+    }
+
+    const setScanner = () => {
+        setDisplay('block')
+        const videoElem = document.querySelector('#video-elem')
+        const qrScanner = new QrScanner(
+            videoElem,
+            result => {
+                console.log('decoded qr code:', result),
+                setCode(result)
+                setDisplay('none')
+                getDetailAsset(result)
+                qrScanner.destroy()
+            },
+            true
+            
+        );
+        qrScanner.start()
+    }
+
+    const handleDetail = () => {
+        if(data.asset_type === 'it'){
+            navigate(`/detail-data-asset-it/${data.id}`)
+        }else{
+            navigate(`/detail-data-asset-non-it/${data.id}`)
+        }
+    }
+
+    useEffect(() => {
+        setScanner()
+        
+    }, [])
 
     return (
         <div className="main-content mb-5">
@@ -130,8 +175,38 @@ const Index = () => {
                         
                     </div>
                     <div className="row">
-                        <Grid container>
+                        <Grid container spacing={3}>
+                            <Grid item md={12} xs={12} display={display}>
+                                <Card>
+                                    <CardContent>
+                                        <Typography>
+                                            Scan QR Code Here 
+                                        </Typography>
+                                        <video style={{ height: '400px', }} id="video-elem"></video>
+                                    </CardContent>
+                                </Card>
+                            </Grid>
                             <Grid item md={12} xs={12}>
+                                <Card>
+                                    <CardContent>
+                                        <Typography>
+                                            Asset Code : {code}
+                                        </Typography>
+                                        <Stack direction="row" spacing={2}>
+                                            <Button variant="contained" onClick={() => {
+                                                setScanner()
+                                            }}>
+                                                Re-Scan QR Code
+                                            </Button>
+                                            {JSON.stringify(data) !== '{}' &&
+                                            <Button variant="contained" onClick={handleDetail}>
+                                                Lihat Detail Asset
+                                            </Button>
+                                            }
+
+                                        </Stack>
+                                    </CardContent>
+                                </Card>
                                 
                             </Grid>
 

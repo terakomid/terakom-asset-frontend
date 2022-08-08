@@ -254,7 +254,8 @@ const Form = (props) => {
             setForm({
                 ...form,
                 [e.target.name]: e.target.value,
-                department_id: user.dept.id
+                department_id: user.dept.id,
+                location_id: user.location.id
             })
             setDepartment(user.dept.dept)
         }else if(e.target.name === 'vendor_id'){
@@ -331,6 +332,7 @@ const Form = (props) => {
             setLoading(false)    
             navigate('/data-asset')      
         }catch(err) {
+            setLoading(false)   
             console.log(err.response)
         }
     }
@@ -342,6 +344,7 @@ const Form = (props) => {
             setLoading(false)   
             navigate('/data-asset')      
         }catch(err) {
+            setLoading(false)   
             console.log(err.response)
         }
     }
@@ -374,7 +377,7 @@ const Form = (props) => {
         formData.append('cost_id', form.cost_id)
         formData.append('acquisition_value', form.acquisition_value)
         formData.append('depreciation_value', form.depreciation_value)
-        formData.append('value_book', form.value_book)
+        // formData.append('value_book', form.value_book)
         formData.append('depreciation', form.depreciation)
 
         //Vendor information
@@ -765,7 +768,7 @@ const Form = (props) => {
                                     <TextField 
                                         name="location_id"
                                         fullWidth
-                                        disabled={props.detail}
+                                        disabled
                                         onChange={handleChange}
                                         value={form.location_id}
                                         label="Asset Location"
@@ -873,7 +876,7 @@ const Form = (props) => {
                                 <Grid item md={6} xs={12}>
                                     <TextField
                                         value={form.value_book}
-                                        disabled={props.detail}
+                                        disabled
                                         onChange={handleChange}   
                                         name="value_book"
                                         fullWidth
