@@ -110,8 +110,8 @@ export default function Sidebar() {
                   </li>
 
                   {/* Qr Code Tagging */}
-                  <li role="menuitem" style={{ display: "none" }}>
-                     <Link to="/#" className="waves-effect">
+                  <li role="menuitem">
+                     <Link to="/qr-tagging" className="waves-effect">
                         <i className="mdi mdi-qrcode"></i>
                         {/* <span className="badge rounded-pill bg-primary float-end">2</span> */}
                         <span className="text-capitalize">qrcode tagging</span>

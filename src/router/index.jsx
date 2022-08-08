@@ -53,6 +53,9 @@ import AcceptanceAsset from "../views/data-asset/acceptance-asset";
 import AddAcceptanceAsset from "../views/data-asset/acceptance-asset/Add";
 import EditAcceptanceAsset from "../views/data-asset/acceptance-asset/Edit";
 
+//Qr Tagging
+import QrTagging from "../views/qr-tagging/Index"
+
 // Disposal
 import DisposalAsset from "../views/disposal-asset/Index";
 import AddDisposalAsset from "../views/disposal-asset/Add";
@@ -364,6 +367,16 @@ export default function Router() {
                element={
                   <Middleware.After>
                      <Layout render={<EditAcceptanceAsset />} />
+                  </Middleware.After>
+               }
+            />
+
+            {/* QR Tagging */}
+            <Route
+               path="/qr-tagging"
+               element={
+                  <Middleware.After>
+                     <Layout render={<QrTagging />} />
                   </Middleware.After>
                }
             />

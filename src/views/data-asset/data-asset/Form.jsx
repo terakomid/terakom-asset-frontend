@@ -10,6 +10,56 @@ import moment from 'moment'
 import { produce } from "immer";
 import {  AssignmentLateOutlined, AssignmentTurnedInOutlined, DescriptionOutlined, DownloadForOffline, DownloadForOfflineOutlined, InsertPhotoOutlined } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
+import QRCode from 'react-qr-code';
+
+const DetailComponent = (props) => {
+    return (
+        <Grid item xs={12} md={12} alignItems="center" justifyContent="center" display="flex" flexDirection={'column'}>
+            <Stack direction={"row"} spacing={3}>
+                <img alt="label" style={{ height: '150px' }} src={props.data.picture[0].file}/>
+                <Box sx={{ border: 1,  height: '200px', display: 'flex', alignItems: "center" }}>
+                    <Box sx={{ border: 1 }}>
+                        <Stack direction={"row"} justifyContent="center" >
+                            <div style={{  background: 'white', display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100px' }}>
+                                <QRCode
+                                    size={256}
+                                    value={props.data.asset_code}
+                                    style={{ height: '80px', width: '80px' }}
+                                    viewBox={`0 0 256 256`}
+                                />
+                            </div>
+                            <Stack border={1} alignItems="stretch">
+                                <Typography sx={{ fontWeight: 'bold', color: 'black', p: 2, textAlign: 'center' }}>PT. Haier Sales Indonesia</Typography>
+                                <Stack 
+                                    divider={
+                                        <Divider 
+                                            orientation="vertical" 
+                                            flexItem
+                                            light 
+                                        />
+                                    } 
+                                    direction={"row"} 
+                                    spacing={2} 
+                                    border={1}
+                                >
+                                    <Typography sx={{ borderRight: 1, px: 2 }}>{`${props.data.capitalized.split('-')[0]}`}</Typography>
+                                    <Typography sx={{ borderRight: 1, pr: 2 }}>{`${props.data.asset_code}`}</Typography>
+                                    <Typography sx={{ borderRight: 1, pr: 2 }}>{`ID${props.data.id}`}</Typography>
+                                    <Typography sx={{ borderRight: 1, pr: 2 }}>{`${props.data.sap_code}`}</Typography>
+                                </Stack>
+                                <Typography sx={{ fontWeight: 'bold', color: 'black', p: 2, textAlign: 'center' }}>
+                                    {`${props.data.asset_name} - ${props.data.employee.name} - ${props.data.department.dept}`}
+                                </Typography>
+                            </Stack>
+                            
+                        </Stack>
+                    </Box>
+                </Box>
+            </Stack>
+            <Button sx={{ mt: 2 }} variant="contained">Print Label</Button>    
+        </Grid>
+    )
+}
 
 const Form = (props) => {
     const [id, setId] = useState('')
@@ -558,31 +608,7 @@ const Form = (props) => {
                 <>
                 {/* Print Label*/}
                 {props.detail && 
-                <Grid item xs={12} md={12} alignItems="center" justifyContent="center" display="flex" flexDirection={'column'}>
-                    <Stack direction={"row"} spacing={3}>
-                        <img alt="label" style={{ height: '150px' }} src={'/assets/images/logo-sm.png'}/>
-                        <Box sx={{ border: 1,  height: '150px', display: 'flex', alignItems: "center" }}>
-                            <Box sx={{ border: 1 }}>
-                                <Stack direction={"row"} spacing={3} justifyContent="center" >
-                                    <Typography>QR</Typography>
-                                    <Stack border={1} alignItems="center">
-                                        <Typography sx={{ fontWeight: 'bold', color: 'black' }}>PT. Haier Sales Indonesia</Typography>
-                                        <Stack my={2} divider={<Divider orientation="vertical" flexItem />} direction={"row"} spacing={2} border={1}>
-                                            <Typography>2020</Typography>
-                                            <Typography>FA</Typography>
-                                            <Typography>65D1</Typography>
-                                            <Typography>ID08</Typography>
-                                            <Typography>200000202920</Typography>
-                                        </Stack>
-                                        <Typography sx={{ fontWeight: 'bold', color: 'black' }}>Laptop - Pak Daeng - IT</Typography>
-                                    </Stack>
-                                    
-                                </Stack>
-                            </Box>
-                        </Box>
-                    </Stack>
-                    <Button sx={{ mt: 2 }} variant="contained">Print Label</Button>    
-                </Grid>
+                    <DetailComponent data={props.data} />
                 }
                 {/* Asset Information */}
                 <Grid item xs={12} md={12}>
