@@ -129,7 +129,6 @@ const Index = () => {
                 by: 'asset_code'
             }
         })
-        console.log(res.data)
         setData(res.data.data)
     }
 
@@ -139,7 +138,7 @@ const Index = () => {
         const qrScanner = new QrScanner(
             videoElem,
             result => {
-                console.log('decoded qr code:', result),
+                
                 setCode(result)
                 setDisplay('none')
                 getDetailAsset(result)

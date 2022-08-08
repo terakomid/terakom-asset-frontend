@@ -128,6 +128,7 @@ const Form = (props) => {
     const navigate = useNavigate()
     const [isComplete, setIsComplete] = useState(false)
     const [loading, setLoading] = useState(false)
+    const [errors, setErrors] = useState({})
     
     //select
     const [assetLocations, setAssetLocations] = useState([])
@@ -333,7 +334,10 @@ const Form = (props) => {
             navigate('/data-asset')      
         }catch(err) {
             setLoading(false)   
-            console.log(err.response)
+            if(err.response){
+                setErrors(err.response.data.errors)
+            }
+            // console.log(err.response)
         }
     }
 
@@ -344,8 +348,11 @@ const Form = (props) => {
             setLoading(false)   
             navigate('/data-asset')      
         }catch(err) {
-            setLoading(false)   
-            console.log(err.response)
+            setLoading(false)
+            if(err.response){
+                setErrors(err.response.data.errors)
+            }   
+            // console.log(err.response)
         }
     }
 
@@ -627,6 +634,9 @@ const Form = (props) => {
                                         name="asset_code"
                                         fullWidth
                                         label="Asset Code"
+                                        required
+                                        helperText={typeof errors?.asset_code !== 'undefined' ? errors.asset_code[0] : ''}
+                                        error={typeof errors?.asset_code !== 'undefined' ? true : false}
                                     />
                                 </Grid>
                                 <Grid item md={4} xs={12}>
@@ -638,6 +648,9 @@ const Form = (props) => {
                                         fullWidth
                                         label="Category Code"
                                         select
+                                        required
+                                        helperText={typeof errors?.category_id !== 'undefined' ? errors.category_id[0] : ''}
+                                        error={typeof errors?.category_id !== 'undefined' ? true : false}
                                     >
                                         {assetCategories.length > 0 && assetCategories.map(v => (
                                             <MenuItem key={v.id} value={v.id}>{`${v.code} - ${v.category}`}</MenuItem>
@@ -656,6 +669,9 @@ const Form = (props) => {
                                         fullWidth
                                         label="Sub Category Code"
                                         select
+                                        required
+                                        helperText={typeof errors?.sub_category_id !== 'undefined' ? errors.sub_category_id[0] : ''}
+                                        error={typeof errors?.sub_category_id !== 'undefined' ? true : false}
                                     >
                                         {subCategoriesLoading && <MenuItem disabled> <Loading /> </MenuItem>}
                                         {subCategories.length > 0 && subCategories.map(v => (
@@ -674,6 +690,9 @@ const Form = (props) => {
                                         name="asset_name"
                                         fullWidth
                                         label="Asset Name"
+                                        required
+                                        helperText={typeof errors?.asset_name !== 'undefined' ? errors.asset_name[0] : ''}
+                                        error={typeof errors?.asset_name !== 'undefined' ? true : false}
                                     />
                                 </Grid>
                                 <Grid item md={4} xs={12}>
@@ -683,8 +702,10 @@ const Form = (props) => {
                                         value={form.specification}
                                         name="specification"
                                         fullWidth
-                                        label="specification"
-                                        
+                                        label="Specification"
+                                        required
+                                        helperText={typeof errors?.specification !== 'undefined' ? errors.specification[0] : ''}
+                                        error={typeof errors?.specification !== 'undefined' ? true : false}
                                     />
                                 </Grid>
                                 <Grid item md={4} xs={12}>
@@ -711,7 +732,14 @@ const Form = (props) => {
                                                 capitalized: newValue
                                             })
                                         }}
-                                        renderInput={(params) => <TextField fullWidth {...params} />}
+                                        renderInput={(params) => 
+                                            <TextField  
+                                                fullWidth {...params}
+                                                required
+                                                helperText={typeof errors?.capitalized !== 'undefined' ? errors.capitalized[0] : ''}
+                                                error={typeof errors?.capitalized !== 'undefined' ? true : false} 
+                                            />
+                                        }
                                     />
                                     </LocalizationProvider>
                                 </Grid>
@@ -723,7 +751,9 @@ const Form = (props) => {
                                         name="sap_code"
                                         fullWidth
                                         label="SAP Code"
-                                        
+                                        required
+                                        helperText={typeof errors?.sap_code !== 'undefined' ? errors.sap_code[0] : ''}
+                                        error={typeof errors?.sap_code !== 'undefined' ? true : false} 
                                     />
                                 </Grid>
                             </Grid>
@@ -746,6 +776,9 @@ const Form = (props) => {
                                         fullWidth
                                         label="Employ Name / PIC"
                                         select
+                                        required
+                                        helperText={typeof errors?.employee_id !== 'undefined' ? errors.employee_id[0] : ''}
+                                        error={typeof errors?.employee_id !== 'undefined' ? true : false}
                                     >
                                         {employees.length > 0 && employees.map(v => (
                                             <MenuItem key={v.id} value={v.id}>{`${v.code} - ${v.name}`}</MenuItem>
@@ -773,6 +806,9 @@ const Form = (props) => {
                                         value={form.location_id}
                                         label="Asset Location"
                                         select
+                                        required
+                                        helperText={typeof errors?.location_id !== 'undefined' ? errors.location_id[0] : ''}
+                                        error={typeof errors?.location_id !== 'undefined' ? true : false}
                                     >
                                         {assetLocations.length > 0 && assetLocations.map(v => (
                                             <MenuItem key={v.id} value={v.id}>{`${v.code} - ${v.location}`}</MenuItem>
@@ -791,6 +827,9 @@ const Form = (props) => {
                                         fullWidth
                                         label="Asset Condition"
                                         select
+                                        required
+                                        helperText={typeof errors?.condition_id !== 'undefined' ? errors.condition_id[0] : ''}
+                                        error={typeof errors?.condition_id !== 'undefined' ? true : false}
                                     >
                                         {assetConditions.length > 0 && assetConditions.map(v => (
                                             <MenuItem key={v.id} value={v.id}>{v.condition}</MenuItem>
@@ -808,7 +847,9 @@ const Form = (props) => {
                                         name="latitude"
                                         fullWidth
                                         label="Asset Coordinate Latitude"
-                                        
+                                        required
+                                        helperText={typeof errors?.latitude !== 'undefined' ? errors.latitude[0] : ''}
+                                        error={typeof errors?.latitude !== 'undefined' ? true : false}
                                     />
                                 </Grid>
                                 <Grid item md={6} xs={12}>
@@ -819,7 +860,9 @@ const Form = (props) => {
                                         name="longitude"
                                         fullWidth
                                         label="Asset Coordinate Longitude"
-                                        
+                                        required
+                                        helperText={typeof errors?.longitude !== 'undefined' ? errors.longitude[0] : ''}
+                                        error={typeof errors?.longitude !== 'undefined' ? true : false}
                                     />
                                 </Grid>
                             </Grid>
@@ -842,6 +885,9 @@ const Form = (props) => {
                                         fullWidth
                                         label="Cost Center Name"
                                         select
+                                        required
+                                        helperText={typeof errors?.cost_id !== 'undefined' ? errors.cost_id[0] : ''}
+                                        error={typeof errors?.cost_id !== 'undefined' ? true : false}
                                     >
                                         {assetCost.length > 0 && assetCost.map(v => (
                                             <MenuItem key={v.id} value={v.id}>{`${v.code} - ${v.name}`}</MenuItem>
@@ -859,7 +905,9 @@ const Form = (props) => {
                                         name="acquisition_value"
                                         fullWidth
                                         label="Acquisition Value"
-                                        
+                                        required
+                                        helperText={typeof errors?.acquisition_value !== 'undefined' ? errors.acquisition_value[0] : ''}
+                                        error={typeof errors?.acquisition_value !== 'undefined' ? true : false}
                                     />
                                 </Grid>
                                 <Grid item md={6} xs={12}>
@@ -870,7 +918,9 @@ const Form = (props) => {
                                         name="depreciation_value"
                                         fullWidth
                                         label="Depreciation Value"
-                                        
+                                        required
+                                        helperText={typeof errors?.depreciation_value !== 'undefined' ? errors.depreciation_value[0] : ''}
+                                        error={typeof errors?.depreciation_value !== 'undefined' ? true : false}
                                     />
                                 </Grid>
                                 <Grid item md={6} xs={12}>
@@ -923,6 +973,9 @@ const Form = (props) => {
                                         fullWidth
                                         label="Vendor Name"
                                         select
+                                        required
+                                        helperText={typeof errors?.vendor_id !== 'undefined' ? errors.vendor_id[0] : ''}
+                                        error={typeof errors?.vendor_id !== 'undefined' ? true : false}
                                     >
                                         {assetVendor.length > 0 && assetVendor.map(v => (
                                             <MenuItem key={v.id} value={v.id}>{`${v.code} - ${v.name}`}</MenuItem>
@@ -981,6 +1034,9 @@ const Form = (props) => {
                                         fullWidth
                                         label="Device"
                                         select
+                                        required
+                                        helperText={typeof errors?.device_id !== 'undefined' ? errors.device_id[0] : ''}
+                                        error={typeof errors?.device_id !== 'undefined' ? true : false}
                                     >
                                         {masterDevices.length > 0 && masterDevices.map(v => (
                                             <MenuItem key={v.id} value={v.id}>{v.sub_type}</MenuItem>
@@ -998,6 +1054,9 @@ const Form = (props) => {
                                         name="type"
                                         fullWidth
                                         label="Type"
+                                        required
+                                        helperText={typeof errors?.type !== 'undefined' ? errors.type[0] : ''}
+                                        error={typeof errors?.type !== 'undefined' ? true : false}
                                     />
                                 </Grid>
                                 <Grid Grid item md={4} xs={12}>
@@ -1009,6 +1068,9 @@ const Form = (props) => {
                                         fullWidth
                                         label="Brand"
                                         select
+                                        required
+                                        helperText={typeof errors?.brand_id !== 'undefined' ? errors.brand_id[0] : ''}
+                                        error={typeof errors?.brand_id !== 'undefined' ? true : false}
                                     >
                                         {masterBrands.length > 0 && masterBrands.map(v => (
                                             <MenuItem key={v.id} value={v.id}>{v.sub_type}</MenuItem>
@@ -1026,6 +1088,9 @@ const Form = (props) => {
                                         name="monitor_inch"
                                         fullWidth
                                         label="Monitor Inch"
+                                        required
+                                        helperText={typeof errors?.monitor_inch !== 'undefined' ? errors.monitor_inch[0] : ''}
+                                        error={typeof errors?.monitor_inch !== 'undefined' ? true : false}
                                     />
                                 </Grid>
                                 <Grid Grid item md={4} xs={12}>
@@ -1036,6 +1101,9 @@ const Form = (props) => {
                                         name="model_brand"
                                         fullWidth
                                         label="Model Brand"
+                                        required
+                                        helperText={typeof errors?.model_brand !== 'undefined' ? errors.model_brand[0] : ''}
+                                        error={typeof errors?.model_brand !== 'undefined' ? true : false}
                                     />
                                 </Grid>
                                 <Grid Grid item md={4} xs={12}>
@@ -1046,6 +1114,9 @@ const Form = (props) => {
                                         name="mac_address"
                                         fullWidth
                                         label="Mac Address"
+                                        required
+                                        helperText={typeof errors?.mac_address !== 'undefined' ? errors.mac_address[0] : ''}
+                                        error={typeof errors?.mac_address !== 'undefined' ? true : false}
                                     />
                                 </Grid>
                                 <Grid Grid item md={6} xs={12}>
@@ -1063,7 +1134,14 @@ const Form = (props) => {
                                                     warranty: newValue
                                                 })
                                             }}
-                                            renderInput={(params) => <TextField fullWidth {...params} />}
+                                            renderInput={(params) => 
+                                                <TextField
+                                                    required
+                                                    helperText={typeof errors?.warranty !== 'undefined' ? errors.warranty[0] : ''}
+                                                    error={typeof errors?.warranty !== 'undefined' ? true : false} 
+                                                    fullWidth 
+                                                    {...params} 
+                                                />}
                                         />
                                     </LocalizationProvider>
                                 </Grid>
@@ -1075,6 +1153,9 @@ const Form = (props) => {
                                         name="computer_name"
                                         fullWidth
                                         label="Computer Name"
+                                        required
+                                        helperText={typeof errors?.computer_name !== 'undefined' ? errors.computer_name[0] : ''}
+                                        error={typeof errors?.computer_name !== 'undefined' ? true : false} 
                                     />
                                 </Grid>
                             </Grid>
@@ -1244,10 +1325,13 @@ const Form = (props) => {
                                         label="Notes"
                                         multiline
                                         rows={5}
+                                        required
+                                        helperText={typeof errors?.notes !== 'undefined' ? errors.notes[0] : ''}
+                                        error={typeof errors?.notes !== 'undefined' ? true : false}
                                     />
                                 </Grid>
                                 <Grid Grid item md={12} xs={12}>
-                                    <Typography>Picture</Typography>
+                                    <Typography>Picture </Typography>
                                     <Grid container>
                                         {pictures.map((v, i) => {
                                             return (
@@ -1258,6 +1342,9 @@ const Form = (props) => {
                                                             <InsertPhotoOutlined sx={{ fontSize: '100px' }} />
                                                             :
                                                             <img style={{ height: '100px' }} src={v.image_preview} alt="test"  />
+                                                            }
+                                                            {typeof errors[`picture.${i}.file`] !== 'undefined' &&
+                                                                <Typography sx={{ color: 'red' }}>Image Required</Typography> 
                                                             }
                                                         </Box>
                                                         <input
@@ -1328,6 +1415,9 @@ const Form = (props) => {
                                                             <DescriptionOutlined sx={{ fontSize: '100px' }} />
                                                             :
                                                             <AssignmentTurnedInOutlined sx={{ fontSize: '100px' }} />
+                                                            }
+                                                            {typeof errors[`picture.${i}.file`] !== 'undefined' &&
+                                                                <Typography sx={{ color: 'red' }}>Evidence Required</Typography> 
                                                             }
                                                         </Box>
                                                         <input 

@@ -64,7 +64,6 @@
       "node-waves": "^0.7.6",
       "parsleyjs": "^2.9.2",
       "propper": "^1.0.4",
-      "qr-scanner": "^1.4.1",
       "raphael": "^2.3.0",
       "react": "^18.2.0",
       "react-bootstrap": "^2.4.0",
