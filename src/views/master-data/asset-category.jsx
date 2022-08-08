@@ -248,7 +248,7 @@ export default function AssetCategory() {
                                                    {page * rowsPerPage + key + 1}.
                                                 </TableCell>
                                                 <TableCell>
-                                                   <Link component={RouterLink} to={`/asset-subcategory/${value.id}`}>
+                                                   <Link component={RouterLink} to={`/master-data/asset-subcategory/${value.id}`}>
                                                       {value.code}
                                                    </Link>
                                                 </TableCell>
