@@ -39,6 +39,9 @@ import Loading from "../../component/Loading";
 import ModalDelete from "../../component/Delete";
 import moment from 'moment';
 
+//css table
+import './Table.css'
+
 const ModalFilter = (props) => {
     const [roleOptions, setRoleOptions] = useState([])
     const [departmentOptions, setDepartmentOptions] = useState([])
@@ -121,8 +124,257 @@ const ModalFilter = (props) => {
     )
 }
 
+const ModalTable = (props) => {
+    const [roleOptions, setRoleOptions] = useState([])
+    const [departmentOptions, setDepartmentOptions] = useState([])
+    const [filter, setFilter] = useState({
+        role: '',
+        department_id: ''
+    })
+    const [isComplete, setIsComplete] = useState(false)
+
+    const getDepartment = async() => {
+            const res = await http.get(`dept`)
+            setDepartmentOptions([...res.data.data])
+            return 1
+        }
+
+        const getRole = async() => {
+            const res = await http.get(`role`)
+            setRoleOptions([...res.data.data])
+            return 1
+        }
+
+    useEffect(() => {
+            let mounted = true
+            if(mounted && props.open){
+                Promise.all([getDepartment(), getRole()]).then(res => {
+                    setIsComplete(true)
+                    
+                })
+            }
+
+
+            return () => mounted = false
+        }, [props.open])
+
+    return (
+        <Dialog
+            fullWidth
+            maxWidth="xs"
+            open={props.open}
+            onClose={props.handleClose}
+            aria-labelledby="alert-dialog-title"
+            aria-describedby="alert-dialog-description"
+        >
+            <DialogTitle>Filter</DialogTitle>
+            <DialogContent>
+                <DialogContentText>Filter</DialogContentText>
+                {isComplete &&
+                <Grid container>
+                <Grid item xs={12} md={6}>
+                    <TextField 
+                        select
+                        multiple
+                        size="small"
+                        name="role"
+                        label="role"
+                        value={filter.role}
+                        fullWidth
+                    >
+                        {roleOptions.length > 0 && roleOptions.map(v => (
+                            <MenuItem key={v.id} value={v.name}>{v.name}</MenuItem>
+                        ))}
+                        {roleOptions.length == 0 && 
+                            <MenuItem disabled>Kosong</MenuItem>
+                        }
+                    </TextField>
+                </Grid>
+
+                </Grid>
+                }
+            </DialogContent>
+            <DialogActions>
+                <Button variant="text" onClick={props.handleClose}>
+                Cancel
+                </Button>
+                <Button variant="text" color="error" onClick={() => console.log('filter')} autoFocus>
+                Delete
+                </Button>
+            </DialogActions>
+        </Dialog>
+    )
+}
+
+// const TableExcel = (props) => {
+//     return (
+//     <table className="tg" style={{ tableLayout: 'fixed', width: '100%' }}>
+//         <colgroup>
+//             <col style={{ width: '56px' }} />
+//             <col style={{ width: '56px' }} />
+//             <col style={{ width: '56px' }} />
+//             <col style={{ width: '56px' }} />
+//             <col style={{ width: '56px' }} />
+//             <col style={{ width: '56px' }} />
+//             <col style={{ width: '56px' }} />
+//             <col style={{ width: '56px' }} />
+//             <col style={{ width: '56px' }} />
+//             <col style={{ width: '56px' }} />
+//             <col style={{ width: '54px' }} />
+//             <col style={{ width: '59px' }} />
+//             <col style={{ width: '56px' }} />
+//             <col style={{ width: '56px' }} />
+//             <col style={{ width: '56px' }} />
+//             <col style={{ width: '56px' }} />
+//             <col style={{ width: '77px' }} />
+//         </colgroup>
+//         <thead>
+//             <tr>
+//                 <th className="tg-amwm" colspan="5" rowspan="4">Appendeix 07<br /><br />PT. Haier Sales Indonesia</th>
+//                 <th className="tg-hjji" colspan="12" rowspan="4"><br /><span style={{ fontWeight:'bold' }}>Asset Disposal Request Form</span></th>
+//             </tr>
+//             <tr>
+//             </tr>
+//             <tr>
+//             </tr>
+//             <tr>
+//             </tr>
+//         </thead>
+//         <tbody>
+//             <tr>
+//                 <td className="tg-baqh" colspan="5"><span style={{ fontWeight:'bold' }}>Nama Pemelihara</span></td>
+//                 <td className="tg-baqh" colspan="3"><span style={{ fontWeight:'bold' }}>No Disposal</span></td>
+//                 <td className="tg-baqh" colspan="4"><span style={{ fontWeight:'bold' }}>Departmen</span></td>
+//                 <td className="tg-baqh" colspan="5"><span style={{ fontWeight:'bold' }}>Tanggal</span></td>
+//             </tr>
+//             <tr>
+//                 <td className="tg-0lax" colspan="5"></td>
+//                 <td className="tg-0lax" colspan="3"></td>
+//                 <td className="tg-0lax" colspan="4"></td>
+//                 <td className="tg-0lax" colspan="5"></td>
+//             </tr>
+//             <tr>
+//                 <td className="tg-baqh" colspan="4"><span style={{ fontWeight:'bold' }}>Asset Code</span></td>
+//                 <td className="tg-baqh" colspan="2"><span style={{ fontWeight:'bold' }}>Jumlah</span></td>
+//                 <td className="tg-baqh" colspan="3"><span style={{ fontWeight:'bold' }}>Asset Name</span></td>
+//                 <td className="tg-baqh" colspan="2"><span style={{ fontWeight:'bold' }}>Years Purchase</span></td>
+//                 <td className="tg-baqh" colspan="2"><span style={{ fontWeight:'bold' }}>Condition Asset</span></td>
+//                 <td className="tg-baqh" colspan="2"><span style={{ fontWeight:'bold' }}>Location Asset</span></td>
+//                 <td className="tg-baqh" colspan="2"><span style={{ fontWeight:'bold' }}>Purchase Price</span></td>
+//             </tr>
+//             <tr>
+//                 <td className="tg-0lax" colspan="4">asst1</td>
+//                 <td className="tg-0lax" colspan="2">1</td>
+//                 <td className="tg-0lax" colspan="3">test 1</td>
+//                 <td className="tg-0lax" colspan="2">2020</td>
+//                 <td className="tg-0lax" colspan="2">baik</td>
+//                 <td className="tg-0lax" colspan="2">bojong</td>
+//                 <td className="tg-0lax" colspan="2">50000</td>
+//             </tr>
+//             <tr>
+//                 <td className="tg-0lax" colspan="4"></td>
+//                 <td className="tg-0lax" colspan="2"></td>
+//                 <td className="tg-0lax" colspan="3"></td>
+//                 <td className="tg-0lax" colspan="2"></td>
+//                 <td className="tg-0lax" colspan="2"></td>
+//                 <td className="tg-0lax" colspan="2"></td>
+//                 <td className="tg-0lax" colspan="2"></td>
+//             </tr>
+//             <tr>
+//                 <td className="tg-0lax" colspan="4"></td>
+//                 <td className="tg-0lax" colspan="2"></td>
+//                 <td className="tg-0lax" colspan="3"></td>
+//                 <td className="tg-0lax" colspan="2"></td>
+//                 <td className="tg-0lax" colspan="2"></td>
+//                 <td className="tg-0lax" colspan="2"></td>
+//                 <td className="tg-0lax" colspan="2"></td>
+//             </tr>
+//             <tr>
+//                 <td className="tg-0lax" colspan="4"></td>
+//                 <td className="tg-0lax" colspan="2"></td>
+//                 <td className="tg-0lax" colspan="3"></td>
+//                 <td className="tg-0lax" colspan="2"></td>
+//                 <td className="tg-0lax" colspan="2"></td>
+//                 <td className="tg-0lax" colspan="2"></td>
+//                 <td className="tg-0lax" colspan="2"></td>
+//             </tr>
+//             <tr>
+//                 <td className="tg-0lax" colspan="4"></td>
+//                 <td className="tg-0lax" colspan="2"></td>
+//                 <td class="tg-0lax" colspan="3"></td>
+//                 <td class="tg-0lax" colspan="2"></td>
+//                 <td class="tg-0lax" colspan="2"></td>
+//                 <td class="tg-0lax" colspan="2"></td>
+//                 <td class="tg-0lax" colspan="2"></td>
+//             </tr>
+//             <tr>
+//                 <td class="tg-0lax" colspan="4"></td>
+//                 <td class="tg-0lax" colspan="2"></td>
+//                 <td class="tg-0lax" colspan="3"></td>
+//                 <td class="tg-0lax" colspan="2"></td>
+//                 <td class="tg-0lax" colspan="2"></td>
+//                 <td class="tg-0lax" colspan="2"></td>
+//                 <td class="tg-0lax" colspan="2"></td>
+//             </tr>
+//             <tr>
+//                 <td class="tg-0lax" colspan="4"></td>
+//                 <td class="tg-0lax" colspan="2"></td>
+//                 <td class="tg-0lax" colspan="3"></td>
+//                 <td class="tg-0lax" colspan="2"></td>
+//                 <td class="tg-0lax" colspan="2"></td>
+//                 <td class="tg-0lax" colspan="2"></td>
+//                 <td class="tg-0lax" colspan="2"></td>
+//             </tr>
+//             <tr>
+//                 <td class="tg-baqh" colspan="15"><span style={{ fontWeight:'bold' }}>Total Harga</span></td>
+//                 <td class="tg-0lax" colspan="2">100000</td>
+//             </tr>
+//             <tr>
+//                 <td class="tg-baqh" colspan="17"><span style={{ fontWeight:'bold' }}>Untuk Informasi Lebih Lanjut</span></td>
+//             </tr>
+//             <tr>
+//                 <td class="tg-0lax" colspan="2"><span style={{ fontWeight:'bold' }}>Nama</span></td>
+//                 <td class="tg-0lax" colspan="5">udin</td>
+//                 <td class="tg-0lax" colspan="2"><span style={{ fontWeight:'bold' }}>Phone</span></td>
+//                 <td class="tg-0lax" colspan="8">08212222</td>
+//             </tr>
+//             <tr>
+//                 <td class="tg-baqh" colspan="9"><span style={{ fontWeight:'bold' }}>Custodian</span></td>
+//                 <td class="tg-baqh" colspan="2"><span style={{ fontWeight:'bold' }}>Chekcer</span></td>
+//                 <td class="tg-baqh" colspan="6"><span style={{ fontWeight:'bold' }}>Approved</span></td>
+//             </tr>
+//             <tr>
+//                 <td class="tg-0lax" colspan="3" rowspan="5"></td>
+//                 <td class="tg-0lax" colspan="3" rowspan="5"></td>
+//                 <td class="tg-0lax" colspan="3" rowspan="5"></td>
+//                 <td class="tg-0lax" colspan="2" rowspan="5"></td>
+//                 <td class="tg-0lax" colspan="3" rowspan="5"></td>
+//                 <td class="tg-0lax" colspan="3" rowspan="5"></td>
+//             </tr>
+//             <tr>
+//             </tr>
+//             <tr>
+//             </tr>
+//             <tr>
+//             </tr>
+//             <tr>
+//             </tr>
+//             <tr>
+//                 <td class="tg-baqh" colspan="3"><span style={{ fontWeight:'bold' }}>Name</span></td>
+//                 <td class="tg-baqh" colspan="3"><span style={{ fontWeight:'bold' }}>Direct Superior</span></td>
+//                 <td class="tg-baqh" colspan="3"><span style={{ fontWeight:'bold' }}>Dept Head</span></td>
+//                 <td class="tg-baqh" colspan="2"><span style={{ fontWeight:'bold' }}>General Affair</span></td>
+//                 <td class="tg-baqh" colspan="3"><span style={{ fontWeight:'bold' }}>HRGA Head</span></td>
+//                 <td class="tg-baqh" colspan="3"><span style={{ fontWeight:'bold' }}>President Director</span></td>
+//             </tr>
+//         </tbody>
+//     </table>
+//     )
+// }
+
 const Index = () => {
     const navigate = useNavigate()
+    const [tableData, setTableData] = useState()
     const [rows, setRows] = useState();
     const [data, setData] = useState({
         code: "",
@@ -151,6 +403,38 @@ const Index = () => {
             });
     };
 
+    function exportTableToExcel(tableID, filename = ''){
+        let downloadLink;
+        const dataType = 'application/vnd.ms-excel';
+        const tableSelect = document.querySelector(tableID);
+        console.log(tableSelect)
+        const tableHTML = tableSelect.outerHTML.replace(/ /g, '%20');
+        
+        // Specify file name
+        filename = filename?filename+'.xls':'excel_data.xls';
+        
+        // Create download link element
+        downloadLink = document.createElement("a");
+        
+        document.body.appendChild(downloadLink);
+        
+        if(navigator.msSaveOrOpenBlob){
+            var blob = new Blob(['\ufeff', tableHTML], {
+                type: dataType
+            });
+            navigator.msSaveOrOpenBlob( blob, filename);
+        }else{
+            // Create a link to the file
+            downloadLink.href = 'data:' + dataType + ', ' + tableHTML;
+        
+            // Setting the file name
+            downloadLink.download = filename;
+            
+            //triggering the function
+            downloadLink.click();
+        }
+    }
+
 
     useEffect(() => {
         setRows(undefined);
@@ -162,7 +446,7 @@ const Index = () => {
     }, [params]);
 
 
-
+    
 
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(5);
@@ -195,6 +479,11 @@ const Index = () => {
         navigate(`/disposal-asset-edit/${staging.id}`)
     };
 
+    const handleDownload = async () => {
+        
+        exportTableToExcel('#table', 'template')
+    }
+
     const [openModal, setOpenModal] = useState(false);
     const handleModal = (e) => {
         setOpenModal(!openModal);
@@ -222,9 +511,13 @@ const Index = () => {
     const [staging, setStaging] = useState();
     const [anchorEl, setAnchorEl] = useState(null);
     const open = Boolean(anchorEl);
-    const handleClick = (event, value) => {
+    const handleClick = async (event, value) => {
         setAnchorEl(event.currentTarget);
         setStaging(value);
+        setTableData(undefined)
+        const res = await http.get(`/asset_disposal/${value.id}`)
+        // console.log(res.data)
+        setTableData(res.data.data)
     };
     const handleMenu = () => {
         setAnchorEl(null);
@@ -398,12 +691,18 @@ const Index = () => {
                                         <Edit />
                                     </ListItemIcon>
                                         Edit
-                                    </MenuItem>
+                                </MenuItem>
                                 <MenuItem onClick={handleModal}>
                                     <ListItemIcon>
                                         <Delete />
                                     </ListItemIcon>
                                         Delete
+                                </MenuItem>
+                                <MenuItem onClick={handleDownload}>
+                                    <ListItemIcon>
+                                        <DownloadOutlined />
+                                    </ListItemIcon>
+                                        Download Template
                                 </MenuItem>
                                 {staging !== undefined && staging.status === 'process' &&
                                 <>
@@ -438,6 +737,125 @@ const Index = () => {
                                 </MenuItem>
                                 }
                             </Menu>
+                        </div>
+                        <div className="col-xl-12 col-12">
+                            {tableData !== undefined && 
+                                <>
+                                {/* Table */}
+                                <table id="table" border={1} class="tg" style={{ tableLayout: 'fixed', width: '100%', display: 'none' }}>
+                                    <colgroup>
+                                        <col style={{ width: '56px' }} />
+                                        <col style={{ width: '56px' }} />
+                                        <col style={{ width: '56px' }} />
+                                        <col style={{ width: '56px' }} />
+                                        <col style={{ width: '56px' }} />
+                                        <col style={{ width: '56px' }} />
+                                        <col style={{ width: '56px' }} />
+                                        <col style={{ width: '56px' }} />
+                                        <col style={{ width: '56px' }} />
+                                        <col style={{ width: '56px' }} />
+                                        <col style={{ width: '54px' }} />
+                                        <col style={{ width: '59px' }} />
+                                        <col style={{ width: '56px' }} />
+                                        <col style={{ width: '56px' }} />
+                                        <col style={{ width: '56px' }} />
+                                        <col style={{ width: '56px' }} />
+                                        <col style={{ width: '77px' }} />
+                                    </colgroup>
+                                    <thead>
+                                        <tr>
+                                            <th className="tg-amwm" colspan="5" rowspan="4">Appendeix 07<br /><br />PT. Haier Sales Indonesia</th>
+                                            <th className="tg-hjji" colspan="12" rowspan="4"><br /><span style={{ fontWeight:'bold' }}>Asset Disposal Request Form</span></th>
+                                        </tr>
+                                        <tr>
+                                        </tr>
+                                        <tr>
+                                        </tr>
+                                        <tr>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td className="tg-baqh" colspan="5"><span style={{ fontWeight:'bold' }}>Nama Pemelihara</span></td>
+                                            <td className="tg-baqh" colspan="3"><span style={{ fontWeight:'bold' }}>No Disposal</span></td>
+                                            <td className="tg-baqh" colspan="4"><span style={{ fontWeight:'bold' }}>Departmen</span></td>
+                                            <td className="tg-baqh" colspan="5"><span style={{ fontWeight:'bold' }}>Tanggal</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td className="tg-0lax" colspan="5"></td>
+                                            <td className="tg-0lax" colspan="3">{tableData.id}</td>
+                                            <td className="tg-0lax" colspan="4"></td>
+                                            <td className="tg-0lax" colspan="5">{moment(tableData.created_at).format('LL')}</td>
+                                        </tr>
+                                        <tr>
+                                            <td className="tg-baqh" colspan="4"><span style={{ fontWeight:'bold' }}>Asset Code</span></td>
+                                            <td className="tg-baqh" colspan="2"><span style={{ fontWeight:'bold' }}>Jumlah</span></td>
+                                            <td className="tg-baqh" colspan="3"><span style={{ fontWeight:'bold' }}>Asset Name</span></td>
+                                            <td className="tg-baqh" colspan="2"><span style={{ fontWeight:'bold' }}>Years Purchase</span></td>
+                                            <td className="tg-baqh" colspan="2"><span style={{ fontWeight:'bold' }}>Condition Asset</span></td>
+                                            <td className="tg-baqh" colspan="2"><span style={{ fontWeight:'bold' }}>Location Asset</span></td>
+                                            <td className="tg-baqh" colspan="2"><span style={{ fontWeight:'bold' }}>Purchase Price</span></td>
+                                        </tr>
+                                        {tableData.asset_disposal_data.length > 0 && tableData.asset_disposal_data.map((v, i) => {
+                                            return (
+                                                <tr key={i}>
+                                                    <td className="tg-0lax" colspan="4">{v.asset.asset_code}</td>
+                                                    <td className="tg-0lax" colspan="2">1</td>
+                                                    <td className="tg-0lax" colspan="3">{v.asset.asset_name}</td>
+                                                    <td className="tg-0lax" colspan="2">{v.asset.capitalized.split('-')[0]}</td>
+                                                    <td className="tg-0lax" colspan="2">{v.asset.condition.condition}</td>
+                                                    <td className="tg-0lax" colspan="2">{v.asset.location.location}</td>
+                                                    <td className="tg-0lax" colspan="2">0</td>
+                                                </tr>
+                                            )
+                                        })}
+                                        <tr>
+                                            <td className="tg-baqh" colspan="15"><span style={{ fontWeight:'bold' }}>Total Harga</span></td>
+                                            <td className="tg-0lax" colspan="2"></td>
+                                        </tr>
+                                        <tr>
+                                            <td className="tg-baqh" colspan="17"><span style={{ fontWeight:'bold' }}>Untuk Informasi Lebih Lanjut</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td className="tg-0lax" colspan="2"><span style={{ fontWeight:'bold' }}>Nama</span></td>
+                                            <td className="tg-0lax" colspan="5"></td>
+                                            <td className="tg-0lax" colspan="2"><span style={{ fontWeight:'bold' }}>Phone</span></td>
+                                            <td className="tg-0lax" colspan="8"></td>
+                                        </tr>
+                                        <tr>
+                                            <td className="tg-baqh" colspan="9"><span style={{ fontWeight:'bold' }}>Custodian</span></td>
+                                            <td className="tg-baqh" colspan="2"><span style={{ fontWeight:'bold' }}>Chekcer</span></td>
+                                            <td className="tg-baqh" colspan="6"><span style={{ fontWeight:'bold' }}>Approved</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td className="tg-0lax" colspan="3" rowspan="5"></td>
+                                            <td className="tg-0lax" colspan="3" rowspan="5"></td>
+                                            <td className="tg-0lax" colspan="3" rowspan="5"></td>
+                                            <td className="tg-0lax" colspan="2" rowspan="5"></td>
+                                            <td className="tg-0lax" colspan="3" rowspan="5"></td>
+                                            <td className="tg-0lax" colspan="3" rowspan="5"></td>
+                                        </tr>
+                                        <tr>
+                                            
+                                        </tr>
+                                        <tr>
+                                        </tr>
+                                        <tr>
+                                        </tr>
+                                        <tr>
+                                        </tr>
+                                        <tr>
+                                            <td className="tg-baqh" colspan="3"><span style={{ fontWeight:'bold' }}>Name</span></td>
+                                            <td className="tg-baqh" colspan="3"><span style={{ fontWeight:'bold' }}>Direct Superior</span></td>
+                                            <td className="tg-baqh" colspan="3"><span style={{ fontWeight:'bold' }}>Dept Head</span></td>
+                                            <td className="tg-baqh" colspan="2"><span style={{ fontWeight:'bold' }}>General Affair</span></td>
+                                            <td className="tg-baqh" colspan="3"><span style={{ fontWeight:'bold' }}>HRGA Head</span></td>
+                                            <td className="tg-baqh" colspan="3"><span style={{ fontWeight:'bold' }}>President Director</span></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                </>
+                            }
                         </div>
                     </div>
                 </div>

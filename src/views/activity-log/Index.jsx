@@ -294,14 +294,14 @@ const Index = () => {
                                                 "& th:last-of-type": { borderRadius: "0 0.5em 0.5em 0" },
                                             }}
                                             >
-                                            <TableCell align="center">No.</TableCell>
-                                            <TableCell>Log Name</TableCell>
-                                            <TableCell>Description</TableCell>
-                                            <TableCell>User</TableCell>
-                                            <TableCell>Ip</TableCell>
-                                            <TableCell>Browser</TableCell>
-                                            <TableCell>OS</TableCell>
-                                            <TableCell>Created At</TableCell>
+                                                <TableCell align="center">No.</TableCell>
+                                                <TableCell>Log Name</TableCell>
+                                                <TableCell>Description</TableCell>
+                                                <TableCell>User</TableCell>
+                                                <TableCell>Ip</TableCell>
+                                                <TableCell>Browser</TableCell>
+                                                <TableCell>OS</TableCell>
+                                                <TableCell>Created At</TableCell>
                                             </TableRow>
                                         </TableHead>
                                         <TableBody>

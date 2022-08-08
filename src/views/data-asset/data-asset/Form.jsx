@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Grid, Card, CardContent, Typography, TextField, MenuItem, Box, Stack, FormControl, FormLabel, RadioGroup, FormControlLabel, Radio, Chip, Button, Divider } from '@mui/material'
+import { Grid, Card, CardContent, Typography, TextField, MenuItem, Box, Stack, FormControl, FormLabel, RadioGroup, FormControlLabel, Radio, Chip, Button, Divider, Tabs, Tab, TableContainer, Table, TableBody, TableHead, TableRow, TableCell, TablePagination, IconButton, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions } from '@mui/material'
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import http from '../../../component/api/Api'
@@ -12,50 +12,632 @@ import {  AssignmentLateOutlined, AssignmentTurnedInOutlined, DescriptionOutline
 import { LoadingButton } from '@mui/lab';
 import QRCode from 'react-qr-code';
 
+const DetailModal = (props) => {
+    const navigate = useNavigate()
+    return (
+        <Dialog
+            fullWidth
+            maxWidth="xs"
+            open={props.open}
+            onClose={props.handleClose}
+            aria-labelledby="alert-dialog-title"
+            aria-describedby="alert-dialog-description"
+        >
+            <DialogTitle>Confirm</DialogTitle>
+            <DialogContent>
+                <DialogContentText>Detail Asset</DialogContentText>
+                <Stack direction={"row"} sx={{ width: '100%', height: '140px', border: 0}}>
+                    <Box sx={{  
+                        background: 'white', 
+                        border: 1,
+                        width: '30%',
+                        display: 'flex',
+                        alignItems: 'center'
+                    }}>
+                        <QRCode
+                            size={300}
+                            value={props.data.asset_code}
+                            style={{  width: '100%', padding: '10px' }}
+                            viewBox={`0 0 300 300`}
+                        />
+                    </Box>
+                    <Stack border={1} minWidth={'50%'}>
+                        <Typography sx={{ fontWeight: 'bold', color: 'black', textAlign: 'center' }}>PT. Haier Sales Indonesia</Typography>
+                        <Stack 
+                            direction={"row"} 
+                            spacing={2} 
+                            border={1}
+                        >
+                            <Typography sx={{ borderRight: 1, }}>{`${props.data.asset_code.split('/')[0]}`}</Typography>
+                            <Typography sx={{ borderRight: 1,}}>{`${props.data.asset_code.split('/')[1]}`}</Typography>
+                            <Typography sx={{ borderRight: 1,}}>{`${props.data.asset_code.split('/')[2]}`}</Typography>
+                            <Typography >{`${props.data.asset_code.split('/')[3]}`}</Typography>
+                        </Stack>
+                        <Typography sx={{ fontWeight: 'bold', color: 'black', textAlign: 'center' }}>
+                            {`${props.data.asset_name} - ${props.data.employee.name} - ${props.data.department.dept}`}
+                        </Typography>
+                    </Stack>
+                    
+                </Stack>
+                <Button variant="outlined" disabled>Print</Button>
+            </DialogContent>
+            <DialogActions>
+                <Button variant="success" onClick={() => navigate('/data-asset')}> 
+                    Close
+                </Button>
+            </DialogActions>
+        </Dialog>
+    )
+}
+
+const SuccessModal = (props) => {
+    return (
+        <Dialog
+            fullWidth
+            maxWidth="xs"
+            open={props.open}
+            onClose={props.handleClose}
+            aria-labelledby="alert-dialog-title"
+            aria-describedby="alert-dialog-description"
+        >
+            <DialogTitle>Confirm</DialogTitle>
+            <DialogContent>
+                <DialogContentText>Are you sure want to {props.title} this asset?</DialogContentText>
+            </DialogContent>
+            <DialogActions>
+                <Button variant="text" onClick={props.handleClose}>
+                    Cancel
+                </Button>
+                <Box component="form" onSubmit={props.onSubmit}>
+                    <LoadingButton loading={props.loading} type="submit" variant="text" color="success">
+                        {props.title}
+                    </LoadingButton>
+                </Box>
+            </DialogActions>
+        </Dialog>
+    )
+}
+
+const TabPanel = (props) => {
+    const { children, value, id, index, ...other } = props;
+
+    const [depreciationData, setDepreciationData] = useState()
+    const [maintanceData, setMaintanceData] = useState()
+    const [mutationData, setMutationData] = useState()
+    const [changeData, setChangeData] = useState()
+    const [params, setParams] = useState({
+        asset_id: id,
+        limit: 10,
+        paginate: 1,
+        page: 1,
+    });
+
+    const [page, setPage] = useState(0);
+    const [rowsPerPage, setRowsPerPage] = useState(5);
+
+    const getAssetDepreciation = async () => {
+        http
+            .get(`/asset_depreciation`, {
+                params: params,
+            })
+            .then((res) => {
+                console.log(res.data.data);
+                setDepreciationData(res.data.data);
+            })
+            .catch((err) => {
+                //  console.log(err.response);
+            });
+    };
+
+    const getAssetMaintance = async () => {
+        http
+            .get(`/asset_maintenance`, {
+                params: params,
+            })
+            .then((res) => {
+                console.log(res.data.data);
+                setMaintanceData(res.data.data);
+            })
+            .catch((err) => {
+                //  console.log(err.response);
+            });
+    };
+
+    const getAssetMutation = async () => {
+        http
+            .get(`/asset_mutation`, {
+                params: params,
+            })
+            .then((res) => {
+                console.log(res.data.data);
+                setMutationData(res.data.data);
+            })
+            .catch((err) => {
+                //  console.log(err.response);
+            });
+    };
+
+    const getAssetChange = async () => {
+        http
+            .get(`/activity_log`, {
+                params: params,
+            })
+            .then((res) => {
+                console.log(res.data.data);
+                setChangeData(res.data.data);
+            })
+            .catch((err) => {
+                //  console.log(err.response);
+            });
+    }
+    
+    const handleChangePage = (event, newPage) => {
+        setParams({
+            ...params,
+            page: newPage + 1,
+        });
+    };
+
+    const handleChangeRowsPerPage = (event) => {
+        setParams({
+            ...params,
+            page: 1,
+            limit: +event.target.value,
+        });
+    };
+
+    useEffect(() => {
+        let mounted = true 
+        if(mounted){
+            if(value === 0){
+                //depreciation history
+                getAssetDepreciation()
+
+            }else if(value === 1){
+                //maintance history
+                getAssetMaintance()
+            }else if(value === 2){
+                //mutation history
+                getAssetMutation()
+
+
+            }else if(value === 3){
+                //change history
+                getAssetChange()
+            }
+        }
+
+        return () => mounted = false
+    }, [])
+  
+    return (
+      <div
+        role="tabpanel"
+        hidden={value !== index}
+        id={`simple-tabpanel-${index}`}
+        aria-labelledby={`simple-tab-${index}`}
+        {...other}
+      >
+        {/* depreciation */}
+        {value === 0 && (
+          <Box sx={{ p: 3 }}>
+            <TableContainer>
+                <Table sx={{ minWidth: 650, mt: 2 }} aria-label="simple table">
+                    <TableHead>
+                        <TableRow
+                            sx={{
+                            "& th:first-of-type": { borderRadius: "0.5em 0 0 0.5em" },
+                            "& th:last-of-type": { borderRadius: "0 0.5em 0.5em 0" },
+                            }}
+                        >
+                            <TableCell align="center">No.</TableCell>
+                            <TableCell>Year</TableCell>
+                            <TableCell>Total Month</TableCell>
+                            <TableCell>Depreciation Date</TableCell>
+                            <TableCell>Depreciation Desc</TableCell>
+                            <TableCell>Debit</TableCell>
+                            <TableCell>Credit</TableCell>
+                            <TableCell>Book Value</TableCell>
+                            <TableCell>Created At</TableCell>
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        {depreciationData !== undefined ? (
+                            depreciationData.data.length > 0 ? (
+                            depreciationData.data.map((value, index) => (
+                                <TableRow key={index}>
+                                    <TableCell component="th" scope="row" align="center">
+                                        {depreciationData.meta.from + index}.
+                                    </TableCell>
+                                    <TableCell>{value.year}</TableCell>
+                                    <TableCell>{value.total_month}</TableCell>
+                                    <TableCell>{value.depreciation_date}</TableCell>
+                                    <TableCell>{value.depreciation_desc}</TableCell>
+                                    <TableCell>{value.debit}</TableCell>
+                                    <TableCell>{value.credit}</TableCell>
+                                    <TableCell>{value.book_value}</TableCell>
+                                    <TableCell>{moment(value.created_at).format('ll')}</TableCell>
+                                </TableRow>
+                            ))
+                            ) : (
+                            <TableRow>
+                                <TableCell component="th" scope="row" sx={{ textAlign: "center", py: 10 }} colSpan={100}>
+                                    No result found
+                                    {params.search !== "" && (
+                                        <div style={{ display: "inline-block" }}>
+                                        &nbsp;for "<b>{params.search}</b>"
+                                        </div>
+                                    )}
+                                    .
+                                </TableCell>
+                            </TableRow>
+                            )
+                        ) : (
+                            <TableRow>
+                                <TableCell component="th" scope="row" sx={{ textAlign: "center", py: 5 }} colSpan={100}>
+                                    <Loading />
+                                </TableCell>
+                            </TableRow>
+                        )}
+                    </TableBody>
+                </Table>
+            </TableContainer>
+            {depreciationData !== undefined && depreciationData.data.length > 0 && (
+            <TablePagination
+                component="div"
+                count={depreciationData.meta.total}
+                page={params.page - 1}
+                rowsPerPage={params.limit}
+                onPageChange={handleChangePage}
+                onRowsPerPageChange={handleChangeRowsPerPage}
+                rowsPerPageOptions={[10, 25, 50]}
+            />
+            )}
+          </Box>
+        )}
+
+        {/* maintance */}
+        {value === 1 && (
+            <Box sx={{ p: 3 }}>
+                <TableContainer>
+                    <Table sx={{ minWidth: 650, mt: 2 }} aria-label="simple table">
+                        <TableHead>
+                            <TableRow
+                                sx={{
+                                "& th:first-of-type": { borderRadius: "0.5em 0 0 0.5em" },
+                                "& th:last-of-type": { borderRadius: "0 0.5em 0.5em 0" },
+                                }}
+                            >
+                                <TableCell align="center">No.</TableCell>
+                                <TableCell>Maintenance Code</TableCell>
+                                <TableCell>PIC Asset</TableCell>
+                                <TableCell>Department</TableCell>
+                                <TableCell>Applicant Date</TableCell>
+                                <TableCell>Request Date Repair</TableCell>
+                                <TableCell>Request Time To Finish</TableCell>
+                            </TableRow>
+                        </TableHead>
+                        <TableBody>
+                            {maintanceData !== undefined ? (
+                                maintanceData.data.length > 0 ? (
+                                    maintanceData.data.map((value, index) => (
+                                    <TableRow key={index}>
+                                        <TableCell component="th" scope="row" align="center">
+                                            {index + 1}.
+                                        </TableCell>
+                                        <TableCell>{value.pic.code}</TableCell>
+                                        <TableCell>{value.pic.name}</TableCell>
+                                        <TableCell>{value.pic.name}</TableCell>
+                                        <TableCell>{moment(value.applicant_date).format("LL")}</TableCell>
+                                        <TableCell>{moment(value.request_date_repair).format("LL")}</TableCell>
+                                        <TableCell>{moment(value.request_time_finish).format("LL")}</TableCell>
+                                    </TableRow>
+                                ))
+                                ) : (
+                                <TableRow>
+                                    <TableCell component="th" scope="row" sx={{ textAlign: "center", py: 10 }} colSpan={100}>
+                                        No result found
+                                        {params.search !== "" && (
+                                            <div style={{ display: "inline-block" }}>
+                                            &nbsp;for "<b>{params.search}</b>"
+                                            </div>
+                                        )}
+                                        .
+                                    </TableCell>
+                                </TableRow>
+                                )
+                            ) : (
+                                <TableRow>
+                                    <TableCell component="th" scope="row" sx={{ textAlign: "center", py: 5 }} colSpan={100}>
+                                        <Loading />
+                                    </TableCell>
+                                </TableRow>
+                            )}
+                        </TableBody>
+                    </Table>
+                    </TableContainer>
+                    {maintanceData !== undefined && maintanceData.data.length > 0 && (
+                    <TablePagination
+                        component="div"
+                        count={maintanceData.meta.total}
+                        page={params.page - 1}
+                        rowsPerPage={params.limit}
+                        onPageChange={handleChangePage}
+                        onRowsPerPageChange={handleChangeRowsPerPage}
+                        rowsPerPageOptions={[10, 25, 50]}
+                    />
+                    )}
+            </Box>
+        )}
+
+        {/* mutation */}
+        {value === 2 && (
+          <Box sx={{ p: 3 }}>
+            <TableContainer>
+                <Table sx={{ minWidth: 650, mt: 2 }} aria-label="simple table">
+                    <TableHead>
+                        <TableRow
+                            sx={{
+                            "& th:first-of-type": { borderRadius: "0.5em 0 0 0.5em" },
+                            "& th:last-of-type": { borderRadius: "0 0.5em 0.5em 0" },
+                            }}
+                        >
+                            <TableCell align="center">No.</TableCell>
+                            <TableCell>PIC Asset</TableCell>
+                            <TableCell>Receive Name</TableCell>
+                            <TableCell>Asset Code</TableCell>
+                            <TableCell>Asset Name</TableCell>
+                            <TableCell>From Branch</TableCell>
+                            <TableCell>From Room</TableCell>
+                            <TableCell>To Branch</TableCell>
+                            <TableCell>To Room</TableCell>
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        {mutationData !== undefined ? (
+                            mutationData.data.length > 0 ? (
+                            mutationData.data.map((value, index) => (
+                                <TableRow key={index}>
+                                    <TableCell component="th" scope="row" align="center">
+                                        {mutationData.meta.from + index}.
+                                    </TableCell>
+                                    <TableCell>{value.pic.name}</TableCell>
+                                    <TableCell>{value.receive.name}</TableCell>
+                                    <TableCell>{value.asset.asset_code}</TableCell>
+                                    <TableCell>{value.asset.asset_name}</TableCell>
+                                    <TableCell>
+                                        {value.from_branch.code} - {value.from_branch.location}
+                                    </TableCell>
+                                    <TableCell>{value.from_room}</TableCell>
+                                    <TableCell>
+                                        {value.to_branch.code} - {value.to_branch.location}
+                                    </TableCell>
+                                    <TableCell>{value.to_room}</TableCell>
+                                </TableRow>
+                            ))
+                            ) : (
+                            <TableRow>
+                                <TableCell component="th" scope="row" sx={{ textAlign: "center", py: 10 }} colSpan={100}>
+                                    No result found
+                                    {params.search !== "" && (
+                                        <div style={{ display: "inline-block" }}>
+                                        &nbsp;for "<b>{params.search}</b>"
+                                        </div>
+                                    )}
+                                    .
+                                </TableCell>
+                            </TableRow>
+                            )
+                        ) : (
+                            <TableRow>
+                                <TableCell component="th" scope="row" sx={{ textAlign: "center", py: 5 }} colSpan={100}>
+                                    <Loading />
+                                </TableCell>
+                            </TableRow>
+                        )}
+                    </TableBody>
+                </Table>
+            </TableContainer>
+            {mutationData !== undefined && mutationData.data.length > 0 && (
+            <TablePagination
+                component="div"
+                count={mutationData.meta.total}
+                page={params.page - 1}
+                rowsPerPage={params.limit}
+                onPageChange={handleChangePage}
+                onRowsPerPageChange={handleChangeRowsPerPage}
+                rowsPerPageOptions={[10, 25, 50]}
+            />
+            )}
+          </Box>
+        )}
+
+        {/* change */}
+        {value === 3 && (
+          <Box sx={{ p: 3 }}>
+            <TableContainer>
+                <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                    <TableHead>
+                        <TableRow
+                        sx={{
+                            "& th:first-of-type": { borderRadius: "0.5em 0 0 0.5em" },
+                            "& th:last-of-type": { borderRadius: "0 0.5em 0.5em 0" },
+                        }}
+                        >
+                            <TableCell align="center">No.</TableCell>
+                            <TableCell>Log Name</TableCell>
+                            <TableCell>Description</TableCell>
+                            <TableCell>User</TableCell>
+                            <TableCell>Ip</TableCell>
+                            <TableCell>Browser</TableCell>
+                            <TableCell>OS</TableCell>
+                            <TableCell>Created At</TableCell>
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        {changeData !== undefined ? (
+                        changeData.data.length > 0 ? (
+                            changeData.data.map((value, key) => (
+                                <TableRow key={key}>
+                                    <TableCell component="th" scope="row" align="center">
+                                        {changeData.meta.from + key}.
+                                    </TableCell>
+                                    <TableCell>{value.log_name}</TableCell>
+                                    <TableCell>{value.description}</TableCell>
+                                    <TableCell>
+                                        {value.user !== null && value.user}
+                                    </TableCell>
+                                    <TableCell>{value.ip}</TableCell>
+                                    <TableCell>{value.browser}</TableCell>
+                                    <TableCell>{value.os}</TableCell>
+                                    <TableCell>{moment(value.created_at).format('ll') }</TableCell>
+                                    
+                                </TableRow>
+                            ))
+                        ) : (
+                            <TableRow>
+                                <TableCell component="th" scope="row" sx={{ textAlign: "center", py: 10 }} colSpan={10}>
+                                    No result found
+                                    {params.search !== "" && (
+                                    <div style={{ display: "inline-block" }}>
+                                        &nbsp;for "<b>{params.search}</b>"
+                                    </div>
+                                    )}
+                                    .
+                                </TableCell>
+                            </TableRow>
+                        )
+                        ) : (
+                        <TableRow>
+                            <TableCell component="th" scope="row" sx={{ textAlign: "center", py: 5 }} colSpan={10}>
+                                <Loading />
+                            </TableCell>
+                        </TableRow>
+                        )}
+                    </TableBody>
+                </Table>
+            </TableContainer>
+            {changeData !== undefined && changeData.data.length > 0 && (
+                <TablePagination
+                    component="div"
+                    count={changeData.meta.total}
+                    page={params.page - 1}
+                    rowsPerPage={params.limit}
+                    onPageChange={handleChangePage}
+                    onRowsPerPageChange={handleChangeRowsPerPage}
+                    rowsPerPageOptions={[10, 25, 50, 100]}
+                    showFirstButton
+                    showLastButton
+            />
+            )}
+          </Box>
+        )}
+
+        
+
+        
+      </div>
+    );
+}
+
+const a11yProps = (index) => {
+    return {
+      id: `simple-tab-${index}`,
+      'aria-controls': `simple-tabpanel-${index}`,
+    };
+}
+
+const TabsComponent = (props) => {
+    const [value, setValue] = useState(0)
+    const handleChange = (e, val) => {
+        setValue(val)
+    }
+    return (
+        <>
+            <Tabs value={value} onChange={handleChange} centered>
+                <Tab label="Depreciation History" {...a11yProps(0)} />
+                <Tab label="Maintance History" {...a11yProps(1)} />
+                <Tab label="Mutation History" {...a11yProps(2)} />
+                <Tab label="Change History" {...a11yProps(3)} />
+            </Tabs>
+            {value === 0 &&
+                <TabPanel value={value} index={0} id={props.id}>
+                    Depreciation History
+                </TabPanel>
+            }
+            {value === 1 && 
+                <TabPanel value={value} index={1} id={props.id}>
+                    Maintance History
+                </TabPanel>
+            }
+            {value === 2 &&
+                <TabPanel value={value} index={2} id={props.id}>
+                    Mutation History
+                </TabPanel>
+            }
+            {value === 3 &&
+                <TabPanel value={value} index={3} id={props.id}>
+                    Change History
+                </TabPanel>
+            }
+            
+        </>
+    )
+}
+
 const DetailComponent = (props) => {
     return (
         <Grid item xs={12} md={12} alignItems="center" justifyContent="center" display="flex" flexDirection={'column'}>
-            <Stack direction={"row"} spacing={3}>
-                <img alt="label" style={{ height: '150px' }} src={props.data.picture[0].file}/>
-                <Box sx={{ border: 1,  height: '200px', display: 'flex', alignItems: "center" }}>
-                    <Box sx={{ border: 1 }}>
-                        <Stack direction={"row"} justifyContent="center" >
-                            <div style={{  background: 'white', display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100px' }}>
-                                <QRCode
-                                    size={256}
-                                    value={props.data.asset_code}
-                                    style={{ height: '80px', width: '80px' }}
-                                    viewBox={`0 0 256 256`}
-                                />
-                            </div>
-                            <Stack border={1} alignItems="stretch">
-                                <Typography sx={{ fontWeight: 'bold', color: 'black', p: 2, textAlign: 'center' }}>PT. Haier Sales Indonesia</Typography>
-                                <Stack 
-                                    divider={
-                                        <Divider 
-                                            orientation="vertical" 
-                                            flexItem
-                                            light 
-                                        />
-                                    } 
-                                    direction={"row"} 
-                                    spacing={2} 
-                                    border={1}
-                                >
-                                    <Typography sx={{ borderRight: 1, px: 2 }}>{`${props.data.capitalized.split('-')[0]}`}</Typography>
-                                    <Typography sx={{ borderRight: 1, pr: 2 }}>{`${props.data.asset_code}`}</Typography>
-                                    <Typography sx={{ borderRight: 1, pr: 2 }}>{`ID${props.data.id}`}</Typography>
-                                    <Typography sx={{ borderRight: 1, pr: 2 }}>{`${props.data.sap_code}`}</Typography>
-                                </Stack>
-                                <Typography sx={{ fontWeight: 'bold', color: 'black', p: 2, textAlign: 'center' }}>
-                                    {`${props.data.asset_name} - ${props.data.employee.name} - ${props.data.department.dept}`}
-                                </Typography>
+            <Grid container spacing={3} mt={2} alignItems="center">
+                <Grid item md={5} xs={12} sx={{ 
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center'
+                 }}>
+                    <img alt="label" style={{ height: '200px', maxWidth: '200px', objectFit: 'cover', objectPosition: 'center', ml: 'auto' }} src={props.data.picture[0].file}/>
+
+                </Grid>
+
+                <Grid item md={6} xs={12} 
+                    sx={{ 
+                        height: '200px',
+                        border: 1,
+                    }}>
+                    <Stack direction={"row"} sx={{ width: '100%', height: '140px', border: 0}}>
+                        <Box sx={{  
+                            background: 'white', 
+                            border: 1,
+                            width: '30%',
+                            display: 'flex',
+                            alignItems: 'center'
+                        }}>
+                            <QRCode
+                                size={300}
+                                value={props.data.asset_code}
+                                style={{  width: '100%', padding: '10px' }}
+                                viewBox={`0 0 300 300`}
+                            />
+                        </Box>
+                        <Stack border={1} minWidth={'50%'}>
+                            <Typography sx={{ fontWeight: 'bold', color: 'black', textAlign: 'center' }}>PT. Haier Sales Indonesia</Typography>
+                            <Stack 
+                                direction={"row"} 
+                                spacing={2} 
+                                border={1}
+                            >
+                                <Typography sx={{ borderRight: 1, }}>{`${props.data.asset_code.split('/')[0]}`}</Typography>
+                                <Typography sx={{ borderRight: 1,}}>{`${props.data.asset_code.split('/')[1]}`}</Typography>
+                                <Typography sx={{ borderRight: 1,}}>{`${props.data.asset_code.split('/')[2]}`}</Typography>
+                                <Typography >{`${props.data.asset_code.split('/')[3]}`}</Typography>
                             </Stack>
-                            
+                            <Typography sx={{ fontWeight: 'bold', color: 'black', textAlign: 'center' }}>
+                                {`${props.data.asset_name} - ${props.data.employee.name} - ${props.data.department.dept}`}
+                            </Typography>
                         </Stack>
-                    </Box>
-                </Box>
-            </Stack>
+                        
+                    </Stack>
+                </Grid>
+            </Grid>
             <Button sx={{ mt: 2 }} variant="contained">Print Label</Button>    
         </Grid>
     )
@@ -129,6 +711,9 @@ const Form = (props) => {
     const [isComplete, setIsComplete] = useState(false)
     const [loading, setLoading] = useState(false)
     const [errors, setErrors] = useState({})
+    const [open, setOpen] = useState(false)
+    const [detailModal, setDetailModal] = useState(false)
+    const [detailModalData, setDetailModalData] = useState()
     
     //select
     const [assetLocations, setAssetLocations] = useState([])
@@ -250,6 +835,22 @@ const Form = (props) => {
                 ...form,
                 [e.target.name]: e.target.value
             })
+        }else if(e.target.name === 'sub_category_id'){
+            const subCategory = subCategories.find(v => v.id == e.target.value)
+            const device = masterDevices.find(v => v.sub_type.toLowerCase() == subCategory.sub_category.toLowerCase())
+            setUseFul(subCategory.useful_life)
+            if(device){
+                setForm({
+                    ...form,
+                    [e.target.name]: e.target.value,
+                    device_id: device.id
+                })
+            }else{
+                setForm({
+                    ...form,
+                    [e.target.name]: e.target.value
+                })
+            }
         }else if(e.target.name === 'employee_id'){
             const user = employees.find(v => v.id == e.target.value)
             setForm({
@@ -270,19 +871,28 @@ const Form = (props) => {
                 contact: vendor.contact,
                 pic_contact: vendor.pic_contact,
             })
-        }else if(e.target.name === 'sub_category_id'){
-            const sub_category = subCategories.find(v => v.id == e.target.value)
-            setForm({
-                ...form,
-                [e.target.name]: e.target.value
-            })
-            setUseFul(sub_category.useful_life)
         }else{
             setForm({
                 ...form,
                 [e.target.name]: e.target.value
             })
         }
+    }
+
+    const handleModal = () => {
+        setOpen(true)
+    }
+
+    const handleClose = () => {
+        setOpen(false)
+    }
+
+    const handleDetailModal = () => {
+        setDetailModal(true)
+    }
+
+    const handleDetailClose = () => {
+        setDetailModal(false)
     }
 
     //Automatic value for edit
@@ -330,8 +940,9 @@ const Form = (props) => {
         try{
             const res = await http.post('asset', formData)
             // console.log(res.data.data)
-            setLoading(false)    
-            navigate('/data-asset')      
+            setLoading(false) 
+            setDetailModalData(res.data.data) 
+            handleDetailModal()
         }catch(err) {
             setLoading(false)   
             if(err.response){
@@ -346,7 +957,9 @@ const Form = (props) => {
             const res = await http.post(`asset/${id}`, formData)
             // console.log(res.data.data) 
             setLoading(false)   
-            navigate('/data-asset')      
+            // navigate('/data-asset')
+            setDetailModalData(res.data.data) 
+            handleDetailModal()     
         }catch(err) {
             setLoading(false)
             if(err.response){
@@ -383,7 +996,7 @@ const Form = (props) => {
         //depreciation asset
         formData.append('cost_id', form.cost_id)
         formData.append('acquisition_value', form.acquisition_value)
-        formData.append('depreciation_value', form.depreciation_value)
+        // formData.append('depreciation_value', form.depreciation_value)
         // formData.append('value_book', form.value_book)
         formData.append('depreciation', form.depreciation)
 
@@ -913,7 +1526,7 @@ const Form = (props) => {
                                 <Grid item md={6} xs={12}>
                                     <TextField
                                         value={form.depreciation_value}
-                                        disabled={props.detail}
+                                        disabled
                                         onChange={handleChange}   
                                         name="depreciation_value"
                                         fullWidth
@@ -1341,7 +1954,7 @@ const Form = (props) => {
                                                             {v.image_preview == "" ? 
                                                             <InsertPhotoOutlined sx={{ fontSize: '100px' }} />
                                                             :
-                                                            <img style={{ height: '100px' }} src={v.image_preview} alt="test"  />
+                                                            <img style={{ height: '100px', width: '100px', objectFit: 'cover', objectPosition: 'center' }} src={v.image_preview} alt="test"  />
                                                             }
                                                             {typeof errors[`picture.${i}.file`] !== 'undefined' &&
                                                                 <Typography sx={{ color: 'red' }}>Image Required</Typography> 
@@ -1491,12 +2104,30 @@ const Form = (props) => {
                 <Grid item xs={12} md={12}>
                     <Card>
                         <CardContent>
-                            <LoadingButton sx={{ display: 'flex', mt: 2, borderRadius: 25, mx: 'auto', width: '50%'  }} type="submit" loading={loading} variant="contained">
+
+                            <LoadingButton sx={{ display: 'flex', mt: 2, borderRadius: 25, mx: 'auto', width: '50%'  }} type="button" onClick={handleModal} variant="contained">
                                 {props.title !== 'add' ? "Save" : "Create" }
                             </LoadingButton>
+                            
+                            <SuccessModal loading={loading} title={props.title !== 'add' ? "Save" : "Create"} open={open} handleClose={handleClose} onSubmit={onSubmit} />
+                            
+                            {detailModalData !== undefined &&
+                                <DetailModal handleClose={handleDetailClose} open={detailModal} data={detailModalData} />
+
+                            }
                         </CardContent>
                     </Card>
 
+                </Grid>
+                }
+
+                {props.detail && 
+                <Grid item xs={12} md={12}>
+                    <Card>
+                        <CardContent>
+                            <TabsComponent id={props.data.id} />
+                        </CardContent>
+                    </Card>
                 </Grid>
                 }
 
@@ -1507,6 +2138,8 @@ const Form = (props) => {
                     <Loading />
                 </Grid>
                 }
+
+                
 
             {/* close Grid Container */}
             </Grid>

@@ -123,13 +123,17 @@ const Index = () => {
     const [display, setDisplay] = useState('block')
     const navigate = useNavigate()
 
-    const getDetailAsset = async (id) => {
-        const res = await http.get(`asset/${id}`, {
-            params: {
-                by: 'asset_code'
-            }
-        })
-        setData(res.data.data)
+    const getDetailAsset = async (asset_code) => {
+        try{
+            const formData = new FormData()
+            formData.append('asset_code', asset_code)
+            const res = await http.post(`asset/show_by_code`, formData)
+            setData(res.data.data)
+
+        }catch(err){
+            console.log(err.response)
+        }
+        
     }
 
     const setScanner = () => {
@@ -155,6 +159,14 @@ const Index = () => {
             navigate(`/detail-data-asset-it/${data.id}`)
         }else{
             navigate(`/detail-data-asset-non-it/${data.id}`)
+        }
+    }
+
+    const handleEdit = () => {
+        if(data.asset_type === 'it'){
+            navigate(`/edit-data-asset-it/${data.id}`)
+        }else{
+            navigate(`/edit-data-asset-non-it/${data.id}`)
         }
     }
 
@@ -198,9 +210,15 @@ const Index = () => {
                                                 Re-Scan QR Code
                                             </Button>
                                             {JSON.stringify(data) !== '{}' &&
+                                            <>
                                             <Button variant="contained" onClick={handleDetail}>
                                                 Lihat Detail Asset
                                             </Button>
+                                            <Button variant="contained" onClick={handleEdit}>
+                                                Edit Asset
+                                            </Button>
+                                            
+                                            </>
                                             }
 
                                         </Stack>

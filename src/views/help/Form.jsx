@@ -50,6 +50,7 @@ const Form = (props) => {
 		title: "",
 		purpose: "",
 		status: "",
+		category: "",
 	});
 	const [document, setDocument] = useState({
 		file: '',
@@ -107,6 +108,7 @@ const Form = (props) => {
 		const formData = new FormData();
 		formData.append('title', form.title)
 		formData.append('purpose', form.purpose)
+		formData.append('category', form.category)
 
 		// setTimeout(() => {
 		// 	console.log(Object.fromEntries(formData))
@@ -121,7 +123,7 @@ const Form = (props) => {
 					navigate("/help");
 				})
 				.catch((err) => {
-					// console.log(err.response)
+					console.log(err.response)
 				})
 				.finally((res) => {
 					setLoading(false);
@@ -211,6 +213,19 @@ const Form = (props) => {
 										</Button>
 									)
 								}
+								</Grid>
+								<Grid item xs={12} md={12}>
+									<TextField 
+										name="category" 
+										value={form.category} 
+										onChange={onChange} 
+										label="Category"
+										fullWidth
+										select 
+									>
+										<MenuItem value="it">IT</MenuItem>
+										<MenuItem value="non_it">NON-IT</MenuItem>
+									</TextField>
 								</Grid>
 								<Grid item xs={12} md={12}>
 									<TextField 

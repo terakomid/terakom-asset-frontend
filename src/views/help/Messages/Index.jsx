@@ -135,7 +135,7 @@ const Index = (props) => {
                                         />
                                         <CardContent sx={{ backgroundColor: '#f3f3f3',  }}>
                                         {isComplete &&
-                                        <Stack sx={{ position: 'relative' }}>
+                                        <Stack sx={{ position: 'relative' }} height={"500px"}>
                                             {data.length > 0 && data.map((v, i) => {
                                                 if(v.from.id === props.data.created_by.id){
                                                     return (
