@@ -38,6 +38,7 @@ export default function AssetSubCategory() {
       useful_life: "",
       sub_category: "",
    });
+   const [usefulLife] = useState([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]);
    const [params, setParams] = useState({
       category_id: id,
       search: "",
@@ -337,19 +338,19 @@ export default function AssetSubCategory() {
                                  name="useful_life"
                                  label="Useful Life"
                                  margin="normal"
-                                 type="tel"
                                  variant="outlined"
                                  value={data.useful_life}
                                  onChange={handleChange}
-                                 endadornment={<InputAdornment position="end">Bulan</InputAdornment>}
-                                 // InputProps={{
-                                 //    endAdornment: <InputAdornment position="end">Bulan</InputAdornment>,
-                                 // }}
+                                 select
                                  fullWidth
                                  required
-                                 // error={this.state.errorCode}
-                                 // helperText={this.state.errorTextUniqueCode}
-                              />
+                              >
+                                 {usefulLife.map((value, index) => (
+                                    <MenuItem value={value * 12} key={index}>
+                                       {value * 12} Bulan
+                                    </MenuItem>
+                                 ))}
+                              </TextField>
                               <FormControl margin="normal">
                                  <Stack direction="row" spacing={1}>
                                     <LoadingButton type="submit" loading={loading} variant="contained">
