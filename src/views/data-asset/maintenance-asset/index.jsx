@@ -168,7 +168,7 @@ export default function MaintenanceAsset() {
                                  }}
                               >
                                  <TableCell align="center">No.</TableCell>
-                                 <TableCell>Maintenance Code</TableCell>
+                                 <TableCell>PIC Code</TableCell>
                                  <TableCell>PIC Asset</TableCell>
                                  <TableCell>Department</TableCell>
                                  <TableCell>Applicant Date</TableCell>
@@ -187,7 +187,7 @@ export default function MaintenanceAsset() {
                                           </TableCell>
                                           <TableCell>{value.pic.code}</TableCell>
                                           <TableCell>{value.pic.name}</TableCell>
-                                          <TableCell>{value.pic.name}</TableCell>
+                                          <TableCell>{value.pic.department}</TableCell>
                                           <TableCell>{moment(value.applicant_date).format("LL")}</TableCell>
                                           <TableCell>{moment(value.request_date_repair).format("LL")}</TableCell>
                                           <TableCell>{moment(value.request_time_finish).format("LL")}</TableCell>
