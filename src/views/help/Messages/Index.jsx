@@ -37,7 +37,7 @@ const Index = (props) => {
         file: '',
         file_url: ''
     })
-
+    console.log(props.data)
     const getData = async () => {
         setIsComplete(false)
         const res = await http.get(`/help_message?help_id=${props.data.id}`)
@@ -136,6 +136,7 @@ const Index = (props) => {
                                         <CardContent sx={{ backgroundColor: '#f3f3f3',  }}>
                                         {isComplete &&
                                         <Stack sx={{ position: 'relative' }} height={"500px"}>
+                                            <Box sx={{ height: '500px' }}>
                                             {data.length > 0 && data.map((v, i) => {
                                                 if(v.from.id === props.data.created_by.id){
                                                     return (
@@ -147,6 +148,8 @@ const Index = (props) => {
                                                     )
                                                 }
                                             })}
+
+                                            </Box>
                                             
                                             {document.file !== '' && 
                                             <Box sx={{ width: '30%',  mt: 3, backgroundColor: '#fff', px: 3, py: 1, borderRadius: 32, position: 'sticky', bottom: 25}}>
@@ -177,6 +180,7 @@ const Index = (props) => {
                                                 <FormControl variant="standard" fullWidth>
                                                     <InputBase
                                                         value={message}
+                                                        disabled={props.data.status !== 'open' ? true : false}
                                                         fullWidth
                                                         id="standard-adornment-password"
                                                         onChange={(e) => setMessage(e.target.value)}
@@ -186,6 +190,7 @@ const Index = (props) => {
                                                                 <IconButton
                                                                     aria-label="toggle password visibility"
                                                                     component="label"
+                                                                    disabled={props.data.status !== 'open' ? true : false}
                                                                 >   
                                                                     <input type="file" hidden onChange={(e) => {
                                                                         let file = e.target.files[0]
@@ -202,6 +207,7 @@ const Index = (props) => {
                                                                 <IconButton
                                                                     aria-label="toggle password visibility"
                                                                     type="submit"
+                                                                    disabled={props.data.status !== 'open' ? true : false}
                                                                 >
                                                                     <Send />
                                                                 </IconButton>

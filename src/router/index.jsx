@@ -10,7 +10,7 @@ import Login from "../views/auth/login";
 import ForgotPassword from "../views/auth/forgot-password";
 
 // Dashboard
-import Dashboard from "../views/dashboard/Content";
+import Dashboard from "../views/dashboard/Index";
 
 // User management
 import UserRole from "../views/user-management/user-role/Content";
