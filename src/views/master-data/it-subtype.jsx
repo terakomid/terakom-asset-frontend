@@ -44,7 +44,7 @@ export default function ItSubType() {
 
    const getData = async () => {
       http
-         .get(`/sub_master_it`, {
+         .get(`sub_master_it`, {
             params: params,
          })
          .then((res) => {
@@ -65,18 +65,18 @@ export default function ItSubType() {
       // eslint-disable-next-line react-hooks/exhaustive-deps
    }, [params]);
 
-   const [method, setMethod] = useState("create");
+   const [method, setMethod] = useState("add");
    const [loading, setLoading] = useState(false);
    const handleSubmit = async (e) => {
       e.preventDefault();
       setLoading(true);
-      if (method === "create") {
+      if (method === "add") {
          let formData = new FormData();
          formData.append("master_it_id", id);
          formData.append("sub_type", data.sub_type);
          // console.log(Object.fromEntries(formData));
          http
-            .post(`/sub_master_it`, formData, {})
+            .post(`sub_master_it`, formData, {})
             .then((res) => {
                // console.log(res.data.data);
                setLoading(false);
@@ -93,10 +93,10 @@ export default function ItSubType() {
          formData.append("master_it_id", id);
          formData.append("sub_type", data.sub_type);
          http
-            .post(`/sub_master_it/${data.id}`, formData, {})
+            .post(`sub_master_it/${data.id}`, formData, {})
             .then((res) => {
                // console.log(res.data.data);
-               setMethod("create");
+               setMethod("add");
                setLoading(false);
                handleClear();
                getData();
@@ -120,7 +120,7 @@ export default function ItSubType() {
    };
 
    const handleClear = (e) => {
-      setMethod("create");
+      setMethod("add");
       setData({
          sub_type: "",
       });
@@ -143,6 +143,7 @@ export default function ItSubType() {
    };
 
    const handleEdit = () => {
+      setMethod("edit");
       setData(staging);
       handleMenu();
    };
@@ -154,7 +155,7 @@ export default function ItSubType() {
 
    const onDelete = async () => {
       http
-         .delete(`/sub_master_it/${staging.id}`, {})
+         .delete(`sub_master_it/${staging.id}`, {})
          .then((res) => {
             getData();
             handleMenu();
@@ -170,7 +171,6 @@ export default function ItSubType() {
    const open = Boolean(anchorEl);
    const handleClick = (event, value) => {
       setAnchorEl(event.currentTarget);
-      setMethod("edit");
       setStaging(value);
    };
    const handleMenu = () => {
@@ -294,7 +294,7 @@ export default function ItSubType() {
                      <Card>
                         <CardContent>
                            <Typography variant="subtitle1" fontWeight="bold" mb={2}>
-                              Form Sub Master IT
+                              {method === "add" ? "Add" : "Edit"} Sub Master IT
                            </Typography>
                            <Box component="form" onSubmit={handleSubmit}>
                               <TextField
@@ -306,8 +306,6 @@ export default function ItSubType() {
                                  onChange={handleChange}
                                  fullWidth
                                  required
-                                 // error={this.state.errorCode}
-                                 // helperText={this.state.errorTextUniqueCode}
                               />
                               <FormControl margin="normal">
                                  <Stack direction="row" spacing={1}>

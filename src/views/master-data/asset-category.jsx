@@ -64,18 +64,18 @@ export default function AssetCategory() {
       // eslint-disable-next-line react-hooks/exhaustive-deps
    }, [params]);
 
-   const [method, setMethod] = useState("create");
+   const [method, setMethod] = useState("add");
    const [loading, setLoading] = useState(false);
    const handleSubmit = async (e) => {
       e.preventDefault();
       setLoading(true);
-      if (method === "create") {
+      if (method === "add") {
          let formData = new FormData();
          formData.append("code", data.code);
          formData.append("category", data.category);
          // console.log(Object.fromEntries(formData));
          http
-            .post(`/category`, formData, {})
+            .post(`category`, formData, {})
             .then((res) => {
                // console.log(res.data.data);
                setLoading(false);
@@ -92,10 +92,10 @@ export default function AssetCategory() {
          formData.append("code", data.code);
          formData.append("category", data.category);
          http
-            .post(`/category/${data.id}`, formData, {})
+            .post(`category/${data.id}`, formData, {})
             .then((res) => {
                // console.log(res.data.data);
-               setMethod("create");
+               setMethod("add");
                setLoading(false);
                handleClear();
                getData();
@@ -119,7 +119,7 @@ export default function AssetCategory() {
    };
 
    const handleClear = (e) => {
-      setMethod("create");
+      setMethod("add");
       setData({
          code: "",
          category: "",
@@ -143,6 +143,7 @@ export default function AssetCategory() {
    };
 
    const handleEdit = () => {
+      setMethod("edit");
       setData(staging);
       handleMenu();
    };
@@ -154,7 +155,7 @@ export default function AssetCategory() {
 
    const onDelete = async () => {
       http
-         .delete(`/category/${staging.id}`, {})
+         .delete(`category/${staging.id}`, {})
          .then((res) => {
             getData();
             handleMenu();
@@ -171,7 +172,6 @@ export default function AssetCategory() {
    const open = Boolean(anchorEl);
    const handleClick = (event, value) => {
       setAnchorEl(event.currentTarget);
-      setMethod("edit");
       setStaging(value);
    };
    const handleMenu = () => {
@@ -301,7 +301,7 @@ export default function AssetCategory() {
                      <Card>
                         <CardContent>
                            <Typography variant="subtitle1" fontWeight="bold" mb={2}>
-                              Form Asset Category
+                              {method === "add" ? "Add" : "Edit"} Asset Category
                            </Typography>
                            <Box component="form" onSubmit={handleSubmit}>
                               <TextField
@@ -313,8 +313,6 @@ export default function AssetCategory() {
                                  onChange={handleChange}
                                  fullWidth
                                  required
-                                 // error={this.state.errorCode}
-                                 // helperText={this.state.errorTextUniqueCode}
                               />
                               <TextField
                                  name="category"
@@ -325,8 +323,6 @@ export default function AssetCategory() {
                                  onChange={handleChange}
                                  fullWidth
                                  required
-                                 // error={this.state.errorCode}
-                                 // helperText={this.state.errorTextUniqueCode}
                               />
                               <FormControl margin="normal">
                                  <Stack direction="row" spacing={1}>

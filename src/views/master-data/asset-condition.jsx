@@ -40,7 +40,7 @@ export default function AssetCondition() {
 
    const getData = async () => {
       http
-         .get(`/condition`, {
+         .get(`condition`, {
             params: params,
          })
          .then((res) => {
@@ -61,17 +61,17 @@ export default function AssetCondition() {
       // eslint-disable-next-line react-hooks/exhaustive-deps
    }, [params]);
 
-   const [method, setMethod] = useState("create");
+   const [method, setMethod] = useState("add");
    const [loading, setLoading] = useState(false);
    const handleSubmit = async (e) => {
       e.preventDefault();
       setLoading(true);
-      if (method === "create") {
+      if (method === "add") {
          let formData = new FormData();
          formData.append("condition", data.condition);
          // console.log(Object.fromEntries(formData));
          http
-            .post(`/condition`, formData, {})
+            .post(`condition`, formData, {})
             .then((res) => {
                // console.log(res.data.data);
                setLoading(false);
@@ -87,10 +87,10 @@ export default function AssetCondition() {
          formData.append("_method", "PUT");
          formData.append("condition", data.condition);
          http
-            .post(`/condition/${data.id}`, formData, {})
+            .post(`condition/${data.id}`, formData, {})
             .then((res) => {
                // console.log(res.data.data);
-               setMethod("create");
+               setMethod("add");
                setLoading(false);
                handleClear();
                getData();
@@ -114,7 +114,7 @@ export default function AssetCondition() {
    };
 
    const handleClear = (e) => {
-      setMethod("create");
+      setMethod("add");
       setData({
          condition: "",
       });
@@ -137,6 +137,7 @@ export default function AssetCondition() {
    };
 
    const handleEdit = () => {
+      setMethod("edit");
       setData(staging);
       handleMenu();
    };
@@ -148,7 +149,7 @@ export default function AssetCondition() {
 
    const onDelete = async () => {
       http
-         .delete(`/condition/${staging.id}`, {})
+         .delete(`condition/${staging.id}`, {})
          .then((res) => {
             getData();
             handleMenu();
@@ -165,7 +166,6 @@ export default function AssetCondition() {
    const open = Boolean(anchorEl);
    const handleClick = (event, value) => {
       setAnchorEl(event.currentTarget);
-      setMethod("edit");
       setStaging(value);
    };
    const handleMenu = () => {
@@ -289,7 +289,7 @@ export default function AssetCondition() {
                      <Card>
                         <CardContent>
                            <Typography variant="subtitle1" fontWeight="bold" mb={2}>
-                              Form Asset Condition
+                              {method === "add" ? "Add" : "Edit"} Asset Condition
                            </Typography>
                            <Box component="form" onSubmit={handleSubmit}>
                               <TextField
@@ -301,8 +301,6 @@ export default function AssetCondition() {
                                  onChange={handleChange}
                                  fullWidth
                                  required
-                                 // error={this.state.errorCode}
-                                 // helperText={this.state.errorTextUniqueCode}
                               />
                               <FormControl margin="normal">
                                  <Stack direction="row" spacing={1}>

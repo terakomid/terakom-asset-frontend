@@ -40,7 +40,7 @@ export default function Department() {
 
    const getData = async () => {
       http
-         .get(`/dept`, {
+         .get(`dept`, {
             params: params,
          })
          .then((res) => {
@@ -61,17 +61,17 @@ export default function Department() {
       // eslint-disable-next-line react-hooks/exhaustive-deps
    }, [params]);
 
-   const [method, setMethod] = useState("create");
+   const [method, setMethod] = useState("add");
    const [loading, setLoading] = useState(false);
    const handleSubmit = async (e) => {
       e.preventDefault();
       setLoading(true);
-      if (method === "create") {
+      if (method === "add") {
          let formData = new FormData();
          formData.append("dept", data.dept);
          // console.log(Object.fromEntries(formData));
          http
-            .post(`/dept`, formData, {})
+            .post(`dept`, formData, {})
             .then((res) => {
                // console.log(res.data.data);
                setLoading(false);
@@ -87,10 +87,10 @@ export default function Department() {
          formData.append("_method", "PUT");
          formData.append("dept", data.dept);
          http
-            .post(`/dept/${data.id}`, formData, {})
+            .post(`dept/${data.id}`, formData, {})
             .then((res) => {
                // console.log(res.data.data);
-               setMethod("create");
+               setMethod("add");
                setLoading(false);
                handleClear();
                getData();
@@ -114,7 +114,7 @@ export default function Department() {
    };
 
    const handleClear = (e) => {
-      setMethod("create");
+      setMethod("add");
       setData({
          dept: "",
       });
@@ -137,6 +137,7 @@ export default function Department() {
    };
 
    const handleEdit = () => {
+      setMethod("edit");
       setData(staging);
       handleMenu();
    };
@@ -148,7 +149,7 @@ export default function Department() {
 
    const onDelete = async () => {
       http
-         .delete(`/dept/${staging.id}`, {})
+         .delete(`dept/${staging.id}`, {})
          .then((res) => {
             getData();
             handleMenu();
@@ -165,7 +166,6 @@ export default function Department() {
    const open = Boolean(anchorEl);
    const handleClick = (event, value) => {
       setAnchorEl(event.currentTarget);
-      setMethod("edit");
       setStaging(value);
    };
    const handleMenu = () => {
@@ -289,7 +289,7 @@ export default function Department() {
                      <Card>
                         <CardContent>
                            <Typography variant="subtitle1" fontWeight="bold" mb={2}>
-                              Form Department
+                              {method === "add" ? "Add" : "Edit"} Department
                            </Typography>
                            <Box component="form" onSubmit={handleSubmit}>
                               <TextField
@@ -301,8 +301,6 @@ export default function Department() {
                                  onChange={handleChange}
                                  fullWidth
                                  required
-                                 // error={this.state.errorCode}
-                                 // helperText={this.state.errorTextUniqueCode}
                               />
                               <FormControl margin="normal">
                                  <Stack direction="row" spacing={1}>

@@ -46,7 +46,7 @@ export default function AssetSubCategory() {
 
    const getData = async () => {
       http
-         .get(`/sub_category`, {
+         .get(`sub_category`, {
             params: params,
          })
          .then((res) => {
@@ -84,19 +84,19 @@ export default function AssetSubCategory() {
       getCategory();
    }, []);
 
-   const [method, setMethod] = useState("create");
+   const [method, setMethod] = useState("add");
    const [loading, setLoading] = useState(false);
    const handleSubmit = async (e) => {
       e.preventDefault();
       setLoading(true);
-      if (method === "create") {
+      if (method === "add") {
          let formData = new FormData();
          formData.append("category_id", id);
          formData.append("sub_category", data.sub_category);
          formData.append("useful_life", data.useful_life);
          // console.log(Object.fromEntries(formData));
          http
-            .post(`/sub_category`, formData, {})
+            .post(`sub_category`, formData, {})
             .then((res) => {
                // console.log(res.data.data);
                setLoading(false);
@@ -114,10 +114,10 @@ export default function AssetSubCategory() {
          formData.append("sub_category", data.sub_category);
          formData.append("useful_life", data.useful_life);
          http
-            .post(`/sub_category/${data.id}`, formData, {})
+            .post(`sub_category/${data.id}`, formData, {})
             .then((res) => {
                // console.log(res.data.data);
-               setMethod("create");
+               setMethod("add");
                setLoading(false);
                handleClear();
                getData();
@@ -141,7 +141,7 @@ export default function AssetSubCategory() {
    };
 
    const handleClear = (e) => {
-      setMethod("create");
+      setMethod("add");
       setData({
          sub_category: "",
          useful_life: "",
@@ -165,6 +165,7 @@ export default function AssetSubCategory() {
    };
 
    const handleEdit = () => {
+      setMethod("edit");
       setData(staging);
       handleMenu();
    };
@@ -176,7 +177,7 @@ export default function AssetSubCategory() {
 
    const onDelete = async () => {
       http
-         .delete(`/sub_category/${staging.id}`, {})
+         .delete(`sub_category/${staging.id}`, {})
          .then((res) => {
             getData();
             handleMenu();
@@ -193,7 +194,6 @@ export default function AssetSubCategory() {
    const open = Boolean(anchorEl);
    const handleClick = (event, value) => {
       setAnchorEl(event.currentTarget);
-      setMethod("edit");
       setStaging(value);
    };
    const handleMenu = () => {
@@ -319,7 +319,7 @@ export default function AssetSubCategory() {
                      <Card>
                         <CardContent>
                            <Typography variant="subtitle1" fontWeight="bold" mb={2}>
-                              Form Asset Sub Category
+                              {method === "add" ? "Add" : "Edit"} Asset Sub Category
                            </Typography>
                            <Box component="form" onSubmit={handleSubmit}>
                               <TextField
@@ -331,8 +331,6 @@ export default function AssetSubCategory() {
                                  onChange={handleChange}
                                  fullWidth
                                  required
-                                 // error={this.state.errorCode}
-                                 // helperText={this.state.errorTextUniqueCode}
                               />
                               <TextField
                                  name="useful_life"

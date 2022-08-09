@@ -42,7 +42,7 @@ export default function AssetLocation() {
 
    const getData = async () => {
       http
-         .get(`/location`, {
+         .get(`location`, {
             params: params,
          })
          .then((res) => {
@@ -57,7 +57,7 @@ export default function AssetLocation() {
    const [listParent, setListParent] = useState([]);
    const getListParent = async () => {
       http
-         .get(`/location`, {
+         .get(`location`, {
             params: {
                parent: 1,
             },
@@ -74,7 +74,7 @@ export default function AssetLocation() {
    const [parent, setParent] = useState(null);
    const getParent = async (code) => {
       http
-         .get(`/location/${code}`, {})
+         .get(`location/${code}`, {})
          .then((res) => {
             // console.log(res.data.data);
             setParent(res.data.data);
@@ -98,19 +98,19 @@ export default function AssetLocation() {
       // eslint-disable-next-line react-hooks/exhaustive-deps
    }, []);
 
-   const [method, setMethod] = useState("create");
+   const [method, setMethod] = useState("add");
    const [loading, setLoading] = useState(false);
    const handleSubmit = async (e) => {
       e.preventDefault();
       setLoading(true);
-      if (method === "create") {
+      if (method === "add") {
          let formData = new FormData();
          formData.append("code", data.code);
          formData.append("location", data.location);
          formData.append("parent_id", parent !== null ? parent.id : "");
          // console.log(Object.fromEntries(formData));
          http
-            .post(`/location`, formData)
+            .post(`location`, formData)
             .then((res) => {
                // console.log(res.data.data);
                setParent(null);
@@ -129,10 +129,10 @@ export default function AssetLocation() {
          formData.append("location", data.location);
          formData.append("parent_id", parent !== null ? parent.id : "");
          http
-            .post(`/location/${data.id}`, formData, {})
+            .post(`location/${data.id}`, formData, {})
             .then((res) => {
                // console.log(res.data.data);
-               setMethod("create");
+               setMethod("add");
                setParent(null);
                setLoading(false);
                handleClear();
@@ -157,7 +157,7 @@ export default function AssetLocation() {
    };
 
    const handleClear = (e) => {
-      setMethod("create");
+      setMethod("add");
       setParent(null);
       setData({
          code: "",
@@ -186,6 +186,7 @@ export default function AssetLocation() {
    };
 
    const handleEdit = () => {
+      setMethod("edit");
       setData(staging);
       handleMenu();
       staging.parent !== null ? setParent(staging.parent) : setParent(null);
@@ -198,7 +199,7 @@ export default function AssetLocation() {
 
    const onDelete = async () => {
       http
-         .delete(`/location/${staging.id}`, {})
+         .delete(`location/${staging.id}`, {})
          .then((res) => {
             getData();
             handleMenu();
@@ -215,7 +216,6 @@ export default function AssetLocation() {
    const open = Boolean(anchorEl);
    const handleClick = (event, value) => {
       setAnchorEl(event.currentTarget);
-      setMethod("edit");
       setStaging(value);
    };
    const handleMenu = () => {
@@ -362,7 +362,7 @@ export default function AssetLocation() {
                      <Card>
                         <CardContent>
                            <Typography variant="subtitle1" fontWeight="bold" mb={2}>
-                              Form Asset Location
+                              {method === "add" ? "Add" : "Edit"} Asset Location
                            </Typography>
                            <Box component="form" onSubmit={handleSubmit}>
                               <TextField
@@ -374,8 +374,6 @@ export default function AssetLocation() {
                                  onChange={handleChange}
                                  fullWidth
                                  required
-                                 // error={this.state.errorCode}
-                                 // helperText={this.state.errorTextUniqueCode}
                               />
                               <TextField
                                  name="location"
@@ -386,8 +384,6 @@ export default function AssetLocation() {
                                  onChange={handleChange}
                                  fullWidth
                                  required
-                                 // error={this.state.errorCode}
-                                 // helperText={this.state.errorTextUniqueCode}
                               />
                               <TextField
                                  name="parent_id"
@@ -397,8 +393,6 @@ export default function AssetLocation() {
                                  value={parent !== null ? parent.location : ""}
                                  fullWidth
                                  disabled
-                                 // error={this.state.errorCode}
-                                 // helperText={this.state.errorTextUniqueCode}
                               />
                               <FormControl margin="normal">
                                  <Stack direction="row" spacing={1}>

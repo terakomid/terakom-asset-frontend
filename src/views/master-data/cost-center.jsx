@@ -41,7 +41,7 @@ export default function CostCenter() {
 
    const getData = async () => {
       http
-         .get(`/cost`, {
+         .get(`cost`, {
             params: params,
          })
          .then((res) => {
@@ -62,18 +62,18 @@ export default function CostCenter() {
       // eslint-disable-next-line react-hooks/exhaustive-deps
    }, [params]);
 
-   const [method, setMethod] = useState("create");
+   const [method, setMethod] = useState("add");
    const [loading, setLoading] = useState(false);
    const handleSubmit = async (e) => {
       e.preventDefault();
       setLoading(true);
-      if (method === "create") {
+      if (method === "add") {
          let formData = new FormData();
          formData.append("code", data.code);
          formData.append("name", data.name);
          // console.log(Object.fromEntries(formData));
          http
-            .post(`/cost`, formData, {})
+            .post(`cost`, formData, {})
             .then((res) => {
                // console.log(res.data.data);
                setLoading(false);
@@ -90,10 +90,10 @@ export default function CostCenter() {
          formData.append("code", data.code);
          formData.append("name", data.name);
          http
-            .post(`/cost/${data.id}`, formData, {})
+            .post(`cost/${data.id}`, formData, {})
             .then((res) => {
                // console.log(res.data.data);
-               setMethod("create");
+               setMethod("add");
                setLoading(false);
                handleClear();
                getData();
@@ -117,7 +117,7 @@ export default function CostCenter() {
    };
 
    const handleClear = (e) => {
-      setMethod("create");
+      setMethod("add");
       setData({
          code: "",
          name: "",
@@ -141,6 +141,7 @@ export default function CostCenter() {
    };
 
    const handleEdit = () => {
+      setMethod("edit");
       setData(staging);
       handleMenu();
    };
@@ -152,7 +153,7 @@ export default function CostCenter() {
 
    const onDelete = async () => {
       http
-         .delete(`/cost/${staging.id}`, {})
+         .delete(`cost/${staging.id}`, {})
          .then((res) => {
             getData();
             handleMenu();
@@ -169,7 +170,6 @@ export default function CostCenter() {
    const open = Boolean(anchorEl);
    const handleClick = (event, value) => {
       setAnchorEl(event.currentTarget);
-      setMethod("edit");
       setStaging(value);
    };
    const handleMenu = () => {
@@ -295,7 +295,7 @@ export default function CostCenter() {
                      <Card>
                         <CardContent>
                            <Typography variant="subtitle1" fontWeight="bold" mb={2}>
-                              Form Cost Center
+                              {method === "add" ? "Add" : "Edit"} Cost Center
                            </Typography>
                            <Box component="form" onSubmit={handleSubmit}>
                               <TextField
@@ -307,8 +307,6 @@ export default function CostCenter() {
                                  onChange={handleChange}
                                  fullWidth
                                  required
-                                 // error={this.state.errorCode}
-                                 // helperText={this.state.errorTextUniqueCode}
                               />
                               <TextField
                                  name="name"
@@ -319,8 +317,6 @@ export default function CostCenter() {
                                  onChange={handleChange}
                                  fullWidth
                                  required
-                                 // error={this.state.errorCode}
-                                 // helperText={this.state.errorTextUniqueCode}
                               />
                               <FormControl margin="normal">
                                  <Stack direction="row" spacing={1}>
