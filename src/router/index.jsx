@@ -9,6 +9,10 @@ import Layout from "../component/Layout";
 import Login from "../views/auth/login";
 import ForgotPassword from "../views/auth/forgot-password";
 
+//Header
+import Profil from "../views/headers/profil/Form"
+import ChangePassword from "../views/headers/reset-password/Form"
+
 // Dashboard
 import Dashboard from "../views/dashboard/Index";
 
@@ -88,6 +92,24 @@ export default function Router() {
                   <Middleware.Before>
                      <Auth render={<ForgotPassword />} />
                   </Middleware.Before>
+               }
+            />
+
+            {/* Headers */}
+            <Route
+               path="/profil"
+               element={
+                  <Middleware.After>
+                     <Layout render={<Profil />} />
+                  </Middleware.After>
+               }
+            />
+            <Route
+               path="/reset-password"
+               element={
+                  <Middleware.After>
+                     <Layout render={<ChangePassword />} />
+                  </Middleware.After>
                }
             />
 

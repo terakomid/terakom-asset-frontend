@@ -399,7 +399,6 @@ const Index = () => {
                     <div className="my-2">
                         <Stack direction="row" justifyContent={"space-between"}>
                             <h3 className="fw-bold mb-2">Dashboard</h3>
-                           {console.log(data)}
                         </Stack>
                         
                     </div>

@@ -4,10 +4,13 @@ import { useRecoilState } from "recoil";
 import { authentication } from "../store/Authentication";
 import http from "../component/api/Api";
 import "../App.css";
+import { useNavigate } from "react-router-dom";
 
 export default function Header(props) {
    let token = localStorage.getItem("token");
+   const navigate = useNavigate()
    const [auth, setAuth] = useRecoilState(authentication);
+   
    const onLogout = async () => {
       await http.post(`logout`).then(() => {
          setAuth({
@@ -17,6 +20,7 @@ export default function Header(props) {
          localStorage.clear();
       });
    };
+   
    return (
       <header id="page-topbar">
          <div className="navbar-header bg-primary">
@@ -189,17 +193,17 @@ export default function Header(props) {
                      aria-haspopup="true"
                      aria-expanded="false"
                   >
-                     <img className="rounded-circle header-profile-user" src="/assets/images/users/user-4.jpg" alt="Header Avatar" />
+                     <img className="rounded-circle header-profile-user" src={auth.user.photo_url} alt="Header Avatar" />
                   </button>
                   <div className="dropdown-menu dropdown-menu-end">
                      {/* item */}
-                     <a className="dropdown-item" href="#link">
+                     <p style={{ cursor: 'pointer' }} onClick={() => navigate('/profil')} className="dropdown-item">
                         <i className="mdi mdi-account-circle font-size-17 text-muted align-middle me-1"></i>
                         Profile
-                     </a>
-                     <a className="dropdown-item d-block" href="#link">
-                        <i className="mdi mdi-cog font-size-17 text-muted align-middle me-1"></i> Settings
-                     </a>
+                     </p>
+                     <p style={{ cursor: 'pointer' }} onClick={() => navigate('/reset-password')} className="dropdown-item d-block">
+                        <i className="mdi mdi-cog font-size-17 text-muted align-middle me-1"></i> Change Password
+                     </p>
                      <div className="dropdown-divider"></div>
                      <div className="dropdown-item text-danger" style={{ cursor: "pointer" }} onClick={onLogout}>
                         <i className="mdi mdi-power font-size-17 text-muted align-middle me-1 text-danger"></i>
