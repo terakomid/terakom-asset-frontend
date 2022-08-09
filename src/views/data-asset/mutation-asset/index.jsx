@@ -26,7 +26,13 @@ import http from "../../../component/api/Api";
 import Loading from "../../../component/Loading";
 import ModalDelete from "../../../component/Delete";
 
+import { useRecoilValue } from "recoil";
+import { authentication } from "../../../store/Authentication";
+import { Permission } from "../../../component/Permission";
+
 export default function MutationAsset() {
+   const { user } = useRecoilValue(authentication);
+
    const [params, setParams] = useState({
       search: "",
       paginate: 1,
@@ -45,7 +51,7 @@ export default function MutationAsset() {
             setData(res.data.data);
          })
          .catch((err) => {
-            console.log(err.response);
+            // console.log(err.response);
          });
    };
 
@@ -117,11 +123,13 @@ export default function MutationAsset() {
             <div className="container">
                <div className="d-flex align-items-center justify-content-between mt-2 mb-4">
                   <h3 className="fw-bold mb-0">Mutation Asset</h3>
-                  <Stack direction="row" spacing={1}>
-                     <Button variant="contained" startIcon={<AddRounded />} component={RouterLink} to="./add">
-                        Add Mutation Asset
-                     </Button>
-                  </Stack>
+                  {Permission(user.permission, "create asset mutation") && (
+                     <Stack direction="row" spacing={1}>
+                        <Button variant="contained" startIcon={<AddRounded />} component={RouterLink} to="./add">
+                           Add Mutation Asset
+                        </Button>
+                     </Stack>
+                  )}
                </div>
                <Card>
                   <CardContent>
@@ -175,7 +183,9 @@ export default function MutationAsset() {
                                  <TableCell>From Room</TableCell>
                                  <TableCell>To Branch</TableCell>
                                  <TableCell>To Room</TableCell>
-                                 <TableCell align="center">Action</TableCell>
+                                 {Permission(user.permission, "update asset mutation") || Permission(user.permission, "delete asset mutation") ? (
+                                    <TableCell align="center">Action</TableCell>
+                                 ) : null}
                               </TableRow>
                            </TableHead>
                            <TableBody>
@@ -198,11 +208,13 @@ export default function MutationAsset() {
                                              {value.to_branch.code} - {value.to_branch.location}
                                           </TableCell>
                                           <TableCell>{value.to_room}</TableCell>
-                                          <TableCell align="center">
-                                             <IconButton onClick={(e) => handleAction(e, value)}>
-                                                <MoreVert />
-                                             </IconButton>
-                                          </TableCell>
+                                          {Permission(user.permission, "update asset mutation") || Permission(user.permission, "delete asset mutation") ? (
+                                             <TableCell align="center">
+                                                <IconButton onClick={(e) => handleAction(e, value)}>
+                                                   <MoreVert />
+                                                </IconButton>
+                                             </TableCell>
+                                          ) : null}
                                        </TableRow>
                                     ))
                                  ) : (
@@ -242,26 +254,32 @@ export default function MutationAsset() {
                   </CardContent>
                </Card>
                <ModalDelete open={openModal} delete={onDelete} handleClose={handleModal} />
-               <Menu
-                  anchorEl={anchorEl}
-                  open={open}
-                  onClose={handleMenu}
-                  transformOrigin={{ horizontal: "right", vertical: "top" }}
-                  anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
-               >
-                  <MenuItem component={RouterLink} to={`/history-asset/mutation-asset/edit/${staging?.id}`}>
-                     <ListItemIcon>
-                        <Edit />
-                     </ListItemIcon>
-                     Edit
-                  </MenuItem>
-                  <MenuItem onClick={handleModal}>
-                     <ListItemIcon>
-                        <Delete />
-                     </ListItemIcon>
-                     Delete
-                  </MenuItem>
-               </Menu>
+               {Permission(user.permission, "update asset mutation") || Permission(user.permission, "delete asset mutation") ? (
+                  <Menu
+                     anchorEl={anchorEl}
+                     open={open}
+                     onClose={handleMenu}
+                     transformOrigin={{ horizontal: "right", vertical: "top" }}
+                     anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
+                  >
+                     {Permission(user.permission, "update asset mutation") && (
+                        <MenuItem component={RouterLink} to={`/history-asset/mutation-asset/edit/${staging?.id}`}>
+                           <ListItemIcon>
+                              <Edit />
+                           </ListItemIcon>
+                           Edit
+                        </MenuItem>
+                     )}
+                     {Permission(user.permission, "delete asset mutation") && (
+                        <MenuItem onClick={handleModal}>
+                           <ListItemIcon>
+                              <Delete />
+                           </ListItemIcon>
+                           Delete
+                        </MenuItem>
+                     )}
+                  </Menu>
+               ) : null}
             </div>
          </div>
       </div>

@@ -27,7 +27,12 @@ import Loading from "../../../component/Loading";
 import ModalDelete from "../../../component/Delete";
 import moment from "moment";
 
+import { useRecoilValue } from "recoil";
+import { authentication } from "../../../store/Authentication";
+import { Permission } from "../../../component/Permission";
+
 export default function MaintenanceAsset() {
+   const { user } = useRecoilValue(authentication);
    const [params, setParams] = useState({
       search: "",
       paginate: 1,
@@ -118,11 +123,13 @@ export default function MaintenanceAsset() {
             <div className="container">
                <div className="d-flex align-items-center justify-content-between mt-2 mb-4">
                   <h3 className="fw-bold mb-0">Maintenance Asset</h3>
-                  <Stack direction="row" spacing={1}>
-                     <Button variant="contained" startIcon={<AddRounded />} component={RouterLink} to="./add">
-                        Add Maintenance Asset
-                     </Button>
-                  </Stack>
+                  {Permission(user.permission, "create asset maintenance") && (
+                     <Stack direction="row" spacing={1}>
+                        <Button variant="contained" startIcon={<AddRounded />} component={RouterLink} to="./add">
+                           Add Maintenance Asset
+                        </Button>
+                     </Stack>
+                  )}
                </div>
                <Card>
                   <CardContent>
@@ -174,7 +181,9 @@ export default function MaintenanceAsset() {
                                  <TableCell>Applicant Date</TableCell>
                                  <TableCell>Request Date Repair</TableCell>
                                  <TableCell>Request Time To Finish</TableCell>
-                                 <TableCell align="center">Action</TableCell>
+                                 {Permission(user.permission, "update asset maintenance") || Permission(user.permission, "delete asset maintenance") ? (
+                                    <TableCell align="center">Action</TableCell>
+                                 ) : null}
                               </TableRow>
                            </TableHead>
                            <TableBody>
@@ -191,11 +200,14 @@ export default function MaintenanceAsset() {
                                           <TableCell>{moment(value.applicant_date).format("LL")}</TableCell>
                                           <TableCell>{moment(value.request_date_repair).format("LL")}</TableCell>
                                           <TableCell>{moment(value.request_time_finish).format("LL")}</TableCell>
-                                          <TableCell align="center">
-                                             <IconButton onClick={(e) => handleAction(e, value)}>
-                                                <MoreVert />
-                                             </IconButton>
-                                          </TableCell>
+                                          {Permission(user.permission, "update asset maintenance") ||
+                                          Permission(user.permission, "delete asset maintenance") ? (
+                                             <TableCell align="center">
+                                                <IconButton onClick={(e) => handleAction(e, value)}>
+                                                   <MoreVert />
+                                                </IconButton>
+                                             </TableCell>
+                                          ) : null}
                                        </TableRow>
                                     ))
                                  ) : (
@@ -235,26 +247,32 @@ export default function MaintenanceAsset() {
                   </CardContent>
                </Card>
                <ModalDelete open={openModal} delete={onDelete} handleClose={handleModal} />
-               <Menu
-                  anchorEl={anchorEl}
-                  open={open}
-                  onClose={handleMenu}
-                  transformOrigin={{ horizontal: "right", vertical: "top" }}
-                  anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
-               >
-                  <MenuItem component={RouterLink} to={`/history-asset/maintenance-asset/edit/${staging?.id}`}>
-                     <ListItemIcon>
-                        <Edit />
-                     </ListItemIcon>
-                     Edit
-                  </MenuItem>
-                  <MenuItem onClick={handleModal}>
-                     <ListItemIcon>
-                        <Delete />
-                     </ListItemIcon>
-                     Delete
-                  </MenuItem>
-               </Menu>
+               {Permission(user.permission, "update asset maintenance") || Permission(user.permission, "delete asset maintenance") ? (
+                  <Menu
+                     anchorEl={anchorEl}
+                     open={open}
+                     onClose={handleMenu}
+                     transformOrigin={{ horizontal: "right", vertical: "top" }}
+                     anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
+                  >
+                     {Permission(user.permission, "update asset maintenance") && (
+                        <MenuItem component={RouterLink} to={`/history-asset/maintenance-asset/edit/${staging?.id}`}>
+                           <ListItemIcon>
+                              <Edit />
+                           </ListItemIcon>
+                           Edit
+                        </MenuItem>
+                     )}
+                     {Permission(user.permission, "delete asset maintenance") && (
+                        <MenuItem onClick={handleModal}>
+                           <ListItemIcon>
+                              <Delete />
+                           </ListItemIcon>
+                           Delete
+                        </MenuItem>
+                     )}
+                  </Menu>
+               ) : null}
             </div>
          </div>
       </div>

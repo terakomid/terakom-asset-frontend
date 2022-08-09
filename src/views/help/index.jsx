@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
    Button,
    Box,
@@ -21,43 +21,140 @@ import {
    ListItemIcon,
    FormControl,
    TablePagination,
-   Link,
+   Avatar,
+   Dialog,
+   DialogTitle,
+   DialogContent,
+   DialogContentText,
+   DialogActions,
+   Chip,
 } from "@mui/material";
-import { CloseRounded, Delete, Edit, FileDownload, FileUpload, MoreVert, Search } from "@mui/icons-material";
-import { LoadingButton } from "@mui/lab";
+import {
+   Add,
+   CloseRounded,
+   Delete,
+   DownloadOutlined,
+   Edit,
+   FileDownload,
+   FileUpload,
+   FilterListRounded,
+   MoreVert,
+   Search,
+   DoneOutline,
+   Close,
+} from "@mui/icons-material";
+import { useNavigate } from "react-router-dom";
+import FileUploadIcon from "@mui/icons-material/FileUpload";
 
 import http from "../../component/api/Api";
-import { Link as RouterLink } from "react-router-dom";
 import Loading from "../../component/Loading";
 import ModalDelete from "../../component/Delete";
+import moment from "moment";
 
 import { useRecoilValue } from "recoil";
 import { authentication } from "../../store/Authentication";
 import { Permission } from "../../component/Permission";
 
-export default function AssetCategory() {
+const ModalFilter = (props) => {
+   const [roleOptions, setRoleOptions] = useState([]);
+   const [departmentOptions, setDepartmentOptions] = useState([]);
+   const [filter, setFilter] = useState({
+      role: "",
+      department_id: "",
+   });
+   const [isComplete, setIsComplete] = useState(false);
+
+   const getDepartment = async () => {
+      const res = await http.get(`dept`);
+      setDepartmentOptions([...res.data.data]);
+      return 1;
+   };
+
+   const getRole = async () => {
+      const res = await http.get(`role`);
+      setRoleOptions([...res.data.data]);
+      return 1;
+   };
+
+   useEffect(() => {
+      let mounted = true;
+      if (mounted && props.open) {
+         Promise.all([getDepartment(), getRole()]).then((res) => {
+            setIsComplete(true);
+         });
+      }
+
+      return () => (mounted = false);
+   }, [props.open]);
+
+   return (
+      <Dialog
+         fullWidth
+         maxWidth="xs"
+         open={props.open}
+         onClose={props.handleClose}
+         aria-labelledby="alert-dialog-title"
+         aria-describedby="alert-dialog-description"
+      >
+         <DialogTitle>Filter</DialogTitle>
+         <DialogContent>
+            <DialogContentText>Filter</DialogContentText>
+            {isComplete && (
+               <Grid container>
+                  <Grid item xs={12} md={6}>
+                     <TextField select multiple size="small" name="role" label="role" value={filter.role} fullWidth>
+                        {roleOptions.length > 0 &&
+                           roleOptions.map((v) => (
+                              <MenuItem key={v.id} value={v.name}>
+                                 {v.name}
+                              </MenuItem>
+                           ))}
+                        {roleOptions.length == 0 && <MenuItem disabled>Kosong</MenuItem>}
+                     </TextField>
+                  </Grid>
+               </Grid>
+            )}
+         </DialogContent>
+         <DialogActions>
+            <Button variant="text" onClick={props.handleClose}>
+               Cancel
+            </Button>
+            <Button variant="text" color="error" onClick={() => console.log("filter")} autoFocus>
+               Delete
+            </Button>
+         </DialogActions>
+      </Dialog>
+   );
+};
+
+const Index = () => {
    const { user } = useRecoilValue(authentication);
+   const navigate = useNavigate();
 
    const [rows, setRows] = useState();
    const [data, setData] = useState({
       code: "",
-      category: "",
+      location: "",
    });
    const [params, setParams] = useState({
       search: "",
+      limit: 10,
+      page: 1,
+      paginate: 1,
    });
+   const [loading, setLoading] = useState(false);
 
    const getData = async () => {
       http
-         .get(`category`, {
+         .get(`/help`, {
             params: params,
          })
          .then((res) => {
-            // console.log(res.data.data);
+            //  console.log(res.data.data);
             setRows(res.data.data);
          })
          .catch((err) => {
-            // console.log(err.response);
+            //  console.log(err.response);
          });
    };
 
@@ -70,77 +167,9 @@ export default function AssetCategory() {
       // eslint-disable-next-line react-hooks/exhaustive-deps
    }, [params]);
 
-   const [method, setMethod] = useState("add");
-   const [loading, setLoading] = useState(false);
-   const handleSubmit = async (e) => {
-      e.preventDefault();
-      setLoading(true);
-      if (method === "add") {
-         let formData = new FormData();
-         formData.append("code", data.code);
-         formData.append("category", data.category);
-         // console.log(Object.fromEntries(formData));
-         http
-            .post(`category`, formData, {})
-            .then((res) => {
-               // console.log(res.data.data);
-               setLoading(false);
-               handleClear();
-               getData();
-            })
-            .catch((err) => {
-               // console.log(err.response.data);
-               setLoading(false);
-            });
-      } else {
-         let formData = new FormData();
-         formData.append("_method", "PUT");
-         formData.append("code", data.code);
-         formData.append("category", data.category);
-         http
-            .post(`category/${data.id}`, formData, {})
-            .then((res) => {
-               // console.log(res.data.data);
-               setMethod("add");
-               setLoading(false);
-               handleClear();
-               getData();
-            })
-            .catch((err) => {
-               // console.log(err.response.data);
-               setLoading(false);
-            });
-      }
-   };
-
-   const [page, setPage] = React.useState(0);
-   const [rowsPerPage, setRowsPerPage] = React.useState(5);
-   const handleChangePage = (event, newPage) => {
-      setPage(newPage);
-   };
-
-   const handleChangeRowsPerPage = (event) => {
-      setRowsPerPage(parseInt(event.target.value, 10));
-      setPage(0);
-   };
-
-   const handleClear = (e) => {
-      setMethod("add");
-      setData({
-         code: "",
-         category: "",
-      });
-   };
-
-   const handleChange = (e) => {
-      setData({
-         ...data,
-         [e.target.name]: e.target.value,
-      });
-   };
-
+   const [page, setPage] = useState(0);
+   const [rowsPerPage, setRowsPerPage] = useState(5);
    const handleSearch = (e) => {
-      setPage(0);
       setParams({
          ...params,
          page: 1,
@@ -148,10 +177,25 @@ export default function AssetCategory() {
       });
    };
 
-   const handleEdit = () => {
-      setMethod("edit");
+   const handleChangePage = (event, newPage) => {
+      setParams({
+         ...params,
+         page: newPage + 1,
+      });
+   };
+
+   const handleChangeRowsPerPage = (event) => {
+      setParams({
+         ...params,
+         page: 1,
+         limit: +event.target.value,
+      });
+   };
+
+   const handleDetail = () => {
       setData(staging);
       handleMenu();
+      navigate(`/help-detail/${staging.id}`);
    };
 
    const [openModal, setOpenModal] = useState(false);
@@ -159,9 +203,14 @@ export default function AssetCategory() {
       setOpenModal(!openModal);
    };
 
+   const [modalFilter, setModalFilter] = useState(false);
+   const handleModalFilter = () => {
+      setModalFilter(!modalFilter);
+   };
+
    const onDelete = async () => {
       http
-         .delete(`category/${staging.id}`, {})
+         .delete(`/help/${staging.id}`, {})
          .then((res) => {
             getData();
             handleMenu();
@@ -183,31 +232,31 @@ export default function AssetCategory() {
    const handleMenu = () => {
       setAnchorEl(null);
    };
+   const handleClose = async () => {
+      const res = await http.patch(`/help/${staging.id}?status=close`);
+      getData();
+      handleMenu();
+   };
 
    return (
       <div className="main-content mb-5">
          <div className="page-content">
             <div className="container">
-               <div className="d-flex align-items-center justify-content-between my-2">
-                  <h3 className="fw-bold mb-0">Master Asset Category</h3>
-                  <Stack direction="row" spacing={1}>
-                     <Button variant="contained" startIcon={<FileDownload />}>
-                        Import
-                     </Button>
-                     <Button variant="contained" startIcon={<FileUpload />}>
-                        Export
-                     </Button>
+               <div className="my-2">
+                  <Stack direction="row" justifyContent={"space-between"}>
+                     <h3 className="fw-bold mb-2">Help</h3>
+                     {Permission(user.permission, "create help") && (
+                        <Button onClick={() => navigate("/help-add")} variant="contained" startIcon={<Add />}>
+                           Ticket
+                        </Button>
+                     )}
                   </Stack>
                </div>
                <div className="row">
-                  <div
-                     className={`${
-                        Permission(user.permission, "create category") || Permission(user.permission, "update category") ? "col-xl-8" : ""
-                     } col-12 mt-3`}
-                  >
+                  <div className="col-xl-12 col-12 mt-3">
                      <Card>
                         <CardContent>
-                           <Grid container spacing={2} sx={{ mb: 2 }}>
+                           <Grid container spacing={2} sx={{ mb: 2 }} alignItems="center">
                               <Grid item xs>
                                  <TextField
                                     name="search"
@@ -233,6 +282,9 @@ export default function AssetCategory() {
                                     fullWidth
                                  />
                               </Grid>
+                              <Grid item xs={2}>
+                                 <Button variant="link" startIcon={<FilterListRounded />}></Button>
+                              </Grid>
                            </Grid>
                            <TableContainer>
                               <Table sx={{ minWidth: 650 }} aria-label="simple table">
@@ -244,28 +296,31 @@ export default function AssetCategory() {
                                        }}
                                     >
                                        <TableCell align="center">No.</TableCell>
-                                       <TableCell>Code</TableCell>
-                                       <TableCell>Category</TableCell>
-                                       {Permission(user.permission, "update category") || Permission(user.permission, "delete category") ? (
-                                          <TableCell align="center">Action</TableCell>
-                                       ) : null}
+                                       <TableCell>Title</TableCell>
+                                       <TableCell>Purpose</TableCell>
+                                       <TableCell>Created At</TableCell>
+                                       <TableCell>Created By</TableCell>
+                                       <TableCell>Status</TableCell>
+                                       {Permission(user.permission, "delete help") ? <TableCell align="center">Action</TableCell> : null}
                                     </TableRow>
                                  </TableHead>
                                  <TableBody>
                                     {rows !== undefined ? (
-                                       rows.length > 0 ? (
-                                          rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((value, key) => (
+                                       rows.data.length > 0 ? (
+                                          rows.data.map((value, key) => (
                                              <TableRow key={key}>
                                                 <TableCell component="th" scope="row" align="center">
-                                                   {page * rowsPerPage + key + 1}.
+                                                   {rows.meta.from + key}.
                                                 </TableCell>
+                                                <TableCell>{value.title}</TableCell>
+                                                <TableCell>{value.purpose}</TableCell>
+                                                <TableCell>{moment(value.created_at).format("ll")}</TableCell>
+                                                <TableCell>{value.created_by.name}</TableCell>
                                                 <TableCell>
-                                                   <Link component={RouterLink} to={`/master-data/asset-subcategory/${value.id}`}>
-                                                      {value.code}
-                                                   </Link>
+                                                   {value.status === "open" && <Chip label="Open" color="primary" />}
+                                                   {value.status === "close" && <Chip label="Close" color="error" />}
                                                 </TableCell>
-                                                <TableCell>{value.category}</TableCell>
-                                                {Permission(user.permission, "update category") || Permission(user.permission, "delete category") ? (
+                                                {Permission(user.permission, "delete help") ? (
                                                    <TableCell align="center">
                                                       <IconButton onClick={(e) => handleClick(e, value)}>
                                                          <MoreVert />
@@ -297,70 +352,29 @@ export default function AssetCategory() {
                                  </TableBody>
                               </Table>
                            </TableContainer>
-                           {rows !== undefined && rows.length > 0 && (
+                           {rows !== undefined && rows.data.length > 0 && (
                               <TablePagination
-                                 rowsPerPageOptions={[5, 10, 25]}
                                  component="div"
-                                 count={rows.length}
-                                 page={page}
-                                 rowsPerPage={rowsPerPage}
+                                 count={rows.meta.total}
+                                 page={params.page - 1}
+                                 rowsPerPage={params.limit}
                                  onPageChange={handleChangePage}
                                  onRowsPerPageChange={handleChangeRowsPerPage}
+                                 rowsPerPageOptions={[10, 25, 50, 100]}
+                                 showFirstButton
+                                 showLastButton
                               />
                            )}
                         </CardContent>
                      </Card>
                   </div>
-                  <div
-                     className={`${
-                        Permission(user.permission, "create category") || Permission(user.permission, "update category") ? "col-xl-4 col-12 mt-3" : "d-none"
-                     } `}
-                  >
-                     <Card>
-                        <CardContent>
-                           <Typography variant="subtitle1" fontWeight="bold" mb={2}>
-                              {method === "add" ? "Add" : "Edit"} Asset Category
-                           </Typography>
-                           <Box component="form" onSubmit={handleSubmit}>
-                              <TextField
-                                 name="code"
-                                 label="Code"
-                                 margin="normal"
-                                 variant="outlined"
-                                 value={data.code}
-                                 onChange={handleChange}
-                                 fullWidth
-                                 required
-                              />
-                              <TextField
-                                 name="category"
-                                 label="Category"
-                                 margin="normal"
-                                 variant="outlined"
-                                 value={data.category}
-                                 onChange={handleChange}
-                                 fullWidth
-                                 required
-                              />
-                              <FormControl margin="normal">
-                                 <Stack direction="row" spacing={1}>
-                                    <LoadingButton type="submit" loading={loading} variant="contained">
-                                       Save
-                                    </LoadingButton>
-                                    <Button type="reset" onClick={handleClear} variant="outlined">
-                                       Reset
-                                    </Button>
-                                 </Stack>
-                              </FormControl>
-                           </Box>
-                        </CardContent>
-                     </Card>
-
+                  <div className="col-xl-4 col-12 mt-3">
                      {/* utils */}
                      <ModalDelete open={openModal} delete={onDelete} handleClose={handleModal} />
+                     <ModalFilter open={modalFilter} setParams={setParams} handleClose={handleModalFilter} />
 
                      {/* menu */}
-                     {Permission(user.permission, "update category") || Permission(user.permission, "delete category") ? (
+                     {Permission(user.permission, "delete help") ? (
                         <Menu
                            anchorEl={anchorEl}
                            open={open}
@@ -368,20 +382,26 @@ export default function AssetCategory() {
                            transformOrigin={{ horizontal: "right", vertical: "top" }}
                            anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
                         >
-                           {Permission(user.permission, "update category") && (
-                              <MenuItem onClick={handleEdit}>
-                                 <ListItemIcon>
-                                    <Edit />
-                                 </ListItemIcon>
-                                 Edit
-                              </MenuItem>
-                           )}
-                           {Permission(user.permission, "delete category") && (
+                           <MenuItem onClick={handleDetail}>
+                              <ListItemIcon>
+                                 <Edit />
+                              </ListItemIcon>
+                              Detail
+                           </MenuItem>
+                           {Permission(user.permission, "delete help") && (
                               <MenuItem onClick={handleModal}>
                                  <ListItemIcon>
                                     <Delete />
                                  </ListItemIcon>
                                  Delete
+                              </MenuItem>
+                           )}
+                           {staging !== undefined && staging.status === "open" && (
+                              <MenuItem onClick={handleClose}>
+                                 <ListItemIcon>
+                                    <Close />
+                                 </ListItemIcon>
+                                 Close
                               </MenuItem>
                            )}
                         </Menu>
@@ -392,4 +412,5 @@ export default function AssetCategory() {
          </div>
       </div>
    );
-}
+};
+export default Index;

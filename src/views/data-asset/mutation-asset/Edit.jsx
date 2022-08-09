@@ -7,17 +7,22 @@ import { useNavigate, useParams } from "react-router-dom";
 import http from "../../../component/api/Api";
 import Loading from "../../../component/Loading";
 
+import { useRecoilValue } from "recoil";
+import { authentication } from "../../../store/Authentication";
+import { Permission } from "../../../component/Permission";
+
 export default function EditMutationAsset() {
+   const { user } = useRecoilValue(authentication);
    const navigate = useNavigate();
    const { id } = useParams();
 
-   const [user, setUser] = useState();
-   const getUser = async () => {
+   const [users, setUsers] = useState();
+   const getUsers = async () => {
       http
          .get(`user`)
          .then((res) => {
             // console.log(res.data.data);
-            setUser(res.data.data);
+            setUsers(res.data.data);
          })
          .catch((err) => {
             // console.log(err.response);
@@ -64,10 +69,14 @@ export default function EditMutationAsset() {
    };
 
    useEffect(() => {
-      window.scrollTo(0, 0);
-      getUser();
-      getLocation();
-      getMutation();
+      if (Permission(user.permission, "update asset mutation")) {
+         window.scrollTo(0, 0);
+         getUsers();
+         getLocation();
+         getMutation();
+      } else {
+         navigate("/history-asset/mutation-asset");
+      }
    }, []);
 
    const handleChange = (e) => {
@@ -123,7 +132,7 @@ export default function EditMutationAsset() {
                <div className="d-flex align-items-center justify-content-between my-2 mb-4" style={{ height: "36px" }}>
                   <h3 className="fw-bold mb-0">Edit Mutation Asset</h3>
                </div>
-               {data !== undefined && user !== undefined && location !== undefined ? (
+               {data !== undefined && users !== undefined && location !== undefined ? (
                   <Card sx={{ mb: 3 }}>
                      <CardContent>
                         <Box component="form" onSubmit={handleSubmit}>
@@ -145,7 +154,7 @@ export default function EditMutationAsset() {
                                     fullWidth
                                     disabled
                                  >
-                                    {user.data.map((value, index) => (
+                                    {users.data.map((value, index) => (
                                        <MenuItem value={value.id} key={index}>
                                           {value.code} - {value.name}
                                        </MenuItem>
@@ -167,7 +176,7 @@ export default function EditMutationAsset() {
                                     fullWidth
                                     disabled
                                  >
-                                    {user.data.map((value, index) => (
+                                    {users.data.map((value, index) => (
                                        <MenuItem value={value.id} key={index}>
                                           {value.code} - {value.name}
                                        </MenuItem>

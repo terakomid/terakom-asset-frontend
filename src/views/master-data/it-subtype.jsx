@@ -30,7 +30,12 @@ import http from "../../component/api/Api";
 import Loading from "../../component/Loading";
 import ModalDelete from "../../component/Delete";
 
+import { useRecoilValue } from "recoil";
+import { authentication } from "../../store/Authentication";
+import { Permission } from "../../component/Permission";
+
 export default function ItSubType() {
+   const { user } = useRecoilValue(authentication);
    const { id } = useParams();
 
    const [rows, setRows] = useState();
@@ -193,7 +198,11 @@ export default function ItSubType() {
                   </Stack>
                </div>
                <div className="row">
-                  <div className="col-xl-8 col-12 mt-3">
+                  <div
+                     className={`${
+                        Permission(user.permission, "create sub master it") || Permission(user.permission, "update sub master it") ? "col-xl-8" : ""
+                     } col-12 mt-3`}
+                  >
                      <Card>
                         <CardContent>
                            <Grid container spacing={2} sx={{ mb: 2 }}>
@@ -234,7 +243,9 @@ export default function ItSubType() {
                                     >
                                        <TableCell align="center">No.</TableCell>
                                        <TableCell>Sub Type</TableCell>
-                                       <TableCell align="center">Action</TableCell>
+                                       {Permission(user.permission, "update sub master it") || Permission(user.permission, "delete sub master it") ? (
+                                          <TableCell align="center">Action</TableCell>
+                                       ) : null}
                                     </TableRow>
                                  </TableHead>
                                  <TableBody>
@@ -246,11 +257,13 @@ export default function ItSubType() {
                                                    {page * rowsPerPage + key + 1}.
                                                 </TableCell>
                                                 <TableCell>{value.sub_type}</TableCell>
-                                                <TableCell align="center">
-                                                   <IconButton onClick={(e) => handleClick(e, value)}>
-                                                      <MoreVert />
-                                                   </IconButton>
-                                                </TableCell>
+                                                {Permission(user.permission, "update sub master it") || Permission(user.permission, "delete sub master it") ? (
+                                                   <TableCell align="center">
+                                                      <IconButton onClick={(e) => handleClick(e, value)}>
+                                                         <MoreVert />
+                                                      </IconButton>
+                                                   </TableCell>
+                                                ) : null}
                                              </TableRow>
                                           ))
                                        ) : (
@@ -290,7 +303,13 @@ export default function ItSubType() {
                         </CardContent>
                      </Card>
                   </div>
-                  <div className="col-xl-4 col-12 mt-3">
+                  <div
+                     className={`${
+                        Permission(user.permission, "create sub master it") || Permission(user.permission, "update sub master it")
+                           ? "col-xl-4 col-12 mt-3"
+                           : "d-none"
+                     } `}
+                  >
                      <Card>
                         <CardContent>
                            <Typography variant="subtitle1" fontWeight="bold" mb={2}>
@@ -325,26 +344,32 @@ export default function ItSubType() {
                      <ModalDelete open={openModal} delete={onDelete} handleClose={handleModal} />
 
                      {/* menu */}
-                     <Menu
-                        anchorEl={anchorEl}
-                        open={open}
-                        onClose={handleMenu}
-                        transformOrigin={{ horizontal: "right", vertical: "top" }}
-                        anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
-                     >
-                        <MenuItem onClick={handleEdit}>
-                           <ListItemIcon>
-                              <Edit />
-                           </ListItemIcon>
-                           Edit
-                        </MenuItem>
-                        <MenuItem onClick={handleModal}>
-                           <ListItemIcon>
-                              <Delete />
-                           </ListItemIcon>
-                           Delete
-                        </MenuItem>
-                     </Menu>
+                     {Permission(user.permission, "update sub master it") || Permission(user.permission, "delete sub master it") ? (
+                        <Menu
+                           anchorEl={anchorEl}
+                           open={open}
+                           onClose={handleMenu}
+                           transformOrigin={{ horizontal: "right", vertical: "top" }}
+                           anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
+                        >
+                           {Permission(user.permission, "update sub master it") && (
+                              <MenuItem onClick={handleEdit}>
+                                 <ListItemIcon>
+                                    <Edit />
+                                 </ListItemIcon>
+                                 Edit
+                              </MenuItem>
+                           )}
+                           {Permission(user.permission, "delete sub master it") && (
+                              <MenuItem onClick={handleModal}>
+                                 <ListItemIcon>
+                                    <Delete />
+                                 </ListItemIcon>
+                                 Delete
+                              </MenuItem>
+                           )}
+                        </Menu>
+                     ) : null}
                   </div>
                </div>
             </div>

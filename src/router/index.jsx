@@ -18,7 +18,7 @@ import Dashboard from "../views/dashboard/Index";
 
 // User management
 import UserRole from "../views/user-management/user-role/Content";
-import ListUser from "../views/user-management/user-list/Index";
+import ListUser from "../views/user-management/user-list";
 import ListUserAdd from "../views/user-management/user-list/Add";
 import ListUserEdit from "../views/user-management/user-list/Edit";
 
@@ -51,25 +51,25 @@ import MaintenanceAsset from "../views/data-asset/maintenance-asset";
 import AddMaintenanceAsset from "../views/data-asset/maintenance-asset/Add";
 import EditMaintenanceAsset from "../views/data-asset/maintenance-asset/Edit";
 
-import StockOpname from "../views/data-asset/stock-opname/Index";
+import StockOpname from "../views/data-asset/stock-opname";
 
 import AcceptanceAsset from "../views/data-asset/acceptance-asset";
 import AddAcceptanceAsset from "../views/data-asset/acceptance-asset/Add";
 import EditAcceptanceAsset from "../views/data-asset/acceptance-asset/Edit";
 
 //Qr Tagging
-import QrTagging from "../views/qr-tagging/Index"
+import QrTagging from "../views/qr-tagging";
 
 // Disposal
-import DisposalAsset from "../views/disposal-asset/Index";
+import DisposalAsset from "../views/disposal-asset";
 import AddDisposalAsset from "../views/disposal-asset/Add";
 import EditDisposalAsset from "../views/disposal-asset/Edit";
 
 // Activity Log
-import ActivityLog from "../views/activity-log/Index";
+import ActivityLog from "../views/activity-log";
 
 // Help
-import Help from "../views/help/Index";
+import Help from "../views/help";
 import HelpAdd from "../views/help/Add";
 import HelpDetail from "../views/help/Detail";
 

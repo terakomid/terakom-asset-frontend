@@ -6,7 +6,13 @@ import { Link as RouterLink } from "react-router-dom";
 import http from "../../component/api/Api";
 import Loading from "../../component/Loading";
 
-export default function AssetCategory() {
+import { useRecoilValue } from "recoil";
+import { authentication } from "../../store/Authentication";
+import { Permission } from "../../component/Permission";
+
+export default function AssetIT() {
+   const { user } = useRecoilValue(authentication);
+
    const [rows, setRows] = useState();
    const getData = async () => {
       http
@@ -74,9 +80,13 @@ export default function AssetCategory() {
                                              {page * rowsPerPage + key + 1}.
                                           </TableCell>
                                           <TableCell>
-                                             <Link component={RouterLink} to={`/master-data/it-subtype/${value.id}`}>
-                                                {value.type}
-                                             </Link>
+                                             {Permission(user.permission, "get sub master it") ? (
+                                                <Link component={RouterLink} to={`/master-data/it-subtype/${value.id}`}>
+                                                   {value.type}
+                                                </Link>
+                                             ) : (
+                                                value.type
+                                             )}
                                           </TableCell>
                                        </TableRow>
                                     ))

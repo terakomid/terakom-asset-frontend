@@ -1,24 +1,7 @@
 import React, { useEffect, useState } from "react";
-import {
-   Box,
-   Card,
-   CardContent,
-   TextField,
-   Stack,
-   Grid,
-   MenuItem,
-   TableContainer,
-   Table,
-   TableHead,
-   TableRow,
-   TableCell,
-   TableBody,
-   IconButton,
-   Tooltip,
-} from "@mui/material";
-import { Delete, Edit } from "@mui/icons-material";
+import { Box, Card, CardContent, TextField, Stack, Grid, MenuItem } from "@mui/material";
 import { LoadingButton } from "@mui/lab";
-import { Link as RouterLink, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 import moment from "moment";
 import { DatePicker } from "@mui/x-date-pickers";
@@ -28,7 +11,12 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import http from "../../../component/api/Api";
 import Loading from "../../../component/Loading";
 
+import { useRecoilValue } from "recoil";
+import { authentication } from "../../../store/Authentication";
+import { Permission } from "../../../component/Permission";
+
 export default function EditAcceptanceAsset() {
+   const { user } = useRecoilValue(authentication);
    const navigate = useNavigate();
    const { id } = useParams();
 
@@ -71,9 +59,13 @@ export default function EditAcceptanceAsset() {
    };
 
    useEffect(() => {
-      window.scrollTo(0, 0);
-      getAsset();
-      getData();
+      if (Permission(user.permission, "update asset acceptance")) {
+         window.scrollTo(0, 0);
+         getAsset();
+         getData();
+      } else {
+         navigate("/acceptance-asset");
+      }
    }, []);
 
    const handleChange = (e) => {
