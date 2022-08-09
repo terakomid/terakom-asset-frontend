@@ -29,7 +29,13 @@ import http from "../../component/api/Api";
 import Loading from "../../component/Loading";
 import ModalDelete from "../../component/Delete";
 
+import { useRecoilValue } from "recoil";
+import { authentication } from "../../store/Authentication";
+import { Permission } from "../../component/Permission";
+
 export default function AssetCondition() {
+   const { user } = useRecoilValue(authentication);
+
    const [rows, setRows] = useState();
    const [data, setData] = useState({
       condition: "",
@@ -188,7 +194,11 @@ export default function AssetCondition() {
                   </Stack>
                </div>
                <div className="row">
-                  <div className="col-xl-8 col-12 mt-3">
+                  <div
+                     className={`${
+                        Permission(user.permission, "create condition") || Permission(user.permission, "update condition") ? "col-xl-8" : ""
+                     } col-12 mt-3`}
+                  >
                      <Card>
                         <CardContent>
                            <Grid container spacing={2} sx={{ mb: 2 }}>
@@ -229,7 +239,9 @@ export default function AssetCondition() {
                                     >
                                        <TableCell align="center">No.</TableCell>
                                        <TableCell>Asset Condition</TableCell>
-                                       <TableCell align="center">Action</TableCell>
+                                       {Permission(user.permission, "update condition") || Permission(user.permission, "delete condition") ? (
+                                          <TableCell align="center">Action</TableCell>
+                                       ) : null}
                                     </TableRow>
                                  </TableHead>
                                  <TableBody>
@@ -241,11 +253,13 @@ export default function AssetCondition() {
                                                    {page * rowsPerPage + key + 1}.
                                                 </TableCell>
                                                 <TableCell>{value.condition}</TableCell>
-                                                <TableCell align="center">
-                                                   <IconButton onClick={(e) => handleClick(e, value)}>
-                                                      <MoreVert />
-                                                   </IconButton>
-                                                </TableCell>
+                                                {Permission(user.permission, "update condition") || Permission(user.permission, "delete condition") ? (
+                                                   <TableCell align="center">
+                                                      <IconButton onClick={(e) => handleClick(e, value)}>
+                                                         <MoreVert />
+                                                      </IconButton>
+                                                   </TableCell>
+                                                ) : null}
                                              </TableRow>
                                           ))
                                        ) : (
@@ -285,7 +299,11 @@ export default function AssetCondition() {
                         </CardContent>
                      </Card>
                   </div>
-                  <div className="col-xl-4 col-12 mt-3">
+                  <div
+                     className={`${
+                        Permission(user.permission, "create condition") || Permission(user.permission, "update condition") ? "col-xl-4 col-12 mt-3" : "d-none"
+                     } `}
+                  >
                      <Card>
                         <CardContent>
                            <Typography variant="subtitle1" fontWeight="bold" mb={2}>
@@ -320,26 +338,32 @@ export default function AssetCondition() {
                      <ModalDelete open={openModal} delete={onDelete} handleClose={handleModal} />
 
                      {/* menu */}
-                     <Menu
-                        anchorEl={anchorEl}
-                        open={open}
-                        onClose={handleMenu}
-                        transformOrigin={{ horizontal: "right", vertical: "top" }}
-                        anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
-                     >
-                        <MenuItem onClick={handleEdit}>
-                           <ListItemIcon>
-                              <Edit />
-                           </ListItemIcon>
-                           Edit
-                        </MenuItem>
-                        <MenuItem onClick={handleModal}>
-                           <ListItemIcon>
-                              <Delete />
-                           </ListItemIcon>
-                           Delete
-                        </MenuItem>
-                     </Menu>
+                     {Permission(user.permission, "update condition") || Permission(user.permission, "delete condition") ? (
+                        <Menu
+                           anchorEl={anchorEl}
+                           open={open}
+                           onClose={handleMenu}
+                           transformOrigin={{ horizontal: "right", vertical: "top" }}
+                           anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
+                        >
+                           {Permission(user.permission, "update condition") && (
+                              <MenuItem onClick={handleEdit}>
+                                 <ListItemIcon>
+                                    <Edit />
+                                 </ListItemIcon>
+                                 Edit
+                              </MenuItem>
+                           )}
+                           {Permission(user.permission, "update condition") && (
+                              <MenuItem onClick={handleModal}>
+                                 <ListItemIcon>
+                                    <Delete />
+                                 </ListItemIcon>
+                                 Delete
+                              </MenuItem>
+                           )}
+                        </Menu>
+                     ) : null}
                   </div>
                </div>
             </div>

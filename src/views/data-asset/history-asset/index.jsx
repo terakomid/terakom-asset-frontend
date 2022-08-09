@@ -27,7 +27,13 @@ import http from "../../../component/api/Api";
 import Loading from "../../../component/Loading";
 // import ModalDelete from "../../../component/Delete";
 
+import { useRecoilValue } from "recoil";
+import { authentication } from "../../../store/Authentication";
+import { Permission } from "../../../component/Permission";
+
 export default function HistoryAsset() {
+   const { user } = useRecoilValue(authentication);
+
    const [rows, setRows] = useState();
    const [data, setData] = useState({
       code: "",
@@ -181,44 +187,54 @@ export default function HistoryAsset() {
                <div className="d-flex align-items-center justify-content-between my-2" style={{ height: "36px" }}>
                   <h3 className="fw-bold mb-0">History Asset</h3>
                </div>
-               <Grid container spacing={2} sx={{ mt: 1 }}>
-                  <Grid item xs={6} md={4}>
-                     <Card>
-                        <CardContent>
-                           <Typography variant="subtitle1" fontWeight="bold" mb={6}>
-                              Mutation Asset
-                           </Typography>
-                           <Button variant="contained" component={RouterLink} to="./mutation-asset">
-                              Mutation Asset
-                           </Button>
-                        </CardContent>
-                     </Card>
+               {Permission(user.permission, "get asset mutation") ||
+               Permission(user.permission, "get asset maintenance") ||
+               Permission(user.permission, "get stock opname") ? (
+                  <Grid container spacing={2} sx={{ mt: 1 }}>
+                     {Permission(user.permission, "get asset mutation") && (
+                        <Grid item xs={6} md={4}>
+                           <Card>
+                              <CardContent>
+                                 <Typography variant="subtitle1" fontWeight="bold" mb={6}>
+                                    Mutation Asset
+                                 </Typography>
+                                 <Button variant="contained" component={RouterLink} to="./mutation-asset">
+                                    Mutation Asset
+                                 </Button>
+                              </CardContent>
+                           </Card>
+                        </Grid>
+                     )}
+                     {Permission(user.permission, "get asset maintenance") && (
+                        <Grid item xs={6} md={4}>
+                           <Card>
+                              <CardContent>
+                                 <Typography variant="subtitle1" fontWeight="bold" mb={6}>
+                                    Maintenance Asset
+                                 </Typography>
+                                 <Button variant="contained" component={RouterLink} to="./maintenance-asset">
+                                    Maintenance Asset
+                                 </Button>
+                              </CardContent>
+                           </Card>
+                        </Grid>
+                     )}
+                     {Permission(user.permission, "get stock opname") && (
+                        <Grid item xs={6} md={4}>
+                           <Card>
+                              <CardContent>
+                                 <Typography variant="subtitle1" fontWeight="bold" mb={6}>
+                                    Stock Opname
+                                 </Typography>
+                                 <Button variant="contained" component={RouterLink} to="./stock-opname">
+                                    Stock Opname
+                                 </Button>
+                              </CardContent>
+                           </Card>
+                        </Grid>
+                     )}
                   </Grid>
-                  <Grid item xs={6} md={4}>
-                     <Card>
-                        <CardContent>
-                           <Typography variant="subtitle1" fontWeight="bold" mb={6}>
-                              Maintenance Asset
-                           </Typography>
-                           <Button variant="contained" component={RouterLink} to="./maintenance-asset">
-                              Maintenance Asset
-                           </Button>
-                        </CardContent>
-                     </Card>
-                  </Grid>
-                  <Grid item xs={6} md={4}>
-                     <Card>
-                        <CardContent>
-                           <Typography variant="subtitle1" fontWeight="bold" mb={6}>
-                              Stock Opname
-                           </Typography>
-                           <Button variant="contained" component={RouterLink} to="./stock-opname">
-                              Stock Opname
-                           </Button>
-                        </CardContent>
-                     </Card>
-                  </Grid>
-               </Grid>
+               ) : null}
                <Card sx={{ mt: 4 }}>
                   <CardContent>
                      <Grid container spacing={2} alignItems="center">

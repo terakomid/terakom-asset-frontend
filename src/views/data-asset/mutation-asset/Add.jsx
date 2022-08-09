@@ -26,19 +26,24 @@ import { Link as RouterLink, useNavigate } from "react-router-dom";
 import http from "../../../component/api/Api";
 import Loading from "../../../component/Loading";
 
+import { useRecoilValue } from "recoil";
+import { authentication } from "../../../store/Authentication";
+import { Permission } from "../../../component/Permission";
+
 export default function AddMutationAsset() {
+   const { user } = useRecoilValue(authentication);
    const navigate = useNavigate();
 
    const [rows, setRows] = useState([]);
    const [data, setData] = useState();
 
-   const [user, setUser] = useState();
-   const getUser = async () => {
+   const [users, setUsers] = useState();
+   const getUsers = async () => {
       http
          .get(`user`)
          .then((res) => {
             // console.log(res.data.data);
-            setUser(res.data.data);
+            setUsers(res.data.data);
          })
          .catch((err) => {
             // console.log(err.response);
@@ -77,10 +82,14 @@ export default function AddMutationAsset() {
    };
 
    useEffect(() => {
-      window.scrollTo(0, 0);
-      getUser();
-      getLocation();
-      handleReset();
+      if (Permission(user.permission, "create asset mutation")) {
+         window.scrollTo(0, 0);
+         getUsers();
+         getLocation();
+         handleReset();
+      } else {
+         navigate("/history-asset/mutation-asset");
+      }
    }, []);
 
    const handleReset = (e) => {
@@ -181,7 +190,7 @@ export default function AddMutationAsset() {
                <div className="d-flex align-items-center justify-content-between my-2 mb-4" style={{ height: "36px" }}>
                   <h3 className="fw-bold mb-0">Add Mutation Asset</h3>
                </div>
-               {data !== undefined && user !== undefined && location !== undefined ? (
+               {data !== undefined && users !== undefined && location !== undefined ? (
                   <>
                      <Card sx={{ mb: 3 }}>
                         <CardContent>
@@ -204,7 +213,7 @@ export default function AddMutationAsset() {
                                        fullWidth
                                        required
                                     >
-                                       {user.data.map((value, index) => (
+                                       {users.data.map((value, index) => (
                                           <MenuItem value={value} key={index}>
                                              {value.code} - {value.name}
                                           </MenuItem>
@@ -226,7 +235,7 @@ export default function AddMutationAsset() {
                                        fullWidth
                                        required
                                     >
-                                       {user.data.map((value, index) => (
+                                       {users.data.map((value, index) => (
                                           <MenuItem value={value} key={index} disabled={data.pic.id === value.id}>
                                              {value.code} - {value.name}
                                           </MenuItem>

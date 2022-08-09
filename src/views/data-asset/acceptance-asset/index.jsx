@@ -28,7 +28,13 @@ import Loading from "../../../component/Loading";
 import ModalDelete from "../../../component/Delete";
 import moment from "moment";
 
+import { useRecoilValue } from "recoil";
+import { authentication } from "../../../store/Authentication";
+import { Permission } from "../../../component/Permission";
+
 export default function AcceptanceAsset() {
+   const { user } = useRecoilValue(authentication);
+
    const [params, setParams] = useState({
       search: "",
       paginate: 1,
@@ -119,11 +125,13 @@ export default function AcceptanceAsset() {
             <div className="container">
                <div className="d-flex align-items-center justify-content-between mt-2 mb-4">
                   <h3 className="fw-bold mb-0">Acceptance Asset</h3>
-                  <Stack direction="row" spacing={1}>
-                     <Button variant="contained" startIcon={<AddRounded />} component={RouterLink} to="./add">
-                        Add Acceptance Asset
-                     </Button>
-                  </Stack>
+                  {Permission(user.permission, "create asset acceptance") && (
+                     <Stack direction="row" spacing={1}>
+                        <Button variant="contained" startIcon={<AddRounded />} component={RouterLink} to="./add">
+                           Add Acceptance Asset
+                        </Button>
+                     </Stack>
+                  )}
                </div>
                <Card>
                   <CardContent>
@@ -175,7 +183,9 @@ export default function AcceptanceAsset() {
                                  <TableCell>Department</TableCell>
                                  <TableCell>Date</TableCell>
                                  <TableCell>Status</TableCell>
-                                 <TableCell align="center">Action</TableCell>
+                                 {Permission(user.permission, "update asset acceptance") || Permission(user.permission, "delete asset acceptance") ? (
+                                    <TableCell align="center">Action</TableCell>
+                                 ) : null}
                               </TableRow>
                            </TableHead>
                            <TableBody>
@@ -199,11 +209,13 @@ export default function AcceptanceAsset() {
                                                 label={value.status === "received" ? "Received" : "Not Received"}
                                              />
                                           </TableCell>
-                                          <TableCell align="center">
-                                             <IconButton onClick={(e) => handleAction(e, value)}>
-                                                <MoreVert />
-                                             </IconButton>
-                                          </TableCell>
+                                          {Permission(user.permission, "update asset acceptance") || Permission(user.permission, "delete asset acceptance") ? (
+                                             <TableCell align="center">
+                                                <IconButton onClick={(e) => handleAction(e, value)}>
+                                                   <MoreVert />
+                                                </IconButton>
+                                             </TableCell>
+                                          ) : null}
                                        </TableRow>
                                     ))
                                  ) : (
@@ -243,26 +255,32 @@ export default function AcceptanceAsset() {
                   </CardContent>
                </Card>
                <ModalDelete open={openModal} delete={onDelete} handleClose={handleModal} />
-               <Menu
-                  anchorEl={anchorEl}
-                  open={open}
-                  onClose={handleMenu}
-                  transformOrigin={{ horizontal: "right", vertical: "top" }}
-                  anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
-               >
-                  <MenuItem component={RouterLink} to={`/acceptance-asset/edit/${staging?.id}`}>
-                     <ListItemIcon>
-                        <Edit />
-                     </ListItemIcon>
-                     Edit
-                  </MenuItem>
-                  <MenuItem onClick={handleModal}>
-                     <ListItemIcon>
-                        <Delete />
-                     </ListItemIcon>
-                     Delete
-                  </MenuItem>
-               </Menu>
+               {Permission(user.permission, "update asset acceptance") || Permission(user.permission, "delete asset acceptance") ? (
+                  <Menu
+                     anchorEl={anchorEl}
+                     open={open}
+                     onClose={handleMenu}
+                     transformOrigin={{ horizontal: "right", vertical: "top" }}
+                     anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
+                  >
+                     {Permission(user.permission, "update asset acceptance") && (
+                        <MenuItem component={RouterLink} to={`/acceptance-asset/edit/${staging?.id}`}>
+                           <ListItemIcon>
+                              <Edit />
+                           </ListItemIcon>
+                           Edit
+                        </MenuItem>
+                     )}
+                     {Permission(user.permission, "delete asset acceptance") && (
+                        <MenuItem onClick={handleModal}>
+                           <ListItemIcon>
+                              <Delete />
+                           </ListItemIcon>
+                           Delete
+                        </MenuItem>
+                     )}
+                  </Menu>
+               ) : null}
             </div>
          </div>
       </div>

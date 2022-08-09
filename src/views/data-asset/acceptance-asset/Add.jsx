@@ -28,7 +28,12 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import http from "../../../component/api/Api";
 import Loading from "../../../component/Loading";
 
+import { useRecoilValue } from "recoil";
+import { authentication } from "../../../store/Authentication";
+import { Permission } from "../../../component/Permission";
+
 export default function AddAcceptanceAsset() {
+   const { user } = useRecoilValue(authentication);
    const navigate = useNavigate();
 
    const [rows, setRows] = useState([]);
@@ -48,9 +53,13 @@ export default function AddAcceptanceAsset() {
    };
 
    useEffect(() => {
-      window.scrollTo(0, 0);
-      getAsset();
-      handleReset();
+      if (Permission(user.permission, "create asset acceptance")) {
+         window.scrollTo(0, 0);
+         getAsset();
+         handleReset();
+      } else {
+         navigate("/acceptance-asset");
+      }
    }, []);
 
    const handleReset = (e) => {

@@ -1,8 +1,16 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
+import { useRecoilValue } from "recoil";
+import { authentication } from "../store/Authentication";
+import { Permission } from "../component/Permission";
 import "../App.css";
 
 export default function Sidebar() {
+   const { user } = useRecoilValue(authentication);
+   useEffect(() => {
+      console.clear();
+      console.log(user.permission);
+   }, []);
    return (
       <div className="vertical-menu">
          <div data-simplebar className="h-100">
@@ -12,120 +20,164 @@ export default function Sidebar() {
                {/* Left Menu Start  */}
                <ul className="metismenu list-unstyled" id="side-menu" role="menu" aria-labelledby="functions">
                   {/* Dashboard */}
-                  <li role="menuitem">
-                     <Link to="/dashboard" className="waves-effect">
-                        <i className="mdi mdi-home"></i>
-                        <span className="text-capitalize">dashboard</span>
-                     </Link>
-                  </li>
+                  {Permission(user.permission, "dashboard") && (
+                     <li role="menuitem">
+                        <Link to="/dashboard" className="waves-effect">
+                           <i className="mdi mdi-home"></i>
+                           <span className="text-capitalize">dashboard</span>
+                        </Link>
+                     </li>
+                  )}
 
                   {/* User Management */}
-                  <li role="menuitem">
-                     <Link to="/" onClick={(e) => e.preventDefault()} className="has-arrow waves-effect">
-                        <i className="mdi mdi-account-circle"></i>
-                        <span className="text-capitalize">user management</span>
-                     </Link>
-                     <ul className="sub-menu" role="menu">
-                        <li role="menuitem">
-                           <Link to="/user-role" className="text-capitalize">
-                              user role
-                           </Link>
-                        </li>
-                        <li role="menuitem">
-                           <Link to="/user-list" className="text-capitalize">
-                              user list
-                           </Link>
-                        </li>
-                     </ul>
-                  </li>
+                  {Permission(user.permission, "get user role") || Permission(user.permission, "get user") ? (
+                     <li role="menuitem">
+                        <Link to="/" onClick={(e) => e.preventDefault()} className="has-arrow waves-effect">
+                           <i className="mdi mdi-account-circle"></i>
+                           <span className="text-capitalize">user management</span>
+                        </Link>
+                        <ul className="sub-menu" role="menu">
+                           {Permission(user.permission, "get user role") && (
+                              <li role="menuitem">
+                                 <Link to="/user-role" className="text-capitalize">
+                                    user role
+                                 </Link>
+                              </li>
+                           )}
+                           {Permission(user.permission, "get user") && (
+                              <li role="menuitem">
+                                 <Link to="/user-list" className="text-capitalize">
+                                    user list
+                                 </Link>
+                              </li>
+                           )}
+                        </ul>
+                     </li>
+                  ) : null}
 
                   {/* Master Data */}
-                  <li role="menuitem">
-                     <Link to="/" onClick={(e) => e.preventDefault()} className="has-arrow waves-effect">
-                        <i className="mdi mdi-note-multiple"></i>
-                        <span className="text-capitalize">master data</span>
-                     </Link>
-                     <ul className="sub-menu" role="menu">
-                        <li role="menuitem">
-                           <Link to="/master-data/asset-location" className="text-capitalize py-2">
-                              master asset location
-                           </Link>
-                        </li>
-                        <li role="menuitem">
-                           <Link to="/master-data/asset-category" className="text-capitalize py-2">
-                              master asset category
-                           </Link>
-                        </li>
-                        <li role="menuitem">
-                           <Link to="/master-data/vendor" className="text-capitalize py-2">
-                              master vendor
-                           </Link>
-                        </li>
-                        <li role="menuitem">
-                           <Link to="/master-data/cost-center" className="text-capitalize py-2">
-                              master cost center
-                           </Link>
-                        </li>
-                        <li role="menuitem">
-                           <Link to="/master-data/department" className="text-capitalize py-2">
-                              master department
-                           </Link>
-                        </li>
-                        <li role="menuitem">
-                           <Link to="/master-data/asset-condition" className="text-capitalize py-2">
-                              master asset condition
-                           </Link>
-                        </li>
-                        <li role="menuitem">
-                           <Link to="/master-data/it" className="text-capitalize py-2">
-                              master IT
-                           </Link>
-                        </li>
-                     </ul>
-                  </li>
+                  {Permission(user.permission, "get location") ||
+                  Permission(user.permission, "get category") ||
+                  Permission(user.permission, "get vendor") ||
+                  Permission(user.permission, "get cost") ||
+                  Permission(user.permission, "get department") ||
+                  Permission(user.permission, "get condition") ||
+                  Permission(user.permission, "get master it") ? (
+                     <li role="menuitem">
+                        <Link to="/" onClick={(e) => e.preventDefault()} className="has-arrow waves-effect">
+                           <i className="mdi mdi-note-multiple"></i>
+                           <span className="text-capitalize">master data</span>
+                        </Link>
+                        <ul className="sub-menu" role="menu">
+                           {Permission(user.permission, "get location") && (
+                              <li role="menuitem">
+                                 <Link to="/master-data/asset-location" className="text-capitalize py-2">
+                                    master asset location
+                                 </Link>
+                              </li>
+                           )}
+                           {Permission(user.permission, "get category") && (
+                              <li role="menuitem">
+                                 <Link to="/master-data/asset-category" className="text-capitalize py-2">
+                                    master asset category
+                                 </Link>
+                              </li>
+                           )}
+                           {Permission(user.permission, "get vendor") && (
+                              <li role="menuitem">
+                                 <Link to="/master-data/vendor" className="text-capitalize py-2">
+                                    master vendor
+                                 </Link>
+                              </li>
+                           )}
+                           {Permission(user.permission, "get cost") && (
+                              <li role="menuitem">
+                                 <Link to="/master-data/cost-center" className="text-capitalize py-2">
+                                    master cost center
+                                 </Link>
+                              </li>
+                           )}
+                           {Permission(user.permission, "get department") && (
+                              <li role="menuitem">
+                                 <Link to="/master-data/department" className="text-capitalize py-2">
+                                    master department
+                                 </Link>
+                              </li>
+                           )}
+                           {Permission(user.permission, "get condition") && (
+                              <li role="menuitem">
+                                 <Link to="/master-data/asset-condition" className="text-capitalize py-2">
+                                    master asset condition
+                                 </Link>
+                              </li>
+                           )}
+                           {Permission(user.permission, "get master it") && (
+                              <li role="menuitem">
+                                 <Link to="/master-data/it" className="text-capitalize py-2">
+                                    master IT
+                                 </Link>
+                              </li>
+                           )}
+                        </ul>
+                     </li>
+                  ) : null}
 
                   {/* Data Asset */}
-                  <li role="menuitem">
-                     <Link to="/" onClick={(e) => e.preventDefault()} className="has-arrow waves-effect">
-                        <i className="mdi mdi-folder-table"></i>
-                        <span className="text-capitalize">data asset</span>
-                     </Link>
-                     <ul className="sub-menu" role="menu">
-                        <li role="menuitem">
-                           <Link to="/data-asset" className="text-capitalize">
-                              data asset
-                           </Link>
-                        </li>
-                        <li role="menuitem">
-                           <Link to="/history-asset" className="text-capitalize">
-                              history asset
-                           </Link>
-                        </li>
-                        <li role="menuitem">
-                           <Link to="/acceptance-asset" className="text-capitalize">
-                              acceptance asset
-                           </Link>
-                        </li>
-                     </ul>
-                  </li>
+                  {Permission(user.permission, "get asset") ||
+                  Permission(user.permission, "get asset mutation") ||
+                  Permission(user.permission, "get asset maintenance") ||
+                  Permission(user.permission, "get stock opname") ||
+                  Permission(user.permission, "get asset acceptance") ? (
+                     <li role="menuitem">
+                        <Link to="/" onClick={(e) => e.preventDefault()} className="has-arrow waves-effect">
+                           <i className="mdi mdi-folder-table"></i>
+                           <span className="text-capitalize">data asset</span>
+                        </Link>
+                        <ul className="sub-menu" role="menu">
+                           {Permission(user.permission, "get asset") && (
+                              <li role="menuitem">
+                                 <Link to="/data-asset" className="text-capitalize">
+                                    data asset
+                                 </Link>
+                              </li>
+                           )}
+                           {Permission(user.permission, "get asset mutation") ||
+                           Permission(user.permission, "get asset maintenance") ||
+                           Permission(user.permission, "get stock opname") ? (
+                              <li role="menuitem">
+                                 <Link to="/history-asset" className="text-capitalize">
+                                    history asset
+                                 </Link>
+                              </li>
+                           ) : null}
+                           {Permission(user.permission, "get asset acceptance") && (
+                              <li role="menuitem">
+                                 <Link to="/acceptance-asset" className="text-capitalize">
+                                    acceptance asset
+                                 </Link>
+                              </li>
+                           )}
+                        </ul>
+                     </li>
+                  ) : null}
 
                   {/* Qr Code Tagging */}
                   <li role="menuitem">
                      <Link to="/qr-tagging" className="waves-effect">
                         <i className="mdi mdi-qrcode"></i>
-                        {/* <span className="badge rounded-pill bg-primary float-end">2</span> */}
                         <span className="text-capitalize">qrcode tagging</span>
                      </Link>
                   </li>
 
-                  {/* Penghapusan Asset */}
-                  <li role="menuitem">
-                     <Link to="/disposal-asset" className="waves-effect">
-                        <i className="mdi mdi-trash-can"></i>
-                        {/* <span className="badge rounded-pill bg-primary float-end">2</span> */}
-                        <span className="text-capitalize">disposal asset</span>
-                     </Link>
-                  </li>
+                  {/* Disposal Asset */}
+                  {Permission(user.permission, "get asset disposal") && (
+                     <li role="menuitem">
+                        <Link to="/disposal-asset" className="waves-effect">
+                           <i className="mdi mdi-trash-can"></i>
+                           <span className="text-capitalize">disposal asset</span>
+                        </Link>
+                     </li>
+                  )}
 
                   {/* Laporan */}
                   <li role="menuitem" style={{ display: "none" }}>
@@ -173,26 +225,26 @@ export default function Sidebar() {
                   </li>
 
                   {/* Help */}
-                  <li role="menuitem">
-                     <Link to="/help" className="waves-effect">
-                        <i className="mdi mdi-help-circle"></i>
-                        {/* <span className="badge rounded-pill bg-primary float-end">2</span> */}
-                        <span className="text-capitalize">help</span>
-                     </Link>
-                  </li>
+                  {Permission(user.permission, "get help") && (
+                     <li role="menuitem">
+                        <Link to="/help" className="waves-effect">
+                           <i className="mdi mdi-help-circle"></i>
+                           <span className="text-capitalize">help</span>
+                        </Link>
+                     </li>
+                  )}
 
                   {/* Activity Log */}
-                  <li role="menuitem">
-                     <Link to="/activity-log" className="waves-effect">
-                        <i className="mdi mdi-login"></i>
-                        {/* <span className="badge rounded-pill bg-primary float-end">2</span> */}
-                        <span className="text-capitalize">activity log</span>
-                     </Link>
-                  </li>
+                  {Permission(user.permission, "get activity log") && (
+                     <li role="menuitem">
+                        <Link to="/activity-log" className="waves-effect">
+                           <i className="mdi mdi-login"></i>
+                           <span className="text-capitalize">activity log</span>
+                        </Link>
+                     </li>
+                  )}
                </ul>
             </div>
-
-            {/* Sidebar  */}
          </div>
       </div>
    );

@@ -29,7 +29,13 @@ import http from "../../component/api/Api";
 import Loading from "../../component/Loading";
 import ModalDelete from "../../component/Delete";
 
+import { useRecoilValue } from "recoil";
+import { authentication } from "../../store/Authentication";
+import { Permission } from "../../component/Permission";
+
 export default function AssetLocation() {
+   const { user } = useRecoilValue(authentication);
+
    const [rows, setRows] = useState();
    const [data, setData] = useState({
       code: "",
@@ -238,7 +244,11 @@ export default function AssetLocation() {
                   </Stack>
                </div>
                <div className="row">
-                  <div className="col-xl-8 col-12 mt-3">
+                  <div
+                     className={`${
+                        Permission(user.permission, "create location") || Permission(user.permission, "update location") ? "col-xl-8" : ""
+                     } col-12 mt-3`}
+                  >
                      <Card>
                         <CardContent>
                            <Grid container spacing={2} sx={{ mb: 2 }}>
@@ -300,7 +310,9 @@ export default function AssetLocation() {
                                        <TableCell>Code</TableCell>
                                        <TableCell>Location</TableCell>
                                        <TableCell>Parent</TableCell>
-                                       <TableCell align="center">Action</TableCell>
+                                       {Permission(user.permission, "update location") || Permission(user.permission, "delete location") ? (
+                                          <TableCell align="center">Action</TableCell>
+                                       ) : null}
                                     </TableRow>
                                  </TableHead>
                                  <TableBody>
@@ -314,11 +326,13 @@ export default function AssetLocation() {
                                                 <TableCell>{value.code}</TableCell>
                                                 <TableCell>{value.location}</TableCell>
                                                 <TableCell>{value.parent !== null && value.parent.location}</TableCell>
-                                                <TableCell align="center">
-                                                   <IconButton onClick={(e) => handleClick(e, value)}>
-                                                      <MoreVert />
-                                                   </IconButton>
-                                                </TableCell>
+                                                {Permission(user.permission, "update location") || Permission(user.permission, "delete location") ? (
+                                                   <TableCell align="center">
+                                                      <IconButton onClick={(e) => handleClick(e, value)}>
+                                                         <MoreVert />
+                                                      </IconButton>
+                                                   </TableCell>
+                                                ) : null}
                                              </TableRow>
                                           ))
                                        ) : (
@@ -358,7 +372,11 @@ export default function AssetLocation() {
                         </CardContent>
                      </Card>
                   </div>
-                  <div className="col-xl-4 col-12 mt-3">
+                  <div
+                     className={`${
+                        Permission(user.permission, "create location") || Permission(user.permission, "update location") ? "col-xl-4 col-12 mt-3" : "d-none"
+                     } `}
+                  >
                      <Card>
                         <CardContent>
                            <Typography variant="subtitle1" fontWeight="bold" mb={2}>
@@ -412,26 +430,32 @@ export default function AssetLocation() {
                      <ModalDelete open={openModal} delete={onDelete} handleClose={handleModal} />
 
                      {/* menu */}
-                     <Menu
-                        anchorEl={anchorEl}
-                        open={open}
-                        onClose={handleMenu}
-                        transformOrigin={{ horizontal: "right", vertical: "top" }}
-                        anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
-                     >
-                        <MenuItem onClick={handleEdit}>
-                           <ListItemIcon>
-                              <Edit />
-                           </ListItemIcon>
-                           Edit
-                        </MenuItem>
-                        <MenuItem onClick={handleModal}>
-                           <ListItemIcon>
-                              <Delete />
-                           </ListItemIcon>
-                           Delete
-                        </MenuItem>
-                     </Menu>
+                     {Permission(user.permission, "update location") || Permission(user.permission, "delete location") ? (
+                        <Menu
+                           anchorEl={anchorEl}
+                           open={open}
+                           onClose={handleMenu}
+                           transformOrigin={{ horizontal: "right", vertical: "top" }}
+                           anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
+                        >
+                           {Permission(user.permission, "update location") && (
+                              <MenuItem onClick={handleEdit}>
+                                 <ListItemIcon>
+                                    <Edit />
+                                 </ListItemIcon>
+                                 Edit
+                              </MenuItem>
+                           )}
+                           {Permission(user.permission, "delete location") && (
+                              <MenuItem onClick={handleModal}>
+                                 <ListItemIcon>
+                                    <Delete />
+                                 </ListItemIcon>
+                                 Delete
+                              </MenuItem>
+                           )}
+                        </Menu>
+                     ) : null}
                   </div>
                </div>
             </div>

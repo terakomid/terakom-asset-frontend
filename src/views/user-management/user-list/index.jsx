@@ -1,7 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import {
    Button,
-   Box,
    Card,
    CardContent,
    Grid,
@@ -19,7 +18,6 @@ import {
    Stack,
    Menu,
    ListItemIcon,
-   FormControl,
    TablePagination,
    Avatar,
    Dialog,
@@ -28,48 +26,49 @@ import {
    DialogContentText,
    DialogActions,
    Chip,
-
 } from "@mui/material";
 import { Add, CloseRounded, Delete, Edit, FileDownload, FileUpload, FilterListRounded, MoreVert, Search } from "@mui/icons-material";
-import { useNavigate } from 'react-router-dom'
+import { useNavigate } from "react-router-dom";
 
 import http from "../../../component/api/Api";
 import Loading from "../../../component/Loading";
 import ModalDelete from "../../../component/Delete";
 
+import { useRecoilValue } from "recoil";
+import { authentication } from "../../../store/Authentication";
+import { Permission } from "../../../component/Permission";
+
 const ModalFilter = (props) => {
-   const [roleOptions, setRoleOptions] = useState([])
-   const [departmentOptions, setDepartmentOptions] = useState([])
+   const [roleOptions, setRoleOptions] = useState([]);
+   const [departmentOptions, setDepartmentOptions] = useState([]);
    const [filter, setFilter] = useState({
-      role: '',
-      department_id: ''
-   })
-   const [isComplete, setIsComplete] = useState(false)
+      role: "",
+      department_id: "",
+   });
+   const [isComplete, setIsComplete] = useState(false);
 
-   const getDepartment = async() => {
-		const res = await http.get(`dept`)
-		setDepartmentOptions([...res.data.data])
-		return 1
-	}
+   const getDepartment = async () => {
+      const res = await http.get(`dept`);
+      setDepartmentOptions([...res.data.data]);
+      return 1;
+   };
 
-	const getRole = async() => {
-		const res = await http.get(`role`)
-		setRoleOptions([...res.data.data])
-		return 1
-	}
+   const getRole = async () => {
+      const res = await http.get(`role`);
+      setRoleOptions([...res.data.data]);
+      return 1;
+   };
 
    useEffect(() => {
-		let mounted = true
-		if(mounted && props.open){
-			Promise.all([getDepartment(), getRole()]).then(res => {
-				setIsComplete(true)
-				
-			})
-		}
+      let mounted = true;
+      if (mounted && props.open) {
+         Promise.all([getDepartment(), getRole()]).then((res) => {
+            setIsComplete(true);
+         });
+      }
 
-
-		return () => mounted = false
-	}, [props.open])
+      return () => (mounted = false);
+   }, [props.open]);
 
    return (
       <Dialog
@@ -83,44 +82,38 @@ const ModalFilter = (props) => {
          <DialogTitle>Filter</DialogTitle>
          <DialogContent>
             <DialogContentText>Filter</DialogContentText>
-            {isComplete &&
-            <Grid container>
-               <Grid item xs={12} md={6}>
-                  <TextField 
-                     select
-                     multiple
-                     size="small"
-                     name="role"
-                     label="role"
-                     value={filter.role}
-                     fullWidth
-                  >
-                     {roleOptions.length > 0 && roleOptions.map(v => (
-                        <MenuItem key={v.id} value={v.name}>{v.name}</MenuItem>
-                     ))}
-                     {roleOptions.length == 0 && 
-                        <MenuItem disabled>Kosong</MenuItem>
-                     }
-                  </TextField>
+            {isComplete && (
+               <Grid container>
+                  <Grid item xs={12} md={6}>
+                     <TextField select multiple size="small" name="role" label="role" value={filter.role} fullWidth>
+                        {roleOptions.length > 0 &&
+                           roleOptions.map((v) => (
+                              <MenuItem key={v.id} value={v.name}>
+                                 {v.name}
+                              </MenuItem>
+                           ))}
+                        {roleOptions.length == 0 && <MenuItem disabled>Kosong</MenuItem>}
+                     </TextField>
+                  </Grid>
                </Grid>
-
-            </Grid>
-            }
+            )}
          </DialogContent>
          <DialogActions>
             <Button variant="text" onClick={props.handleClose}>
                Cancel
             </Button>
-            <Button variant="text" color="error" onClick={() => console.log('filter')} autoFocus>
+            <Button variant="text" color="error" onClick={() => console.log("filter")} autoFocus>
                Delete
             </Button>
          </DialogActions>
       </Dialog>
-   )
-}
+   );
+};
 
 const Index = () => {
-   const navigate = useNavigate()
+   const { user } = useRecoilValue(authentication);
+
+   const navigate = useNavigate();
    const [rows, setRows] = useState();
    const [data, setData] = useState({
       code: "",
@@ -128,39 +121,35 @@ const Index = () => {
    });
    const [params, setParams] = useState({
       search: "",
-      department_id: "", 
+      department_id: "",
       role: "",
       limit: 5,
-      paginate: 0
+      paginate: 0,
    });
-   const [loading, setLoading] = useState(false)
+   const [loading, setLoading] = useState(false);
 
    const getData = async () => {
       http
-            .get(`user`, {
-               params: params,
-            })
-            .then((res) => {
-               //  console.log(res.data.data);
-               setRows(res.data.data.data);
-            })
-            .catch((err) => {
-               //  console.log(err.response);
-            });
+         .get(`user`, {
+            params: params,
+         })
+         .then((res) => {
+            //  console.log(res.data.data);
+            setRows(res.data.data.data);
+         })
+         .catch((err) => {
+            //  console.log(err.response);
+         });
    };
-
 
    useEffect(() => {
       setRows(undefined);
       let timer = setTimeout(() => {
-            if (params) getData();
+         if (params) getData();
       }, 500);
       return () => clearTimeout(timer);
       // eslint-disable-next-line react-hooks/exhaustive-deps
    }, [params]);
-
-
-  
 
    const [page, setPage] = React.useState(0);
    const [rowsPerPage, setRowsPerPage] = React.useState(5);
@@ -173,20 +162,19 @@ const Index = () => {
       setPage(0);
    };
 
-
    const handleSearch = (e) => {
       setPage(0);
       setParams({
-            ...params,
-            page: 1,
-            [e.target.name]: e.target.value,
+         ...params,
+         page: 1,
+         [e.target.name]: e.target.value,
       });
    };
 
    const handleEdit = () => {
       setData(staging);
       handleMenu();
-      navigate(`/user-list-edit/${staging.id}`)
+      navigate(`/user-list-edit/${staging.id}`);
    };
 
    const [openModal, setOpenModal] = useState(false);
@@ -194,23 +182,23 @@ const Index = () => {
       setOpenModal(!openModal);
    };
 
-   const [modalFilter, setModalFilter] = useState(false)
+   const [modalFilter, setModalFilter] = useState(false);
    const handleModalFilter = () => {
-      setModalFilter(!modalFilter)
-   }
+      setModalFilter(!modalFilter);
+   };
 
    const onDelete = async () => {
       http
-            .delete(`/user/${staging.id}`, {})
-            .then((res) => {
-               getData();
-               handleMenu();
-               handleModal();
-            })
-            .catch((err) => {
-               console.log(err.response.data);
-               setLoading(false);
-            });
+         .delete(`/user/${staging.id}`, {})
+         .then((res) => {
+            getData();
+            handleMenu();
+            handleModal();
+         })
+         .catch((err) => {
+            console.log(err.response.data);
+            setLoading(false);
+         });
    };
 
    const [staging, setStaging] = useState();
@@ -223,7 +211,7 @@ const Index = () => {
    const handleMenu = () => {
       setAnchorEl(null);
    };
-   
+
    return (
       <div className="main-content mb-5">
          <div className="page-content">
@@ -237,16 +225,18 @@ const Index = () => {
                      <Button variant="contained" startIcon={<FileUpload />}>
                         Export
                      </Button>
-                     <Button onClick={() => navigate('/user-list-add')} variant="contained" startIcon={<Add />}>
-                        Add User
-                     </Button>
+                     {Permission(user.permission, "create user") && (
+                        <Button onClick={() => navigate("/user-list-add")} variant="contained" startIcon={<Add />}>
+                           Add User
+                        </Button>
+                     )}
                   </Stack>
                </div>
                <div className="row">
                   <div className="col-xl-12 col-12 mt-3">
                      <Card>
                         <CardContent>
-                           <Grid container spacing={2} sx={{ mb: 2 }} >
+                           <Grid container spacing={2} sx={{ mb: 2 }}>
                               <Grid item xs>
                                  <TextField
                                     name="search"
@@ -294,7 +284,9 @@ const Index = () => {
                                        <TableCell>Department</TableCell>
                                        <TableCell>Role</TableCell>
                                        <TableCell>Status</TableCell>
-                                       <TableCell align="center">Action</TableCell>
+                                       {Permission(user.permission, "update user") || Permission(user.permission, "delete user") ? (
+                                          <TableCell align="center">Action</TableCell>
+                                       ) : null}
                                     </TableRow>
                                  </TableHead>
                                  <TableBody>
@@ -306,23 +298,25 @@ const Index = () => {
                                                    {page * rowsPerPage + key + 1}.
                                                 </TableCell>
                                                 <TableCell>
-                                                   <Stack direction="row" >
-                                                      <Avatar src={value.photo_url} sx={{ height: '5vh', width: '5vh' }} />
-                                                      <Typography sx={{ ml: 1 }}>
-                                                         {value.name}
-                                                      </Typography>
+                                                   <Stack direction="row">
+                                                      <Avatar src={value.photo_url} sx={{ height: "5vh", width: "5vh" }} />
+                                                      <Typography sx={{ ml: 1 }}>{value.name}</Typography>
                                                    </Stack>
                                                 </TableCell>
                                                 <TableCell>{value.code}</TableCell>
                                                 <TableCell>{value.phone_number}</TableCell>
                                                 <TableCell>{value.dept.dept}</TableCell>
                                                 <TableCell>{value.role}</TableCell>
-                                                <TableCell>{value.status == 1 ? <Chip label="Active" color="success" /> : <Chip label="Not Active" color="error" />}</TableCell>
-                                                <TableCell align="center">
-                                                   <IconButton onClick={(e) => handleClick(e, value)}>
-                                                      <MoreVert />
-                                                   </IconButton>
+                                                <TableCell>
+                                                   {value.status == 1 ? <Chip label="Active" color="success" /> : <Chip label="Not Active" color="error" />}
                                                 </TableCell>
+                                                {Permission(user.permission, "update user") || Permission(user.permission, "delete user") ? (
+                                                   <TableCell align="center">
+                                                      <IconButton onClick={(e) => handleClick(e, value)}>
+                                                         <MoreVert />
+                                                      </IconButton>
+                                                   </TableCell>
+                                                ) : null}
                                              </TableRow>
                                           ))
                                        ) : (
@@ -363,32 +357,37 @@ const Index = () => {
                      </Card>
                   </div>
                   <div className="col-xl-4 col-12 mt-3">
-
                      {/* utils */}
                      <ModalDelete open={openModal} delete={onDelete} handleClose={handleModal} />
                      <ModalFilter open={modalFilter} setParams={setParams} handleClose={handleModalFilter} />
 
                      {/* menu */}
-                     <Menu
-                        anchorEl={anchorEl}
-                        open={open}
-                        onClose={handleMenu}
-                        transformOrigin={{ horizontal: "right", vertical: "top" }}
-                        anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
-                     >
-                        <MenuItem onClick={handleEdit}>
-                           <ListItemIcon>
-                              <Edit />
-                           </ListItemIcon>
-                           Edit
-                        </MenuItem>
-                        <MenuItem onClick={handleModal}>
-                           <ListItemIcon>
-                              <Delete />
-                           </ListItemIcon>
-                           Delete
-                        </MenuItem>
-                     </Menu>
+                     {Permission(user.permission, "update user") || Permission(user.permission, "delete user") ? (
+                        <Menu
+                           anchorEl={anchorEl}
+                           open={open}
+                           onClose={handleMenu}
+                           transformOrigin={{ horizontal: "right", vertical: "top" }}
+                           anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
+                        >
+                           {Permission(user.permission, "update user") && (
+                              <MenuItem onClick={handleEdit}>
+                                 <ListItemIcon>
+                                    <Edit />
+                                 </ListItemIcon>
+                                 Edit
+                              </MenuItem>
+                           )}
+                           {Permission(user.permission, "delete user") && (
+                              <MenuItem onClick={handleModal}>
+                                 <ListItemIcon>
+                                    <Delete />
+                                 </ListItemIcon>
+                                 Delete
+                              </MenuItem>
+                           )}
+                        </Menu>
+                     ) : null}
                   </div>
                </div>
             </div>

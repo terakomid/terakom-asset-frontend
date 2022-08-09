@@ -26,7 +26,13 @@ import { Link as RouterLink } from "react-router-dom";
 import Loading from "../../../component/Loading";
 import ModalDelete from "../../../component/Delete";
 
+import { useRecoilValue } from "recoil";
+import { authentication } from "../../../store/Authentication";
+import { Permission } from "../../../component/Permission";
+
 export default function Vendor() {
+   const { user } = useRecoilValue(authentication);
+
    const [rows, setRows] = useState();
    const [params, setParams] = useState({
       search: "",
@@ -117,9 +123,11 @@ export default function Vendor() {
                      <Button variant="contained" startIcon={<FileUpload />}>
                         Export
                      </Button>
-                     <Button variant="contained" startIcon={<AddRounded />} component={RouterLink} to="./add">
-                        Add Vendor
-                     </Button>
+                     {Permission(user.permission, "create vendor") && (
+                        <Button variant="contained" startIcon={<AddRounded />} component={RouterLink} to="./add">
+                           Add Vendor
+                        </Button>
+                     )}
                   </Stack>
                </div>
                <Card>
@@ -166,7 +174,9 @@ export default function Vendor() {
                                  <TableCell>Vendor Address</TableCell>
                                  <TableCell>PIC Contact</TableCell>
                                  <TableCell>Contact</TableCell>
-                                 <TableCell align="center">Action</TableCell>
+                                 {Permission(user.permission, "update vendor") || Permission(user.permission, "delete vendor") ? (
+                                    <TableCell align="center">Action</TableCell>
+                                 ) : null}
                               </TableRow>
                            </TableHead>
                            <TableBody>
@@ -182,11 +192,13 @@ export default function Vendor() {
                                           <TableCell>{value.address}</TableCell>
                                           <TableCell>{value.pic_contact}</TableCell>
                                           <TableCell>{value.contact}</TableCell>
-                                          <TableCell align="center">
-                                             <IconButton onClick={(e) => handleClick(e, value)}>
-                                                <MoreVert />
-                                             </IconButton>
-                                          </TableCell>
+                                          {Permission(user.permission, "update category") || Permission(user.permission, "delete category") ? (
+                                             <TableCell align="center">
+                                                <IconButton onClick={(e) => handleClick(e, value)}>
+                                                   <MoreVert />
+                                                </IconButton>
+                                             </TableCell>
+                                          ) : null}
                                        </TableRow>
                                     ))
                                  ) : (
@@ -226,26 +238,33 @@ export default function Vendor() {
                   </CardContent>
                </Card>
                <ModalDelete open={openModal} delete={onDelete} handleClose={handleModal} />
-               <Menu
-                  anchorEl={anchorEl}
-                  open={open}
-                  onClose={handleMenu}
-                  transformOrigin={{ horizontal: "right", vertical: "top" }}
-                  anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
-               >
-                  <MenuItem component={RouterLink} to={`/master-data/vendor/edit/${staging?.id}`}>
-                     <ListItemIcon>
-                        <Edit />
-                     </ListItemIcon>
-                     Edit
-                  </MenuItem>
-                  <MenuItem onClick={handleModal}>
-                     <ListItemIcon>
-                        <Delete />
-                     </ListItemIcon>
-                     Delete
-                  </MenuItem>
-               </Menu>
+
+               {Permission(user.permission, "update vendor") || Permission(user.permission, "delete vendor") ? (
+                  <Menu
+                     anchorEl={anchorEl}
+                     open={open}
+                     onClose={handleMenu}
+                     transformOrigin={{ horizontal: "right", vertical: "top" }}
+                     anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
+                  >
+                     {Permission(user.permission, "update vendor") && (
+                        <MenuItem component={RouterLink} to={`/master-data/vendor/edit/${staging?.id}`}>
+                           <ListItemIcon>
+                              <Edit />
+                           </ListItemIcon>
+                           Edit
+                        </MenuItem>
+                     )}
+                     {Permission(user.permission, "delete vendor") && (
+                        <MenuItem onClick={handleModal}>
+                           <ListItemIcon>
+                              <Delete />
+                           </ListItemIcon>
+                           Delete
+                        </MenuItem>
+                     )}
+                  </Menu>
+               ) : null}
             </div>
          </div>
       </div>

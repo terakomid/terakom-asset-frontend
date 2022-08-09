@@ -27,19 +27,24 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import http from "../../../component/api/Api";
 import Loading from "../../../component/Loading";
 
+import { useRecoilValue } from "recoil";
+import { authentication } from "../../../store/Authentication";
+import { Permission } from "../../../component/Permission";
+
 export default function AddMaintenanceAsset() {
+   const { user } = useRecoilValue(authentication);
    const navigate = useNavigate();
 
    const [rows, setRows] = useState([]);
    const [data, setData] = useState();
 
-   const [user, setUser] = useState();
-   const getUser = async () => {
+   const [users, setUsers] = useState();
+   const getUsers = async () => {
       http
          .get(`user`)
          .then((res) => {
             // console.log(res.data.data);
-            setUser(res.data.data);
+            setUsers(res.data.data);
          })
          .catch((err) => {
             // console.log(err.response);
@@ -51,7 +56,7 @@ export default function AddMaintenanceAsset() {
          .get(`asset?employee_id=${employee_id}`)
          .then((res) => {
             // console.log(res.data.data.data);
-            const obj = user.data.find((value) => value.id == employee_id);
+            const obj = users.data.find((value) => value.id == employee_id);
             setData({
                ...data,
                pic_id: employee_id,
@@ -65,9 +70,13 @@ export default function AddMaintenanceAsset() {
    };
 
    useEffect(() => {
-      window.scrollTo(0, 0);
-      getUser();
-      handleReset();
+      if (Permission(user.permission, "create asset maintenance")) {
+         window.scrollTo(0, 0);
+         getUsers();
+         handleReset();
+      } else {
+         navigate("/history-asset/maintenance-asset");
+      }
    }, []);
 
    const handleReset = (e) => {
@@ -186,7 +195,7 @@ export default function AddMaintenanceAsset() {
                <div className="d-flex align-items-center justify-content-between my-2 mb-4" style={{ height: "36px" }}>
                   <h3 className="fw-bold mb-0">Add Maintenance Asset</h3>
                </div>
-               {data !== undefined && user !== undefined ? (
+               {data !== undefined && users !== undefined ? (
                   <>
                      <Card sx={{ mb: 3 }}>
                         <CardContent>
@@ -203,7 +212,7 @@ export default function AddMaintenanceAsset() {
                                     fullWidth
                                     required
                                  >
-                                    {user.data.map((value, index) => (
+                                    {users.data.map((value, index) => (
                                        <MenuItem value={value.id} key={index}>
                                           {value.code} - {value.name}
                                        </MenuItem>

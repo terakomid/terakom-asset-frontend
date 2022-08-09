@@ -5,7 +5,12 @@ import { LoadingButton } from "@mui/lab";
 import http from "../../../component/api/Api";
 import { useNavigate, useParams } from "react-router-dom";
 
+import { useRecoilValue } from "recoil";
+import { authentication } from "../../../store/Authentication";
+import { Permission } from "../../../component/Permission";
+
 export default function VendorForm() {
+   const { user } = useRecoilValue(authentication);
    const { id } = useParams();
    const navigate = useNavigate();
 
@@ -30,7 +35,11 @@ export default function VendorForm() {
    };
 
    useEffect(() => {
-      if (id) getData(id);
+      if (id) {
+         Permission(user.permission, "update vendor") === true ? getData(id) : navigate("/master-data/vendor");
+      } else {
+         Permission(user.permission, "create vendor") === false && navigate("/master-data/vendor");
+      }
    }, [id]);
 
    const [loading, setLoading] = useState(false);
@@ -123,7 +132,15 @@ export default function VendorForm() {
                               />
                            </Grid>
                            <Grid item xs={12} sm={6}>
-                              <TextField name="contact" label="No. Telp/HP" variant="outlined" value={data.contact} onChange={handleChange} fullWidth required />
+                              <TextField
+                                 name="contact"
+                                 label="No. Telp/HP"
+                                 variant="outlined"
+                                 value={data.contact}
+                                 onChange={handleChange}
+                                 fullWidth
+                                 required
+                              />
                            </Grid>
                            <Grid item xs={12}>
                               <Stack direction="row" justifyContent="flex-end" spacing={1}>

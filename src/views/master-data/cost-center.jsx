@@ -29,7 +29,13 @@ import http from "../../component/api/Api";
 import Loading from "../../component/Loading";
 import ModalDelete from "../../component/Delete";
 
+import { useRecoilValue } from "recoil";
+import { authentication } from "../../store/Authentication";
+import { Permission } from "../../component/Permission";
+
 export default function CostCenter() {
+   const { user } = useRecoilValue(authentication);
+
    const [rows, setRows] = useState();
    const [data, setData] = useState({
       code: "",
@@ -192,7 +198,7 @@ export default function CostCenter() {
                   </Stack>
                </div>
                <div className="row">
-                  <div className="col-xl-8 col-12 mt-3">
+                  <div className={`${Permission(user.permission, "create cost") || Permission(user.permission, "update cost") ? "col-xl-8" : ""} col-12 mt-3`}>
                      <Card>
                         <CardContent>
                            <Grid container spacing={2} sx={{ mb: 2 }}>
@@ -234,7 +240,9 @@ export default function CostCenter() {
                                        <TableCell align="center">No.</TableCell>
                                        <TableCell>Cost Center Code</TableCell>
                                        <TableCell>Cost Center Name</TableCell>
-                                       <TableCell align="center">Action</TableCell>
+                                       {Permission(user.permission, "update cost") || Permission(user.permission, "delete cost") ? (
+                                          <TableCell align="center">Action</TableCell>
+                                       ) : null}
                                     </TableRow>
                                  </TableHead>
                                  <TableBody>
@@ -247,11 +255,13 @@ export default function CostCenter() {
                                                 </TableCell>
                                                 <TableCell>{value.code}</TableCell>
                                                 <TableCell>{value.name}</TableCell>
-                                                <TableCell align="center">
-                                                   <IconButton onClick={(e) => handleClick(e, value)}>
-                                                      <MoreVert />
-                                                   </IconButton>
-                                                </TableCell>
+                                                {Permission(user.permission, "update cost") || Permission(user.permission, "delete cost") ? (
+                                                   <TableCell align="center">
+                                                      <IconButton onClick={(e) => handleClick(e, value)}>
+                                                         <MoreVert />
+                                                      </IconButton>
+                                                   </TableCell>
+                                                ) : null}
                                              </TableRow>
                                           ))
                                        ) : (
@@ -291,7 +301,11 @@ export default function CostCenter() {
                         </CardContent>
                      </Card>
                   </div>
-                  <div className="col-xl-4 col-12 mt-3">
+                  <div
+                     className={`${
+                        Permission(user.permission, "create cost") || Permission(user.permission, "update cost") ? "col-xl-4 col-12 mt-3" : "d-none"
+                     } `}
+                  >
                      <Card>
                         <CardContent>
                            <Typography variant="subtitle1" fontWeight="bold" mb={2}>
@@ -336,26 +350,32 @@ export default function CostCenter() {
                      <ModalDelete open={openModal} delete={onDelete} handleClose={handleModal} />
 
                      {/* menu */}
-                     <Menu
-                        anchorEl={anchorEl}
-                        open={open}
-                        onClose={handleMenu}
-                        transformOrigin={{ horizontal: "right", vertical: "top" }}
-                        anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
-                     >
-                        <MenuItem onClick={handleEdit}>
-                           <ListItemIcon>
-                              <Edit />
-                           </ListItemIcon>
-                           Edit
-                        </MenuItem>
-                        <MenuItem onClick={handleModal}>
-                           <ListItemIcon>
-                              <Delete />
-                           </ListItemIcon>
-                           Delete
-                        </MenuItem>
-                     </Menu>
+                     {Permission(user.permission, "update cost") || Permission(user.permission, "delete cost") ? (
+                        <Menu
+                           anchorEl={anchorEl}
+                           open={open}
+                           onClose={handleMenu}
+                           transformOrigin={{ horizontal: "right", vertical: "top" }}
+                           anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
+                        >
+                           {Permission(user.permission, "update cost") && (
+                              <MenuItem onClick={handleEdit}>
+                                 <ListItemIcon>
+                                    <Edit />
+                                 </ListItemIcon>
+                                 Edit
+                              </MenuItem>
+                           )}
+                           {Permission(user.permission, "delete cost") && (
+                              <MenuItem onClick={handleModal}>
+                                 <ListItemIcon>
+                                    <Delete />
+                                 </ListItemIcon>
+                                 Delete
+                              </MenuItem>
+                           )}
+                        </Menu>
+                     ) : null}
                   </div>
                </div>
             </div>
