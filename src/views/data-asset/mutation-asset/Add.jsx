@@ -68,6 +68,7 @@ export default function AddMutationAsset() {
                pic: employee,
                pic_dept: employee.dept.dept,
                master_asset: res.data.data.data,
+               from_branch: employee.location.id,
             });
          })
          .catch((err) => {
@@ -132,6 +133,7 @@ export default function AddMutationAsset() {
                ...data,
                [e.target.name]: e.target.value,
                receive_dept: e.target.value.dept.dept,
+               to_branch: e.target.value.location.id,
             });
          } else {
             setData({
@@ -153,9 +155,9 @@ export default function AddMutationAsset() {
          formData.append(`asset_mutation[${index}][reason]`, value.reason);
          formData.append(`asset_mutation[${index}][asset_id]`, value.asset.id);
          formData.append(`asset_mutation[${index}][quantity]`, 1);
-         formData.append(`asset_mutation[${index}][from_branch_id]`, value.from_branch.id);
+         formData.append(`asset_mutation[${index}][from_branch_id]`, value.from_branch);
          formData.append(`asset_mutation[${index}][from_room]`, value.from_room);
-         formData.append(`asset_mutation[${index}][to_branch_id]`, value.to_branch.id);
+         formData.append(`asset_mutation[${index}][to_branch_id]`, value.to_branch);
          formData.append(`asset_mutation[${index}][to_room]`, value.to_room);
          formData.append(`asset_mutation[${index}][document]`, value.document);
       });
@@ -290,7 +292,7 @@ export default function AddMutationAsset() {
                                        required
                                     >
                                        {location.map((value, index) => (
-                                          <MenuItem value={value} key={index}>
+                                          <MenuItem value={value.id} key={index}>
                                              {value.code} - {value.location}
                                           </MenuItem>
                                        ))}
@@ -320,7 +322,7 @@ export default function AddMutationAsset() {
                                        required
                                     >
                                        {location.map((value, index) => (
-                                          <MenuItem value={value} key={index}>
+                                          <MenuItem value={value.id} key={index}>
                                              {value.code} - {value.location}
                                           </MenuItem>
                                        ))}
@@ -414,9 +416,21 @@ export default function AddMutationAsset() {
                                              <TableCell>{value.receive.name}</TableCell>
                                              <TableCell>{value.asset.asset_code}</TableCell>
                                              <TableCell>{value.asset.asset_name}</TableCell>
-                                             <TableCell>{value.from_branch.location}</TableCell>
+                                             <TableCell>
+                                                {location.map(function (row) {
+                                                   if (row.id == value.from_branch) {
+                                                      return `${row.code} - ${row.location}`;
+                                                   }
+                                                })}
+                                             </TableCell>
                                              <TableCell>{value.from_room}</TableCell>
-                                             <TableCell>{value.to_branch.location}</TableCell>
+                                             <TableCell>
+                                                {location.map(function (row) {
+                                                   if (row.id == value.to_branch) {
+                                                      return `${row.code} - ${row.location}`;
+                                                   }
+                                                })}
+                                             </TableCell>
                                              <TableCell>{value.to_room}</TableCell>
                                              <TableCell align="center">
                                                 <Stack direction="row">
