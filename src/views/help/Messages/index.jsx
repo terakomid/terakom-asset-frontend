@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Avatar, Card, CardContent, CardHeader, Grid, IconButton, Stack, Typography, Box, TextField, InputAdornment, Input, OutlinedInput, FormControl, InputBase } from '@mui/material'
+import { Avatar, Card, CardContent, CardHeader, Grid, IconButton, Stack, Typography, Box, TextField, InputAdornment, Input, OutlinedInput, FormControl, InputBase, Rating } from '@mui/material'
 import { AttachFile, Download, InsertDriveFile, MoreVert, Send, SendTimeExtensionRounded, Summarize } from '@mui/icons-material';
 import moment from 'moment';
 import http from '../../../component/api/Api'
+import { LoadingButton } from '@mui/lab';
+import { useNavigate } from 'react-router-dom';
 
 const LeftMessage = (props) => {
     return (
@@ -30,6 +32,8 @@ const RightMessage = (props) => {
 }
 
 const Index = (props) => {
+    const navigate = useNavigate()
+
     const [data, setData] = useState([])
     const [isComplete, setIsComplete] = useState(false)
     const [message, setMessage] = useState('')
@@ -37,7 +41,8 @@ const Index = (props) => {
         file: '',
         file_url: ''
     })
-    console.log(props.data)
+    const [rating, setRating] = useState(0)
+    const [loadingRating, setLoadingRating] = useState(false)
     const getData = async () => {
         setIsComplete(false)
         const res = await http.get(`/help_message?help_id=${props.data.id}`)
@@ -71,6 +76,27 @@ const Index = (props) => {
             .catch(err => {
                 // console.log(err.response)
             })
+    }
+
+    const onSubmitRating = (e) => {
+        e.preventDefault()
+        setLoadingRating(true)
+        http.patch(`help/${props.data.id}/rating`, {}, {
+            params: {
+                rating,
+            }
+        })
+        .then(res => {
+            navigate('/help')
+        })
+        .catch(err => {
+            if(err.response){
+                // console.log(err.response)
+            }
+        })
+        .finally(() => {
+            setLoadingRating(false)
+        })
     }
 
     return (
@@ -123,6 +149,28 @@ const Index = (props) => {
                                         fullWidth
                                     />
                                 </Grid>
+                                {props.data.status !== 'open' && props.data.rating === 0 &&
+                                <Grid item xs={12} md={12}>
+                                    <Box component="form" onSubmit={onSubmitRating}> 
+                                        <Grid container>
+                                            <Grid item xs={12} md={12}>
+                                                <Typography>Rating</Typography>
+                                                <Rating 
+                                                    value={rating}
+                                                    onChange={(event, newValue) => {
+                                                        setRating(newValue);
+                                                    }}
+                                                />
+                                            </Grid>
+                                            <Grid item xs={12} md={12}>
+                                                <LoadingButton loading={loadingRating} variant="contained" type="submit">
+                                                    Submit Rating
+                                                </LoadingButton>
+                                            </Grid>
+                                        </Grid>
+                                    </Box>
+                                </Grid>
+                                }
                                 <Grid item xs={12} md={12}>
                                     <Card sx={{ backgroundColor: '#0d4c92', color: 'white', height: '500px', overflowY: 'auto' }}>
                                         <CardHeader 

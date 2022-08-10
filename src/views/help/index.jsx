@@ -28,6 +28,7 @@ import {
    DialogContentText,
    DialogActions,
    Chip,
+   Rating,
 } from "@mui/material";
 import {
    Add,
@@ -150,7 +151,6 @@ const Index = () => {
             params: params,
          })
          .then((res) => {
-            //  console.log(res.data.data);
             setRows(res.data.data);
          })
          .catch((err) => {
@@ -217,7 +217,6 @@ const Index = () => {
             handleModal();
          })
          .catch((err) => {
-            console.log(err.response.data);
             setLoading(false);
          });
    };
@@ -300,6 +299,7 @@ const Index = () => {
                                        <TableCell>Purpose</TableCell>
                                        <TableCell>Created At</TableCell>
                                        <TableCell>Created By</TableCell>
+                                       <TableCell>Rating</TableCell>
                                        <TableCell>Status</TableCell>
                                        {Permission(user.permission, "delete help") ? <TableCell align="center">Action</TableCell> : null}
                                     </TableRow>
@@ -316,6 +316,9 @@ const Index = () => {
                                                 <TableCell>{value.purpose}</TableCell>
                                                 <TableCell>{moment(value.created_at).format("ll")}</TableCell>
                                                 <TableCell>{value.created_by.name}</TableCell>
+                                                <TableCell>
+                                                   <Rating readOnly value={value.rating} />
+                                                </TableCell>
                                                 <TableCell>
                                                    {value.status === "open" && <Chip label="Open" color="primary" />}
                                                    {value.status === "close" && <Chip label="Close" color="error" />}

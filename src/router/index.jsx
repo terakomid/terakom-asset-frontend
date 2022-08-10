@@ -15,6 +15,8 @@ import ChangePassword from "../views/headers/reset-password/Form"
 
 // Dashboard
 import Dashboard from "../views/dashboard/Index";
+import DashboardByCategory from "../views/dashboard/by-category";
+import DashboardAssetIt from "../views/dashboard/asset-it";
 
 // User management
 import UserRole from "../views/user-management/user-role/Content";
@@ -119,6 +121,22 @@ export default function Router() {
                element={
                   <Middleware.After>
                      <Layout render={<Dashboard />} />
+                  </Middleware.After>
+               }
+            />
+            <Route
+               path="/dashboard-by-category/:id"
+               element={
+                  <Middleware.After>
+                     <Layout render={<DashboardByCategory />} />
+                  </Middleware.After>
+               }
+            />
+            <Route
+               path="/dashboard-asset-it"
+               element={
+                  <Middleware.After>
+                     <Layout render={<DashboardAssetIt />} />
                   </Middleware.After>
                }
             />

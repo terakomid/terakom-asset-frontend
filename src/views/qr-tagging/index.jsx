@@ -128,7 +128,7 @@ const Index = () => {
             const formData = new FormData()
             formData.append('asset_code', asset_code)
             const res = await http.post(`asset/show_by_code`, formData)
-            console.log(res.data)
+            // console.log(res.data)
             setData(res.data.data)
 
         }catch(err){

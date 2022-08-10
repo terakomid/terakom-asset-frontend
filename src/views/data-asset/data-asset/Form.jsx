@@ -154,7 +154,6 @@ const TabPanel = (props) => {
             params: params,
          })
          .then((res) => {
-            console.log(res.data.data);
             setDepreciationData(res.data.data);
          })
          .catch((err) => {
@@ -168,7 +167,6 @@ const TabPanel = (props) => {
             params: params,
          })
          .then((res) => {
-            console.log(res.data.data);
             setMaintanceData(res.data.data);
          })
          .catch((err) => {
@@ -182,7 +180,6 @@ const TabPanel = (props) => {
             params: params,
          })
          .then((res) => {
-            console.log(res.data.data);
             setMutationData(res.data.data);
          })
          .catch((err) => {
@@ -196,7 +193,6 @@ const TabPanel = (props) => {
             params: params,
          })
          .then((res) => {
-            console.log(res.data.data);
             setChangeData(res.data.data);
          })
          .catch((err) => {
@@ -1106,7 +1102,7 @@ const Form = (props) => {
          } else {
             formData.append("_method", "PUT");
             edit(formData, id);
-            console.log(Object.fromEntries(formData));
+            // console.log(Object.fromEntries(formData));
          }
       }
    };
@@ -1900,14 +1896,14 @@ const Form = (props) => {
                                                       <InsertPhotoOutlined sx={{ fontSize: "100px" }} />
                                                    ) : (
                                                       <img
-                                                         style={{ height: "100px", width: "100px", objectFit: "cover", objectPosition: "center" }}
+                                                         style={{ maxHeight: "100px", maxWidth: "100px", objectFit: "cover", objectPosition: "center" }}
                                                          src={v.image_preview}
                                                          alt="test"
                                                       />
                                                    )}
-                                                   {typeof errors[`picture.${i}.file`] !== "undefined" && (
+                                                   {/* {typeof errors[`picture.${i}.file`] !== "undefined" && (
                                                       <Typography sx={{ color: "red" }}>Image Required</Typography>
-                                                   )}
+                                                   )} */}
                                                 </Box>
                                                 <input
                                                    disabled={props.detail}
@@ -1975,7 +1971,7 @@ const Form = (props) => {
                                                    ) : (
                                                       <AssignmentTurnedInOutlined sx={{ fontSize: "100px" }} />
                                                    )}
-                                                   {typeof errors[`picture.${i}.file`] !== "undefined" && (
+                                                   {typeof errors[`evidence.${i}.file`] !== "undefined" && (
                                                       <Typography sx={{ color: "red" }}>Evidence Required</Typography>
                                                    )}
                                                 </Box>

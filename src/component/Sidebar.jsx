@@ -9,7 +9,6 @@ export default function Sidebar() {
    const { user } = useRecoilValue(authentication);
    useEffect(() => {
       console.clear();
-      console.log(user.permission);
    }, []);
    return (
       <div className="vertical-menu">
