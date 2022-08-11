@@ -16,16 +16,19 @@ import {
    Typography,
    Stack,
    TablePagination,
-   Link,
    Grid,
+   Menu,
+   MenuItem,
+   ListItemIcon,
 } from "@mui/material";
-import { CloseRounded, FilterListRounded, MoreVert, Search } from "@mui/icons-material";
+import { CloseRounded, InfoOutlined, Edit, FilterListRounded, MoreVert, Search } from "@mui/icons-material";
 
-import { Link as RouterLink } from "react-router-dom";
+import { Link as RouterLink, useNavigate } from "react-router-dom";
 
 import http from "../../../component/api/Api";
 import Loading from "../../../component/Loading";
-// import ModalDelete from "../../../component/Delete";
+import { NumberFormat } from "../../../component/Format";
+import moment from "moment";
 
 import { useRecoilValue } from "recoil";
 import { authentication } from "../../../store/Authentication";
@@ -33,24 +36,25 @@ import { Permission } from "../../../component/Permission";
 
 export default function HistoryAsset() {
    const { user } = useRecoilValue(authentication);
+   const navigate = useNavigate();
 
-   const [rows, setRows] = useState();
-   const [data, setData] = useState({
-      code: "",
-      category: "",
-   });
    const [params, setParams] = useState({
       search: "",
+      order_by_name: 0,
+      limit: 10,
+      page: 1,
+      paginate: 1,
    });
 
+   const [data, setData] = useState();
    const getData = async () => {
-      http
-         .get(`category`, {
+      await http
+         .get(`asset`, {
             params: params,
          })
          .then((res) => {
             // console.log(res.data.data);
-            setRows(res.data.data);
+            setData(res.data.data);
          })
          .catch((err) => {
             // console.log(err.response);
@@ -58,7 +62,7 @@ export default function HistoryAsset() {
    };
 
    useEffect(() => {
-      setRows(undefined);
+      setData(undefined);
       let timer = setTimeout(() => {
          if (params) getData();
       }, 500);
@@ -66,77 +70,7 @@ export default function HistoryAsset() {
       // eslint-disable-next-line react-hooks/exhaustive-deps
    }, [params]);
 
-   const [method, setMethod] = useState("create");
-   const [loading, setLoading] = useState(false);
-   const handleSubmit = async (e) => {
-      e.preventDefault();
-      setLoading(true);
-      if (method === "create") {
-         let formData = new FormData();
-         formData.append("code", data.code);
-         formData.append("category", data.category);
-         // console.log(Object.fromEntries(formData));
-         http
-            .post(`/category`, formData, {})
-            .then((res) => {
-               // console.log(res.data.data);
-               setLoading(false);
-               handleClear();
-               getData();
-            })
-            .catch((err) => {
-               // console.log(err.response.data);
-               setLoading(false);
-            });
-      } else {
-         let formData = new FormData();
-         formData.append("_method", "PUT");
-         formData.append("code", data.code);
-         formData.append("category", data.category);
-         http
-            .post(`/category/${data.id}`, formData, {})
-            .then((res) => {
-               // console.log(res.data.data);
-               setMethod("create");
-               setLoading(false);
-               handleClear();
-               getData();
-            })
-            .catch((err) => {
-               // console.log(err.response.data);
-               setLoading(false);
-            });
-      }
-   };
-
-   const [page, setPage] = React.useState(0);
-   const [rowsPerPage, setRowsPerPage] = React.useState(5);
-   const handleChangePage = (event, newPage) => {
-      setPage(newPage);
-   };
-
-   const handleChangeRowsPerPage = (event) => {
-      setRowsPerPage(parseInt(event.target.value, 10));
-      setPage(0);
-   };
-
-   const handleClear = (e) => {
-      setMethod("create");
-      setData({
-         code: "",
-         category: "",
-      });
-   };
-
-   const handleChange = (e) => {
-      setData({
-         ...data,
-         [e.target.name]: e.target.value,
-      });
-   };
-
    const handleSearch = (e) => {
-      setPage(0);
       setParams({
          ...params,
          page: 1,
@@ -144,36 +78,46 @@ export default function HistoryAsset() {
       });
    };
 
-   const handleEdit = () => {
-      setData(staging);
-      handleMenu();
+   const handleChangePage = (event, newPage) => {
+      setParams({
+         ...params,
+         page: newPage + 1,
+      });
    };
 
-   const [openModal, setOpenModal] = useState(false);
-   const handleModal = (e) => {
-      setOpenModal(!openModal);
-   };
-
-   const onDelete = async () => {
-      http
-         .delete(`/category/${staging.id}`, {})
-         .then((res) => {
-            getData();
-            handleMenu();
-            handleModal();
-         })
-         .catch((err) => {
-            console.log(err.response.data);
-            setLoading(false);
-         });
+   const handleChangeRowsPerPage = (event) => {
+      setParams({
+         ...params,
+         page: 1,
+         limit: +event.target.value,
+      });
    };
 
    const [staging, setStaging] = useState();
+   const handleEdit = () => {
+      setData(staging);
+      handleMenu();
+      if (staging.asset_type === "it") {
+         navigate(`/edit-data-asset-it/${staging.id}`);
+      } else {
+         navigate(`/edit-data-asset-non-it/${staging.id}`);
+      }
+   };
+
+   const handleDetail = () => {
+      setData(staging);
+      handleMenu();
+      if (staging.asset_type === "it") {
+         navigate(`/detail-data-asset-it/${staging.id}`);
+      } else {
+         navigate(`/detail-data-asset-non-it/${staging.id}`);
+      }
+   };
+
    const [anchorEl, setAnchorEl] = useState(null);
    const open = Boolean(anchorEl);
    const handleClick = (event, value) => {
       setAnchorEl(event.currentTarget);
-      setMethod("edit");
       setStaging(value);
    };
    const handleMenu = () => {
@@ -271,12 +215,7 @@ export default function HistoryAsset() {
                      </Grid>
                      <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 3 }}>
                         <Stack direction="row" spacing={1}>
-                           <Button size="small" variant="contained">
-                              Add To Queue
-                           </Button>
-                           <Button size="small" variant="contained">
-                              Show Detail
-                           </Button>
+                           <Button variant="contained">Print Label</Button>
                         </Stack>
                      </Box>
                      <TableContainer>
@@ -289,7 +228,6 @@ export default function HistoryAsset() {
                                  }}
                               >
                                  <TableCell align="center">No.</TableCell>
-                                 <TableCell>Code</TableCell>
                                  <TableCell>Code Asset</TableCell>
                                  <TableCell>SAP Code</TableCell>
                                  <TableCell>Asset Name</TableCell>
@@ -297,35 +235,32 @@ export default function HistoryAsset() {
                                  <TableCell>Capitalized On</TableCell>
                                  <TableCell>Useful Life</TableCell>
                                  <TableCell>Usage Limit</TableCell>
-                                 <TableCell>Usage Period</TableCell>
+                                 {/* <TableCell>Usage Period</TableCell> */}
                                  <TableCell>Asset Acquistion Value</TableCell>
                                  <TableCell>Deprecation</TableCell>
                                  <TableCell align="center">Action</TableCell>
                               </TableRow>
                            </TableHead>
                            <TableBody>
-                              {rows !== undefined ? (
-                                 rows.length > 0 ? (
-                                    rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((value, key) => (
-                                       <TableRow key={key}>
+                              {data !== undefined ? (
+                                 data.data.length > 0 ? (
+                                    data.data.map((value, index) => (
+                                       <TableRow key={index}>
                                           <TableCell component="th" scope="row" align="center">
-                                             {page * rowsPerPage + key + 1}.
+                                             {index + 1}.
                                           </TableCell>
+                                          <TableCell>{value.asset_code}</TableCell>
+                                          <TableCell>{value.sap_code}</TableCell>
+                                          <TableCell>{value.asset_name}</TableCell>
                                           <TableCell>
-                                             <Link component={RouterLink} to={`/asset-subcategory/${value.id}`}>
-                                                {value.code}
-                                             </Link>
+                                             {value.category.code} - {value.category.category}
                                           </TableCell>
-                                          <TableCell>{value.category}</TableCell>
-                                          <TableCell>{value.category}</TableCell>
-                                          <TableCell>{value.category}</TableCell>
-                                          <TableCell>{value.category}</TableCell>
-                                          <TableCell>{value.category}</TableCell>
-                                          <TableCell>{value.category}</TableCell>
-                                          <TableCell>{value.category}</TableCell>
-                                          <TableCell>{value.category}</TableCell>
-                                          <TableCell>{value.category}</TableCell>
-                                          <TableCell>{value.category}</TableCell>
+                                          <TableCell>{moment(value.capitalized).format("LL")}</TableCell>
+                                          <TableCell>{value.useful_life} Month</TableCell>
+                                          <TableCell>{value.useful_life / 12} Year</TableCell>
+                                          {/* <TableCell>{value.asset_code}</TableCell> */}
+                                          <TableCell>{NumberFormat(value.acquisition_value)}</TableCell>
+                                          <TableCell>{NumberFormat(value.depreciation)}</TableCell>
                                           <TableCell align="center">
                                              <IconButton onClick={(e) => handleClick(e, value)}>
                                                 <MoreVert />
@@ -356,19 +291,41 @@ export default function HistoryAsset() {
                            </TableBody>
                         </Table>
                      </TableContainer>
-                     {rows !== undefined && rows.length > 0 && (
+                     {data !== undefined && data.data.length > 0 && (
                         <TablePagination
-                           rowsPerPageOptions={[5, 10, 25]}
                            component="div"
-                           count={rows.length}
-                           page={page}
-                           rowsPerPage={rowsPerPage}
+                           count={data.meta.total}
+                           page={params.page - 1}
+                           rowsPerPage={params.limit}
                            onPageChange={handleChangePage}
                            onRowsPerPageChange={handleChangeRowsPerPage}
+                           rowsPerPageOptions={[10, 25, 50]}
                         />
                      )}
                   </CardContent>
                </Card>
+               <Menu
+                  anchorEl={anchorEl}
+                  open={open}
+                  onClose={handleMenu}
+                  transformOrigin={{ horizontal: "right", vertical: "top" }}
+                  anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
+               >
+                  {Permission(user.permission, "update asset") && (
+                     <MenuItem onClick={handleEdit}>
+                        <ListItemIcon>
+                           <Edit />
+                        </ListItemIcon>
+                        Edit
+                     </MenuItem>
+                  )}
+                  <MenuItem onClick={handleDetail}>
+                     <ListItemIcon>
+                        <InfoOutlined />
+                     </ListItemIcon>
+                     Detail
+                  </MenuItem>
+               </Menu>
             </div>
          </div>
       </div>
