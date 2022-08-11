@@ -266,7 +266,7 @@ export const optionsPie = {
         position: 'left',
         labels: {
           usePointStyle: true,
-          boxWidth: 6
+          boxWidth: 6,
         }
       },
       title: {
@@ -349,7 +349,7 @@ const index = () => {
                                 <Grid item xs={12} md={8}>
                                     <Card sx={{ height: '100%' }}>
                                         <CardContent>
-                                            <Typography variant="p" sx={{ mb: 2, fontWeight: 'bold' }}>Asset By Condition</Typography>
+                                            <Typography variant="p" sx={{ mb: 2, fontWeight: 'bold' }}>Asset By Category</Typography>
                                             {data.asset_condition !== undefined &&
                                             <Bar 
                                                 options={optionsBar} 

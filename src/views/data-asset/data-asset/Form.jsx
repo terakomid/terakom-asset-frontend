@@ -635,9 +635,10 @@ const DetailComponent = (props) => {
                         width: "30%",
                         display: "flex",
                         alignItems: "center",
+                        justifyContent: 'center'
                      }}
                   >
-                     <QRCode size={300} value={props.data.asset_code} style={{ width: "100%", padding: "10px" }} viewBox={`0 0 300 300`} />
+                     <QRCode size={280} value={props.data.asset_code} style={{ width: "100%", padding: "10px" }} viewBox={`0 0 300 300`} />
                   </Box>
                   <Stack border={1} minWidth={"50%"}>
                      <Typography sx={{ fontWeight: "bold", color: "black", textAlign: "center" }}>PT. Haier Sales Indonesia</Typography>
@@ -1512,22 +1513,6 @@ const Form = (props) => {
                                     helperText={typeof errors?.acquisition_value !== "undefined" ? errors.acquisition_value[0] : ""}
                                     error={typeof errors?.acquisition_value !== "undefined" ? true : false}
                                  />
-                              </Grid>
-                              <Grid item md={6} xs={12}>
-                                 <TextField
-                                    value={form.depreciation_value}
-                                    disabled
-                                    onChange={handleChange}
-                                    name="depreciation_value"
-                                    fullWidth
-                                    label="Depreciation Value"
-                                    required
-                                    helperText={typeof errors?.depreciation_value !== "undefined" ? errors.depreciation_value[0] : ""}
-                                    error={typeof errors?.depreciation_value !== "undefined" ? true : false}
-                                 />
-                              </Grid>
-                              <Grid item md={6} xs={12}>
-                                 <TextField value={form.value_book} disabled onChange={handleChange} name="value_book" fullWidth label="Value Book" />
                               </Grid>
                               <Grid item md={4} xs={12}>
                                  <FormControl>

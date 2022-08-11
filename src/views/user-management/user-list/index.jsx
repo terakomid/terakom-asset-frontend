@@ -464,7 +464,7 @@ const Index = () => {
                                                    {page * rowsPerPage + key + 1}.
                                                 </TableCell>
                                                 <TableCell>
-                                                   <Stack direction="row">
+                                                   <Stack direction="row" width="250px">
                                                       <Avatar src={value.photo_url} sx={{ height: "5vh", width: "5vh" }} />
                                                       <Typography sx={{ ml: 1 }}>{value.name}</Typography>
                                                    </Stack>
