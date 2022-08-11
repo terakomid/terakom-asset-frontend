@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { Link } from "react-router-dom";
 import { useRecoilValue } from "recoil";
 import { authentication } from "../store/Authentication";
@@ -7,9 +7,6 @@ import "../App.css";
 
 export default function Sidebar() {
    const { user } = useRecoilValue(authentication);
-   useEffect(() => {
-      console.clear();
-   }, []);
    return (
       <div className="vertical-menu">
          <div data-simplebar className="h-100">

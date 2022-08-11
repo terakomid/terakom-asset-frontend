@@ -1,16 +1,56 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { Box } from "@mui/material";
+import { NotificationsNoneOutlined } from "@mui/icons-material";
 import { useRecoilState } from "recoil";
 import { authentication } from "../store/Authentication";
+import { Link, useNavigate } from "react-router-dom";
+import addNotification, { Notifications } from "react-push-notification";
 import http from "../component/api/Api";
 import "../App.css";
-import { useNavigate } from "react-router-dom";
 
-export default function Header(props) {
-   let token = localStorage.getItem("token");
-   const navigate = useNavigate()
+export default function Header() {
+   const navigate = useNavigate();
    const [auth, setAuth] = useRecoilState(authentication);
-   
+
+   const [notification, setNotification] = useState([]);
+   const getNotification = async () => {
+      await http.get(`notification`).then((res) => {
+         // console.log(res.data.data);
+         setNotification(res.data.data);
+      });
+   };
+
+   const readNotification = async (id) => {
+      await http.delete(`notification/${id}`).then((res) => {
+         // console.log(res.data.data);
+         navigate(`/acceptance-asset`);
+         getNotification();
+      });
+   };
+
+   useEffect(() => {
+      // window.Echo.private("App.Models.User." + auth.user.id).notification((value) => {
+      //    // console.log(value);
+      //    showNotification(value);
+      //    getNotification();
+      // });
+      getNotification();
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+   }, []);
+
+   const showNotification = (value) => {
+      // console.log(value);
+      addNotification({
+         title: "title",
+         message: "message",
+         duration: 60000,
+         native: true,
+         onClick: () => {
+            navigate(`/acceptance-asset`);
+         },
+      });
+   };
+
    const onLogout = async () => {
       await http.post(`logout`).then(() => {
          setAuth({
@@ -20,9 +60,16 @@ export default function Header(props) {
          localStorage.clear();
       });
    };
-   
+
+   function tToggle() {
+      var body = document.body;
+      body.classList.toggle("vertical-collpsed");
+      body.classList.toggle("sidebar-enable");
+   }
+
    return (
       <header id="page-topbar">
+         <Notifications />
          <div className="navbar-header bg-primary">
             <div className="d-flex">
                {/* LOGO */}
@@ -49,7 +96,9 @@ export default function Header(props) {
                <button
                   type="button"
                   className="btn btn-sm px-3 font-size-24 header-item waves-effect vertical-menu-btn text-white"
-                  onClick={props.openSideMenu}
+                  onClick={() => {
+                     tToggle();
+                  }}
                >
                   <i className="mdi mdi-menu"></i>
                </button>
@@ -74,112 +123,57 @@ export default function Header(props) {
                      aria-expanded="false"
                   >
                      <i className="ti-bell text-white"></i>
-                     <span className="badge bg-danger rounded-pill">9</span>
+                     {notification.length > 0 && <span className="badge bg-danger rounded-pill">{notification.length}</span>}
                   </button>
                   <div className="dropdown-menu dropdown-menu-lg dropdown-menu-end p-0" aria-labelledby="page-header-notifications-dropdown">
-                     <div className="p-3">
+                     <div className="p-3 border-bottom">
                         <div className="row align-items-center">
                            <div className="col">
-                              <h5 className="m-0"> Notifications (9) </h5>
+                              <h5 className="m-0">Notifications {notification.length > 0 && `(${notification.length})`}</h5>
                            </div>
                         </div>
                      </div>
                      <div>
-                        <a href="#link" className="text-reset notification-item">
-                           <div className="d-flex">
-                              <div className="flex-shrink-0 me-3">
-                                 <div className="avatar-xs">
-                                    <span className="avatar-title border-success rounded-circle ">
-                                       <i className="mdi mdi-cart-outline"></i>
-                                    </span>
+                        {notification.length > 0 ? (
+                           notification.map((value, index) => (
+                              <a href="#" className="text-reset notification-item" key={index} onClick={() => readNotification(value.id)}>
+                                 <div className="d-flex">
+                                    <div className="flex-shrink-0 me-3">
+                                       <div className="avatar-xs">
+                                          <span className="avatar-title border-info rounded-circle ">
+                                             <i className="mdi mdi-folder-table"></i>
+                                          </span>
+                                       </div>
+                                    </div>
+                                    <div className="flex-grow-1">
+                                       <h6 className="mb-1">Acceptance Asset</h6>
+                                       <div className="text-muted">
+                                          <p>#{value.data.asset_acceptance.po_number}</p>
+                                          <p>
+                                             Asset: {value.data.asset_acceptance.asset.asset_code} - {value.data.asset_acceptance.asset.asset_name}
+                                          </p>
+                                          <p>Vendor: {value.data.asset_acceptance.asset.veendor}</p>
+                                          <p>Location: {value.data.asset_acceptance.asset.location}</p>
+                                          <p>Department: {value.data.asset_acceptance.asset.dept}</p>
+                                       </div>
+                                    </div>
                                  </div>
-                              </div>
-                              <div className="flex-grow-1">
-                                 <h6 className="mb-1">Your order is placed</h6>
-                                 <div className="text-muted">
-                                    <p className="mb-1">If several languages coalesce the grammar</p>
-                                 </div>
-                              </div>
-                           </div>
-                        </a>
-
-                        <a href="#link" className="text-reset notification-item">
-                           <div className="d-flex">
-                              <div className="flex-shrink-0 me-3">
-                                 <div className="avatar-xs">
-                                    <span className="avatar-title border-warning rounded-circle ">
-                                       <i className="mdi mdi-message"></i>
-                                    </span>
-                                 </div>
-                              </div>
-                              <div className="flex-grow-1">
-                                 <h6 className="mb-1">New Message received</h6>
-                                 <div className="text-muted">
-                                    <p className="mb-1">You have 87 unread messages</p>
-                                 </div>
-                              </div>
-                           </div>
-                        </a>
-
-                        <a href="#link" className="text-reset notification-item">
-                           <div className="d-flex">
-                              <div className="flex-shrink-0 me-3">
-                                 <div className="avatar-xs">
-                                    <span className="avatar-title border-info rounded-circle ">
-                                       <i className="mdi mdi-glass-cocktail"></i>
-                                    </span>
-                                 </div>
-                              </div>
-                              <div className="flex-grow-1">
-                                 <h6 className="mb-1">Your item is shipped</h6>
-                                 <div className="text-muted">
-                                    <p className="mb-1">It is a long established fact that a reader will</p>
-                                 </div>
-                              </div>
-                           </div>
-                        </a>
-
-                        <a href="#link" className="text-reset notification-item">
-                           <div className="d-flex">
-                              <div className="flex-shrink-0 me-3">
-                                 <div className="avatar-xs">
-                                    <span className="avatar-title border-primary rounded-circle ">
-                                       <i className="mdi mdi-cart-outline"></i>
-                                    </span>
-                                 </div>
-                              </div>
-                              <div className="flex-grow-1">
-                                 <h6 className="mb-1">Your order is placed</h6>
-                                 <div className="text-muted">
-                                    <p className="mb-1">Dummy text of the printing and typesetting industry.</p>
-                                 </div>
-                              </div>
-                           </div>
-                        </a>
-
-                        <a href="#link" className="text-reset notification-item">
-                           <div className="d-flex">
-                              <div className="flex-shrink-0 me-3">
-                                 <div className="avatar-xs">
-                                    <span className="avatar-title border-warning rounded-circle ">
-                                       <i className="mdi mdi-message"></i>
-                                    </span>
-                                 </div>
-                              </div>
-                              <div className="flex-grow-1">
-                                 <h6 className="mb-1">New Message received</h6>
-                                 <div className="text-muted">
-                                    <p className="mb-1">You have 87 unread messages</p>
-                                 </div>
-                              </div>
-                           </div>
-                        </a>
+                              </a>
+                           ))
+                        ) : (
+                           <Box sx={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", pb: 3, height: 200 }}>
+                              <NotificationsNoneOutlined fontSize="large" sx={{ mb: 1 }} />
+                              You have no notifications.
+                           </Box>
+                        )}
                      </div>
-                     <div className="p-2 border-top">
-                        <a className="btn btn-sm btn-link font-size-14 w-100 text-center" href="#link">
-                           View all
-                        </a>
-                     </div>
+                     {/* {notification.length > 0 && (
+                        <div className="p-2 border-top">
+                           <a className="btn btn-sm btn-link font-size-14 w-100 text-center" href="#link">
+                              View all
+                           </a>
+                        </div>
+                     )} */}
                   </div>
                </div>
 
@@ -197,17 +191,15 @@ export default function Header(props) {
                   </button>
                   <div className="dropdown-menu dropdown-menu-end">
                      {/* item */}
-                     <p style={{ cursor: 'pointer' }} onClick={() => navigate('/profil')} className="dropdown-item">
-                        <i className="mdi mdi-account-circle font-size-17 text-muted align-middle me-1"></i>
-                        Profile
+                     <p style={{ cursor: "pointer" }} onClick={() => navigate("/profil")} className="dropdown-item">
+                        <i className="mdi mdi-account-circle font-size-17 text-muted align-middle me-1"></i> Profile
                      </p>
-                     <p style={{ cursor: 'pointer' }} onClick={() => navigate('/reset-password')} className="dropdown-item d-block">
+                     <p style={{ cursor: "pointer" }} onClick={() => navigate("/reset-password")} className="dropdown-item d-block">
                         <i className="mdi mdi-cog font-size-17 text-muted align-middle me-1"></i> Change Password
                      </p>
                      <div className="dropdown-divider"></div>
                      <div className="dropdown-item text-danger" style={{ cursor: "pointer" }} onClick={onLogout}>
-                        <i className="mdi mdi-power font-size-17 text-muted align-middle me-1 text-danger"></i>
-                        Logout
+                        <i className="mdi mdi-power font-size-17 text-muted align-middle me-1 text-danger"></i> Logout
                      </div>
                   </div>
                </div>
