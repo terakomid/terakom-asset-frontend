@@ -272,40 +272,63 @@ const index = () => {
     const [isComplete, setIsComplete] = useState(false)
     const [locationParams, setLocationParams] = useState({
         device_id: [],
-        branch_id: [],
+        location_id: [],
         sub_branch_id: [],
     })
 
+    //data
+    const [dataByLocation, setDataByLocation] = useState({})
+    const [dataByDeparment, setDataByDeparment] = useState({})
+
     //Option
     const [deviceOption, setDeviceOption] = useState([])
-    const [branchOption, setBranchOption] = useState([])
+    const [locationOption, setLocationOption] = useState([])
 
     //loading
     const [loading, setLoading] = useState(false)
     
     //get Data from API
-    const getData = async () => {
+    const getDataByLocation = async () => {
         setIsComplete(false)
-        const res = await http.get(`statistic/asset_by_sub_category`, {
+        const res = await http.get(`/statistic/asset_it_by_location`, {
             params: {
-                category_id: id
+                device_id: locationParams.device_id,
+                location_id: locationParams.location_id,
+                sub_location_id: locationParams.sub_branch_id
             }
         })
         console.log(res.data.data)
-        setData(res.data.data)
+        setDataByLocation(res.data.data)
     }
+
     const getDevice = async () => {
         const res = await http.get(`sub_master_it`, {
             params: {
                 master_it_id: 1,
             },
         });
-        console.log(res.data)
         setDeviceOption(res.data.data)
+    }
+
+    const getLocation = async () => {
+        const res = await http.get(`location`);
+        setLocationOption(res.data.data)
     }
 
 
     //convert data response
+    const covertDataGroupLocation = (arr) => {
+        const temp = arr.map((v, i)=> {
+            return {
+                id: i,
+                label: v.device,
+                data: [...v.asset_count],
+                backgroundColor: `rgba(0, 0, ${160 + i * 5}, 1)`
+            }
+        })
+        return temp
+    }
+
     const covertDataConditionCount = (arr) => {
         return arr.map(v => v.asset_count)
     }
@@ -336,7 +359,7 @@ const index = () => {
     useEffect(() => {
         let mounted = true
         if(mounted){
-            Promise.all([getDevice()]).then(res => {
+            Promise.all([getDevice(), getDataByLocation(), getLocation()]).then(res => {
                 setIsComplete(true)
             })
 
@@ -404,29 +427,29 @@ const index = () => {
                                                     </FormControl>
                                                 </Grid>
 
-                                                {/* Branch option */}
+                                                {/* Location option */}
                                                 <Grid item xs={12} md={6}>
                                                     <FormControl fullWidth>
-                                                        <InputLabel>Device</InputLabel>
+                                                        <InputLabel>Location</InputLabel>
                                                         <Select
                                                             labelId="demo-multiple-checkbox-label"
                                                             id="demo-multiple-checkbox"
                                                             multiple
-                                                            name='device_id'
-                                                            value={locationParams.device_id}
+                                                            name='location_id'
+                                                            value={locationParams.location_id}
                                                             onChange={locationChange}
                                                             input={<OutlinedInput label="Device" />}
                                                             renderValue={(selected) => {
-                                                                return deviceOption.filter(v => selected.includes(v.id)).map(v => v.sub_type).join(', ')
+                                                                return locationOption.filter(v => selected.includes(v.id)).map(v => v.location).join(', ')
                                                             }}
                                                         >
-                                                            {deviceOption.length > 0 && deviceOption.map((v, i) => {
+                                                            {locationOption.length > 0 && locationOption.map((v, i) => {
                                                                 return (
                                                                 <MenuItem key={v.id} value={v.id}>
                                                                     <Checkbox 
-                                                                        checked={locationParams.device_id.indexOf(v.id) > -1} 
+                                                                        checked={locationParams.location_id.indexOf(v.id) > -1} 
                                                                     />
-                                                                    <ListItemText primary={v.sub_type} />
+                                                                    <ListItemText primary={v.location} />
                                                                 </MenuItem>
                                                                 )
                                                             })}
@@ -466,32 +489,16 @@ const index = () => {
 
                                                 {/* Bar Chart */}
                                                 <Grid item xs={12} md={12}>
+                                                    {dataByLocation.asset_count !== undefined && dataByLocation.location !== undefined &&
                                                     <Bar 
                                                         options={optionsBar} 
                                                         data={{
-                                                            labels: ['Satu', 'Dua', 'Tiga'],
-                                                            datasets: [
-                                                                {
-                                                                    id: 1,
-                                                                    label: 'Asset',
-                                                                    data: [15, 20, 5],
-                                                                    backgroundColor: 'rgba(7, 82, 143, 1)',
-                                                                },
-                                                                {
-                                                                    id: 1,
-                                                                    label: 'Asset',
-                                                                    data: [10, 15, 10],
-                                                                    backgroundColor: 'rgba(7, 82, 143, 1)',
-                                                                },
-                                                                {
-                                                                    id: 1,
-                                                                    label: 'Asset',
-                                                                    data: [5, 10, 5],
-                                                                    backgroundColor: 'rgba(7, 82, 143, 1)',
-                                                                },
-                                                            ],
+                                                            labels: dataByLocation.location,
+                                                            datasets: covertDataGroupLocation(dataByLocation.asset_count)
                                                         }} 
                                                     />
+                                                    
+                                                    }
 
                                                 </Grid>
 

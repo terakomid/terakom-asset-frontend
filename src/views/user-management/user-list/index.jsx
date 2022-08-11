@@ -26,8 +26,13 @@ import {
    DialogContentText,
    DialogActions,
    Chip,
+   FormControl,
+   InputLabel,
+   OutlinedInput,
+   FormHelperText,
+   Box,
 } from "@mui/material";
-import { Add, CloseRounded, Delete, Edit, FileDownload, FileUpload, FilterListRounded, MoreVert, Search } from "@mui/icons-material";
+import { Add, CloseRounded, Delete, Edit, FileDownload, FileUpload, FilterListRounded, MoreVert, RestartAlt, Search, Visibility, VisibilityOff } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 
 import http from "../../../component/api/Api";
@@ -37,6 +42,7 @@ import ModalDelete from "../../../component/Delete";
 import { useRecoilValue } from "recoil";
 import { authentication } from "../../../store/Authentication";
 import { Permission } from "../../../component/Permission";
+import { LoadingButton } from "@mui/lab";
 
 const ModalFilter = (props) => {
    const [roleOptions, setRoleOptions] = useState([]);
@@ -105,6 +111,162 @@ const ModalFilter = (props) => {
             <Button variant="text" color="error" onClick={() => console.log("filter")} autoFocus>
                Delete
             </Button>
+         </DialogActions>
+      </Dialog>
+   );
+};
+const ModalResetPassword = (props) => {
+   const [loading, setLoading] = useState(false)
+   const [form, setForm] = useState({
+      password: '',
+      password_confirmation: '',
+   })
+   const [errors, setErrors] = useState({})
+
+   const [showNew, setShowNew] = useState("password");
+   const [showCon, setShowCon] = useState("password");
+
+   const onShowNew = (e) => {
+      if (showNew === "password") {
+         setShowNew("text");
+      } else {
+         setShowNew("password");
+      }
+   };
+
+   const onShowCon = (e) => {
+      if (showCon === "password") {
+         setShowCon("text");
+      } else {
+         setShowCon("password");
+      }
+   };
+
+   const resetPassword = async () => {
+      const res = await http.patch(`user/${props.data.id}/change_password_without_confirm`, {}, {
+         params: {
+            password: form.password, 
+            password_confirmation: form.password_confirmation
+         }
+      })
+      props.handleMenu();
+      props.handleClose();
+      props.getData()
+
+   }
+
+   const onSubmit = (e) => {
+      setLoading(true)
+      resetPassword()
+      .then(res => {
+         setForm({
+            password: '',
+            password_confirmation: ''
+         })
+      })
+      .catch(err => {
+         if(err.response){
+            setErrors(err.response.data.errors)
+         }
+      }).finally(() => {
+         setLoading(false)
+      })
+   }
+
+   const onChange = (e) => {
+      setForm({
+          ...form,
+          [e.target.name]: e.target.value,
+      });
+   };
+
+   return (
+      <Dialog
+         fullWidth
+         maxWidth="xs"
+         open={props.open}
+         onClose={props.handleClose}
+         aria-labelledby="alert-dialog-title"
+         aria-describedby="alert-dialog-description"
+      >
+         <DialogTitle>Reset Password</DialogTitle>
+         <DialogContent>
+            <Grid mt={2} spacing={2} container>
+               {/* New Password */}
+               <Grid item xs={12} md={12}>
+                  <FormControl error={typeof errors?.password !== "undefined" ? true : false} fullWidth>
+                        <InputLabel htmlFor="password">
+                           New Password
+                        </InputLabel>
+                        <OutlinedInput
+                           id="password"
+                           type={showNew}
+                           label={"New Password"}
+                           variant="outlined"
+                           fullWidth
+                           name="password"
+                           onChange={onChange}
+                           value={form.password}
+                           required
+                           endAdornment={
+                              <InputAdornment position="end">
+                                    <IconButton aria-label="toggle password visibility" onClick={onShowNew}>
+                                       {showNew === "text" ? <VisibilityOff /> : <Visibility />}
+                                    </IconButton>
+                              </InputAdornment>
+                           }
+                        />
+                        <FormHelperText>
+                           {typeof errors?.password !== "undefined" ? <span style={{ color: "red" }}>{errors.password[0]}</span> : ""}
+                        </FormHelperText>
+                  </FormControl>
+               </Grid>
+
+               {/* New Password Confirm */}
+               <Grid item xs={12} md={12}>
+                  <FormControl error={typeof errors?.password_confirmation !== "undefined" ? true : false} fullWidth>
+                        <InputLabel htmlFor="password_confirmation">
+                           Repeat New Password
+                        </InputLabel>
+                        <OutlinedInput
+                           id="password_confirmation"
+                           type={showCon}
+                           label={"Repeat New Password"}
+                           variant="outlined"
+                           fullWidth
+                           name="password_confirmation"
+                           onChange={onChange}
+                           value={form.password_confirmation}
+                           required
+                           endAdornment={
+                              <InputAdornment position="end">
+                                    <IconButton aria-label="toggle password_confirmation visibility" onClick={onShowCon}>
+                                       {showCon === "text" ? <VisibilityOff /> : <Visibility />}
+                                    </IconButton>
+                              </InputAdornment>
+                           }
+                        />
+                        <FormHelperText>
+                           {typeof errors?.password_confirmation !== "undefined" ? (
+                              <span style={{ color: "red" }}>{errors.password_confirmation[0]}</span>
+                           ) : (
+                              ""
+                           )}
+                        </FormHelperText>
+                  </FormControl>
+               </Grid>
+
+            </Grid>
+         </DialogContent>
+         <DialogActions>
+            <Box component="form">
+               <Button variant="text" onClick={props.handleClose}>
+                  Cancel
+               </Button>
+               <LoadingButton onClick={onSubmit} loading={loading} variant="text" color="success" autoFocus>
+                  Submit
+               </LoadingButton>
+            </Box>
          </DialogActions>
       </Dialog>
    );
@@ -196,10 +358,14 @@ const Index = () => {
             handleModal();
          })
          .catch((err) => {
-            console.log(err.response.data);
             setLoading(false);
          });
    };
+
+   const [openResetPassword, setOpenResetPassword] = useState(false)
+   const handleResetPassword = () => {
+      setOpenResetPassword(!openResetPassword)
+   }
 
    const [staging, setStaging] = useState();
    const [anchorEl, setAnchorEl] = useState(null);
@@ -360,6 +526,13 @@ const Index = () => {
                      {/* utils */}
                      <ModalDelete open={openModal} delete={onDelete} handleClose={handleModal} />
                      <ModalFilter open={modalFilter} setParams={setParams} handleClose={handleModalFilter} />
+                     <ModalResetPassword 
+                        open={openResetPassword} 
+                        handleMenu={handleMenu}
+                        getData={getData}
+                        data={staging}
+                        handleClose={handleResetPassword} 
+                     />
 
                      {/* menu */}
                      {Permission(user.permission, "update user") || Permission(user.permission, "delete user") ? (
@@ -384,6 +557,14 @@ const Index = () => {
                                     <Delete />
                                  </ListItemIcon>
                                  Delete
+                              </MenuItem>
+                           )}
+                           {Permission(user.permission, "delete user") && (
+                              <MenuItem onClick={handleResetPassword}>
+                                 <ListItemIcon>
+                                    <RestartAlt />
+                                 </ListItemIcon>
+                                 Reset Password
                               </MenuItem>
                            )}
                         </Menu>

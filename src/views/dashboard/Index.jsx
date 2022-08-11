@@ -349,7 +349,6 @@ const index = () => {
             }
         })
         setData(res.data.data)
-        console.log(res.data)
     }
 
     const covertDataConditionCount = (arr) => {

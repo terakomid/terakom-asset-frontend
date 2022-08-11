@@ -88,7 +88,6 @@ const Form = (props) => {
 
    const getLocation = async () => {
       const res = await http.get('location')
-      console.log(res.data)
       setLocationOptions([...res.data.data])
    }
 

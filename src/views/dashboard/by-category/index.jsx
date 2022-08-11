@@ -301,7 +301,6 @@ const index = () => {
                 category_id: id
             }
         })
-        console.log(res.data.data)
         setData(res.data.data)
     }
 

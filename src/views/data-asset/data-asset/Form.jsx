@@ -1126,6 +1126,7 @@ const Form = (props) => {
          ]).then((res) => {
             if (props.data) {
                const data = props.data;
+               console.log(data)
                //otomatic value
                setAutomatic(data);
                setPictureFromApi(data);
@@ -1173,17 +1174,17 @@ const Form = (props) => {
                         computer_name: data.computer_name,
 
                         // Hardware
-                        dlp: data.dlp,
-                        soc: data.soc,
-                        snnbpc: data.snnbpc,
-                        processor_id: data.processor.id,
-                        hardware: data.hardware,
+                        dlp: data.dlp === null ? '' : data.dlp,
+                        soc: data.soc === null ? '' : data.soc,
+                        snnbpc: data.snnbpc === null ? '' : data.snnbpc,
+                        processor_id: data.processor === null ? '' : data.processor.id,
+                        hardware: data.hardware === null ? '' : data.hardware,
 
                         //Sofware
-                        os_id: data.os.id,
-                        sn_windows: data.sn_windows,
-                        office_id: data.office.id,
-                        antivirus_id: data.antivirus.id,
+                        os_id: data.os === null ? '' : data.os.id,
+                        sn_windows: data.sn_windows === null ? '' : data.sn_windows,
+                        office_id: data.office === null ? '' : data.office.id,
+                        antivirus_id: data.antivirus === null ? '' : data.antivirus.id,
 
                         // information support
                         notes: data.notes,
