@@ -175,7 +175,7 @@ export default function AddMaintenanceAsset() {
          formData.append(`asset_data[${index}][asset_id]`, value.asset_id);
          formData.append(`asset_data[${index}][reason]`, value.reason);
       });
-      console.log(Object.fromEntries(formData));
+      // console.log(Object.fromEntries(formData));
       http
          .post(`asset_maintenance`, formData)
          .then((res) => {
