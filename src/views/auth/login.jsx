@@ -114,18 +114,7 @@ export default function Login() {
                         required
                      />
                   </FormControl>
-                  <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                     <FormGroup>
-                        <FormControlLabel
-                           sx={{ mb: 0 }}
-                           control={<Checkbox size="small" />}
-                           label={
-                              <Typography variant="body2" color="text.primary">
-                                 Remember me
-                              </Typography>
-                           }
-                        />
-                     </FormGroup>
+                  <Box sx={{ display: "flex", justifyContent: "flex-end", alignItems: "center", mt: 1 }}>
                      <Link component={RouterLink} to="/forgot-password">
                         <Typography variant="body2">Forgot password?</Typography>
                      </Link>
