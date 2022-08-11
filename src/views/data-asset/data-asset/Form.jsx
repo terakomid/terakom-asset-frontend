@@ -600,7 +600,8 @@ const TabsComponent = (props) => {
 const DetailComponent = (props) => {
    return (
       <Grid item xs={12} md={12} alignItems="center" justifyContent="center" display="flex" flexDirection={"column"}>
-         <Grid container spacing={3} mt={2} alignItems="center">
+         <Grid container spacing={3} mt={2} justifyContent={props.data.picture.length > 0 ? "" : "center"} alignItems="center">
+            {props.data.picture.length > 0 &&
             <Grid
                item
                md={5}
@@ -617,6 +618,7 @@ const DetailComponent = (props) => {
                   src={props.data.picture[0].file}
                />
             </Grid>
+            }
 
             <Grid
                item
@@ -1023,18 +1025,22 @@ const Form = (props) => {
       if (props.title === "add") {
          pictures.map((v, i) => {
             if (i === 0) {
-               formData.append(`picture[${i}][file]`, v.image_file);
-               formData.append(`picture[${i}][main]`, 1);
+               if(v.image_file !== ""){
+                  formData.append(`picture[${i}][file]`, v.image_file);
+                  formData.append(`picture[${i}][main]`, 1);
+               } 
             } else {
-               formData.append(`picture[${i}][file]`, v.image_file);
-               formData.append(`picture[${i}][main]`, 1);
+               if(v.image_file !== ""){
+                  formData.append(`picture[${i}][file]`, v.image_file);
+                  formData.append(`picture[${i}][main]`, 0);
+               }
             }
          });
          evidences.map((v, i) => {
             if (i === 0) {
-               formData.append(`evidence[${i}][file]`, v.file);
+               v.file !== "" && formData.append(`evidence[${i}][file]`, v.file);
             } else {
-               formData.append(`evidence[${i}][file]`, v.file);
+               v.file !== "" && formData.append(`evidence[${i}][file]`, v.file);
             }
          });
       } else {
@@ -1127,11 +1133,11 @@ const Form = (props) => {
          ]).then((res) => {
             if (props.data) {
                const data = props.data;
-               
+               console.log(data)
                //otomatic value
                setAutomatic(data);
-               setPictureFromApi(data);
-               setEvidenceFromApi(data);
+               data.picture.length > 0 && setPictureFromApi(data);
+               data.evidence.length > 0 && setEvidenceFromApi(data);
                getSubCategory(data.category.id).then((res) => {
                   if (props.type === "it") {
                      setForm({

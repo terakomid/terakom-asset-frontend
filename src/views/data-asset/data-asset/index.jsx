@@ -136,17 +136,16 @@ const Index = () => {
             },
          })
          .then((res) => {
-             console.log(res.data.data);
+            //  console.log(res.data.data);
             setRows(res.data.data);
          })
          .catch((err) => {
-             console.log(err.response);
+            //  console.log(err.response);
          });
    };
 
    const getField = async () => {
       const res = await http.get('asset/field_asset')
-      console.log(res.data)
       setFieldOption([...res.data.data])
    }
 
@@ -234,7 +233,6 @@ const Index = () => {
             handleModal();
          })
          .catch((err) => {
-            console.log(err.response.data);
             setLoading(false);
          });
    };
