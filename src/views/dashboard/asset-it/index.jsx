@@ -281,6 +281,7 @@ const index = () => {
         sub_location_id: [],
     })
 
+
     //data
     const [dataByLocation, setDataByLocation] = useState({})
     const [dataByDeparment, setDataByDeparment] = useState({})
@@ -294,27 +295,27 @@ const index = () => {
 
     //loading
     const [loading, setLoading] = useState(false)
+    const [locationLoading, setLocationLoading] = useState(false)
+    const [departmentLoading, setDepartmentLoading] = useState(false)
     
     //get Data from API
     const getDataByLocation = async () => {
-        setIsComplete(false)
         const res = await http.get(`/statistic/asset_it_by_location`, {
             params: {
                 device_id: locationParams.device_id,
                 location_id: locationParams.location_id,
-                sub_location_id: locationParams.sub_branch_id
+                sub_location_id: locationParams.sub_location_id
             }
         })
-        console.log(res.data)
         setDataByLocation(res.data.data)
     }
 
     const getDataByDepartment = async () => {
         const res = await http.get(`/statistic/asset_it_by_department`, {
             params: {
-                device_id: locationParams.device_id,
-                location_id: locationParams.location_id,
-                sub_location_id: locationParams.sub_branch_id
+                device_id: departmentParams.device_id,
+                department_id: departmentParams.department_id,
+                sub_location_id: departmentParams.sub_location_id
             }
         })
         setDataByDeparment(res.data.data)
@@ -337,6 +338,20 @@ const index = () => {
     const getDepartment = async () => {
         const res = await http.get('dept')
         setDepartmentOptions([...res.data.data])
+    }
+
+    const locationSubmit = async () => {
+        setLocationLoading(true)
+        getDataByLocation().then(res => {
+            setLocationLoading(false)
+        })
+    }
+
+    const departmentSubmit = async () => {
+        setDepartmentLoading(true)
+        getDataByDepartment().then(res => {
+            setDepartmentLoading(false)
+        })
     }
 
     //convert data response
@@ -542,15 +557,16 @@ const index = () => {
                                                 {/* Location option */}
                                                 <Grid item xs={12} md={6}>
                                                     <FormControl fullWidth>
-                                                        <InputLabel>Location</InputLabel>
+                                                        <InputLabel>Branch</InputLabel>
                                                         <Select
                                                             labelId="demo-multiple-checkbox-label"
                                                             id="demo-multiple-checkbox"
                                                             multiple
                                                             name='location_id'
+                                                            disabled={locationParams.sub_location_id.length > 0 ? true : false}
                                                             value={locationParams.location_id}
                                                             onChange={locationChange}
-                                                            input={<OutlinedInput label="Location" />}
+                                                            input={<OutlinedInput label="Branch" />}
                                                             renderValue={(selected) => {
                                                                 return locationOption.filter(v => selected.includes(v.id)).map(v => v.location).join(', ')
                                                             }}
@@ -572,7 +588,7 @@ const index = () => {
                                                 {/* Sub Location option */}
                                                 <Grid item xs={12} md={6}>
                                                     <FormControl fullWidth>
-                                                        <InputLabel>Sub Location</InputLabel>
+                                                        <InputLabel>Sub Branch</InputLabel>
                                                         <Select
                                                             labelId="demo-multiple-checkbox-label"
                                                             id="demo-multiple-checkbox"
@@ -580,7 +596,8 @@ const index = () => {
                                                             name='sub_location_id'
                                                             value={locationParams.sub_location_id}
                                                             onChange={locationChange}
-                                                            input={<OutlinedInput label="Sub Location" />}
+                                                            disabled={locationParams.location_id.length > 0 ? true : false}
+                                                            input={<OutlinedInput label="Sub Branch" />}
                                                             renderValue={(selected) => {
                                                                 return locationOption.filter(v => selected.includes(v.id)).map(v => v.location).join(', ')
                                                             }}
@@ -600,7 +617,7 @@ const index = () => {
                                                 </Grid>
 
                                                 <Grid item xs={12} md={6}>
-                                                    <LoadingButton variant='contained'>
+                                                    <LoadingButton loading={locationLoading} variant='contained' onClick={locationSubmit}>
                                                             Submit
                                                     </LoadingButton>
                                                     
@@ -651,7 +668,7 @@ const index = () => {
                                 <Grid item xs={12} md={12}>
                                     <Card sx={{ height: '100%' }}>
                                         <CardContent>
-                                            <Typography variant="p" sx={{ fontWeight: 'bold' }}>Total Asset By Location</Typography>
+                                            <Typography variant="p" sx={{ fontWeight: 'bold' }}>Total Asset By Department</Typography>
                                             <Grid container spacing={2} my={2} alignItems="center">
                                                 
                                                 {/* Device option */}
@@ -724,7 +741,7 @@ const index = () => {
                                                 {/* Sub Location option */}
                                                 <Grid item xs={12} md={6}>
                                                     <FormControl fullWidth>
-                                                        <InputLabel>Sub Location</InputLabel>
+                                                        <InputLabel>Branch</InputLabel>
                                                         <Select
                                                             labelId="demo-multiple-checkbox-label"
                                                             id="demo-multiple-checkbox"
@@ -732,12 +749,12 @@ const index = () => {
                                                             name='sub_location_id'
                                                             value={departmentParams.sub_location_id}
                                                             onChange={departmentChange}
-                                                            input={<OutlinedInput label="Sub Location" />}
+                                                            input={<OutlinedInput label="Branch" />}
                                                             renderValue={(selected) => {
                                                                 return locationOption.filter(v => selected.includes(v.id)).map(v => v.location).join(', ')
                                                             }}
                                                         >
-                                                            {locationOption.length > 0 && locationOption.filter(v => v.parent !== null).map((v, i) => {
+                                                            {locationOption.length > 0 && locationOption.filter(v => v.parent === null).map((v, i) => {
                                                                 return (
                                                                 <MenuItem key={v.id} value={v.id}>
                                                                     <Checkbox 
@@ -756,7 +773,7 @@ const index = () => {
                                                 
 
                                                 <Grid item xs={12} md={6}>
-                                                    <LoadingButton variant='contained'>
+                                                    <LoadingButton variant='contained' loading={departmentLoading} onClick={departmentSubmit}>
                                                             Submit
                                                     </LoadingButton>
                                                     
