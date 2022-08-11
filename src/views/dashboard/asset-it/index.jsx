@@ -297,7 +297,6 @@ const index = () => {
                 sub_location_id: locationParams.sub_branch_id
             }
         })
-        console.log(res.data.data)
         setDataByLocation(res.data.data)
     }
 

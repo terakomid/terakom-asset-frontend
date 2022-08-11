@@ -718,6 +718,7 @@ const Form = (props) => {
       os_id: "",
       sn_windows: "",
       office_id: "",
+      sn_office: "",
       antivirus_id: "",
 
       // information support
@@ -957,7 +958,6 @@ const Form = (props) => {
    const store = async (formData) => {
       try {
          const res = await http.post("asset", formData);
-         // console.log(res.data.data)
          setLoading(false);
          setDetailModalData(res.data.data);
          handleDetailModal();
@@ -966,7 +966,6 @@ const Form = (props) => {
          if (err.response) {
             setErrors(err.response.data.errors);
          }
-         // console.log(err.response)
       }
    };
 
@@ -1067,34 +1066,36 @@ const Form = (props) => {
 
       if (props.type === "it") {
          formData.append("asset_type", "it");
+
          //Device information
-         formData.append("device_id", form.device_id);
-         formData.append("type", form.type);
-         formData.append("brand_id", form.brand_id);
-         formData.append("monitor_inch", form.monitor_inch);
-         formData.append("model_brand", form.model_brand);
-         formData.append("mac_address", form.mac_address);
-         formData.append("warranty", moment(form.warranty).format("yyyy/MM/DD"));
-         formData.append("computer_name", form.computer_name);
+         form.device_id !== "" && formData.append("device_id", form.device_id); 
+         form.type !== "" && formData.append("type", form.type);
+         form.brand_id !== "" && formData.append("brand_id", form.brand_id);
+         form.monitor_inch !== "" && formData.append("monitor_inch", form.monitor_inch);
+         form.model_brand !== "" && formData.append("model_brand", form.model_brand);
+         form.mac_address !== "" && formData.append("mac_address", form.mac_address);
+         form.warranty !== null && formData.append("warranty", moment(form.warranty).format("yyyy/MM/DD"));
+         form.computer_name !== "" && formData.append("computer_name", form.computer_name);
 
          //Hardware
-         formData.append("dlp", form.dlp);
-         formData.append("soc", form.soc);
-         formData.append("snnbpc", form.snnbpc);
-         formData.append("processor_id", form.processor_id);
-         formData.append("hardware", form.hardware);
+         form.dlp !== "" && formData.append("dlp", form.dlp);
+         form.soc !== "" && formData.append("soc", form.soc);
+         form.snnbpc !== "" && formData.append("snnbpc", form.snnbpc);
+         form.processor_id !== "" && formData.append("processor_id", form.processor_id);
+         form.hardware !== "" && formData.append("hardware", form.hardware);
 
          //Sofware
-         formData.append("os_id", form.os_id);
-         formData.append("sn_windows", form.sn_windows);
-         formData.append("office_id", form.office_id);
-         formData.append("antivirus_id", form.antivirus_id);
+         form.os_id !== "" && formData.append("os_id", form.os_id);
+         form.sn_windows !== "" && formData.append("sn_windows", form.sn_windows);
+         form.office_id !== "" && formData.append("office_id", form.office_id);
+         form.sn_office !== "" && formData.append("sn_office", form.sn_office);
+         form.antivirus_id !== "" && formData.append("antivirus_id", form.antivirus_id);
+
          if (props.title === "add") {
             store(formData);
          } else {
             formData.append("_method", "PUT");
             edit(formData, id);
-            // console.log(Object.fromEntries(formData))
          }
       } else {
          formData.append("asset_type", "non-it");
@@ -1103,7 +1104,6 @@ const Form = (props) => {
          } else {
             formData.append("_method", "PUT");
             edit(formData, id);
-            // console.log(Object.fromEntries(formData));
          }
       }
    };
@@ -1127,7 +1127,7 @@ const Form = (props) => {
          ]).then((res) => {
             if (props.data) {
                const data = props.data;
-               console.log(data)
+               
                //otomatic value
                setAutomatic(data);
                setPictureFromApi(data);
@@ -1165,14 +1165,14 @@ const Form = (props) => {
                         vendor_id: data.vendor.id,
 
                         // Device information
-                        device_id: data.device.id,
-                        type: data.type,
-                        brand_id: data.brand.id,
-                        monitor_inch: data.monitor_inch,
-                        model_brand: data.model_brand,
-                        mac_address: data.mac_address,
-                        warranty: moment(data.warranty).format("yyyy/MM/DD"),
-                        computer_name: data.computer_name,
+                        device_id: data.device === null ? '' : data.device.id,
+                        type: data.type === null ? '' : data.type,
+                        brand_id: data.brand === null ? '' : data.brand.id,
+                        monitor_inch: data.monitor_inch === null ? '' : data.monitor_inch,
+                        model_brand: data.model_brand === null ? '' : data.model_brand,
+                        mac_address: data.mac_address === null ? '' : data.mac_address,
+                        warranty: data.warranty === null ? null : moment(data.warranty).format("yyyy/MM/DD"),
+                        computer_name: data.computer_name === null ? '' : data.computer_name,
 
                         // Hardware
                         dlp: data.dlp === null ? '' : data.dlp,
@@ -1185,6 +1185,7 @@ const Form = (props) => {
                         os_id: data.os === null ? '' : data.os.id,
                         sn_windows: data.sn_windows === null ? '' : data.sn_windows,
                         office_id: data.office === null ? '' : data.office.id,
+                        sn_office: data.sn_office === null ? '' : data.sn_office,
                         antivirus_id: data.antivirus === null ? '' : data.antivirus.id,
 
                         // information support
@@ -1589,7 +1590,6 @@ const Form = (props) => {
                                           fullWidth
                                           label="Device"
                                           select
-                                          required
                                           helperText={typeof errors?.device_id !== "undefined" ? errors.device_id[0] : ""}
                                           error={typeof errors?.device_id !== "undefined" ? true : false}
                                        >
@@ -1610,7 +1610,7 @@ const Form = (props) => {
                                           name="type"
                                           fullWidth
                                           label="Type"
-                                          required
+                                          
                                           helperText={typeof errors?.type !== "undefined" ? errors.type[0] : ""}
                                           error={typeof errors?.type !== "undefined" ? true : false}
                                        />
@@ -1624,7 +1624,7 @@ const Form = (props) => {
                                           fullWidth
                                           label="Brand"
                                           select
-                                          required
+                                          
                                           helperText={typeof errors?.brand_id !== "undefined" ? errors.brand_id[0] : ""}
                                           error={typeof errors?.brand_id !== "undefined" ? true : false}
                                        >
@@ -1645,7 +1645,7 @@ const Form = (props) => {
                                           name="monitor_inch"
                                           fullWidth
                                           label="Monitor Inch"
-                                          required
+                                          
                                           helperText={typeof errors?.monitor_inch !== "undefined" ? errors.monitor_inch[0] : ""}
                                           error={typeof errors?.monitor_inch !== "undefined" ? true : false}
                                        />
@@ -1658,7 +1658,7 @@ const Form = (props) => {
                                           name="model_brand"
                                           fullWidth
                                           label="Model Brand"
-                                          required
+                                          
                                           helperText={typeof errors?.model_brand !== "undefined" ? errors.model_brand[0] : ""}
                                           error={typeof errors?.model_brand !== "undefined" ? true : false}
                                        />
@@ -1671,7 +1671,7 @@ const Form = (props) => {
                                           name="mac_address"
                                           fullWidth
                                           label="Mac Address"
-                                          required
+                                          
                                           helperText={typeof errors?.mac_address !== "undefined" ? errors.mac_address[0] : ""}
                                           error={typeof errors?.mac_address !== "undefined" ? true : false}
                                        />
@@ -1693,7 +1693,7 @@ const Form = (props) => {
                                              }}
                                              renderInput={(params) => (
                                                 <TextField
-                                                   required
+                                                   
                                                    helperText={typeof errors?.warranty !== "undefined" ? errors.warranty[0] : ""}
                                                    error={typeof errors?.warranty !== "undefined" ? true : false}
                                                    fullWidth
@@ -1711,7 +1711,7 @@ const Form = (props) => {
                                           name="computer_name"
                                           fullWidth
                                           label="Computer Name"
-                                          required
+                                          
                                           helperText={typeof errors?.computer_name !== "undefined" ? errors.computer_name[0] : ""}
                                           error={typeof errors?.computer_name !== "undefined" ? true : false}
                                        />
@@ -1804,7 +1804,7 @@ const Form = (props) => {
                                           label="SN Windows"
                                        />
                                     </Grid>
-                                    <Grid Grid item md={6} xs={12}>
+                                    <Grid Grid item md={4} xs={12}>
                                        <TextField
                                           disabled={props.detail}
                                           onChange={handleChange}
@@ -1823,7 +1823,17 @@ const Form = (props) => {
                                           {masterOffices.length == 0 && <MenuItem disabled>Kosong</MenuItem>}
                                        </TextField>
                                     </Grid>
-                                    <Grid Grid item md={6} xs={12}>
+                                    <Grid Grid item md={4} xs={12}>
+                                       <TextField
+                                          disabled={props.detail}
+                                          onChange={handleChange}
+                                          value={form.sn_office}
+                                          name="sn_office"
+                                          fullWidth
+                                          label="SN Office"
+                                       />
+                                    </Grid>
+                                    <Grid Grid item md={4} xs={12}>
                                        <TextField
                                           disabled={props.detail}
                                           onChange={handleChange}
@@ -1865,7 +1875,7 @@ const Form = (props) => {
                                     label="Notes"
                                     multiline
                                     rows={5}
-                                    required
+                                    
                                     helperText={typeof errors?.notes !== "undefined" ? errors.notes[0] : ""}
                                     error={typeof errors?.notes !== "undefined" ? true : false}
                                  />
@@ -1888,7 +1898,7 @@ const Form = (props) => {
                                                       />
                                                    )}
                                                    {/* {typeof errors[`picture.${i}.file`] !== "undefined" && (
-                                                      <Typography sx={{ color: "red" }}>Image Required</Typography>
+                                                      <Typography sx={{ color: "red" }}>Image </Typography>
                                                    )} */}
                                                 </Box>
                                                 <input

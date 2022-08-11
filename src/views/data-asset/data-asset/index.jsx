@@ -116,6 +116,7 @@ const Index = () => {
       code: "",
       location: "",
    });
+   const [field, setField] = useState('')
    const [params, setParams] = useState({
       search: "",
       order_by_name: 0,
@@ -124,11 +125,15 @@ const Index = () => {
       paginate: 1,
    });
    const [loading, setLoading] = useState(false);
+   const [fieldOption, setFieldOption] = useState([])
 
    const getData = async () => {
       http
          .get(`/asset`, {
-            params: params,
+            params: {
+               ...params,
+               field
+            },
          })
          .then((res) => {
              console.log(res.data.data);
@@ -138,6 +143,23 @@ const Index = () => {
              console.log(err.response);
          });
    };
+
+   const getField = async () => {
+      const res = await http.get('asset/field_asset')
+      console.log(res.data)
+      setFieldOption([...res.data.data])
+   }
+
+   useEffect(() => {
+      let mounted = true
+      if(mounted){
+         getField()
+      }
+
+      return () => mounted = false
+
+   }, [])
+   
 
    useEffect(() => {
       setRows(undefined);
@@ -264,6 +286,28 @@ const Index = () => {
                      <Card>
                         <CardContent>
                            <Grid container spacing={2} sx={{ mb: 2 }} alignItems="center">
+                              <Grid item xs={12} md={3}>
+                                 <TextField
+                                    name="field"
+                                    variant="outlined"
+                                    label="Field"
+                                    autoComplete="off"
+                                    onChange={(e) => {
+                                       setField(e.target.value)
+                                    }}
+                                    fullWidth
+                                    select
+                                    value={field}
+                                    disabled={fieldOption.length === 0 ? true : false}
+                                 >
+                                    {fieldOption.length > 0 && fieldOption.map(v => {
+                                       return(
+                                          <MenuItem value={v.field}>{v.title}</MenuItem>
+
+                                       )
+                                    })}
+                                 </TextField>
+                              </Grid>
                               <Grid item xs>
                                  <TextField
                                     name="search"
