@@ -273,15 +273,23 @@ const index = () => {
     const [locationParams, setLocationParams] = useState({
         device_id: [],
         location_id: [],
-        sub_branch_id: [],
+        sub_location_id: [],
+    })
+    const [departmentParams, setDepartmentParams] = useState({
+        device_id: [],
+        department_id: [],
+        sub_location_id: [],
     })
 
     //data
     const [dataByLocation, setDataByLocation] = useState({})
     const [dataByDeparment, setDataByDeparment] = useState({})
+    const [dataOsByLocation, setDataOsByLocation] = useState([])
+    const [dataOsByDepartment, setDataOsByDepartment] = useState([])
 
     //Option
     const [deviceOption, setDeviceOption] = useState([])
+    const [departmentOptions, setDepartmentOptions] = useState([])
     const [locationOption, setLocationOption] = useState([])
 
     //loading
@@ -297,7 +305,19 @@ const index = () => {
                 sub_location_id: locationParams.sub_branch_id
             }
         })
+        console.log(res.data)
         setDataByLocation(res.data.data)
+    }
+
+    const getDataByDepartment = async () => {
+        const res = await http.get(`/statistic/asset_it_by_department`, {
+            params: {
+                device_id: locationParams.device_id,
+                location_id: locationParams.location_id,
+                sub_location_id: locationParams.sub_branch_id
+            }
+        })
+        setDataByDeparment(res.data.data)
     }
 
     const getDevice = async () => {
@@ -314,6 +334,10 @@ const index = () => {
         setLocationOption(res.data.data)
     }
 
+    const getDepartment = async () => {
+        const res = await http.get('dept')
+        setDepartmentOptions([...res.data.data])
+    }
 
     //convert data response
     const covertDataGroupLocation = (arr) => {
@@ -355,10 +379,99 @@ const index = () => {
         });
     }
 
+    const departmentChange = (e) => {
+        const {
+            target: { value },
+        } = e;
+        setDepartmentParams({
+            ...departmentParams,
+           [e.target.name]: typeof value === 'string' ? value.split(',') : value,
+        });
+    }
+
+
+    //pagination
+
+    //by location
+    const [pageLocation, setPageLocation] = useState(0);
+    const [rowsPerPageLocation, setRowsPerPageLocation] = useState(5);
+    const [paginationLocation, setPaginationLocation] = useState({
+        limit: 3,
+        page: 1
+    })
+    const getDataOsByLocation = async () => {
+        const res = await http.get('statistic/asset_it_by_os_location', {
+            params: {
+                ...paginationLocation
+            }
+        })
+        setDataOsByLocation(res.data.data)
+    }
+    const handleChangePageLocation = (event, newPage) => {
+        setPaginationLocation({
+           ...paginationLocation,
+           page: newPage + 1,
+        });
+     };
+  
+    const handleChangeRowsPerPageLocation = (event) => {
+    setPaginationLocation({
+        ...paginationLocation,
+        page: 1,
+        limit: +event.target.value,
+    });
+    };
+    useEffect(() => {
+    setDataOsByLocation(undefined);
+    let timer = setTimeout(() => {
+        if (paginationLocation) getDataOsByLocation();
+    }, 500);
+    return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [paginationLocation]);
+
+    //by depart
+    const [pageDepartment, setPageDepartment] = useState(0);
+    const [rowsPerPageDepartment, setRowsPerPageDepartment] = useState(5);
+    const [paginationDepartment, setPaginationDepartment] = useState({
+        limit: 3,
+        page: 1
+    })
+    const getDataOsByDepartment = async () => {
+        const res = await http.get('statistic/asset_it_by_os_department', {
+            params: {
+                ...paginationDepartment
+            }
+        })
+        setDataOsByDepartment(res.data.data)
+    }
+    const handleChangePageDepartment = (event, newPage) => {
+        setPaginationDepartment({
+           ...paginationDepartment,
+           page: newPage + 1,
+        });
+     };
+  
+    const handleChangeRowsPerPageDepartment = (event) => {
+    setPaginationDepartment({
+        ...paginationDepartment,
+        page: 1,
+        limit: +event.target.value,
+    });
+    };
+    useEffect(() => {
+    setDataOsByDepartment(undefined);
+    let timer = setTimeout(() => {
+        if (paginationDepartment) getDataOsByDepartment();
+    }, 500);
+    return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [paginationDepartment]);
+
     useEffect(() => {
         let mounted = true
         if(mounted){
-            Promise.all([getDevice(), getDataByLocation(), getLocation()]).then(res => {
+            Promise.all([getDevice(), getDataByLocation(), getLocation(), getDataByDepartment(), getDepartment(), getDataOsByLocation(), getDataOsByDepartment()]).then(res => {
                 setIsComplete(true)
             })
 
@@ -387,7 +500,7 @@ const index = () => {
                                     <Card sx={{ height: '100%' }}>
                                         <CardContent>
                                             <Typography variant="p" sx={{ fontWeight: 'bold' }}>Total Asset By Location</Typography>
-                                            <Grid container spacing={2} my={2}>
+                                            <Grid container spacing={2} my={2} alignItems="center">
                                                 
                                                 {/* Device option */}
                                                 <Grid item xs={12} md={6}>
@@ -437,12 +550,12 @@ const index = () => {
                                                             name='location_id'
                                                             value={locationParams.location_id}
                                                             onChange={locationChange}
-                                                            input={<OutlinedInput label="Device" />}
+                                                            input={<OutlinedInput label="Location" />}
                                                             renderValue={(selected) => {
                                                                 return locationOption.filter(v => selected.includes(v.id)).map(v => v.location).join(', ')
                                                             }}
                                                         >
-                                                            {locationOption.length > 0 && locationOption.map((v, i) => {
+                                                            {locationOption.length > 0 && locationOption.filter(v => v.parent === null).map((v, i) => {
                                                                 return (
                                                                 <MenuItem key={v.id} value={v.id}>
                                                                     <Checkbox 
@@ -456,35 +569,44 @@ const index = () => {
                                                     </FormControl>
                                                 </Grid>
 
-                                                {/* sub branch option */}
+                                                {/* Sub Location option */}
                                                 <Grid item xs={12} md={6}>
                                                     <FormControl fullWidth>
-                                                        <InputLabel>Device</InputLabel>
+                                                        <InputLabel>Sub Location</InputLabel>
                                                         <Select
                                                             labelId="demo-multiple-checkbox-label"
                                                             id="demo-multiple-checkbox"
                                                             multiple
-                                                            name='device_id'
-                                                            value={locationParams.device_id}
+                                                            name='sub_location_id'
+                                                            value={locationParams.sub_location_id}
                                                             onChange={locationChange}
-                                                            input={<OutlinedInput label="Device" />}
+                                                            input={<OutlinedInput label="Sub Location" />}
                                                             renderValue={(selected) => {
-                                                                return deviceOption.filter(v => selected.includes(v.id)).map(v => v.sub_type).join(', ')
+                                                                return locationOption.filter(v => selected.includes(v.id)).map(v => v.location).join(', ')
                                                             }}
                                                         >
-                                                            {deviceOption.length > 0 && deviceOption.map((v, i) => {
+                                                            {locationOption.length > 0 && locationOption.filter(v => v.parent !== null).map((v, i) => {
                                                                 return (
                                                                 <MenuItem key={v.id} value={v.id}>
                                                                     <Checkbox 
-                                                                        checked={locationParams.device_id.indexOf(v.id) > -1} 
+                                                                        checked={locationParams.sub_location_id.indexOf(v.id) > -1} 
                                                                     />
-                                                                    <ListItemText primary={v.sub_type} />
+                                                                    <ListItemText primary={v.location} />
                                                                 </MenuItem>
                                                                 )
                                                             })}
                                                         </Select>
                                                     </FormControl>
                                                 </Grid>
+
+                                                <Grid item xs={12} md={6}>
+                                                    <LoadingButton variant='contained'>
+                                                            Submit
+                                                    </LoadingButton>
+                                                    
+                                                </Grid>
+
+                                                
 
                                                 {/* Bar Chart */}
                                                 <Grid item xs={12} md={12}>
@@ -504,26 +626,21 @@ const index = () => {
                                                 {/* by condition */}
                                                 <Grid item xs={12} md={12}>
                                                     <Grid container  spacing={1}>
-                                                        <Grid item xs={6} md={3}>
-                                                            <Chip icon={<Circle />} label="Baik/layak : 200 asset" />
+                                                        {dataByLocation.condition !== undefined && dataByLocation.condition.map(v => {
+                                                            return (
+                                                                <Grid item xs={6} md={3}>
+                                                                    <Chip icon={<Circle />} label={`${v.condition} : ${v.asset_count}`} />
+                                                                </Grid>
 
-                                                        </Grid>
-                                                        <Grid item xs={6} md={3}>
-                                                            <Chip icon={<Circle />} label="Baik/layak : 200 asset" />
-
-                                                        </Grid>
-                                                        <Grid item xs={6} md={3}>
-                                                            <Chip icon={<Circle />} label="Baik/layak : 200 asset" />
-
-                                                        </Grid>
-                                                        <Grid item xs={6} md={3}>
-                                                            <Chip icon={<Circle />} label="Baik/layak : 200 asset" />
-
-                                                        </Grid>
+                                                            )
+                                                        })}
+                                                        
+                                                       
 
                                                     </Grid>
 
                                                 </Grid>
+
                                             </Grid>
                                             
                                         </CardContent>
@@ -534,8 +651,8 @@ const index = () => {
                                 <Grid item xs={12} md={12}>
                                     <Card sx={{ height: '100%' }}>
                                         <CardContent>
-                                            <Typography variant="p" sx={{ fontWeight: 'bold' }}>Total Asset By Department</Typography>
-                                            <Grid container spacing={2} my={2}>
+                                            <Typography variant="p" sx={{ fontWeight: 'bold' }}>Total Asset By Location</Typography>
+                                            <Grid container spacing={2} my={2} alignItems="center">
                                                 
                                                 {/* Device option */}
                                                 <Grid item xs={12} md={6}>
@@ -546,8 +663,8 @@ const index = () => {
                                                             id="demo-multiple-checkbox"
                                                             multiple
                                                             name='device_id'
-                                                            value={locationParams.device_id}
-                                                            onChange={locationChange}
+                                                            value={departmentParams.device_id}
+                                                            onChange={departmentChange}
                                                             input={<OutlinedInput label="Device" />}
                                                             renderValue={(selected) => {
                                                                 return deviceOption.filter(v => selected.includes(v.id)).map(v => {
@@ -564,7 +681,7 @@ const index = () => {
                                                                 return (
                                                                 <MenuItem key={v.id} value={v.id}>
                                                                     <Checkbox 
-                                                                        checked={locationParams.device_id.indexOf(v.id) > -1} 
+                                                                        checked={departmentParams.device_id.indexOf(v.id) > -1} 
                                                                     />
                                                                     <ListItemText primary={v.sub_type} />
                                                                 </MenuItem>
@@ -577,26 +694,26 @@ const index = () => {
                                                 {/* Department option */}
                                                 <Grid item xs={12} md={6}>
                                                     <FormControl fullWidth>
-                                                        <InputLabel>Device</InputLabel>
+                                                        <InputLabel>Department</InputLabel>
                                                         <Select
                                                             labelId="demo-multiple-checkbox-label"
                                                             id="demo-multiple-checkbox"
                                                             multiple
-                                                            name='device_id'
-                                                            value={locationParams.device_id}
-                                                            onChange={locationChange}
-                                                            input={<OutlinedInput label="Device" />}
+                                                            name='department_id'
+                                                            value={departmentParams.department_id}
+                                                            onChange={departmentChange}
+                                                            input={<OutlinedInput label="Department" />}
                                                             renderValue={(selected) => {
-                                                                return deviceOption.filter(v => selected.includes(v.id)).map(v => v.sub_type).join(', ')
+                                                                return departmentOptions.filter(v => selected.includes(v.id)).map(v => v.dept).join(', ')
                                                             }}
                                                         >
-                                                            {deviceOption.length > 0 && deviceOption.map((v, i) => {
+                                                            {departmentOptions.length > 0 && departmentOptions.filter(v => v.parent !== null).map((v, i) => {
                                                                 return (
                                                                 <MenuItem key={v.id} value={v.id}>
                                                                     <Checkbox 
-                                                                        checked={locationParams.device_id.indexOf(v.id) > -1} 
+                                                                        checked={departmentParams.department_id.indexOf(v.id) > -1} 
                                                                     />
-                                                                    <ListItemText primary={v.sub_type} />
+                                                                    <ListItemText primary={v.dept} />
                                                                 </MenuItem>
                                                                 )
                                                             })}
@@ -604,90 +721,82 @@ const index = () => {
                                                     </FormControl>
                                                 </Grid>
 
-                                                {/* branch option */}
+                                                {/* Sub Location option */}
                                                 <Grid item xs={12} md={6}>
                                                     <FormControl fullWidth>
-                                                        <InputLabel>Device</InputLabel>
+                                                        <InputLabel>Sub Location</InputLabel>
                                                         <Select
                                                             labelId="demo-multiple-checkbox-label"
                                                             id="demo-multiple-checkbox"
                                                             multiple
-                                                            name='device_id'
-                                                            value={locationParams.device_id}
-                                                            onChange={locationChange}
-                                                            input={<OutlinedInput label="Device" />}
+                                                            name='sub_location_id'
+                                                            value={departmentParams.sub_location_id}
+                                                            onChange={departmentChange}
+                                                            input={<OutlinedInput label="Sub Location" />}
                                                             renderValue={(selected) => {
-                                                                return deviceOption.filter(v => selected.includes(v.id)).map(v => v.sub_type).join(', ')
+                                                                return locationOption.filter(v => selected.includes(v.id)).map(v => v.location).join(', ')
                                                             }}
                                                         >
-                                                            {deviceOption.length > 0 && deviceOption.map((v, i) => {
+                                                            {locationOption.length > 0 && locationOption.filter(v => v.parent !== null).map((v, i) => {
                                                                 return (
                                                                 <MenuItem key={v.id} value={v.id}>
                                                                     <Checkbox 
-                                                                        checked={locationParams.device_id.indexOf(v.id) > -1} 
+                                                                        checked={departmentParams.sub_location_id.indexOf(v.id) > -1} 
                                                                     />
-                                                                    <ListItemText primary={v.sub_type} />
+                                                                    <ListItemText primary={v.location} />
                                                                 </MenuItem>
                                                                 )
                                                             })}
                                                         </Select>
                                                     </FormControl>
                                                 </Grid>
+
+                                                
+
+                                                
+
+                                                <Grid item xs={12} md={6}>
+                                                    <LoadingButton variant='contained'>
+                                                            Submit
+                                                    </LoadingButton>
+                                                    
+                                                </Grid>
+
+                                                
 
                                                 {/* Bar Chart */}
                                                 <Grid item xs={12} md={12}>
+                                                    {dataByDeparment.asset_count !== undefined && dataByDeparment.department !== undefined &&
                                                     <Bar 
                                                         options={optionsBar} 
                                                         data={{
-                                                            labels: ['Satu', 'Dua', 'Tiga'],
-                                                            datasets: [
-                                                                {
-                                                                    id: 1,
-                                                                    label: 'Asset',
-                                                                    data: [15, 20, 5],
-                                                                    backgroundColor: 'rgba(7, 82, 143, 1)',
-                                                                },
-                                                                {
-                                                                    id: 1,
-                                                                    label: 'Asset',
-                                                                    data: [10, 15, 10],
-                                                                    backgroundColor: 'rgba(7, 82, 143, 1)',
-                                                                },
-                                                                {
-                                                                    id: 1,
-                                                                    label: 'Asset',
-                                                                    data: [5, 10, 5],
-                                                                    backgroundColor: 'rgba(7, 82, 143, 1)',
-                                                                },
-                                                            ],
+                                                            labels: dataByDeparment.department,
+                                                            datasets: covertDataGroupLocation(dataByDeparment.asset_count)
                                                         }} 
                                                     />
+                                                    
+                                                    }
 
                                                 </Grid>
 
                                                 {/* by condition */}
                                                 <Grid item xs={12} md={12}>
                                                     <Grid container  spacing={1}>
-                                                        <Grid item xs={6} md={3}>
-                                                            <Chip icon={<Circle />} label="Baik/layak : 200 asset" />
+                                                        {dataByDeparment.condition !== undefined && dataByDeparment.condition.map(v => {
+                                                            return (
+                                                                <Grid item xs={6} md={3}>
+                                                                    <Chip icon={<Circle />} label={`${v.condition} : ${v.asset_count}`} />
+                                                                </Grid>
 
-                                                        </Grid>
-                                                        <Grid item xs={6} md={3}>
-                                                            <Chip icon={<Circle />} label="Baik/layak : 200 asset" />
-
-                                                        </Grid>
-                                                        <Grid item xs={6} md={3}>
-                                                            <Chip icon={<Circle />} label="Baik/layak : 200 asset" />
-
-                                                        </Grid>
-                                                        <Grid item xs={6} md={3}>
-                                                            <Chip icon={<Circle />} label="Baik/layak : 200 asset" />
-
-                                                        </Grid>
+                                                            )
+                                                        })}
+                                                        
+                                                       
 
                                                     </Grid>
 
                                                 </Grid>
+
                                             </Grid>
                                             
                                         </CardContent>
@@ -696,9 +805,10 @@ const index = () => {
 
                                 {/* Asset Per Operating System by Location  */}
                                 <Grid item xs={12} md={6}>
-                                    <Card>
+                                    <Card sx={{ height: '100%' }}>
                                         <CardContent>
-                                            <TableContainer>
+                                            <Typography variant="p" sx={{ fontWeight: 'bold' }}>Asset IT Per Operating System By Location</Typography>
+                                            <TableContainer sx={{ mt: 2 }}>
                                                 <Table >
                                                     <TableHead>
                                                         <TableRow sx={{
@@ -707,74 +817,118 @@ const index = () => {
                                                         }}>
                                                             <TableCell>Location</TableCell>
                                                             <TableCell>Device</TableCell>
-                                                            <TableCell>Windows</TableCell>
-                                                            <TableCell>Linux</TableCell>
-                                                            <TableCell>Mac</TableCell>
+                                                            <TableCell>OS</TableCell>
+                                                            <TableCell>OS Count</TableCell>
                                                         </TableRow>
                                                     </TableHead>
                                                     <TableBody>
-                                                        <TableRow>
-                                                            <TableCell rowSpan={2}>Jakarta</TableCell>
-                                                            <TableCell>Notebook</TableCell>
-                                                            <TableCell>5</TableCell>
-                                                            <TableCell>-</TableCell>
-                                                            <TableCell>1</TableCell>
-                                                        </TableRow>
-                                                        <TableRow>
-                                                            <TableCell>Notebook</TableCell>
-                                                            <TableCell>4</TableCell>
-                                                            <TableCell>-</TableCell>
-                                                            <TableCell>-</TableCell>
-                                                        </TableRow>
+                                                        {dataOsByLocation !== undefined && dataOsByLocation.data.map((v, i) => {
+                                                            return (
+                                                                <>
+                                                                    <TableRow key={v.id}>
+                                                                        <TableCell rowSpan={v.os.length}>{v.location}</TableCell>
+                                                                        <TableCell rowSpan={v.os.length}>dummy</TableCell>
+                                                                        <TableCell>{v.os[0].sub_type}</TableCell>
+                                                                        <TableCell>{v.os[0].os_count}</TableCell>
+                                                                    </TableRow>
+                                                                    {v.os.map((k, i) => {
+                                                                        if(i !== 0){
+                                                                            return (
+                                                                                <TableRow sx={{ borderBottom: i == v.os.length - 1 ? 1 : 0 }}>
+                                                                                    <TableCell>{k.sub_type}</TableCell>
+                                                                                    <TableCell>{k.os_count}</TableCell>
+                                                                                </TableRow>
+                                                                            )
+                                                                        }
+                                                                    })}
+                                                                </>
+                                                            )
+                                                        })}
 
                                                     </TableBody>
                                                 </Table>
                                             </TableContainer>
+                                            {dataOsByLocation !== undefined && dataOsByLocation.data.length > 0 && (
+                                                <TablePagination
+                                                    component="div"
+                                                    count={dataOsByLocation.meta.total}
+                                                    page={paginationLocation.page - 1}
+                                                    rowsPerPage={paginationLocation.limit}
+                                                    onPageChange={handleChangePageLocation}
+                                                    onRowsPerPageChange={handleChangeRowsPerPageLocation}
+                                                    rowsPerPageOptions={[3, 10, 25, 100]}
+                                                    showFirstButton
+                                                    showLastButton
+                                                />
+                                            )}
 
                                         </CardContent>
                                     </Card>
                                     
                                 </Grid>
 
-                                {/* Asset Per Operating System by Location  */}
+                                {/* Asset Per Operating System by Department  */}
                                 <Grid item xs={12} md={6}>
-                                    <Card>
+                                    <Card sx={{ height: '100%' }}>
                                         <CardContent>
-                                            <TableContainer>
+                                            <Typography variant="p" sx={{ fontWeight: 'bold' }}>Asset IT Per Operating System By Location</Typography>
+                                            <TableContainer sx={{ mt: 2 }}>
                                                 <Table >
                                                     <TableHead>
                                                         <TableRow sx={{
                                                             "& th:first-of-type": { borderRadius: "0.5em 0 0 0.5em" },
                                                             "& th:last-of-type": { borderRadius: "0 0.5em 0.5em 0" },
                                                         }}>
-                                                            <TableCell>Location</TableCell>
+                                                            <TableCell>Department</TableCell>
                                                             <TableCell>Device</TableCell>
-                                                            <TableCell>Windows</TableCell>
-                                                            <TableCell>Linux</TableCell>
-                                                            <TableCell>Mac</TableCell>
+                                                            <TableCell>OS</TableCell>
+                                                            <TableCell>OS Count</TableCell>
                                                         </TableRow>
                                                     </TableHead>
                                                     <TableBody>
-                                                        <TableRow>
-                                                            <TableCell rowSpan={2}>Jakarta</TableCell>
-                                                            <TableCell>Notebook</TableCell>
-                                                            <TableCell>5</TableCell>
-                                                            <TableCell>-</TableCell>
-                                                            <TableCell>1</TableCell>
-                                                        </TableRow>
-                                                        <TableRow>
-                                                            <TableCell>Notebook</TableCell>
-                                                            <TableCell>4</TableCell>
-                                                            <TableCell>-</TableCell>
-                                                            <TableCell>-</TableCell>
-                                                        </TableRow>
+                                                        {dataOsByDepartment !== undefined && dataOsByDepartment.data.map((v, i) => {
+                                                            return (
+                                                                <>
+                                                                    <TableRow key={v.id}>
+                                                                        <TableCell rowSpan={v.os.length}>{v.department}</TableCell>
+                                                                        <TableCell rowSpan={v.os.length}>dummy</TableCell>
+                                                                        <TableCell>{v.os[0].sub_type}</TableCell>
+                                                                        <TableCell>{v.os[0].os_count}</TableCell>
+                                                                    </TableRow>
+                                                                    {v.os.map((k, i) => {
+                                                                        if(i !== 0){
+                                                                            return (
+                                                                                <TableRow sx={{ borderBottom: i == v.os.length - 1 ? 1 : 0 }}>
+                                                                                    <TableCell>{k.sub_type}</TableCell>
+                                                                                    <TableCell>{k.os_count}</TableCell>
+                                                                                </TableRow>
+                                                                            )
+                                                                        }
+                                                                    })}
+                                                                </>
+                                                            )
+                                                        })}
 
                                                     </TableBody>
                                                 </Table>
                                             </TableContainer>
+                                            {dataOsByDepartment !== undefined && dataOsByDepartment.data.length > 0 && (
+                                                <TablePagination
+                                                    component="div"
+                                                    count={dataOsByDepartment.meta.total}
+                                                    page={paginationDepartment.page - 1}
+                                                    rowsPerPage={paginationDepartment.limit}
+                                                    onPageChange={handleChangePageDepartment}
+                                                    onRowsPerPageChange={handleChangeRowsPerPageDepartment}
+                                                    rowsPerPageOptions={[3, 10, 25, 100]}
+                                                    showFirstButton
+                                                    showLastButton
+                                                />
+                                            )}
 
                                         </CardContent>
                                     </Card>
+                                    
                                 </Grid>
                            </Grid>
                         </div>

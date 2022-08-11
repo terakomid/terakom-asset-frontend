@@ -291,7 +291,7 @@ export const optionsPie = {
         position: 'left',
         labels: {
           usePointStyle: true,
-          boxWidth: 6
+          boxWidth: 15
         }
       },
       title: {
