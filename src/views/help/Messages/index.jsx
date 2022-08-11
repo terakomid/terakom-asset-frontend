@@ -5,6 +5,8 @@ import moment from 'moment';
 import http from '../../../component/api/Api'
 import { LoadingButton } from '@mui/lab';
 import { useNavigate } from 'react-router-dom';
+import { useRecoilState } from 'recoil';
+import { authentication } from '../../../store/Authentication';
 
 const LeftMessage = (props) => {
     return (
@@ -33,6 +35,7 @@ const RightMessage = (props) => {
 
 const Index = (props) => {
     const navigate = useNavigate()
+    const [auth, setAuth] = useRecoilState(authentication)
 
     const [data, setData] = useState([])
     const [isComplete, setIsComplete] = useState(false)
@@ -149,7 +152,7 @@ const Index = (props) => {
                                         fullWidth
                                     />
                                 </Grid>
-                                {props.data.status !== 'open' && props.data.rating === 0 &&
+                                {props.data.status !== 'open' && props.data.rating === 0 && auth.user.id === props.data.created_by.id &&
                                 <Grid item xs={12} md={12}>
                                     <Box component="form" onSubmit={onSubmitRating}> 
                                         <Grid container>
@@ -186,7 +189,7 @@ const Index = (props) => {
                                         <Stack sx={{ position: 'relative' }} height={"500px"}>
                                             <Box sx={{ height: '500px' }}>
                                             {data.length > 0 && data.map((v, i) => {
-                                                if(v.from.id === props.data.created_by.id){
+                                                if(auth.user.id === v.from.id){
                                                     return (
                                                         <RightMessage key={v.id} attachment={v.attachment} message={v.message} tanggal={v.created_at}/>
                                                     )

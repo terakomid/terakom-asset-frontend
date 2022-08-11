@@ -131,11 +131,11 @@ const Index = () => {
             params: params,
          })
          .then((res) => {
-            //  console.log(res.data.data);
+             console.log(res.data.data);
             setRows(res.data.data);
          })
          .catch((err) => {
-            //  console.log(err.response);
+             console.log(err.response);
          });
    };
 

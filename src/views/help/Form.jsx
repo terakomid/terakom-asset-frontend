@@ -115,7 +115,7 @@ const Form = (props) => {
 		// 	setLoading(false)
 		// }, 500);
 		if (props.title == "add") {
-			formData.append('file', document.file)
+			if(document.file !== "") formData.append('file', document.file)
 			http
 				.post("help", formData)
 				.then((res) => {
@@ -209,7 +209,7 @@ const Form = (props) => {
 													})
 												}}
 												hidden 
-												required />
+											/>
 										</Button>
 									)
 								}
