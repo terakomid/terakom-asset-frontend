@@ -10,8 +10,8 @@ import Login from "../views/auth/login";
 import ForgotPassword from "../views/auth/forgot-password";
 
 //Header
-import Profil from "../views/headers/profil/Form"
-import ChangePassword from "../views/headers/reset-password/Form"
+import Profil from "../views/headers/profil/Form";
+import ChangePassword from "../views/headers/reset-password/Form";
 
 // Dashboard
 import Dashboard from "../views/dashboard/Index";
@@ -43,7 +43,9 @@ import AssetITDetail from "../views/data-asset/data-asset/IT/Detail";
 import AssetNonIT from "../views/data-asset/data-asset/NonIT/Add";
 import AssetNonITEdit from "../views/data-asset/data-asset/NonIT/Edit";
 import AssetNonITDetail from "../views/data-asset/data-asset/NonIT/Detail";
+
 import HistoryAsset from "../views/data-asset/history-asset";
+import PrintLabel from "../views/data-asset/history-asset/PrintLabel";
 
 import MutationAsset from "../views/data-asset/mutation-asset";
 import AddMutationAsset from "../views/data-asset/mutation-asset/Add";
@@ -327,6 +329,14 @@ export default function Router() {
                element={
                   <Middleware.After>
                      <Layout render={<HistoryAsset />} />
+                  </Middleware.After>
+               }
+            />
+            <Route
+               path="/history-asset/print-label"
+               element={
+                  <Middleware.After>
+                     <Layout render={<PrintLabel />} />
                   </Middleware.After>
                }
             />

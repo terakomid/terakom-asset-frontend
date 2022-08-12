@@ -215,7 +215,9 @@ export default function HistoryAsset() {
                      </Grid>
                      <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 3 }}>
                         <Stack direction="row" spacing={1}>
-                           <Button variant="contained">Print Label</Button>
+                           <Button variant="contained" component={RouterLink} to="./print-label">
+                              Print Label
+                           </Button>
                         </Stack>
                      </Box>
                      <TableContainer>
