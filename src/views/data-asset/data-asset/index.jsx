@@ -126,6 +126,7 @@ const ModalImport = (props) => {
    const onSubmit = () => {
       setLoading(true)
       submitData().then(res => {
+         props.getData()
          props.handleClose()
       })
       .catch(err => {
@@ -177,7 +178,7 @@ const ModalImport = (props) => {
                />
             ) : (
                <Button size="large" variant="outlined" component="label" fullWidth startIcon={<FileUploadOutlined />}>
-                  Import Data Asset(.xls)
+                  Import Data Asset(.xlsx)
                   <input 
                      name="document" 
                      type="file" 
@@ -537,7 +538,7 @@ const Index = () => {
                      {/* utils */}
                      <ModalDelete open={openModal} delete={onDelete} handleClose={handleModal} />
                      <ModalFilter open={modalFilter} setParams={setParams} handleClose={handleModalFilter} />
-                     <ModalImport open={openImport} handleClose={handleCloseImport} />
+                     <ModalImport open={openImport} handleClose={handleCloseImport} getData={getData} />
 
                      {/* menu */}
                      <Menu
