@@ -50,6 +50,7 @@ import {
 } from "@mui/icons-material";
 import { LoadingButton } from "@mui/lab";
 import QRCode from "react-qr-code";
+import { NumberFormat } from "../../../component/Format";
 
 const DetailModal = (props) => {
    const navigate = useNavigate();
@@ -255,8 +256,8 @@ const TabPanel = (props) => {
                            <TableCell>Total Month</TableCell>
                            <TableCell>Depreciation Date</TableCell>
                            <TableCell>Depreciation Desc</TableCell>
-                           <TableCell>Debit</TableCell>
-                           <TableCell>Credit</TableCell>
+                           <TableCell>Depreciation</TableCell>
+                           <TableCell>Final Accumulated Depreciation</TableCell>
                            <TableCell>Book Value</TableCell>
                            <TableCell>Created At</TableCell>
                         </TableRow>
@@ -273,9 +274,9 @@ const TabPanel = (props) => {
                                     <TableCell>{value.total_month}</TableCell>
                                     <TableCell>{value.depreciation_date}</TableCell>
                                     <TableCell>{value.depreciation_desc}</TableCell>
-                                    <TableCell>{value.debit}</TableCell>
-                                    <TableCell>{value.credit}</TableCell>
-                                    <TableCell>{value.book_value}</TableCell>
+                                    <TableCell>{NumberFormat(value.debit)}</TableCell>
+                                    <TableCell>{NumberFormat(value.credit)}</TableCell>
+                                    <TableCell>{NumberFormat(value.book_value)}</TableCell>
                                     <TableCell>{moment(value.created_at).format("ll")}</TableCell>
                                  </TableRow>
                               ))
