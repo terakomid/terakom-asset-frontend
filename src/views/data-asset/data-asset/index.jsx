@@ -177,13 +177,13 @@ const ModalImport = (props) => {
                />
             ) : (
                <Button size="large" variant="outlined" component="label" fullWidth startIcon={<FileUploadOutlined />}>
-                  Supporting Document *
+                  Import Data Asset(.xls)
                   <input 
                      name="document" 
                      type="file" 
                      onChange={(e) => {
                         let file = e.target.files[0]
-                        let file_url = URL.createObjectURL(file)
+                        let file_url = file.name
                         setDocument({
                            file,
                            file_url
