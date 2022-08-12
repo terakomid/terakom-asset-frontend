@@ -66,6 +66,7 @@ import QrTagging from "../views/qr-tagging";
 import DisposalAsset from "../views/disposal-asset";
 import AddDisposalAsset from "../views/disposal-asset/Add";
 import EditDisposalAsset from "../views/disposal-asset/Edit";
+import HistoryDisposal from "../views/disposal-asset/history-disposal"
 
 // Activity Log
 import ActivityLog from "../views/activity-log";
@@ -422,6 +423,14 @@ export default function Router() {
             />
 
             {/* Disposal Asset */}
+            <Route
+               path="/history-disposal"
+               element={
+                  <Middleware.After>
+                     <Layout render={<HistoryDisposal />} />
+                  </Middleware.After>
+               }
+            />
             <Route
                path="/disposal-asset"
                element={

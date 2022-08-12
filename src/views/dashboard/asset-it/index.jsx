@@ -568,7 +568,14 @@ const index = () => {
                                                             onChange={locationChange}
                                                             input={<OutlinedInput label="Branch" />}
                                                             renderValue={(selected) => {
-                                                                return locationOption.filter(v => selected.includes(v.id)).map(v => v.location).join(', ')
+                                                                return locationOption.filter(v => selected.includes(v.id)).map(v => {
+                                                                    return (
+                                                                        <Chip 
+                                                                            label={v.location} 
+                                                                            onDelete={() => 's'}
+                                                                        />
+                                                                    )
+                                                                })
                                                             }}
                                                         >
                                                             {locationOption.length > 0 && locationOption.filter(v => v.parent === null).map((v, i) => {
@@ -599,7 +606,14 @@ const index = () => {
                                                             disabled={locationParams.location_id.length > 0 ? true : false}
                                                             input={<OutlinedInput label="Sub Branch" />}
                                                             renderValue={(selected) => {
-                                                                return locationOption.filter(v => selected.includes(v.id)).map(v => v.location).join(', ')
+                                                                return locationOption.filter(v => selected.includes(v.id)).map(v => {
+                                                                    return (
+                                                                        <Chip 
+                                                                            label={v.location} 
+                                                                            onDelete={() => 's'}
+                                                                        />
+                                                                    )
+                                                                })
                                                             }}
                                                         >
                                                             {locationOption.length > 0 && locationOption.filter(v => v.parent !== null).map((v, i) => {
@@ -721,7 +735,14 @@ const index = () => {
                                                             onChange={departmentChange}
                                                             input={<OutlinedInput label="Department" />}
                                                             renderValue={(selected) => {
-                                                                return departmentOptions.filter(v => selected.includes(v.id)).map(v => v.dept).join(', ')
+                                                                return departmentOptions.filter(v => selected.includes(v.id)).map(v => {
+                                                                    return (
+                                                                        <Chip 
+                                                                            label={v.dept} 
+                                                                            onDelete={() => 's'}
+                                                                        />
+                                                                    )
+                                                                })
                                                             }}
                                                         >
                                                             {departmentOptions.length > 0 && departmentOptions.filter(v => v.parent !== null).map((v, i) => {
@@ -751,7 +772,14 @@ const index = () => {
                                                             onChange={departmentChange}
                                                             input={<OutlinedInput label="Branch" />}
                                                             renderValue={(selected) => {
-                                                                return locationOption.filter(v => selected.includes(v.id)).map(v => v.location).join(', ')
+                                                                return locationOption.filter(v => selected.includes(v.id)).map(v => {
+                                                                    return (
+                                                                        <Chip 
+                                                                            label={v.location} 
+                                                                            onDelete={() => 's'}
+                                                                        />
+                                                                    )
+                                                                })
                                                             }}
                                                         >
                                                             {locationOption.length > 0 && locationOption.filter(v => v.parent === null).map((v, i) => {
