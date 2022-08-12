@@ -23,8 +23,9 @@ import {
    DialogContent,
    DialogContentText,
    DialogActions,
+   Tooltip,
 } from "@mui/material";
-import { CloseRounded, Edit, FilterListRounded, InfoOutlined, MoreVert, Search } from "@mui/icons-material";
+import { Close, CloseRounded, Edit, FileDownload, FileUploadOutlined, FilterListRounded, InfoOutlined, InsertDriveFile, MoreVert, Search } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 
 import http from "../../../component/api/Api";
@@ -35,6 +36,7 @@ import moment from "moment";
 import { useRecoilValue } from "recoil";
 import { authentication } from "../../../store/Authentication";
 import { Permission } from "../../../component/Permission";
+import { LoadingButton } from "@mui/lab";
 
 const ModalFilter = (props) => {
    const [roleOptions, setRoleOptions] = useState([]);
@@ -102,6 +104,105 @@ const ModalFilter = (props) => {
             <Button variant="text" color="error" onClick={() => console.log("filter")} autoFocus>
                Delete
             </Button>
+         </DialogActions>
+      </Dialog>
+   );
+};
+
+const ModalImport = (props) => {
+   const [document, setDocument] = useState({
+      file: "",
+      file_url: "",
+   })
+   const [loading, setLoading] = useState(false);
+
+   const submitData = async () => {
+      const formData = new FormData()
+      formData.append("file", document.file)
+      const res = http.post(`asset/import_excel`, formData)
+      
+   }
+
+   const onSubmit = () => {
+      setLoading(true)
+      submitData().then(res => {
+         props.getData()
+         props.handleClose()
+      })
+      .catch(err => {
+         err.response && console.log(err.response)
+      })
+      .finally(() => {
+         setLoading(false)
+      })
+   }
+
+   return (
+      <Dialog
+         fullWidth
+         maxWidth="xs"
+         open={props.open}
+         onClose={props.handleClose}
+         aria-labelledby="alert-dialog-title"
+         aria-describedby="alert-dialog-description"
+      >
+         <DialogTitle>Import</DialogTitle>
+         <DialogContent>
+         {
+            document.file_url !== "" ? (
+               <TextField
+                  variant="outlined"
+                  label="Supporting Document *"
+                  value={document.file_url}
+                  disabled
+                  InputProps={{
+                     startAdornment: (
+                        <InputAdornment position="start">
+                           <InsertDriveFile />
+                        </InputAdornment>
+                     ),
+                     endAdornment: (
+                        <InputAdornment position="end">
+                           <Tooltip title="Delete">
+                              <IconButton onClick={() => setDocument({ 
+                                 file: '',
+                                 file_url: '' 
+                              })}>
+                                 <Close />
+                              </IconButton>
+                           </Tooltip>
+                        </InputAdornment>
+                     ),
+                  }}
+                  fullWidth
+               />
+            ) : (
+               <Button size="large" variant="outlined" component="label" fullWidth startIcon={<FileUploadOutlined />}>
+                  Import Data Asset(.xlsx)
+                  <input 
+                     name="document" 
+                     type="file" 
+                     onChange={(e) => {
+                        let file = e.target.files[0]
+                        let file_url = file.name
+                        setDocument({
+                           file,
+                           file_url
+                        })
+                     }}
+                     hidden 
+                     required />
+               </Button>
+            )
+         }
+         </DialogContent>
+         <DialogActions>
+            <Button variant="text" onClick={props.handleClose}>
+               Cancel
+            </Button>
+            <LoadingButton loading={loading}  variant="text" color="success" onClick={onSubmit} autoFocus>
+               Submit
+            </LoadingButton>
          </DialogActions>
       </Dialog>
    );
@@ -237,6 +338,13 @@ const Index = () => {
          });
    };
 
+   //Import
+   const [openImport, setOpenImport] = useState(false)
+   const handleCloseImport = () => {
+      setOpenImport(!openImport)
+   }
+
+   //staging
    const [staging, setStaging] = useState();
    const [anchorEl, setAnchorEl] = useState(null);
    const open = Boolean(anchorEl);
@@ -253,7 +361,15 @@ const Index = () => {
          <div className="page-content">
             <div className="container">
                <div className="my-2">
-                  <h3 className="fw-bold mb-2">Data Asset</h3>
+                  <div className="d-flex mb-3 align-items-center justify-content-between">
+                     <h3 className="fw-bold ">Data Asset</h3>
+                     {Permission(user.permission, "create asset") && (
+                        <Button variant="contained" onClick={handleCloseImport} startIcon={<FileDownload />}>
+                           Import
+                        </Button>
+                     )}
+
+                  </div>
                   {Permission(user.permission, "create asset") && (
                      <Grid container spacing={3}>
                         <Grid item md={6} xs={12}>
@@ -422,6 +538,7 @@ const Index = () => {
                      {/* utils */}
                      <ModalDelete open={openModal} delete={onDelete} handleClose={handleModal} />
                      <ModalFilter open={modalFilter} setParams={setParams} handleClose={handleModalFilter} />
+                     <ModalImport open={openImport} handleClose={handleCloseImport} getData={getData} />
 
                      {/* menu */}
                      <Menu
