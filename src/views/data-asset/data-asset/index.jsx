@@ -24,6 +24,13 @@ import {
    DialogContentText,
    DialogActions,
    Tooltip,
+   InputLabel,
+   Select,
+   OutlinedInput,
+   Checkbox,
+   ListItemText,
+   FormControl,
+   Chip
 } from "@mui/material";
 import { Close, CloseRounded, Edit, FileDownload, FileUploadOutlined, FilterListRounded, InfoOutlined, InsertDriveFile, MoreVert, Search } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
@@ -217,7 +224,7 @@ const Index = () => {
       code: "",
       location: "",
    });
-   const [field, setField] = useState('')
+   const [field, setField] = useState([])
    const [params, setParams] = useState({
       search: "",
       order_by_name: 0,
@@ -401,26 +408,42 @@ const Index = () => {
                         <CardContent>
                            <Grid container spacing={2} sx={{ mb: 2 }} alignItems="center">
                               <Grid item xs={12} md={3}>
-                                 <TextField
-                                    name="field"
-                                    variant="outlined"
-                                    label="Field"
-                                    autoComplete="off"
-                                    onChange={(e) => {
-                                       setField(e.target.value)
-                                    }}
-                                    fullWidth
-                                    select
-                                    value={field}
-                                    disabled={fieldOption.length === 0 ? true : false}
-                                 >
-                                    {fieldOption.length > 0 && fieldOption.map(v => {
-                                       return(
-                                          <MenuItem value={v.field}>{v.title}</MenuItem>
-
-                                       )
-                                    })}
-                                 </TextField>
+                                 <FormControl fullWidth>
+                                    <InputLabel>Field</InputLabel>
+                                    <Select
+                                       multiple
+                                       name='field'
+                                       value={field}
+                                       onChange={(e) => {
+                                          const {
+                                             target: { value },
+                                          } = e;
+                                          setField(typeof value === 'string' ? value.split(',') : value);
+                                       }}
+                                       input={<OutlinedInput label="Field" />}
+                                       renderValue={(selected) => {
+                                             return fieldOption.filter(v => selected.includes(v.field)).map(v => {
+                                                return (
+                                                   <Chip 
+                                                         label={v.title} 
+                                                         onDelete={() => 's'}
+                                                   />
+                                                )
+                                             })
+                                       }}
+                                    >
+                                       {fieldOption.length > 0 && fieldOption.map((v, i) => {
+                                             return (
+                                             <MenuItem key={v.field} value={v.field}>
+                                                <Checkbox 
+                                                   checked={field.indexOf(v.field) > -1} 
+                                                />
+                                                <ListItemText primary={v.title} />
+                                             </MenuItem>
+                                             )
+                                       })}
+                                    </Select>
+                                 </FormControl>
                               </Grid>
                               <Grid item xs>
                                  <TextField

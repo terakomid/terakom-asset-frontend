@@ -230,7 +230,59 @@ const ModalTable = (props) => {
     )
 }
 
-export const optionsBar = {
+export const optionsBarByCategory = {
+    responsive: true,
+    plugins: {
+      legend: {
+        display: false,
+      },
+      title: {
+        display: true,
+        color: '#5F6368',
+        font: {
+          size: 19.5,
+          weight: '600'
+        },
+        text: 'Total Asset By Category',
+        padding: {
+          bottom: 50
+        },
+        position: 'top',
+        align: 'start'
+      }
+    },
+    scales: {
+      y: {
+        position: 'right',
+        ticks: {
+          align: 'center',
+          padding: 1,
+          beginAtZero: true,
+          min: 0,
+          stepSize: 10,
+        },
+        grid: {
+          display: true,
+          borderDash: [10, 10],
+          borderWidth: 0,
+          borderDashOffset: 0.0
+        },
+      },
+      x: {
+        grid: {
+          display: false,
+        },
+        ticks: {
+          color: '#5F6368',
+          font: {
+            weight: 'bold'
+          },
+          padding: 5
+        }
+      }
+    }
+};
+export const optionsBarByLocation = {
     responsive: true,
     plugins: {
       legend: {
@@ -314,6 +366,7 @@ const index = () => {
     const [isComplete, setIsComplete] = useState(false)
 
     const [data, setData] = useState([])
+    const [dataByLoc, setDataByLoc] = useState({})
     const [params, setParams] = useState({
         location_id: '',
     })
@@ -350,6 +403,12 @@ const index = () => {
         })
         setData(res.data.data)
     }
+    const getDataByLoc = async () => {
+        const res = await http.get(`statistic/asset_by_location`)
+        setDataByLoc(res.data.data)
+    }
+
+
 
     const covertDataConditionCount = (arr) => {
         return arr.map(v => v.asset_count)
@@ -359,8 +418,16 @@ const index = () => {
         return arr.map(v => v.condition)
     }
 
-    const covertDataLocationLabels = (arr) => {
+    const covertDataCategoryLabels = (arr) => {
         return arr.map(v => v.category)
+    }
+
+    const covertDataCategoryCount = (arr) => {
+        return arr.map(v => v.asset_count)
+    }
+
+    const covertDataLocationLabels = (arr) => {
+        return arr.map(v => v.location)
     }
 
     const covertDataLocationCount = (arr) => {
@@ -370,17 +437,9 @@ const index = () => {
     useEffect(() => {
         let mounted = true
         if(mounted){
-            Promise.all([getLocation(), getCategory() ]).then(res => {
+            Promise.all([getLocation(), getCategory(), getDataByLoc(), getData()  ]).then(res => {
                 setIsComplete(true)
             })
-        }
-
-        return () => mounted = false
-    }, [])
-    useEffect(() => {
-        let mounted = true
-        if(mounted){
-            getData()
         }
 
         return () => mounted = false
@@ -448,6 +507,9 @@ const index = () => {
                                                         <LoadingButton type="submit" loading={loading} variant="contained">
                                                             Filter
                                                         </LoadingButton>
+                                                        <Button onClick={(e) => { setParams({...params, location_id: ''}) }}>
+                                                            Reset
+                                                        </Button>
                                                     </Grid>
                                                 </Grid>
                                             </Box>
@@ -455,19 +517,43 @@ const index = () => {
                                         </CardContent>
                                     </Card>
                                 </Grid>
+                                {dataByLoc.length > 0 && params.location_id === '' &&
+                                <Grid item xs={12} md={12}>
+                                    <Card sx={{ height: '100%' }}>
+                                        <CardContent>
+                                            <Bar 
+                                                options={optionsBarByLocation} 
+                                                data={{
+                                                    labels: covertDataLocationLabels(dataByLoc),
+                                                    datasets: [
+                                                        {
+                                                            id: 1,
+                                                            label: 'Asset',
+                                                            data: covertDataLocationCount(dataByLoc),
+                                                            backgroundColor: 'rgba(7, 82, 143, 1)',
+                                                        }
+                                                    ],
+                                                }} 
+                                            />
+
+                                        </CardContent>
+                                    </Card>
+                                </Grid>
+                                }
+
                                 <Grid item xs={12} md={12}>
                                     <Card sx={{ height: '100%' }}>
                                         <CardContent>
                                             {data.asset_location !== undefined && 
                                             <Bar 
-                                                options={optionsBar} 
+                                                options={optionsBarByCategory} 
                                                 data={{
-                                                    labels: covertDataLocationLabels(data.asset_location),
+                                                    labels: covertDataCategoryLabels(data.asset_location),
                                                     datasets: [
                                                         {
                                                             id: 1,
                                                             label: 'Asset',
-                                                            data: covertDataLocationCount(data.asset_location),
+                                                            data: covertDataCategoryCount(data.asset_location),
                                                             backgroundColor: 'rgba(7, 82, 143, 1)',
                                                         }
                                                     ],

@@ -54,6 +54,24 @@ import { NumberFormat } from "../../../component/Format";
 
 const DetailModal = (props) => {
    const navigate = useNavigate();
+
+   const [asset_code, setAssetCode] = useState('')
+
+   useEffect(() => {
+      let mounted = true 
+      if(mounted){
+         const data = props.data
+         const assetCodeTemp = []
+         assetCodeTemp[0] = data.capitalized.split('-')[0]
+         assetCodeTemp[1] = 'FA'
+         assetCodeTemp[2] = data.category.code
+         assetCodeTemp[3] = data.sap_code
+         setAssetCode(assetCodeTemp.join('/'))
+      }
+
+      return () => mounted = false
+   }, [])
+
    return (
       <Dialog
          fullWidth
@@ -63,35 +81,58 @@ const DetailModal = (props) => {
          aria-labelledby="alert-dialog-title"
          aria-describedby="alert-dialog-description"
       >
-         <DialogTitle>Confirm</DialogTitle>
+         <DialogTitle>Detail</DialogTitle>
          <DialogContent>
-            <DialogContentText>Detail Asset</DialogContentText>
-            <Stack direction={"row"} sx={{ width: "100%", height: "140px", border: 0 }}>
-               <Box
-                  sx={{
-                     background: "white",
-                     border: 1,
-                     width: "30%",
-                     display: "flex",
-                     alignItems: "center",
-                  }}
-               >
-                  <QRCode size={300} value={props.data.asset_code} style={{ width: "100%", padding: "10px" }} viewBox={`0 0 300 300`} />
-               </Box>
-               <Stack border={1} minWidth={"50%"}>
-                  <Typography sx={{ fontWeight: "bold", color: "black", textAlign: "center" }}>PT. Haier Sales Indonesia</Typography>
-                  <Stack direction={"row"} spacing={2} border={1}>
-                     <Typography sx={{ borderRight: 1 }}>{`${props.data.asset_code.split("/")[0]}`}</Typography>
-                     <Typography sx={{ borderRight: 1 }}>{`${props.data.asset_code.split("/")[1]}`}</Typography>
-                     <Typography sx={{ borderRight: 1 }}>{`${props.data.asset_code.split("/")[2]}`}</Typography>
-                     <Typography>{`${props.data.asset_code.split("/")[3]}`}</Typography>
-                  </Stack>
-                  <Typography sx={{ fontWeight: "bold", color: "black", textAlign: "center" }}>
-                     {`${props.data.asset_name} - ${props.data.employee.name} - ${props.data.department.dept}`}
-                  </Typography>
-               </Stack>
-            </Stack>
-            <Button variant="outlined" disabled>
+            <DialogContentText>QR Asset</DialogContentText>
+            <table style={{ border: "1px solid black" }}>
+               <tbody>
+                  <tr>
+                     <td rowSpan={4} style={{ border: "1px solid black", padding: "40px 10px", background: "#fff" }}>
+                        <QRCode size={100} value={asset_code} />
+                     </td>
+                  </tr>
+                  <tr>
+                     <td colSpan={5} style={{ border: "1px solid black", padding: "0px 30px" }}>
+                        <Typography variant="h6" fontWeight="bold" textAlign="center" color="black">
+                           PT. Haier Sales Indonesia
+                        </Typography>
+                     </td>
+                  </tr>
+                  <tr>
+                     <td style={{ border: "1px solid black" }}>
+                        <Typography variant="body2" fontWeight="bold" textAlign="center" color="black">
+                           {props.data.capitalized.split('-')[0]}
+                        </Typography>
+                     </td>
+                     <td style={{ border: "1px solid black" }}>
+                        <Typography variant="body2" fontWeight="bold" textAlign="center" color="black">
+                           FA
+                        </Typography>
+                     </td>
+                     <td style={{ border: "1px solid black" }}>
+                        <Typography variant="body2" fontWeight="bold" textAlign="center" color="black">
+                           {props.data.category.code}
+                        </Typography>
+                     </td>
+                     <td style={{ border: "1px solid black" }}>
+                        <Typography variant="body2" fontWeight="bold" textAlign="center" color="black">
+                           {props.data.sap_code}
+                        </Typography>
+                     </td>
+                  </tr>
+                  <tr>
+                     <td colSpan={5} style={{ border: "1px solid black", padding: "0px 30px" }}>
+                        <Typography
+                           variant="subtitle2"
+                           fontWeight="bold"
+                           textAlign="center"
+                           color="black"
+                        >{`${props.data.asset_name} - ${props.data.employee.name} - ${props.data.department.dept}`}</Typography>
+                     </td>
+                  </tr>
+               </tbody>
+            </table>
+            <Button sx={{ mt: 2 }} variant="contained" disabled>
                Print
             </Button>
          </DialogContent>
@@ -158,7 +199,6 @@ const TabPanel = (props) => {
             setDepreciationData(res.data.data);
          })
          .catch((err) => {
-            //  console.log(err.response);
          });
    };
 
@@ -171,7 +211,6 @@ const TabPanel = (props) => {
             setMaintanceData(res.data.data);
          })
          .catch((err) => {
-            //  console.log(err.response);
          });
    };
 
@@ -184,7 +223,6 @@ const TabPanel = (props) => {
             setMutationData(res.data.data);
          })
          .catch((err) => {
-            //  console.log(err.response);
          });
    };
 
@@ -197,7 +235,6 @@ const TabPanel = (props) => {
             setChangeData(res.data.data);
          })
          .catch((err) => {
-            //  console.log(err.response);
          });
    };
 
@@ -599,6 +636,22 @@ const TabsComponent = (props) => {
 };
 
 const DetailComponent = (props) => {
+   const [asset_code, setAssetCode] = useState('')
+
+   useEffect(() => {
+      let mounted = true 
+      if(mounted){
+         const data = props.data
+         const assetCodeTemp = []
+         assetCodeTemp[0] = data.capitalized.split('-')[0]
+         assetCodeTemp[1] = 'FA'
+         assetCodeTemp[2] = data.category.code
+         assetCodeTemp[3] = data.sap_code
+         setAssetCode(assetCodeTemp.join('/'))
+      }
+
+      return () => mounted = false
+   }, [])
    return (
       <Grid item xs={12} md={12} alignItems="center" justifyContent="center" display="flex" flexDirection={"column"}>
          <Grid container spacing={3} mt={2} justifyContent={props.data.picture.length > 0 ? "" : "center"} alignItems="center">
@@ -625,37 +678,55 @@ const DetailComponent = (props) => {
                item
                md={6}
                xs={12}
-               sx={{
-                  height: "200px",
-                  border: 1,
-               }}
             >
-               <Stack direction={"row"} sx={{ width: "100%", height: "140px", border: 0 }}>
-                  <Box
-                     sx={{
-                        background: "white",
-                        border: 1,
-                        width: "30%",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: 'center'
-                     }}
-                  >
-                     <QRCode size={280} value={props.data.asset_code} style={{ width: "100%", padding: "10px" }} viewBox={`0 0 300 300`} />
-                  </Box>
-                  <Stack border={1} minWidth={"50%"}>
-                     <Typography sx={{ fontWeight: "bold", color: "black", textAlign: "center" }}>PT. Haier Sales Indonesia</Typography>
-                     <Stack direction={"row"} spacing={2} border={1}>
-                        <Typography sx={{ borderRight: 1 }}>{`${props.data.asset_code.split("/")[0]}`}</Typography>
-                        <Typography sx={{ borderRight: 1 }}>{`${props.data.asset_code.split("/")[1]}`}</Typography>
-                        <Typography sx={{ borderRight: 1 }}>{`${props.data.asset_code.split("/")[2]}`}</Typography>
-                        <Typography>{`${props.data.asset_code.split("/")[3]}`}</Typography>
-                     </Stack>
-                     <Typography sx={{ fontWeight: "bold", color: "black", textAlign: "center" }}>
-                        {`${props.data.asset_name} - ${props.data.employee.name} - ${props.data.department.dept}`}
-                     </Typography>
-                  </Stack>
-               </Stack>
+               <table style={{ border: "1px solid black" }}>
+                  <tbody>
+                     <tr>
+                        <td rowSpan={4} style={{ border: "1px solid black", padding: "40px 10px", background: "#fff" }}>
+                           <QRCode size={100} value={asset_code} />
+                        </td>
+                     </tr>
+                     <tr>
+                        <td colSpan={5} style={{ border: "1px solid black", padding: "0px 30px" }}>
+                           <Typography variant="h6" fontWeight="bold" textAlign="center" color="black">
+                              PT. Haier Sales Indonesia
+                           </Typography>
+                        </td>
+                     </tr>
+                     <tr>
+                        <td style={{ border: "1px solid black" }}>
+                           <Typography variant="body2" fontWeight="bold" textAlign="center" color="black">
+                              {props.data.capitalized.split('-')[0]}
+                           </Typography>
+                        </td>
+                        <td style={{ border: "1px solid black" }}>
+                           <Typography variant="body2" fontWeight="bold" textAlign="center" color="black">
+                              FA
+                           </Typography>
+                        </td>
+                        <td style={{ border: "1px solid black" }}>
+                           <Typography variant="body2" fontWeight="bold" textAlign="center" color="black">
+                              {props.data.category.code}
+                           </Typography>
+                        </td>
+                        <td style={{ border: "1px solid black" }}>
+                           <Typography variant="body2" fontWeight="bold" textAlign="center" color="black">
+                              {props.data.sap_code}
+                           </Typography>
+                        </td>
+                     </tr>
+                     <tr>
+                        <td colSpan={5} style={{ border: "1px solid black", padding: "0px 30px" }}>
+                           <Typography
+                              variant="subtitle2"
+                              fontWeight="bold"
+                              textAlign="center"
+                              color="black"
+                           >{`${props.data.asset_name} - ${props.data.employee.name} - ${props.data.department.dept}`}</Typography>
+                        </td>
+                     </tr>
+                  </tbody>
+               </table>
             </Grid>
          </Grid>
          <Button sx={{ mt: 2 }} variant="contained">
@@ -671,7 +742,7 @@ const Form = (props) => {
    //form
    const [form, setForm] = useState({
       // asset information
-      asset_code: "",
+      asset_code: " /FA/ / ",
       category_id: "",
       sub_category_id: "",
       asset_name: "",
@@ -852,10 +923,14 @@ const Form = (props) => {
    // event handler
    const handleChange = (e) => {
       if (e.target.name === "category_id") {
+         const temp = assetCategories.find(v => v.id === e.target.value)
+         const splitCode = form.asset_code.split('/')
+         splitCode[2] = temp.code
          getSubCategory(e.target.value);
          setForm({
             ...form,
             [e.target.name]: e.target.value,
+            asset_code: splitCode.join('/')
          });
       } else if (e.target.name === "sub_category_id") {
          const subCategory = subCategories.find((v) => v.id == e.target.value);
@@ -892,6 +967,14 @@ const Form = (props) => {
             vendor_address: vendor.address,
             contact: vendor.contact,
             pic_contact: vendor.pic_contact,
+         });
+      } else if (e.target.name === "sap_code") {
+         const splitCode = form.asset_code.split('/')
+         splitCode[3] = e.target.value
+         setForm({
+            ...form,
+            [e.target.name]: e.target.value,
+            asset_code: splitCode.join('/')
          });
       } else {
          setForm({
@@ -939,7 +1022,6 @@ const Form = (props) => {
             image_file: "",
          });
       });
-      // console.log(temp)
       setPictures([...temp]);
       let main = data.picture.find((v) => v.main === 1);
       setMainPicture(main);
@@ -954,7 +1036,6 @@ const Form = (props) => {
             file_url: v.file,
          });
       });
-      // console.log(temp)
       setEvidences([...temp]);
    };
 
@@ -975,9 +1056,7 @@ const Form = (props) => {
    const edit = async (formData, id) => {
       try {
          const res = await http.post(`asset/${id}`, formData);
-         // console.log(res.data.data)
          setLoading(false);
-         // navigate('/data-asset')
          setDetailModalData(res.data.data);
          handleDetailModal();
       } catch (err) {
@@ -985,7 +1064,6 @@ const Form = (props) => {
          if (err.response) {
             setErrors(err.response.data.errors);
          }
-         // console.log(err.response)
       }
    };
 
@@ -1135,8 +1213,15 @@ const Form = (props) => {
             if (props.data) {
                const data = props.data;
                console.log(data)
+
                //otomatic value
                setAutomatic(data);
+               const asset_code = []
+               asset_code[0] = data.capitalized.split('-')[0]
+               asset_code[1] = 'FA'
+               asset_code[2] = data.category.code
+               asset_code[3] = data.sap_code
+               
                data.picture.length > 0 && setPictureFromApi(data);
                data.evidence.length > 0 && setEvidenceFromApi(data);
                getSubCategory(data.category.id).then((res) => {
@@ -1145,7 +1230,7 @@ const Form = (props) => {
                         ...form,
 
                         // asset information
-                        asset_code: data.asset_code,
+                        asset_code: asset_code.join('/'),
                         category_id: data.category.id,
                         sub_category_id: data.sub_category.id,
                         asset_name: data.asset_name,
@@ -1203,7 +1288,7 @@ const Form = (props) => {
                         ...form,
 
                         // asset information
-                        asset_code: data.asset_code,
+                        asset_code: asset_code.join('/'),
                         category_id: data.category.id,
                         sub_category_id: data.sub_category.id,
                         asset_name: data.asset_name,
@@ -1258,7 +1343,7 @@ const Form = (props) => {
                            <Grid container mt={2} spacing={2}>
                               <Grid item md={4} xs={12}>
                                  <TextField
-                                    disabled={props.detail}
+                                    disabled
                                     onChange={handleChange}
                                     value={form.asset_code}
                                     name="asset_code"
@@ -1354,9 +1439,12 @@ const Form = (props) => {
                                        mask="____/__/__"
                                        disabled={props.detail}
                                        onChange={(newValue) => {
+                                          const splitCode = form.asset_code.split('/')
+                                          splitCode[0] = newValue.toString().split(' ')[3]
                                           setForm({
                                              ...form,
                                              capitalized: newValue,
+                                             asset_code: splitCode.join('/')
                                           });
                                        }}
                                        renderInput={(params) => (
