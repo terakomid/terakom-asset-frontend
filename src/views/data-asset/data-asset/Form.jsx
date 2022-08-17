@@ -137,8 +137,7 @@ const TabPanel = (props) => {
          .then((res) => {
             setDepreciationData(res.data.data);
          })
-         .catch((err) => {
-         });
+         .catch((err) => {});
    };
 
    const getAssetMaintance = async () => {
@@ -149,8 +148,7 @@ const TabPanel = (props) => {
          .then((res) => {
             setMaintanceData(res.data.data);
          })
-         .catch((err) => {
-         });
+         .catch((err) => {});
    };
 
    const getAssetMutation = async () => {
@@ -161,8 +159,7 @@ const TabPanel = (props) => {
          .then((res) => {
             setMutationData(res.data.data);
          })
-         .catch((err) => {
-         });
+         .catch((err) => {});
    };
 
    const getAssetChange = async () => {
@@ -173,8 +170,7 @@ const TabPanel = (props) => {
          .then((res) => {
             setChangeData(res.data.data);
          })
-         .catch((err) => {
-         });
+         .catch((err) => {});
    };
 
    const handleChangePage = (event, newPage) => {
@@ -575,43 +571,35 @@ const TabsComponent = (props) => {
 };
 
 const DetailComponent = (props) => {
-   const [asset_code, setAssetCode] = useState('')
+   const [asset_code, setAssetCode] = useState("");
 
    useEffect(() => {
-      let mounted = true 
-      if(mounted){
-         setAssetCode(ConvertLabel(props.data).join('/'))
+      let mounted = true;
+      if (mounted) {
+         setAssetCode(ConvertLabel(props.data).join("/"));
       }
 
-      return () => mounted = false
-   }, [])
+      return () => (mounted = false);
+   }, []);
    return (
       <Grid item xs={12} md={12} alignItems="center" justifyContent="center" display="flex" flexDirection={"column"}>
          <Grid container spacing={3} mt={2} justifyContent={props.data.picture.length > 0 ? "" : "center"} alignItems="center">
-            {props.data.picture.length > 0 &&
-            <Grid
-               item
-               md={5}
-               xs={12}
-               sx={{
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-               }}
-            >
-               <img
-                  alt="label"
-                  style={{ maxWidth: "200px", objectFit: "cover", objectPosition: "center", ml: "auto" }}
-                  src={props.data.picture[0].file}
-               />
-            </Grid>
-            }
+            {props.data.picture.length > 0 && (
+               <Grid
+                  item
+                  md={5}
+                  xs={12}
+                  sx={{
+                     display: "flex",
+                     justifyContent: "center",
+                     alignItems: "center",
+                  }}
+               >
+                  <img alt="label" style={{ maxWidth: "200px", objectFit: "cover", objectPosition: "center", ml: "auto" }} src={props.data.picture[0].file} />
+               </Grid>
+            )}
 
-            <Grid
-               item
-               md={6}
-               xs={12}
-            >
+            <Grid item md={6} xs={12}>
                <LabelTable data={props.data} />
             </Grid>
          </Grid>
@@ -761,11 +749,11 @@ const Form = (props) => {
    const [paramsEmployee, setParamsEmploy] = useState({
       paginate: 1,
       limit: 3,
-      search: ''
-   })
+      search: "",
+   });
    const getEmployees = async () => {
       const res = await http.get(`user`, {
-         params: paramsEmployee
+         params: paramsEmployee,
       });
       setEmployees([...res.data.data.data]);
       return 1;
@@ -776,8 +764,7 @@ const Form = (props) => {
       let timer = setTimeout(() => {
          if (paramsEmployee) getEmployees();
       }, 500);
-         return () => clearTimeout(timer);
-
+      return () => clearTimeout(timer);
    }, [paramsEmployee]);
 
    const getAssetCondition = async () => {
@@ -821,14 +808,14 @@ const Form = (props) => {
    // event handler
    const handleChange = (e) => {
       if (e.target.name === "category_id") {
-         const temp = assetCategories.find(v => v.id === e.target.value)
-         const splitCode = form.asset_code.split('/')
-         splitCode[3] = temp.code
+         const temp = assetCategories.find((v) => v.id === e.target.value);
+         const splitCode = form.asset_code.split("/");
+         splitCode[3] = temp.code;
          getSubCategory(e.target.value);
          setForm({
             ...form,
             [e.target.name]: e.target.value,
-            asset_code: splitCode.join('/')
+            asset_code: splitCode.join("/"),
          });
       } else if (e.target.name === "sub_category_id") {
          const subCategory = subCategories.find((v) => v.id == e.target.value);
@@ -848,14 +835,14 @@ const Form = (props) => {
          }
       } else if (e.target.name === "employee_id") {
          const user = employees.find((v) => v.id == e.target.value);
-         const splitCode = form.asset_code.split('/')
-         splitCode[2] = user.location.code
+         const splitCode = form.asset_code.split("/");
+         splitCode[2] = user.location.code;
          setForm({
             ...form,
             [e.target.name]: e.target.value,
             department_id: user.dept.id,
             location_id: user.location.id,
-            asset_code: splitCode.join('/')
+            asset_code: splitCode.join("/"),
          });
          setDepartment(user.dept.dept);
       } else if (e.target.name === "vendor_id") {
@@ -870,12 +857,12 @@ const Form = (props) => {
             pic_contact: vendor.pic_contact,
          });
       } else if (e.target.name === "sap_code") {
-         const splitCode = form.asset_code.split('/')
-         splitCode[4] = e.target.value
+         const splitCode = form.asset_code.split("/");
+         splitCode[4] = e.target.value;
          setForm({
             ...form,
             [e.target.name]: e.target.value,
-            asset_code: splitCode.join('/')
+            asset_code: splitCode.join("/"),
          });
       } else {
          setForm({
@@ -905,8 +892,8 @@ const Form = (props) => {
    const setAutomatic = (data) => {
       setParamsEmploy({
          ...paramsEmployee,
-         search: `${data.employee.id} - ${data.employee.name}`
-      })
+         search: `${data.employee.id} - ${data.employee.name}`,
+      });
       setId(data.id);
       setDepartment(data.department.dept);
       setUseFul(data.sub_category.useful_life);
@@ -1004,17 +991,17 @@ const Form = (props) => {
 
       //Vendor information
       formData.append("vendor_id", form.vendor_id);
-      if(form.notes !== "") formData.append("notes", form.notes);
+      if (form.notes !== "") formData.append("notes", form.notes);
 
       if (props.title === "add") {
          pictures.map((v, i) => {
             if (i === 0) {
-               if(v.image_file !== ""){
+               if (v.image_file !== "") {
                   formData.append(`picture[${i}][file]`, v.image_file);
                   formData.append(`picture[${i}][main]`, 1);
-               } 
+               }
             } else {
-               if(v.image_file !== ""){
+               if (v.image_file !== "") {
                   formData.append(`picture[${i}][file]`, v.image_file);
                   formData.append(`picture[${i}][main]`, 0);
                }
@@ -1031,25 +1018,25 @@ const Form = (props) => {
          pictures.map((v, i) => {
             if (i === 0) {
                if (v.image_file === "") {
-                  if(v.id !== "") formData.append(`picture[${i}][id]`, v.id);
+                  if (v.id !== "") formData.append(`picture[${i}][id]`, v.id);
                } else {
-                  if(v.image_file !== "") formData.append(`picture[${i}][file]`, v.image_file);
+                  if (v.image_file !== "") formData.append(`picture[${i}][file]`, v.image_file);
                }
-               if(v.id !== "") formData.append(`picture[${i}][main]`, 1);
+               if (v.id !== "") formData.append(`picture[${i}][main]`, 1);
             } else {
                if (v.image_file === "") {
-                  if(v.id !== "") formData.append(`picture[${i}][id]`, v.id);
+                  if (v.id !== "") formData.append(`picture[${i}][id]`, v.id);
                } else {
-                  if(v.image_file !== "") formData.append(`picture[${i}][file]`, v.image_file);
+                  if (v.image_file !== "") formData.append(`picture[${i}][file]`, v.image_file);
                }
-               if(v.id !== "") formData.append(`picture[${i}][main]`, 0);
+               if (v.id !== "") formData.append(`picture[${i}][main]`, 0);
             }
          });
          evidences.map((v, i) => {
             if (v.file === "") {
-               if(v.id !== "") formData.append(`evidence[${i}][id]`, v.id);
+               if (v.id !== "") formData.append(`evidence[${i}][id]`, v.id);
             } else {
-               if(v.file !== "") formData.append(`evidence[${i}][file]`, v.file);
+               if (v.file !== "") formData.append(`evidence[${i}][file]`, v.file);
             }
          });
       }
@@ -1058,7 +1045,7 @@ const Form = (props) => {
          formData.append("asset_type", "it");
 
          //Device information
-         form.device_id !== "" && formData.append("device_id", form.device_id); 
+         form.device_id !== "" && formData.append("device_id", form.device_id);
          form.type !== "" && formData.append("type", form.type);
          form.brand_id !== "" && formData.append("brand_id", form.brand_id);
          form.monitor_inch !== "" && formData.append("monitor_inch", form.monitor_inch);
@@ -1121,8 +1108,8 @@ const Form = (props) => {
                //otomatic value
                setAutomatic(data);
 
-               const asset_code = ConvertLabel(data)
-               
+               const asset_code = ConvertLabel(data);
+
                data.picture.length > 0 && setPictureFromApi(data);
                data.evidence.length > 0 && setEvidenceFromApi(data);
                getSubCategory(data.category.id).then((res) => {
@@ -1131,7 +1118,7 @@ const Form = (props) => {
                         ...form,
 
                         // asset information
-                        asset_code: asset_code.join('/'),
+                        asset_code: asset_code.join("/"),
                         category_id: data.category.id,
                         sub_category_id: data.sub_category.id,
                         asset_name: data.asset_name,
@@ -1158,28 +1145,28 @@ const Form = (props) => {
                         vendor_id: data.vendor.id,
 
                         // Device information
-                        device_id: data.device === null ? '' : data.device.id,
-                        type: data.type === null ? '' : data.type,
-                        brand_id: data.brand === null ? '' : data.brand.id,
-                        monitor_inch: data.monitor_inch === null ? '' : data.monitor_inch,
-                        model_brand: data.model_brand === null ? '' : data.model_brand,
-                        mac_address: data.mac_address === null ? '' : data.mac_address,
+                        device_id: data.device === null ? "" : data.device.id,
+                        type: data.type === null ? "" : data.type,
+                        brand_id: data.brand === null ? "" : data.brand.id,
+                        monitor_inch: data.monitor_inch === null ? "" : data.monitor_inch,
+                        model_brand: data.model_brand === null ? "" : data.model_brand,
+                        mac_address: data.mac_address === null ? "" : data.mac_address,
                         warranty: data.warranty === null ? null : moment(data.warranty).format("yyyy/MM/DD"),
-                        computer_name: data.computer_name === null ? '' : data.computer_name,
+                        computer_name: data.computer_name === null ? "" : data.computer_name,
 
                         // Hardware
-                        dlp: data.dlp === null ? '' : data.dlp,
-                        soc: data.soc === null ? '' : data.soc,
-                        snnbpc: data.snnbpc === null ? '' : data.snnbpc,
-                        processor_id: data.processor === null ? '' : data.processor.id,
-                        hardware: data.hardware === null ? '' : data.hardware,
+                        dlp: data.dlp === null ? "" : data.dlp,
+                        soc: data.soc === null ? "" : data.soc,
+                        snnbpc: data.snnbpc === null ? "" : data.snnbpc,
+                        processor_id: data.processor === null ? "" : data.processor.id,
+                        hardware: data.hardware === null ? "" : data.hardware,
 
                         //Sofware
-                        os_id: data.os === null ? '' : data.os.id,
-                        sn_windows: data.sn_windows === null ? '' : data.sn_windows,
-                        office_id: data.office === null ? '' : data.office.id,
-                        sn_office: data.sn_office === null ? '' : data.sn_office,
-                        antivirus_id: data.antivirus === null ? '' : data.antivirus.id,
+                        os_id: data.os === null ? "" : data.os.id,
+                        sn_windows: data.sn_windows === null ? "" : data.sn_windows,
+                        office_id: data.office === null ? "" : data.office.id,
+                        sn_office: data.sn_office === null ? "" : data.sn_office,
+                        antivirus_id: data.antivirus === null ? "" : data.antivirus.id,
 
                         // information support
                         notes: data.notes,
@@ -1189,7 +1176,7 @@ const Form = (props) => {
                         ...form,
 
                         // asset information
-                        asset_code: asset_code.join('/'),
+                        asset_code: asset_code.join("/"),
                         category_id: data.category.id,
                         sub_category_id: data.sub_category.id,
                         asset_name: data.asset_name,
@@ -1341,12 +1328,12 @@ const Form = (props) => {
                                        mask="____/__/__"
                                        disabled={props.detail}
                                        onChange={(newValue) => {
-                                          const splitCode = form.asset_code.split('/')
-                                          splitCode[0] = newValue.toString().split(' ')[3]
+                                          const splitCode = form.asset_code.split("/");
+                                          splitCode[0] = newValue.toString().split(" ")[3];
                                           setForm({
                                              ...form,
                                              capitalized: newValue,
-                                             asset_code: splitCode.join('/')
+                                             asset_code: splitCode.join("/"),
                                           });
                                        }}
                                        renderInput={(params) => (
@@ -1402,42 +1389,43 @@ const Form = (props) => {
                                     {employees.length == 0 && <MenuItem disabled>Kosong</MenuItem>}
                                  </TextField> */}
                                  <Autocomplete
-												freeSolo
-												disableClearable
-												options={employees}
-												fullWidth
-												getOptionLabel={(option) => { return `${option.code} - ${option.name}` }}
-												inputValue={paramsEmployee.search}
-												onInputChange={(event, newInputValue, reason) => {
-													setParamsEmploy({
-														...paramsEmployee,
-														search: newInputValue
-													})
-												}}
-												onChange={(e, value) => {
-                                       const splitCode = form.asset_code.split('/')
-                                       splitCode[2] = value.location.code
+                                    freeSolo
+                                    disableClearable
+                                    options={employees}
+                                    fullWidth
+                                    getOptionLabel={(option) => {
+                                       return `${option.code} - ${option.name}`;
+                                    }}
+                                    inputValue={paramsEmployee.search}
+                                    onInputChange={(event, newInputValue, reason) => {
+                                       setParamsEmploy({
+                                          ...paramsEmployee,
+                                          search: newInputValue,
+                                       });
+                                    }}
+                                    onChange={(e, value) => {
+                                       const splitCode = form.asset_code.split("/");
+                                       splitCode[2] = value.location.code;
                                        setForm({
                                           ...form,
                                           employee_id: value.id,
                                           department_id: value.dept.id,
                                           location_id: value.location.id,
-                                          asset_code: splitCode.join('/')
+                                          asset_code: splitCode.join("/"),
                                        });
                                        setDepartment(value.dept.dept);
-
-												}}
-												renderInput={(params) => (
-												<TextField
-													{...params}
-													label="Employ Name / PIC"
-													InputProps={{
-														...params.InputProps,
-														type: 'search',
-													}}
-												/>
-												)}
-											/>
+                                    }}
+                                    renderInput={(params) => (
+                                       <TextField
+                                          {...params}
+                                          label="Employ Name / PIC"
+                                          InputProps={{
+                                             ...params.InputProps,
+                                             type: "search",
+                                          }}
+                                       />
+                                    )}
+                                 />
                               </Grid>
                               <Grid item md={6} xs={12}>
                                  <TextField value={department} name="department_id" fullWidth label="Department Using" disabled />
@@ -1644,7 +1632,6 @@ const Form = (props) => {
                                           name="type"
                                           fullWidth
                                           label="Type"
-                                          
                                           helperText={typeof errors?.type !== "undefined" ? errors.type[0] : ""}
                                           error={typeof errors?.type !== "undefined" ? true : false}
                                        />
@@ -1658,7 +1645,6 @@ const Form = (props) => {
                                           fullWidth
                                           label="Brand"
                                           select
-                                          
                                           helperText={typeof errors?.brand_id !== "undefined" ? errors.brand_id[0] : ""}
                                           error={typeof errors?.brand_id !== "undefined" ? true : false}
                                        >
@@ -1679,7 +1665,6 @@ const Form = (props) => {
                                           name="monitor_inch"
                                           fullWidth
                                           label="Monitor Inch"
-                                          
                                           helperText={typeof errors?.monitor_inch !== "undefined" ? errors.monitor_inch[0] : ""}
                                           error={typeof errors?.monitor_inch !== "undefined" ? true : false}
                                        />
@@ -1692,7 +1677,6 @@ const Form = (props) => {
                                           name="model_brand"
                                           fullWidth
                                           label="Model Brand"
-                                          
                                           helperText={typeof errors?.model_brand !== "undefined" ? errors.model_brand[0] : ""}
                                           error={typeof errors?.model_brand !== "undefined" ? true : false}
                                        />
@@ -1705,7 +1689,6 @@ const Form = (props) => {
                                           name="mac_address"
                                           fullWidth
                                           label="Mac Address"
-                                          
                                           helperText={typeof errors?.mac_address !== "undefined" ? errors.mac_address[0] : ""}
                                           error={typeof errors?.mac_address !== "undefined" ? true : false}
                                        />
@@ -1727,7 +1710,6 @@ const Form = (props) => {
                                              }}
                                              renderInput={(params) => (
                                                 <TextField
-                                                   
                                                    helperText={typeof errors?.warranty !== "undefined" ? errors.warranty[0] : ""}
                                                    error={typeof errors?.warranty !== "undefined" ? true : false}
                                                    fullWidth
@@ -1745,7 +1727,6 @@ const Form = (props) => {
                                           name="computer_name"
                                           fullWidth
                                           label="Computer Name"
-                                          
                                           helperText={typeof errors?.computer_name !== "undefined" ? errors.computer_name[0] : ""}
                                           error={typeof errors?.computer_name !== "undefined" ? true : false}
                                        />
@@ -1909,7 +1890,6 @@ const Form = (props) => {
                                     label="Notes"
                                     multiline
                                     rows={5}
-                                    
                                     helperText={typeof errors?.notes !== "undefined" ? errors.notes[0] : ""}
                                     error={typeof errors?.notes !== "undefined" ? true : false}
                                  />
