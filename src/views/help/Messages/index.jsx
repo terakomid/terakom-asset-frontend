@@ -94,7 +94,7 @@ const Index = (props) => {
         })
         .catch(err => {
             if(err.response){
-                // console.log(err.response)
+                console.log(err.response)
             }
         })
         .finally(() => {
@@ -169,6 +169,24 @@ const Index = (props) => {
                                                 <LoadingButton loading={loadingRating} variant="contained" type="submit">
                                                     Submit Rating
                                                 </LoadingButton>
+                                            </Grid>
+                                        </Grid>
+                                    </Box>
+                                </Grid>
+                                }
+                                {props.data.status !== 'open' && props.data.rating !== 0 && 
+                                <Grid item xs={12} md={12}>
+                                    <Box component="form" onSubmit={onSubmitRating}> 
+                                        <Grid container>
+                                            <Grid item xs={12} md={12}>
+                                                <Typography>Rating</Typography>
+                                                <Rating 
+                                                    value={rating}
+                                                    onChange={(event, newValue) => {
+                                                        setRating(newValue);
+                                                    }}
+                                                    readOnly
+                                                />
                                             </Grid>
                                         </Grid>
                                     </Box>

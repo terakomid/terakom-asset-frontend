@@ -566,9 +566,7 @@ const index = () => {
                                                         </Select>
                                                     </FormControl>
                                                 </Grid>
-                                                
-                                                {user.user.role !== 'Admin Department' &&
-                                                <>
+
                                                 {/* Department option */}
                                                 <Grid item xs={12} md={6}>
                                                     <FormControl fullWidth>
@@ -605,6 +603,10 @@ const index = () => {
                                                         </Select>
                                                     </FormControl>
                                                 </Grid>
+                                                
+                                                {user.user.role !== 'Admin Department' &&
+                                                <>
+                                                
 
                                                 {/* Sub Location option */}
                                                 <Grid item xs={12} md={6}>

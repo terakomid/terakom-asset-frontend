@@ -123,10 +123,12 @@ const Form = (props) => {
 						sk_number: data.sk_number,
 						description: data.description
 					})
-					setDocument({
-						...document,
-						file_url: data.document
-					})
+					if(data.document !== null){
+						setDocument({
+							...document,
+							file_url: data.document
+						})
+					}
 					const assetIdTemp = data.asset_disposal_data.map(v => v.asset.id)
 					if(props.data.status === 'accepted'){
 						setDisposalAssetId([...assetIdTemp])
@@ -232,7 +234,7 @@ const Form = (props) => {
 												endAdornment: (
 													<InputAdornment position="end">
 														<Tooltip title="Delete">
-															<IconButton onClick={() => setDocument({ 
+															<IconButton disabled={props.title !== "add" && props.data.status === "accepted" ? true : false}  onClick={() => setDocument({ 
 																file: '',
 																file_url: '' 
 															})}>

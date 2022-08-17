@@ -672,7 +672,7 @@ const Index = () => {
                                  Edit
                               </MenuItem>
                            )}
-                           {Permission(user.permission, "delete asset disposal") && (
+                           {Permission(user.permission, "delete asset disposal") && staging !== undefined && staging.status === "process" &&  (
                               <MenuItem onClick={handleModal}>
                                  <ListItemIcon>
                                     <Delete />
@@ -701,22 +701,6 @@ const Index = () => {
                                     Reject
                                  </MenuItem>
                               </>
-                           )}
-                           {staging !== undefined && staging.status === "accepted" && (
-                              <MenuItem onClick={handleReject}>
-                                 <ListItemIcon>
-                                    <Close />
-                                 </ListItemIcon>
-                                 Reject
-                              </MenuItem>
-                           )}
-                           {staging !== undefined && staging.status === "rejected" && (
-                              <MenuItem onClick={handleAccept}>
-                                 <ListItemIcon>
-                                    <DoneOutline />
-                                 </ListItemIcon>
-                                 Accept
-                              </MenuItem>
                            )}
                         </Menu>
                      ) : null}

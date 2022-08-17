@@ -63,7 +63,7 @@ const DetailModal = (props) => {
          fullWidth
          maxWidth="xs"
          open={props.open}
-         onClose={props.handleClose}
+         onClose={() => navigate("/data-asset")}
          aria-labelledby="alert-dialog-title"
          aria-describedby="alert-dialog-description"
       >
