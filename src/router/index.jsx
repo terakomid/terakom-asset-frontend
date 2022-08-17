@@ -119,7 +119,7 @@ export default function Router() {
                }
             />
             <Route
-               path="/reset-password"
+               path="/change-password"
                element={
                   <Middleware.After>
                      <Layout render={<ChangePassword />} />

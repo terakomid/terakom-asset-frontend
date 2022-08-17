@@ -194,7 +194,7 @@ export default function Header() {
                      <p style={{ cursor: "pointer" }} onClick={() => navigate("/profil")} className="dropdown-item">
                         <i className="mdi mdi-account-circle font-size-17 text-muted align-middle me-1"></i> Profile
                      </p>
-                     <p style={{ cursor: "pointer" }} onClick={() => navigate("/reset-password")} className="dropdown-item d-block">
+                     <p style={{ cursor: "pointer" }} onClick={() => navigate("/change-password")} className="dropdown-item d-block">
                         <i className="mdi mdi-cog font-size-17 text-muted align-middle me-1"></i> Change Password
                      </p>
                      <div className="dropdown-divider"></div>
