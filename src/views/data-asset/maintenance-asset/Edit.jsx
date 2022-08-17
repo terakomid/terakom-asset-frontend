@@ -1,62 +1,105 @@
 import React, { useEffect, useState } from "react";
-import { Box, Card, CardContent, TextField, Stack, Grid, Typography, MenuItem, Button, IconButton, InputAdornment, Tooltip } from "@mui/material";
-import { Close, FileUploadOutlined, InsertDriveFile } from "@mui/icons-material";
+import {
+   Card,
+   CardContent,
+   TextField,
+   Stack,
+   Grid,
+   MenuItem,
+   TableContainer,
+   Table,
+   TableHead,
+   TableRow,
+   TableCell,
+   TableBody,
+   IconButton,
+   Tooltip,
+} from "@mui/material";
+import { Delete, Edit } from "@mui/icons-material";
 import { LoadingButton } from "@mui/lab";
-import { useNavigate, useParams } from "react-router-dom";
+import { Link as RouterLink, useNavigate, useParams } from "react-router-dom";
+
+import moment from "moment";
+import { DatePicker } from "@mui/x-date-pickers";
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 
 import http from "../../../component/api/Api";
 import Loading from "../../../component/Loading";
 
-export default function EditMaintenanceAsset() {
-   const navigate = useNavigate();
-   const { id } = useParams();
+import { useRecoilValue } from "recoil";
+import { authentication } from "../../../store/Authentication";
+import { Permission } from "../../../component/Permission";
 
-   const [user, setUser] = useState();
-   const getUser = async () => {
+export default function EditMaintenanceAsset() {
+   const { user } = useRecoilValue(authentication);
+   const { id } = useParams();
+   const navigate = useNavigate();
+
+   const [rows, setRows] = useState([]);
+   const [data, setData] = useState();
+   const getData = async () => {
+      http
+         .get(`asset_maintenance/${id}`)
+         .then((res) => {
+            // console.log(res.data.data);
+            let value = res.data.data;
+            getAsset(value.pic.id, value);
+         })
+         .catch((err) => {
+            // console.log(err.response);
+         });
+   };
+
+   const [users, setUsers] = useState();
+   const getUsers = async () => {
       http
          .get(`user`)
          .then((res) => {
             // console.log(res.data.data);
-            setUser(res.data.data);
+            setUsers(res.data.data);
          })
          .catch((err) => {
             // console.log(err.response);
          });
    };
 
-   const [location, setLocation] = useState();
-   const getLocation = async () => {
+   const getAsset = async (employee_id, value) => {
       http
-         .get(`location`)
+         .get(`asset?employee_id=${employee_id}`)
          .then((res) => {
             // console.log(res.data.data);
-            setLocation(res.data.data);
-         })
-         .catch((err) => {
-            // console.log(err.response);
-         });
-   };
-
-   const [data, setData] = useState();
-   const getMutation = async () => {
-      http
-         .get(`asset_mutation/${id}`)
-         .then((res) => {
-            // console.log(res.data.data);
-            let value = res.data.data;
             setData({
-               pic: value.pic.id,
+               pic_id: value.pic.id,
                pic_dept: value.pic.department,
-               receive: value.receive.id,
-               receive_dept: value.receive.department,
-               reason: value.reason,
-               asset: value.asset.id,
-               from_branch: value.from_branch.id,
-               from_room: value.from_room,
-               to_branch: value.to_branch.id,
-               to_room: value.to_room,
-               document: { name: value.ducument.split("/").pop() },
+               applicant_date: value.applicant_date.substr(0, 10),
+               request_date_repair: value.request_date_repair.substr(0, 10),
+               request_time_finish: value.request_time_finish.substr(0, 10),
+               testing_date: value.testing_date.substr(0, 10),
+               testing_finish_date: value.testing_finish_date.substr(0, 10),
+               testing_result: value.testing_result,
+               person_testing: value.person_testing,
+               final_cost: value.final_cost,
+               returning_date: value.returning_date.substr(0, 10),
+               repair_record: value.repair_record,
+               master_asset: res.data.data.data,
+               asset_id: "",
+               asset_dept: "",
+               reason: "",
             });
+
+            let newState;
+            value.asset_maintenance_data.map((row) => {
+               const obj = res.data.data.data.find((value) => value.id == row.asset.id);
+               newState = rows.concat({
+                  asset_id: row.asset.id,
+                  asset_dept: obj.department.dept,
+                  master_asset: obj,
+                  reason: row.reason,
+               });
+            });
+            // console.log(newState);
+            setRows(newState);
          })
          .catch((err) => {
             // console.log(err.response);
@@ -64,21 +107,62 @@ export default function EditMaintenanceAsset() {
    };
 
    useEffect(() => {
-      window.scrollTo(0, 0);
-      getUser();
-      getLocation();
-      getMutation();
+      if (Permission(user.permission, "update asset maintenance")) {
+         window.scrollTo(0, 0);
+         getData();
+         getUsers();
+      } else {
+         navigate("/history-asset/maintenance-asset");
+      }
    }, []);
 
+   const handleResetStaging = (e) => {
+      setData({
+         ...data,
+         asset_id: "",
+         asset_dept: "",
+         reason: "",
+      });
+   };
+
+   const handleStaging = (e) => {
+      e.preventDefault();
+      const obj = data.master_asset.find((value) => value.id == data.asset_id);
+      let staging = {
+         asset_id: data.asset_id,
+         asset_dept: obj.department.dept,
+         master_asset: obj,
+         reason: data.reason,
+      };
+      let newState = rows.concat(staging);
+      setRows(newState);
+      handleResetStaging();
+   };
+
+   const handleEdit = (value, key) => {
+      setRows([...rows.slice(0, key), ...rows.slice(key + 1, rows.length)]);
+      setData({
+         ...data,
+         asset_id: value.asset_id,
+         asset_dept: value.asset_dept,
+         reason: value.reason,
+      });
+   };
+
+   const handleDelete = (key) => {
+      setRows([...rows.slice(0, key), ...rows.slice(key + 1, rows.length)]);
+   };
+
    const handleChange = (e) => {
-      if (e.target.type === "file") {
-         if (e.target.files[0] !== undefined) {
-            setData({
-               ...data,
-               [e.target.name]: e.target.files[0],
-            });
-            e.target.value = null;
-         }
+      if (e.target.name === "pic_id") {
+         getAsset(e.target.value);
+      } else if (e.target.name === "asset_id") {
+         const obj = data.master_asset.find((value) => value.id == e.target.value);
+         setData({
+            ...data,
+            asset_id: e.target.value,
+            asset_dept: obj.department.dept,
+         });
       } else {
          setData({
             ...data,
@@ -93,22 +177,27 @@ export default function EditMaintenanceAsset() {
       setLoading(true);
       let formData = new FormData();
       formData.append("_method", "PUT");
-      // formData.append("pic_id", data.pic);
-      // formData.append("receive_id", data.receive);
-      formData.append("reason", data.reason);
-      // formData.append("asset_id", data.asset);
-      formData.append("quantity", 1);
-      formData.append("from_branch_id", data.from_branch);
-      formData.append("from_room", data.from_room);
-      formData.append("to_branch_id", data.to_branch);
-      formData.append("to_room", data.to_room);
-      data.document.size !== undefined && formData.append("document", data.document);
+      formData.append("pic_id", data.pic_id);
+      formData.append("applicant_date", moment(data.applicant_date).format("yyyy/MM/DD"));
+      formData.append("request_date_repair", moment(data.request_date_repair).format("yyyy/MM/DD"));
+      formData.append("request_time_finish", moment(data.request_time_finish).format("yyyy/MM/DD"));
+      formData.append("testing_date", moment(data.testing_date).format("yyyy/MM/DD"));
+      formData.append("testing_finish_date", moment(data.testing_finish_date).format("yyyy/MM/DD"));
+      formData.append("testing_result", data.testing_result);
+      formData.append("person_testing", data.person_testing);
+      formData.append("final_cost", data.final_cost);
+      formData.append("returning_date", moment(data.returning_date).format("yyyy/MM/DD"));
+      formData.append("repair_record", data.repair_record);
+      rows.map((value, index) => {
+         formData.append(`asset_data[${index}][asset_id]`, value.asset_id);
+         formData.append(`asset_data[${index}][reason]`, value.reason);
+      });
       // console.log(Object.fromEntries(formData));
       http
-         .post(`asset_mutation/${id}`, formData)
+         .post(`asset_maintenance/${id}`, formData)
          .then((res) => {
             // console.log(res.data.data);
-            navigate("/history-asset/mutation-asset");
+            navigate("/history-asset/maintenance-asset");
          })
          .catch((err) => {
             // console.log(err.response.data);
@@ -121,33 +210,26 @@ export default function EditMaintenanceAsset() {
          <div className="page-content">
             <div className="container">
                <div className="d-flex align-items-center justify-content-between my-2 mb-4" style={{ height: "36px" }}>
-                  <h3 className="fw-bold mb-0" onClick={() => console.log(data)}>
-                     Edit Mutation Asset
-                  </h3>
+                  <h3 className="fw-bold mb-0">Edit Maintenance Asset</h3>
                </div>
-               {data !== undefined && user !== undefined && location !== undefined ? (
-                  <Card sx={{ mb: 3 }}>
-                     <CardContent>
-                        <Box component="form" onSubmit={handleSubmit}>
+               {data !== undefined && users !== undefined ? (
+                  <>
+                     <Card sx={{ mb: 3 }}>
+                        <CardContent>
                            <Grid container spacing={2}>
-                              <Grid item xs={12}>
-                                 <Typography color="primary" pb={2}>
-                                    To:
-                                 </Typography>
-                              </Grid>
                               <Grid item xs={12} sm={6}>
                                  <TextField
-                                    name="pic"
+                                    name="pic_id"
                                     label="PIC Asset"
                                     variant="outlined"
-                                    value={data.pic}
+                                    value={data.pic_id}
                                     onChange={handleChange}
                                     defaultValue=""
                                     select
                                     fullWidth
                                     disabled
                                  >
-                                    {user.data.map((value, index) => (
+                                    {users.data.map((value, index) => (
                                        <MenuItem value={value.id} key={index}>
                                           {value.code} - {value.name}
                                        </MenuItem>
@@ -157,32 +239,214 @@ export default function EditMaintenanceAsset() {
                               <Grid item xs={12} sm={6}>
                                  <TextField label="Department" variant="outlined" value={data.pic_dept} fullWidth disabled />
                               </Grid>
+                              <Grid item xs={12} sm={6} md={4}>
+                                 <LocalizationProvider dateAdapter={AdapterDateFns}>
+                                    <DatePicker
+                                       value={data.applicant_date}
+                                       name="applicant_date"
+                                       label="Applicant Date"
+                                       inputFormat="yyyy/MM/dd"
+                                       mask="____/__/__"
+                                       onChange={(newValue) => {
+                                          setData({
+                                             ...data,
+                                             applicant_date: newValue,
+                                          });
+                                       }}
+                                       renderInput={(params) => <TextField fullWidth {...params} />}
+                                    />
+                                 </LocalizationProvider>
+                              </Grid>
+                              <Grid item xs={12} sm={6} md={4}>
+                                 <LocalizationProvider dateAdapter={AdapterDateFns}>
+                                    <DatePicker
+                                       value={data.request_date_repair}
+                                       name="request_date_repair"
+                                       label="Request Date Repair"
+                                       inputFormat="yyyy/MM/dd"
+                                       mask="____/__/__"
+                                       onChange={(newValue) => {
+                                          setData({
+                                             ...data,
+                                             request_date_repair: newValue,
+                                          });
+                                       }}
+                                       renderInput={(params) => <TextField fullWidth {...params} />}
+                                    />
+                                 </LocalizationProvider>
+                              </Grid>
+                              <Grid item xs={12} sm={6} md={4}>
+                                 <LocalizationProvider dateAdapter={AdapterDateFns}>
+                                    <DatePicker
+                                       value={data.request_time_finish}
+                                       name="request_time_finish"
+                                       label="Request Time Finish"
+                                       inputFormat="yyyy/MM/dd"
+                                       mask="____/__/__"
+                                       onChange={(newValue) => {
+                                          setData({
+                                             ...data,
+                                             request_time_finish: newValue,
+                                          });
+                                       }}
+                                       renderInput={(params) => <TextField fullWidth {...params} />}
+                                    />
+                                 </LocalizationProvider>
+                              </Grid>
+                           </Grid>
+                        </CardContent>
+                     </Card>
+                     <Card sx={{ mb: 3 }}>
+                        <CardContent>
+                           <Grid container spacing={2}>
+                              <Grid item xs={12} sm={6}>
+                                 <LocalizationProvider dateAdapter={AdapterDateFns}>
+                                    <DatePicker
+                                       value={data.testing_date}
+                                       name="testing_date"
+                                       label="Testing Date"
+                                       inputFormat="yyyy/MM/dd"
+                                       mask="____/__/__"
+                                       onChange={(newValue) => {
+                                          setData({
+                                             ...data,
+                                             testing_date: newValue,
+                                          });
+                                       }}
+                                       renderInput={(params) => <TextField fullWidth {...params} />}
+                                    />
+                                 </LocalizationProvider>
+                              </Grid>
+                              <Grid item xs={12} sm={6}>
+                                 <LocalizationProvider dateAdapter={AdapterDateFns}>
+                                    <DatePicker
+                                       value={data.testing_finish_date}
+                                       name="testing_finish_date"
+                                       label="Testing Finish Date"
+                                       inputFormat="yyyy/MM/dd"
+                                       mask="____/__/__"
+                                       onChange={(newValue) => {
+                                          setData({
+                                             ...data,
+                                             testing_finish_date: newValue,
+                                          });
+                                       }}
+                                       renderInput={(params) => <TextField fullWidth {...params} />}
+                                    />
+                                 </LocalizationProvider>
+                              </Grid>
+                              <Grid item xs={12}>
+                                 <TextField
+                                    name="testing_result"
+                                    label="Testing Result"
+                                    variant="outlined"
+                                    value={data.testing_result}
+                                    onChange={handleChange}
+                                    rows={4}
+                                    multiline
+                                    fullWidth
+                                    required
+                                 />
+                              </Grid>
+                              <Grid item xs={12} sm={6} md={4}>
+                                 <TextField
+                                    name="person_testing"
+                                    label="Person Testing"
+                                    variant="outlined"
+                                    value={data.person_testing}
+                                    onChange={handleChange}
+                                    fullWidth
+                                    required
+                                 />
+                              </Grid>
+                              <Grid item xs={12} sm={6} md={4}>
+                                 <TextField
+                                    name="final_cost"
+                                    label="Final Cost"
+                                    variant="outlined"
+                                    value={data.final_cost}
+                                    onChange={handleChange}
+                                    fullWidth
+                                    required
+                                 />
+                              </Grid>
+                              <Grid item xs={12} sm={6} md={4}>
+                                 <LocalizationProvider dateAdapter={AdapterDateFns}>
+                                    <DatePicker
+                                       value={data.returning_date}
+                                       name="returning_date"
+                                       label="Returning Date"
+                                       inputFormat="yyyy/MM/dd"
+                                       mask="____/__/__"
+                                       onChange={(newValue) => {
+                                          setData({
+                                             ...data,
+                                             returning_date: newValue,
+                                          });
+                                       }}
+                                       renderInput={(params) => <TextField fullWidth {...params} />}
+                                    />
+                                 </LocalizationProvider>
+                              </Grid>
+                              <Grid item xs={12}>
+                                 <TextField
+                                    name="repair_record"
+                                    label="Repair Record"
+                                    variant="outlined"
+                                    value={data.repair_record}
+                                    onChange={handleChange}
+                                    rows={4}
+                                    multiline
+                                    fullWidth
+                                    required
+                                 />
+                              </Grid>
+                           </Grid>
+                        </CardContent>
+                     </Card>
+                     <Card sx={{ mb: 3 }}>
+                        <CardContent>
+                           <Grid container spacing={2}>
                               <Grid item xs={12} sm={6}>
                                  <TextField
-                                    name="receive"
-                                    label="Receive Name"
+                                    name="asset_id"
+                                    label="Choose Asset"
                                     variant="outlined"
-                                    value={data.receive}
+                                    value={data.asset_id}
                                     onChange={handleChange}
                                     defaultValue=""
                                     select
                                     fullWidth
-                                    disabled
+                                    required
+                                    disabled={data.master_asset.length < 1}
                                  >
-                                    {user.data.map((value, index) => (
-                                       <MenuItem value={value.id} key={index}>
-                                          {value.code} - {value.name}
-                                       </MenuItem>
-                                    ))}
+                                    {data.master_asset.length > 0 ? (
+                                       data.master_asset.map((value, index) => (
+                                          <MenuItem
+                                             value={value.id}
+                                             key={index}
+                                             disabled={
+                                                rows.length > 0 &&
+                                                rows.find(function (row) {
+                                                   return row.asset_id === value.id;
+                                                })
+                                             }
+                                          >
+                                             {value.asset_code} - {value.asset_name}
+                                          </MenuItem>
+                                       ))
+                                    ) : (
+                                       <MenuItem value="">Pilih</MenuItem>
+                                    )}
                                  </TextField>
                               </Grid>
                               <Grid item xs={12} sm={6}>
-                                 <TextField label="Department" variant="outlined" value={data.receive_dept} fullWidth disabled />
+                                 <TextField label="Department" variant="outlined" value={data.asset_dept} fullWidth disabled />
                               </Grid>
                               <Grid item xs={12}>
                                  <TextField
                                     name="reason"
-                                    label="Reason"
+                                    label="Reason For Repair"
                                     variant="outlined"
                                     value={data.reason}
                                     onChange={handleChange}
@@ -192,101 +456,79 @@ export default function EditMaintenanceAsset() {
                                     required
                                  />
                               </Grid>
-                              <Grid item xs={12} sm={6}>
-                                 <TextField
-                                    name="from_branch"
-                                    label="From Branch"
-                                    variant="outlined"
-                                    value={data.from_branch}
-                                    onChange={handleChange}
-                                    defaultValue=""
-                                    select
-                                    fullWidth
-                                    required
-                                 >
-                                    {location.map((value, index) => (
-                                       <MenuItem value={value.id} key={index}>
-                                          {value.code} - {value.location}
-                                       </MenuItem>
-                                    ))}
-                                 </TextField>
-                              </Grid>
-                              <Grid item xs={12} sm={6}>
-                                 <TextField
-                                    name="from_room"
-                                    label="From Room"
-                                    variant="outlined"
-                                    value={data.from_room}
-                                    onChange={handleChange}
-                                    fullWidth
-                                    required
-                                 />
-                              </Grid>
-                              <Grid item xs={12} sm={6}>
-                                 <TextField
-                                    name="to_branch"
-                                    label="To Branch"
-                                    variant="outlined"
-                                    value={data.to_branch}
-                                    onChange={handleChange}
-                                    defaultValue=""
-                                    select
-                                    fullWidth
-                                    required
-                                 >
-                                    {location.map((value, index) => (
-                                       <MenuItem value={value.id} key={index}>
-                                          {value.code} - {value.location}
-                                       </MenuItem>
-                                    ))}
-                                 </TextField>
-                              </Grid>
-                              <Grid item xs={12} sm={6}>
-                                 <TextField name="to_room" label="To Room" variant="outlined" value={data.to_room} onChange={handleChange} fullWidth required />
-                              </Grid>
-                              <Grid item xs={12} sm={6}>
-                                 {data.document !== null ? (
-                                    <TextField
-                                       variant="outlined"
-                                       label="Supporting Document *"
-                                       value={data.document.name}
-                                       disabled
-                                       InputProps={{
-                                          startAdornment: (
-                                             <InputAdornment position="start">
-                                                <InsertDriveFile />
-                                             </InputAdornment>
-                                          ),
-                                          endAdornment: (
-                                             <InputAdornment position="end">
-                                                <Tooltip title="Delete">
-                                                   <IconButton onClick={() => setData({ ...data, document: null })}>
-                                                      <Close />
-                                                   </IconButton>
-                                                </Tooltip>
-                                             </InputAdornment>
-                                          ),
-                                       }}
-                                       fullWidth
-                                    />
-                                 ) : (
-                                    <Button size="large" variant="outlined" component="label" fullWidth startIcon={<FileUploadOutlined />}>
-                                       Supporting Document *
-                                       <input name="document" type="file" onChange={handleChange} hidden required />
-                                    </Button>
-                                 )}
-                              </Grid>
                               <Grid item xs={12}>
-                                 <Stack direction="row" justifyContent="flex-end" spacing={1}>
-                                    <LoadingButton type="submit" variant="contained" loading={loading}>
-                                       Save
+                                 <Stack direction="row" justifyContent="flex-end" spacing={1} sx={{ my: 2 }}>
+                                    <LoadingButton onClick={handleStaging} variant="contained">
+                                       Add
                                     </LoadingButton>
                                  </Stack>
                               </Grid>
                            </Grid>
-                        </Box>
-                     </CardContent>
-                  </Card>
+                           <TableContainer>
+                              <Table sx={{ mt: 3 }}>
+                                 <TableHead>
+                                    <TableRow
+                                       sx={{
+                                          "& th:first-of-type": { borderRadius: "0.5em 0 0 0.5em" },
+                                          "& th:last-of-type": { borderRadius: "0 0.5em 0.5em 0" },
+                                       }}
+                                    >
+                                       <TableCell align="center">No.</TableCell>
+                                       <TableCell>Asset Name</TableCell>
+                                       <TableCell>Asset Code</TableCell>
+                                       <TableCell>Department</TableCell>
+                                       <TableCell>Reason For Repair</TableCell>
+                                       <TableCell align="center">Action</TableCell>
+                                    </TableRow>
+                                 </TableHead>
+                                 <TableBody>
+                                    {rows.length > 0 ? (
+                                       rows.map((value, key) => (
+                                          <TableRow key={key}>
+                                             <TableCell component="th" scope="row" align="center">
+                                                {key + 1}.
+                                             </TableCell>
+                                             <TableCell>{value.master_asset.asset_name}</TableCell>
+                                             <TableCell>{value.master_asset.asset_code}</TableCell>
+                                             <TableCell>{value.master_asset.department.dept}</TableCell>
+                                             <TableCell>{value.reason}</TableCell>
+                                             <TableCell align="center">
+                                                <Stack direction="row">
+                                                   <Tooltip title="Edit">
+                                                      <IconButton onClick={() => handleEdit(value, key)}>
+                                                         <Edit />
+                                                      </IconButton>
+                                                   </Tooltip>
+                                                   <Tooltip title="Delete">
+                                                      <IconButton onClick={() => handleDelete(key)}>
+                                                         <Delete />
+                                                      </IconButton>
+                                                   </Tooltip>
+                                                </Stack>
+                                             </TableCell>
+                                          </TableRow>
+                                       ))
+                                    ) : (
+                                       <TableRow>
+                                          <TableCell component="th" scope="row" sx={{ textAlign: "center", py: 10 }} colSpan={100}>
+                                             No data added.
+                                          </TableCell>
+                                       </TableRow>
+                                    )}
+                                 </TableBody>
+                              </Table>
+                           </TableContainer>
+                        </CardContent>
+                     </Card>
+                     <Stack direction="row" spacing={1} sx={{ mt: 3 }}>
+                        <LoadingButton type="submit" disabled={rows.length < 1} loading={loading} onClick={handleSubmit} variant="contained">
+                           Save
+                        </LoadingButton>
+                        <LoadingButton variant="outlined" component={RouterLink} to="/history-asset/maintenance-asset">
+                           Back
+                        </LoadingButton>
+                     </Stack>
+                  </>
                ) : (
                   <Loading />
                )}
