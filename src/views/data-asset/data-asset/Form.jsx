@@ -1096,7 +1096,6 @@ const Form = (props) => {
             edit(formData, id);
          }
       }
-      console.log(Object.fromEntries(formData))
    };
 
    useEffect(() => {
@@ -1118,7 +1117,6 @@ const Form = (props) => {
          ]).then((res) => {
             if (props.data) {
                const data = props.data;
-               console.log(data)
 
                //otomatic value
                setAutomatic(data);
@@ -1417,7 +1415,6 @@ const Form = (props) => {
 													})
 												}}
 												onChange={(e, value) => {
-                                       console.log(value)
                                        const splitCode = form.asset_code.split('/')
                                        splitCode[2] = value.location.code
                                        setForm({

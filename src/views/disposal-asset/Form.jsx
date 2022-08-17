@@ -85,7 +85,6 @@ const Form = (props) => {
             });
 	}
 	const getDataMultipleAsset = () => {
-		console.log(assetId)
 		http
             .get(`/asset/get_multiple`, {
             	params: {
@@ -93,11 +92,10 @@ const Form = (props) => {
 				},
             })
             .then((res) => {
-				console.log(res.data);
 				setTableData(res.data.data)
             })
             .catch((err) => {
-            	 console.log(err.response);
+            	//  console.log(err.response);
             });
 	}
 	useEffect(() => {
@@ -176,7 +174,7 @@ const Form = (props) => {
 					navigate("/disposal-asset");
 				})
 				.catch((err) => {
-					console.log(err.response)
+					// console.log(err.response)
 				})
 				.finally((res) => {
 					setLoading(false);
