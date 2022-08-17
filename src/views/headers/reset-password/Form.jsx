@@ -159,7 +159,7 @@ const Form = (props) => {
                                                                     aria-label="toggle password visibility"
                                                                     onClick={onShowOld}
                                                                 >
-                                                                    {showOld === 'text' ? <VisibilityOff /> : <Visibility />}
+                                                                    {showOld === 'text' ? <Visibility /> : <VisibilityOff /> }
                                                                 </IconButton>
                                                             </InputAdornment>
                                                         }
@@ -189,7 +189,7 @@ const Form = (props) => {
                                                         endAdornment={
                                                             <InputAdornment position="end">
                                                                 <IconButton aria-label="toggle password visibility" onClick={onShowNew}>
-                                                                    {showNew === "text" ? <VisibilityOff /> : <Visibility />}
+                                                                    {showNew === "text" ? <Visibility /> : <VisibilityOff />}
                                                                 </IconButton>
                                                             </InputAdornment>
                                                         }
@@ -219,7 +219,7 @@ const Form = (props) => {
                                                         endAdornment={
                                                             <InputAdornment position="end">
                                                                 <IconButton aria-label="toggle password_confirmation visibility" onClick={onShowCon}>
-                                                                    {showCon === "text" ? <VisibilityOff /> : <Visibility />}
+                                                                    {showCon === "text" ? <Visibility /> : <VisibilityOff />}
                                                                 </IconButton>
                                                             </InputAdornment>
                                                         }
