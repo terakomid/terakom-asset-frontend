@@ -31,6 +31,7 @@ import {
    DialogContent,
    DialogContentText,
    DialogActions,
+   Autocomplete,
 } from "@mui/material";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
@@ -600,7 +601,7 @@ const DetailComponent = (props) => {
             >
                <img
                   alt="label"
-                  style={{ height: "200px", maxWidth: "200px", objectFit: "cover", objectPosition: "center", ml: "auto" }}
+                  style={{ maxWidth: "200px", objectFit: "cover", objectPosition: "center", ml: "auto" }}
                   src={props.data.picture[0].file}
                />
             </Grid>
@@ -757,15 +758,27 @@ const Form = (props) => {
       return 1;
    };
 
+   const [paramsEmployee, setParamsEmploy] = useState({
+      paginate: 1,
+      limit: 3,
+      search: ''
+   })
    const getEmployees = async () => {
       const res = await http.get(`user`, {
-         params: {
-            paginate: 0,
-         },
+         params: paramsEmployee
       });
       setEmployees([...res.data.data.data]);
       return 1;
    };
+
+   useEffect(() => {
+      setEmployees([]);
+      let timer = setTimeout(() => {
+         if (paramsEmployee) getEmployees();
+      }, 500);
+         return () => clearTimeout(timer);
+
+   }, [paramsEmployee]);
 
    const getAssetCondition = async () => {
       const res = await http.get(`condition`);
@@ -890,6 +903,10 @@ const Form = (props) => {
 
    //Automatic value for edit
    const setAutomatic = (data) => {
+      setParamsEmploy({
+         ...paramsEmployee,
+         search: `${data.employee.id} - ${data.employee.name}`
+      })
       setId(data.id);
       setDepartment(data.department.dept);
       setUseFul(data.sub_category.useful_life);
@@ -1014,25 +1031,25 @@ const Form = (props) => {
          pictures.map((v, i) => {
             if (i === 0) {
                if (v.image_file === "") {
-                  formData.append(`picture[${i}][id]`, v.id);
+                  if(v.id !== "") formData.append(`picture[${i}][id]`, v.id);
                } else {
-                  formData.append(`picture[${i}][file]`, v.image_file);
+                  if(v.image_file !== "") formData.append(`picture[${i}][file]`, v.image_file);
                }
-               formData.append(`picture[${i}][main]`, 1);
+               if(v.id !== "") formData.append(`picture[${i}][main]`, 1);
             } else {
                if (v.image_file === "") {
-                  formData.append(`picture[${i}][id]`, v.id);
+                  if(v.id !== "") formData.append(`picture[${i}][id]`, v.id);
                } else {
-                  formData.append(`picture[${i}][file]`, v.image_file);
+                  if(v.image_file !== "") formData.append(`picture[${i}][file]`, v.image_file);
                }
-               formData.append(`picture[${i}][main]`, 0);
+               if(v.id !== "") formData.append(`picture[${i}][main]`, 0);
             }
          });
          evidences.map((v, i) => {
             if (v.file === "") {
-               formData.append(`evidence[${i}][id]`, v.id);
+               if(v.id !== "") formData.append(`evidence[${i}][id]`, v.id);
             } else {
-               formData.append(`evidence[${i}][file]`, v.file);
+               if(v.file !== "") formData.append(`evidence[${i}][file]`, v.file);
             }
          });
       }
@@ -1079,6 +1096,7 @@ const Form = (props) => {
             edit(formData, id);
          }
       }
+      console.log(Object.fromEntries(formData))
    };
 
    useEffect(() => {
@@ -1100,6 +1118,7 @@ const Form = (props) => {
          ]).then((res) => {
             if (props.data) {
                const data = props.data;
+               console.log(data)
 
                //otomatic value
                setAutomatic(data);
@@ -1212,6 +1231,7 @@ const Form = (props) => {
 
       return () => (mounted = false);
    }, [props]);
+
    return (
       <Box component="form" onSubmit={onSubmit}>
          <Grid container spacing={4}>
@@ -1368,7 +1388,7 @@ const Form = (props) => {
                            <Typography>Asset Holder</Typography>
                            <Grid container mt={2} spacing={2}>
                               <Grid item md={6} xs={12}>
-                                 <TextField
+                                 {/* <TextField
                                     disabled={props.detail}
                                     onChange={handleChange}
                                     value={form.employee_id}
@@ -1382,7 +1402,45 @@ const Form = (props) => {
                                  >
                                     {employees.length > 0 && employees.map((v) => <MenuItem key={v.id} value={v.id}>{`${v.code} - ${v.name}`}</MenuItem>)}
                                     {employees.length == 0 && <MenuItem disabled>Kosong</MenuItem>}
-                                 </TextField>
+                                 </TextField> */}
+                                 <Autocomplete
+												freeSolo
+												disableClearable
+												options={employees}
+												fullWidth
+												getOptionLabel={(option) => { return `${option.code} - ${option.name}` }}
+												inputValue={paramsEmployee.search}
+												onInputChange={(event, newInputValue, reason) => {
+													setParamsEmploy({
+														...paramsEmployee,
+														search: newInputValue
+													})
+												}}
+												onChange={(e, value) => {
+                                       console.log(value)
+                                       const splitCode = form.asset_code.split('/')
+                                       splitCode[2] = value.location.code
+                                       setForm({
+                                          ...form,
+                                          employee_id: value.id,
+                                          department_id: value.dept.id,
+                                          location_id: value.location.id,
+                                          asset_code: splitCode.join('/')
+                                       });
+                                       setDepartment(value.dept.dept);
+
+												}}
+												renderInput={(params) => (
+												<TextField
+													{...params}
+													label="Employ Name / PIC"
+													InputProps={{
+														...params.InputProps,
+														type: 'search',
+													}}
+												/>
+												)}
+											/>
                               </Grid>
                               <Grid item md={6} xs={12}>
                                  <TextField value={department} name="department_id" fullWidth label="Department Using" disabled />

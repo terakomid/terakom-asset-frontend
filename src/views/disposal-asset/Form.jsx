@@ -31,6 +31,8 @@ import {
    Menu,
    ListItemIcon,
    Tooltip,
+   CircularProgress,
+   Autocomplete,
 } from "@mui/material";
 
 import { LoadingButton } from "@mui/lab";
@@ -46,6 +48,7 @@ const Form = (props) => {
 	const navigate = useNavigate();
 	const [id, setId] = useState('')
 	const [rows, setRows] = useState([])
+	const [tableData, setTableData] = useState([])
 	const [disposalData, setDisposalData] = useState([])
 	const [form, setForm] = useState({
 		sk_number: "",
@@ -58,15 +61,15 @@ const Form = (props) => {
 	const [loading, setLoading] = useState(false);
 	const [isComplete, setIsComplete] = useState(false);
 	const [errors, setErrors] = useState({});
-	const [assetId, setAssetId] = useState([''])
+	const [assetId, setAssetId] = useState([])
 	const [disposalAssetId, setDisposalAssetId] = useState([''])
 
 	const [params, setParams] = useState({
         search: "",
         order_by_name: 0,
-        limit: 10,
+        limit: 5,
         page: 1,
-		paginate: 0,
+		paginate: 1,
     });
 
 	const getData = () => {
@@ -75,21 +78,40 @@ const Form = (props) => {
             	params: params,
             })
             .then((res) => {
-            	//  console.log(res.data.data);
            		setRows(res.data.data.data);
             })
             .catch((err) => {
             	//  console.log(err.response);
             });
 	}
-	// useEffect(() => {
-    //     setRows(undefined);
-    //     let timer = setTimeout(() => {
-    //             if (params) getData();
-    //     }, 500);
-    //     	return () => clearTimeout(timer);
-    //     // eslint-disable-next-line react-hooks/exhaustive-deps
-    // }, [params]);
+	const getDataMultipleAsset = () => {
+		console.log(assetId)
+		http
+            .get(`/asset/get_multiple`, {
+            	params: {
+					ids: assetId
+				},
+            })
+            .then((res) => {
+				console.log(res.data);
+				setTableData(res.data.data)
+            })
+            .catch((err) => {
+            	 console.log(err.response);
+            });
+	}
+	useEffect(() => {
+        setRows([]);
+        let timer = setTimeout(() => {
+        	if (params) getData();
+        }, 500);
+        	return () => clearTimeout(timer);
+
+    }, [params]);
+	useEffect(() => {
+        getDataMultipleAsset()
+
+    }, [assetId]);
 
 	useEffect(() => {
 		let mounted = true;
@@ -136,7 +158,8 @@ const Form = (props) => {
 		formData.append('sk_number', form.sk_number)
 		formData.append('description', form.description)
 		if (document.file !== "") formData.append("document", document.file);
-		assetId.map((v, i) => {
+		const assetIdTemp = [...new Set(assetId)]
+		assetIdTemp.map((v, i) => {
 			formData.append(`asset_disposal_data[${i}][asset_id]`, v)
 		})
 
@@ -144,6 +167,7 @@ const Form = (props) => {
 		// 	console.log(Object.fromEntries(formData))
 		// 	setLoading(false)
 		// }, 500);
+
 		if (props.title == "add") {
 			http
 				.post("asset_disposal", formData)
@@ -258,71 +282,69 @@ const Form = (props) => {
 								<Grid item xs={12} md={12}>
 									{/* Add */}
 									{props.title !== "edit" &&
-									<Grid container spacing={3}>
-									{assetId.map((v, i) => {
-										return (
-											<Grid key={i} item xs={12} md={12}>
-												<Stack direction={"row"} spacing={2} alignItems="center">
-													<TextField
-														id="outlined-select-currency"
-														fullWidth
-														label="Data Asset"
-														value={v}
-														onChange={(e) =>{
-															setAssetId(currentAssetId => 
-																produce(currentAssetId, v => {
-																	v[i] = e.target.value
-																})
-															);
-														}}
-														select
-													>	
-													{rows !== undefined && rows.length > 0 && rows.map(v => {
-														return (
-															<MenuItem key={v.id} value={v.id} disabled={assetId.includes(v.id)}>{v.asset_name}</MenuItem>
-														)
-													})}
-													</TextField>
-												</Stack>
-												
-											</Grid>
-										)
-									})}
-									</Grid>
+									<>
+										<Autocomplete
+											freeSolo
+											disableClearable
+											options={rows}
+											fullWidth
+											getOptionLabel={(option) => option.asset_name}
+											inputValue={params.search}
+											onInputChange={(event, newInputValue, reason) => {
+												setParams({
+													...params,
+													search: reason === 'reset' ? '' : newInputValue
+												})
+											}}
+											onChange={(e, value) => {
+												setAssetId([...assetId, value.id])
+
+											}}
+											renderInput={(params) => (
+											<TextField
+												{...params}
+												label="Search input"
+												InputProps={{
+												...params.InputProps,
+												type: 'search',
+												}}
+											/>
+											)}
+										/>
+									</>
 									}
 
 									{/* selain accepted */}
 									{props.title !== "add" && props.data.status !== "accepted" && 
-									<Grid container spacing={3}>
-									{assetId.map((v, i) => {
-										return (
-											<Grid key={i} item xs={12} md={12}>
-												<Stack direction={"row"} spacing={2} alignItems="center">
-													<TextField
-														id="outlined-select-currency"
-														fullWidth
-														label="Data Asset"
-														value={v}
-														onChange={(e) =>{
-															setAssetId(currentAssetId => 
-																produce(currentAssetId, v => {
-																	v[i] = e.target.value
-																})
-															);
-														}}
-														select
-													>	
-													{rows !== undefined && rows.length > 0 && rows.map(v => {
-														return (
-															<MenuItem key={v.id} value={v.id} disabled={assetId.includes(v.id)}>{v.asset_name}</MenuItem>
-														)
-													})}
-													</TextField>
-												</Stack>
-												
-											</Grid>
-										)
-									})}
+									<Grid item xs={12} md={12}>
+										<Autocomplete
+												freeSolo
+												disableClearable
+												options={rows}
+												fullWidth
+												getOptionLabel={(option) => option.asset_name}
+												inputValue={params.search}
+												onInputChange={(event, newInputValue, reason) => {
+													setParams({
+														...params,
+														search: reason === 'reset' ? '' : newInputValue
+													})
+												}}
+												onChange={(e, value) => {
+													setAssetId([...assetId, value.id])
+
+												}}
+												renderInput={(params) => (
+												<TextField
+													{...params}
+													label="Search input"
+													InputProps={{
+														...params.InputProps,
+														type: 'search',
+													}}
+												/>
+												)}
+											/>
 									</Grid>
 									}
 
@@ -357,21 +379,8 @@ const Form = (props) => {
 									}
 
 								</Grid>
-								<Grid item xs={3} md={3}>
-									<Chip
-										disabled={props.title !== "add" && props.data.status === "accepted" ? true : false}
-										color="primary"
-										sx={{ display: 'flex', width: { xs: '100%', md: '100%' }, mt: { xs: 2, md: 2 }, mb: 'auto' }} 
-										label="Tambah Asset" 
-										onClick={() => {
-											setAssetId(currentAssetId => [
-												...currentAssetId, ''
-											])
-										}}
-									/>
-								</Grid>
 								<Grid item xs={12} md={12}>
-									{assetId[0] !== '' &&
+									{assetId.length > 0 &&
 									<TableContainer>
 										<Table sx={{ minWidth: 650 }} aria-label="simple table">
 											<TableHead>
@@ -393,9 +402,9 @@ const Form = (props) => {
 												</TableRow>
 											</TableHead>
 											<TableBody>
-												{rows !== undefined ? (
-												rows.length > 0 ? (
-													rows.filter(v => assetId.includes(v.id)).map((value, key) => (
+												{tableData !== undefined ? (
+												tableData.length > 0 ? (
+													tableData.filter(v => assetId.includes(v.id)).map((value, key) => (
 														<TableRow key={key}>
 															<TableCell component="th" scope="row" align="center">
 															{1 + key}.
@@ -415,7 +424,7 @@ const Form = (props) => {
 																		if(assetId.length > 1){
 																			setAssetId(currentAssetId => currentAssetId.filter((v, x) => v !== value.id))
 																		}else{
-																			setAssetId([''])
+																			setAssetId([])
 																		}
 																		// var index = array.indexOf(item);
 																		// if (index !== -1) {
@@ -430,16 +439,10 @@ const Form = (props) => {
 													))
 												) : (
 													<TableRow>
-														<TableCell component="th" scope="row" sx={{ textAlign: "center", py: 10 }} colSpan={10}>
-															No result found
-															{params.search !== "" && (
-															<div style={{ display: "inline-block" }}>
-																&nbsp;for "<b>{params.search}</b>"
-															</div>
-															)}
-															.
-														</TableCell>
-													</TableRow>
+													<TableCell component="th" scope="row" sx={{ textAlign: "center", py: 5 }} colSpan={10}>
+														<Loading />
+													</TableCell>
+												</TableRow>
 												)
 												) : (
 												<TableRow>
@@ -452,6 +455,7 @@ const Form = (props) => {
 										</Table>
 									</TableContainer>
 									}
+
 									{disposalAssetId[0] !== '' &&
 									<TableContainer>
 										<Table sx={{ minWidth: 650 }} aria-label="simple table">

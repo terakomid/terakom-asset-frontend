@@ -137,7 +137,7 @@ const Index = () => {
         
     }
 
-    const setScanner = () => {
+    const setScanner = (isOn = true) => {
         setDisplay('block')
         const videoElem = document.querySelector('#video-elem')
         const qrScanner = new QrScanner(
@@ -152,7 +152,12 @@ const Index = () => {
             true
             
         );
-        qrScanner.start()
+        if(isOn){
+            qrScanner.start()
+        }else{
+            qrScanner.start()
+            qrScanner.destroy()
+        }
     }
 
     const handleDetail = () => {
@@ -174,6 +179,10 @@ const Index = () => {
     useEffect(() => {
         setScanner()
         
+
+        // return () => {
+        //     setScanner(false)
+        // }
     }, [])
 
     return (
