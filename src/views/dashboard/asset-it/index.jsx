@@ -56,6 +56,8 @@ import { Pie } from 'react-chartjs-2';
 import { Bar } from 'react-chartjs-2';
 import Loading from '../../../component/Loading';
 import { LoadingButton } from '@mui/lab';
+import { authentication } from '../../../store/Authentication';
+import { useRecoilValue } from 'recoil'
 
 ChartJS.register(
     CategoryScale,
@@ -67,169 +69,7 @@ ChartJS.register(
     Legend
   );
 
-const ModalFilter = (props) => {
-    const [roleOptions, setRoleOptions] = useState([])
-    const [departmentOptions, setDepartmentOptions] = useState([])
-    const [filter, setFilter] = useState({
-        role: '',
-        department_id: ''
-    })
-    const [isComplete, setIsComplete] = useState(false)
 
-    const getDepartment = async() => {
-            const res = await http.get(`dept`)
-            setDepartmentOptions([...res.data.data])
-            return 1
-        }
-
-        const getRole = async() => {
-            const res = await http.get(`role`)
-            setRoleOptions([...res.data.data])
-            return 1
-        }
-
-    useEffect(() => {
-            let mounted = true
-            if(mounted && props.open){
-                Promise.all([getDepartment(), getRole()]).then(res => {
-                    setIsComplete(true)
-                    
-                })
-            }
-
-
-            return () => mounted = false
-        }, [props.open])
-
-    return (
-        <Dialog
-            fullWidth
-            maxWidth="xs"
-            open={props.open}
-            onClose={props.handleClose}
-            aria-labelledby="alert-dialog-title"
-            aria-describedby="alert-dialog-description"
-        >
-            <DialogTitle>Filter</DialogTitle>
-            <DialogContent>
-                <DialogContentText>Filter</DialogContentText>
-                {isComplete &&
-                <Grid container>
-                <Grid item xs={12} md={6}>
-                    <TextField 
-                        select
-                        multiple
-                        size="small"
-                        name="role"
-                        label="role"
-                        value={filter.role}
-                        fullWidth
-                    >
-                        {roleOptions.length > 0 && roleOptions.map(v => (
-                            <MenuItem key={v.id} value={v.name}>{v.name}</MenuItem>
-                        ))}
-                        {roleOptions.length == 0 && 
-                            <MenuItem disabled>Kosong</MenuItem>
-                        }
-                    </TextField>
-                </Grid>
-
-                </Grid>
-                }
-            </DialogContent>
-            <DialogActions>
-                <Button variant="text" onClick={props.handleClose}>
-                Cancel
-                </Button>
-                <Button variant="text" color="error" onClick={() => console.log('filter')} autoFocus>
-                Delete
-                </Button>
-            </DialogActions>
-        </Dialog>
-    )
-}
-
-const ModalTable = (props) => {
-    const [roleOptions, setRoleOptions] = useState([])
-    const [departmentOptions, setDepartmentOptions] = useState([])
-    const [filter, setFilter] = useState({
-        role: '',
-        department_id: ''
-    })
-    const [isComplete, setIsComplete] = useState(false)
-
-    const getDepartment = async() => {
-            const res = await http.get(`dept`)
-            setDepartmentOptions([...res.data.data])
-            return 1
-        }
-
-        const getRole = async() => {
-            const res = await http.get(`role`)
-            setRoleOptions([...res.data.data])
-            return 1
-        }
-
-    useEffect(() => {
-            let mounted = true
-            if(mounted && props.open){
-                Promise.all([getDepartment(), getRole()]).then(res => {
-                    setIsComplete(true)
-                    
-                })
-            }
-
-
-            return () => mounted = false
-        }, [props.open])
-
-    return (
-        <Dialog
-            fullWidth
-            maxWidth="xs"
-            open={props.open}
-            onClose={props.handleClose}
-            aria-labelledby="alert-dialog-title"
-            aria-describedby="alert-dialog-description"
-        >
-            <DialogTitle>Filter</DialogTitle>
-            <DialogContent>
-                <DialogContentText>Filter</DialogContentText>
-                {isComplete &&
-                <Grid container>
-                <Grid item xs={12} md={6}>
-                    <TextField 
-                        select
-                        multiple
-                        size="small"
-                        name="role"
-                        label="role"
-                        value={filter.role}
-                        fullWidth
-                    >
-                        {roleOptions.length > 0 && roleOptions.map(v => (
-                            <MenuItem key={v.id} value={v.name}>{v.name}</MenuItem>
-                        ))}
-                        {roleOptions.length == 0 && 
-                            <MenuItem disabled>Kosong</MenuItem>
-                        }
-                    </TextField>
-                </Grid>
-
-                </Grid>
-                }
-            </DialogContent>
-            <DialogActions>
-                <Button variant="text" onClick={props.handleClose}>
-                Cancel
-                </Button>
-                <Button variant="text" color="error" onClick={() => console.log('filter')} autoFocus>
-                Delete
-                </Button>
-            </DialogActions>
-        </Dialog>
-    )
-}
 
 export const optionsBar = {
     responsive: true,
@@ -269,6 +109,7 @@ export const optionsPie = {
 
 const index = () => {
     const navigate = useNavigate()
+    const user = useRecoilValue(authentication)
     const [isComplete, setIsComplete] = useState(false)
     const [locationParams, setLocationParams] = useState({
         device_id: [],
@@ -278,7 +119,7 @@ const index = () => {
     const [departmentParams, setDepartmentParams] = useState({
         device_id: [],
         department_id: [],
-        sub_location_id: [],
+        location_id: [],
     })
 
 
@@ -303,7 +144,7 @@ const index = () => {
         const res = await http.get(`/statistic/asset_it_by_location`, {
             params: {
                 device_id: locationParams.device_id,
-                location_id: locationParams.location_id,
+                location_id: user.user.role !== 'Admin Department' ? locationParams.location_id : [user.user.dept.id],
                 sub_location_id: locationParams.sub_location_id
             }
         })
@@ -315,7 +156,7 @@ const index = () => {
             params: {
                 device_id: departmentParams.device_id,
                 department_id: departmentParams.department_id,
-                sub_location_id: departmentParams.sub_location_id
+                sub_location_id: user.user.role !== 'Admin Department' ? departmentParams.location_id : [user.user.dept.id],
             }
         })
         setDataByDeparment(res.data.data)
@@ -555,6 +396,8 @@ const index = () => {
                                                 </Grid>
 
                                                 {/* Location option */}
+                                                {user.user.role !== 'Admin Department' &&
+                                                <>
                                                 <Grid item xs={12} md={6}>
                                                     <FormControl fullWidth>
                                                         <InputLabel>Branch</InputLabel>
@@ -629,6 +472,8 @@ const index = () => {
                                                         </Select>
                                                     </FormControl>
                                                 </Grid>
+                                                </>
+                                                }
 
                                                 <Grid item xs={12} md={6}>
                                                     <LoadingButton loading={locationLoading} variant='contained' onClick={locationSubmit}>
@@ -721,7 +566,9 @@ const index = () => {
                                                         </Select>
                                                     </FormControl>
                                                 </Grid>
-
+                                                
+                                                {user.user.role !== 'Admin Department' &&
+                                                <>
                                                 {/* Department option */}
                                                 <Grid item xs={12} md={6}>
                                                     <FormControl fullWidth>
@@ -767,8 +614,8 @@ const index = () => {
                                                             labelId="demo-multiple-checkbox-label"
                                                             id="demo-multiple-checkbox"
                                                             multiple
-                                                            name='sub_location_id'
-                                                            value={departmentParams.sub_location_id}
+                                                            name='location_id'
+                                                            value={departmentParams.location_id}
                                                             onChange={departmentChange}
                                                             input={<OutlinedInput label="Branch" />}
                                                             renderValue={(selected) => {
@@ -786,7 +633,7 @@ const index = () => {
                                                                 return (
                                                                 <MenuItem key={v.id} value={v.id}>
                                                                     <Checkbox 
-                                                                        checked={departmentParams.sub_location_id.indexOf(v.id) > -1} 
+                                                                        checked={departmentParams.location_id.indexOf(v.id) > -1} 
                                                                     />
                                                                     <ListItemText primary={v.location} />
                                                                 </MenuItem>
@@ -795,8 +642,8 @@ const index = () => {
                                                         </Select>
                                                     </FormControl>
                                                 </Grid>
-
-                                                
+                                                </>
+                                                }
 
                                                 
 
@@ -861,7 +708,6 @@ const index = () => {
                                                             "& th:last-of-type": { borderRadius: "0 0.5em 0.5em 0" },
                                                         }}>
                                                             <TableCell>Location</TableCell>
-                                                            <TableCell>Device</TableCell>
                                                             <TableCell>OS</TableCell>
                                                             <TableCell>OS Count</TableCell>
                                                         </TableRow>
@@ -872,7 +718,6 @@ const index = () => {
                                                                 <>
                                                                     <TableRow key={v.id}>
                                                                         <TableCell rowSpan={v.os.length}>{v.location}</TableCell>
-                                                                        <TableCell rowSpan={v.os.length}>dummy</TableCell>
                                                                         <TableCell>{v.os[0].sub_type}</TableCell>
                                                                         <TableCell>{v.os[0].os_count}</TableCell>
                                                                     </TableRow>
@@ -916,7 +761,7 @@ const index = () => {
                                 <Grid item xs={12} md={6}>
                                     <Card sx={{ height: '100%' }}>
                                         <CardContent>
-                                            <Typography variant="p" sx={{ fontWeight: 'bold' }}>Asset IT Per Operating System By Location</Typography>
+                                            <Typography variant="p" sx={{ fontWeight: 'bold' }}>Asset IT Per Operating System By Department</Typography>
                                             <TableContainer sx={{ mt: 2 }}>
                                                 <Table >
                                                     <TableHead>
@@ -925,7 +770,6 @@ const index = () => {
                                                             "& th:last-of-type": { borderRadius: "0 0.5em 0.5em 0" },
                                                         }}>
                                                             <TableCell>Department</TableCell>
-                                                            <TableCell>Device</TableCell>
                                                             <TableCell>OS</TableCell>
                                                             <TableCell>OS Count</TableCell>
                                                         </TableRow>
@@ -936,7 +780,6 @@ const index = () => {
                                                                 <>
                                                                     <TableRow key={v.id}>
                                                                         <TableCell rowSpan={v.os.length}>{v.department}</TableCell>
-                                                                        <TableCell rowSpan={v.os.length}>dummy</TableCell>
                                                                         <TableCell>{v.os[0].sub_type}</TableCell>
                                                                         <TableCell>{v.os[0].os_count}</TableCell>
                                                                     </TableRow>

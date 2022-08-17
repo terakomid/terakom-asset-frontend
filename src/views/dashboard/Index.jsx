@@ -55,6 +55,8 @@ import { Pie } from 'react-chartjs-2';
 import { Bar } from 'react-chartjs-2';
 import Loading from '../../component/Loading';
 import { LoadingButton } from '@mui/lab';
+import { useRecoilValue } from 'recoil';
+import { authentication } from '../../store/Authentication';
 
 ChartJS.register(
     CategoryScale,
@@ -65,170 +67,6 @@ ChartJS.register(
     Tooltip,
     Legend
   );
-
-const ModalFilter = (props) => {
-    const [roleOptions, setRoleOptions] = useState([])
-    const [departmentOptions, setDepartmentOptions] = useState([])
-    const [filter, setFilter] = useState({
-        role: '',
-        department_id: ''
-    })
-    const [isComplete, setIsComplete] = useState(false)
-
-    const getDepartment = async() => {
-            const res = await http.get(`dept`)
-            setDepartmentOptions([...res.data.data])
-            return 1
-        }
-
-        const getRole = async() => {
-            const res = await http.get(`role`)
-            setRoleOptions([...res.data.data])
-            return 1
-        }
-
-    useEffect(() => {
-            let mounted = true
-            if(mounted && props.open){
-                Promise.all([getDepartment(), getRole()]).then(res => {
-                    setIsComplete(true)
-                    
-                })
-            }
-
-
-            return () => mounted = false
-        }, [props.open])
-
-    return (
-        <Dialog
-            fullWidth
-            maxWidth="xs"
-            open={props.open}
-            onClose={props.handleClose}
-            aria-labelledby="alert-dialog-title"
-            aria-describedby="alert-dialog-description"
-        >
-            <DialogTitle>Filter</DialogTitle>
-            <DialogContent>
-                <DialogContentText>Filter</DialogContentText>
-                {isComplete &&
-                <Grid container>
-                <Grid item xs={12} md={6}>
-                    <TextField 
-                        select
-                        multiple
-                        size="small"
-                        name="role"
-                        label="role"
-                        value={filter.role}
-                        fullWidth
-                    >
-                        {roleOptions.length > 0 && roleOptions.map(v => (
-                            <MenuItem key={v.id} value={v.name}>{v.name}</MenuItem>
-                        ))}
-                        {roleOptions.length == 0 && 
-                            <MenuItem disabled>Kosong</MenuItem>
-                        }
-                    </TextField>
-                </Grid>
-
-                </Grid>
-                }
-            </DialogContent>
-            <DialogActions>
-                <Button variant="text" onClick={props.handleClose}>
-                Cancel
-                </Button>
-                <Button variant="text" color="error" onClick={() => console.log('filter')} autoFocus>
-                Delete
-                </Button>
-            </DialogActions>
-        </Dialog>
-    )
-}
-
-const ModalTable = (props) => {
-    const [roleOptions, setRoleOptions] = useState([])
-    const [departmentOptions, setDepartmentOptions] = useState([])
-    const [filter, setFilter] = useState({
-        role: '',
-        department_id: ''
-    })
-    const [isComplete, setIsComplete] = useState(false)
-
-    const getDepartment = async() => {
-            const res = await http.get(`dept`)
-            setDepartmentOptions([...res.data.data])
-            return 1
-        }
-
-        const getRole = async() => {
-            const res = await http.get(`role`)
-            setRoleOptions([...res.data.data])
-            return 1
-        }
-
-    useEffect(() => {
-            let mounted = true
-            if(mounted && props.open){
-                Promise.all([getDepartment(), getRole()]).then(res => {
-                    setIsComplete(true)
-                    
-                })
-            }
-
-
-            return () => mounted = false
-        }, [props.open])
-
-    return (
-        <Dialog
-            fullWidth
-            maxWidth="xs"
-            open={props.open}
-            onClose={props.handleClose}
-            aria-labelledby="alert-dialog-title"
-            aria-describedby="alert-dialog-description"
-        >
-            <DialogTitle>Filter</DialogTitle>
-            <DialogContent>
-                <DialogContentText>Filter</DialogContentText>
-                {isComplete &&
-                <Grid container>
-                <Grid item xs={12} md={6}>
-                    <TextField 
-                        select
-                        multiple
-                        size="small"
-                        name="role"
-                        label="role"
-                        value={filter.role}
-                        fullWidth
-                    >
-                        {roleOptions.length > 0 && roleOptions.map(v => (
-                            <MenuItem key={v.id} value={v.name}>{v.name}</MenuItem>
-                        ))}
-                        {roleOptions.length == 0 && 
-                            <MenuItem disabled>Kosong</MenuItem>
-                        }
-                    </TextField>
-                </Grid>
-
-                </Grid>
-                }
-            </DialogContent>
-            <DialogActions>
-                <Button variant="text" onClick={props.handleClose}>
-                Cancel
-                </Button>
-                <Button variant="text" color="error" onClick={() => console.log('filter')} autoFocus>
-                Delete
-                </Button>
-            </DialogActions>
-        </Dialog>
-    )
-}
 
 export const optionsBarByCategory = {
     responsive: true,
@@ -364,6 +202,7 @@ export const optionsPie = {
 const index = () => {
     const navigate = useNavigate()
     const [isComplete, setIsComplete] = useState(false)
+    const user = useRecoilValue(authentication)
 
     const [data, setData] = useState([])
     const [dataByLoc, setDataByLoc] = useState({})
@@ -398,7 +237,7 @@ const index = () => {
     const getData = async () => {
         const res = await http.get(`statistic/asset`, {
             params: {
-                location_id: params.location_id
+                location_id: user.user.role !== 'Admin Department' ? params.location_id : user.user.dept.id
             }
         })
         setData(res.data.data)
@@ -475,6 +314,8 @@ const index = () => {
                     <div className="row">
                         <div className="col-xl-12 col-12 mt-3">
                            <Grid container spacing={2}>
+                                {user.user.role !== 'Admin Department' && 
+                                <>
                                 <Grid item xs={12} md={12}>
                                     <Card>
                                         <CardContent>
@@ -540,7 +381,9 @@ const index = () => {
                                     </Card>
                                 </Grid>
                                 }
-
+                                </>
+                                
+                                }
                                 <Grid item xs={12} md={12}>
                                     <Card sx={{ height: '100%' }}>
                                         <CardContent>
