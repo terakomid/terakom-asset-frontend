@@ -4,11 +4,8 @@ import {
    Box,
    Card,
    CardContent,
-   Checkbox,
    Collapse,
    FormControl,
-   FormControlLabel,
-   FormGroup,
    IconButton,
    InputAdornment,
    InputLabel,
@@ -19,29 +16,27 @@ import {
 } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { LoadingButton } from "@mui/lab";
-
 import { useRecoilState } from "recoil";
 import { Link as RouterLink } from "react-router-dom";
-
 import { authentication } from "../../store/Authentication";
 import http from "../../component/api/Api";
 
 export default function Login() {
    const [auth, setAuth] = useRecoilState(authentication);
-   const [error, setError] = React.useState();
-   const [alert, setAlert] = React.useState(false);
+   const [error, setError] = useState();
+   const [alert, setAlert] = useState(false);
    const [loading, setLoading] = useState(false);
    const [data, setData] = useState({
       email: "",
       password: "",
    });
-   const onChange = (e) => {
+   const handleChange = (e) => {
       setData({
          ...data,
          [e.target.name]: e.target.value,
       });
    };
-   const onSubmit = (e) => {
+   const handleSubmit = (e) => {
       e.preventDefault();
       setAlert(false);
       setLoading(true);
@@ -59,18 +54,18 @@ export default function Login() {
                user: value.user,
             });
          })
-         .catch((err) => {
-            // console.log(err.response);
-            let responseError = err.response.data.data;
-            if (responseError.message === "Unauthorized") {
+         .catch((xhr) => {
+            // console.log(xhr.response);
+            let err = xhr.response.data.data;
+            if (err.message === "Unauthorized") {
                setAlert(true);
                setLoading(false);
-               setError("Invalid email or password.");
+               setError("Invalid email address or password.");
             }
          });
    };
 
-   const [values, setValues] = React.useState({
+   const [values, setValues] = useState({
       showPassword: false,
    });
    const handleClickShowPassword = () => {
@@ -85,23 +80,23 @@ export default function Login() {
    return (
       <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100%" }}>
          <Card sx={{ width: "400px" }}>
-            <CardContent sx={{ textAlign: "center" }}>
+            <CardContent sx={{ textAlign: "center", mt: 5 }}>
                <img alt="Logo" src="/assets/images/logo.webp" />
                <Typography variant="h6" my={5} fontWeight="bold" color="text.primary">
                   Asset Management System
                </Typography>
-               <Box component="form" onSubmit={onSubmit} px={2} mb={1}>
+               <Box component="form" onSubmit={handleSubmit} px={2} mb={1}>
                   <Collapse in={alert} sx={{ mt: 1 }}>
                      <Alert severity="error">{error}</Alert>
                   </Collapse>
-                  <TextField name="email" type="email" label="Email" margin="normal" onChange={onChange} fullWidth required autoFocus />
+                  <TextField name="email" type="email" label="Email Address" margin="normal" onChange={handleChange} fullWidth required autoFocus />
                   <FormControl margin="normal" variant="outlined" fullWidth>
                      <InputLabel>Password *</InputLabel>
                      <OutlinedInput
                         name="password"
                         label="Password"
                         type={values.showPassword ? "text" : "password"}
-                        onChange={onChange}
+                        onChange={handleChange}
                         inputProps={{ minLength: 8, maxLength: 32 }}
                         endAdornment={
                            <InputAdornment position="end">
@@ -115,7 +110,7 @@ export default function Login() {
                      />
                   </FormControl>
                   <Box sx={{ display: "flex", justifyContent: "flex-end", alignItems: "center", mt: 1 }}>
-                     <Link component={RouterLink} to="/forgot-password">
+                     <Link component={RouterLink} to="/reset-password">
                         <Typography variant="body2">Forgot password?</Typography>
                      </Link>
                   </Box>

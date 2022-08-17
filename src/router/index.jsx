@@ -7,7 +7,8 @@ import Layout from "../component/Layout";
 
 // Auth
 import Login from "../views/auth/login";
-import ForgotPassword from "../views/auth/forgot-password";
+import ResetPassword from "../views/auth/reset-password";
+import NewPassword from "../views/auth/new-password";
 
 //Header
 import Profil from "../views/headers/profil/Form";
@@ -68,7 +69,7 @@ import QrTagging from "../views/qr-tagging";
 import DisposalAsset from "../views/disposal-asset";
 import AddDisposalAsset from "../views/disposal-asset/Add";
 import EditDisposalAsset from "../views/disposal-asset/Edit";
-import HistoryDisposal from "../views/disposal-asset/history-disposal"
+import HistoryDisposal from "../views/disposal-asset/history-disposal";
 
 // Activity Log
 import ActivityLog from "../views/activity-log";
@@ -92,10 +93,18 @@ export default function Router() {
                }
             />
             <Route
-               path="/forgot-password"
+               path="/reset-password"
                element={
                   <Middleware.Before>
-                     <Auth render={<ForgotPassword />} />
+                     <Auth render={<ResetPassword />} />
+                  </Middleware.Before>
+               }
+            />
+            <Route
+               path="/reset-password/:token"
+               element={
+                  <Middleware.Before>
+                     <Auth render={<NewPassword />} />
                   </Middleware.Before>
                }
             />
