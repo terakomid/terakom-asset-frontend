@@ -163,6 +163,7 @@ const ModalResetPassword = (props) => {
             password: '',
             password_confirmation: ''
          })
+         setErrors({})
       })
       .catch(err => {
          if(err.response){
@@ -211,7 +212,7 @@ const ModalResetPassword = (props) => {
                            endAdornment={
                               <InputAdornment position="end">
                                     <IconButton aria-label="toggle password visibility" onClick={onShowNew}>
-                                       {showNew === "text" ? <VisibilityOff /> : <Visibility />}
+                                       {showNew === "text" ? <Visibility /> : <VisibilityOff />}
                                     </IconButton>
                               </InputAdornment>
                            }
@@ -241,7 +242,7 @@ const ModalResetPassword = (props) => {
                            endAdornment={
                               <InputAdornment position="end">
                                     <IconButton aria-label="toggle password_confirmation visibility" onClick={onShowCon}>
-                                       {showCon === "text" ? <VisibilityOff /> : <Visibility />}
+                                       {showCon === "text" ? <Visibility /> : <VisibilityOff />}
                                     </IconButton>
                               </InputAdornment>
                            }

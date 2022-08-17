@@ -115,6 +115,7 @@ const Form = (props) => {
             })
         })
         .catch(err => {
+            console.log(err.response)
             if(err.response){
                 setErrors(err.response.data.errors)
             }
