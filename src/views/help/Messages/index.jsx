@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Avatar, Card, CardContent, CardHeader, Grid, IconButton, Stack, Typography, Box, TextField, InputAdornment, Input, OutlinedInput, FormControl, InputBase, Rating } from '@mui/material'
-import { AttachFile, Download, InsertDriveFile, MoreVert, Send, SendTimeExtensionRounded, Summarize } from '@mui/icons-material';
+import { AttachFile, CloseOutlined, Download, InsertDriveFile, MoreVert, Send, SendTimeExtensionRounded, Summarize } from '@mui/icons-material';
 import moment from 'moment';
 import http from '../../../component/api/Api'
 import { LoadingButton } from '@mui/lab';
@@ -65,7 +65,7 @@ const Index = (props) => {
         e.preventDefault()
         const formData = new FormData()
         formData.append('help_id', props.data.id)
-        formData.append('message', message)
+        if(message !== '') formData.append('message', message)
         if(document.file !== '') formData.append('attachment', document.file)
         http.post(`/help_message`, formData)
             .then(res => {
@@ -181,10 +181,7 @@ const Index = (props) => {
                                             <Grid item xs={12} md={12}>
                                                 <Typography>Rating</Typography>
                                                 <Rating 
-                                                    value={rating}
-                                                    onChange={(event, newValue) => {
-                                                        setRating(newValue);
-                                                    }}
+                                                    value={props.data.rating}
                                                     readOnly
                                                 />
                                             </Grid>
@@ -204,8 +201,8 @@ const Index = (props) => {
                                         />
                                         <CardContent sx={{ backgroundColor: '#f3f3f3',  }}>
                                         {isComplete &&
-                                        <Stack sx={{ position: 'relative' }} height={"500px"}>
-                                            <Box sx={{ height: '500px' }}>
+                                        <Stack sx={{ position: 'relative' }} minHeight={"500px"}>
+                                            <Box sx={{ minHeight: '500px' }}>
                                             {data.length > 0 && data.map((v, i) => {
                                                 if(auth.user.id === v.from.id){
                                                     return (
@@ -220,9 +217,9 @@ const Index = (props) => {
 
                                             </Box>
                                             
-                                            {document.file !== '' && 
-                                            <Box sx={{ width: '30%',  mt: 3, backgroundColor: '#fff', px: 3, py: 1, borderRadius: 32, position: 'sticky', bottom: 25}}>
-                                                <FormControl variant="standard" fullWidth>
+                                            <Box component="form" sx={{ width: '100%', mt: 3, px: 3, py: 1, position: 'sticky', bottom: 25 }} onSubmit={onSubmit}>
+                                                {document.file !== "" && 
+                                                <FormControl sx={{ borderRadius: 25, backgroundColor: '#fff', pl: 1, p:1, mb: 1, width: '30%' }} variant="standard" fullWidth>
                                                     <InputBase
                                                         value={document.file_url}
                                                         fullWidth
@@ -230,24 +227,38 @@ const Index = (props) => {
                                                         disabled
                                                         startAdornment={
                                                             <>
+                                                                <InputAdornment position="start">
+                                                                    <IconButton
+                                                                        aria-label="toggle password visibility"
+                                                                        component="label"
+                                                                    >   
+                                                                    
+                                                                        <Summarize />
+                                                                    </IconButton>
+                                                                </InputAdornment>
+                                                            </>
+                                                        }
+                                                        endAdornment ={
                                                             <InputAdornment position="start">
                                                                 <IconButton
                                                                     aria-label="toggle password visibility"
                                                                     component="label"
+                                                                    onClick={() => setDocument({
+                                                                        file: '',
+                                                                        file_url: ""
+                                                                    })}
                                                                 >   
-                                                                   
-                                                                    <Summarize />
+                                                                
+                                                                    <CloseOutlined />
                                                                 </IconButton>
                                                             </InputAdornment>
-                                                            </>
                                                         }
                                                     />
                                                 </FormControl>
-                                            </Box>
-                                            }
-                                            <Box component="form" sx={{ width: '100%', mt: 3, backgroundColor: '#fff', px: 3, py: 1, borderRadius: 25, position: 'sticky', bottom: 25 }} onSubmit={onSubmit}>
-                                                <FormControl variant="standard" fullWidth>
+                                                }
+                                                <FormControl sx={{ borderRadius: 25, backgroundColor: '#fff', p:1 }} variant="standard" fullWidth>
                                                     <InputBase
+                                                        sx={{ pl: 1, }}
                                                         value={message}
                                                         disabled={props.data.status !== 'open' ? true : false}
                                                         fullWidth

@@ -31,6 +31,9 @@ import {
    OutlinedInput,
    FormHelperText,
    Box,
+   Select,
+   ListItemText,
+   Checkbox,
 } from "@mui/material";
 import { Add, CloseRounded, Delete, Edit, FileDownload, FileUpload, FilterListRounded, MoreVert, RestartAlt, Search, Visibility, VisibilityOff } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
@@ -43,6 +46,9 @@ import { useRecoilValue } from "recoil";
 import { authentication } from "../../../store/Authentication";
 import { Permission } from "../../../component/Permission";
 import { LoadingButton } from "@mui/lab";
+import { exportTableToExcel } from "../../../help/ExportToExcel";
+import { ImportModal } from "../../../component/ImportModal";
+import { useSnackbar } from 'notistack'
 
 const ModalFilter = (props) => {
    const [roleOptions, setRoleOptions] = useState([]);
@@ -51,6 +57,11 @@ const ModalFilter = (props) => {
       role: "",
       department_id: "",
    });
+   const [data, setData] = useState({
+      department_id: [],
+      employee_id: [],
+      role_id: [],
+   })
    const [isComplete, setIsComplete] = useState(false);
 
    const getDepartment = async () => {
@@ -62,8 +73,19 @@ const ModalFilter = (props) => {
    const getRole = async () => {
       const res = await http.get(`role`);
       setRoleOptions([...res.data.data]);
+      console.log(res.data)
       return 1;
    };
+
+   const handleChange = (e) => {
+      const {
+         target: { value },
+     } = e;
+     setData({
+         ...data,
+        [e.target.name]: typeof value === 'string' ? value.split(',') : value,
+     });
+   }
 
    useEffect(() => {
       let mounted = true;
@@ -79,7 +101,7 @@ const ModalFilter = (props) => {
    return (
       <Dialog
          fullWidth
-         maxWidth="xs"
+         maxWidth="md"
          open={props.open}
          onClose={props.handleClose}
          aria-labelledby="alert-dialog-title"
@@ -87,19 +109,77 @@ const ModalFilter = (props) => {
       >
          <DialogTitle>Filter</DialogTitle>
          <DialogContent>
-            <DialogContentText>Filter</DialogContentText>
             {isComplete && (
-               <Grid container>
+               <Grid container mt={3} spacing={2}>
                   <Grid item xs={12} md={6}>
-                     <TextField select multiple size="small" name="role" label="role" value={filter.role} fullWidth>
-                        {roleOptions.length > 0 &&
-                           roleOptions.map((v) => (
-                              <MenuItem key={v.id} value={v.name}>
-                                 {v.name}
-                              </MenuItem>
-                           ))}
-                        {roleOptions.length == 0 && <MenuItem disabled>Kosong</MenuItem>}
-                     </TextField>
+                     <FormControl fullWidth>
+                        <InputLabel>Department</InputLabel>
+                        <Select
+                           labelId="demo-multiple-checkbox-label"
+                           id="demo-multiple-checkbox"
+                           multiple
+                           name='department_id'
+                           value={data.department_id}
+                           onChange={handleChange}
+                           input={<OutlinedInput label="Department" />}
+                           renderValue={(selected) => {
+                                 return departmentOptions.filter(v => selected.includes(v.id)).map(v => {
+                                    return (
+                                       <Chip 
+                                             label={v.dept} 
+                                             onDelete={() => 's'}
+                                       />
+                                    )
+                                 })
+                           }}
+                        >
+                           {departmentOptions.length > 0 && departmentOptions.map((v, i) => {
+                                 return (
+                                 <MenuItem key={v.id} value={v.id}>
+                                    <Checkbox 
+                                       checked={data.department_id.indexOf(v.id) > -1} 
+                                    />
+                                    <ListItemText primary={v.dept} />
+                                 </MenuItem>
+                                 )
+                           })}
+                        </Select>
+                     </FormControl>
+                  </Grid>
+                  <Grid item xs={12} md={6}>
+                     <FormControl fullWidth>
+                        <InputLabel>Role</InputLabel>
+                        <Select
+                           labelId="demo-multiple-checkbox-label"
+                           id="demo-multiple-checkbox"
+                           multiple
+                           name='role_id'
+                           value={data.role_id}
+                           onChange={handleChange}
+                           input={<OutlinedInput label="Role" />}
+                           renderValue={(selected) => {
+                                 return roleOptions.filter(v => selected.includes(v.id)).map(v => {
+                                    return (
+                                       <Chip 
+                                             label={v.name} 
+                                             onDelete={() => 's'}
+                                       />
+                                    )
+                                 })
+                           }}
+                        >
+                           {roleOptions.length > 0 && roleOptions.map((v, i) => {
+                                 return (
+                                 <MenuItem key={v.id} value={v.id}>
+                                    <Checkbox 
+                                       checked={data.role_id.indexOf(v.id) > -1} 
+                                    />
+                                    <ListItemText primary={v.name} />
+                                 </MenuItem>
+                                 )
+                           })}
+                        </Select>
+                     </FormControl>
                   </Grid>
                </Grid>
             )}
@@ -108,8 +188,8 @@ const ModalFilter = (props) => {
             <Button variant="text" onClick={props.handleClose}>
                Cancel
             </Button>
-            <Button variant="text" color="error" onClick={() => console.log("filter")} autoFocus>
-               Delete
+            <Button variant="text" color="primary" onClick={() => console.log("filter")} autoFocus>
+               Filter
             </Button>
          </DialogActions>
       </Dialog>
@@ -273,10 +353,45 @@ const ModalResetPassword = (props) => {
    );
 };
 
+const TableExport = (props) => {
+   return (
+      <table border={1} id="table-export" style={{ display: 'none' }}>
+         <thead>
+            <tr>
+               <td>Name</td>
+               <td>Code</td>
+               <td>Phone Number</td>
+               <td>Department</td>
+               <td>Role</td>
+               <td>Status</td>
+            </tr>
+         </thead>
+         <tbody>
+            {props.data &&
+               props.data.length > 0 && props.data.map(v => {
+                  return (
+                     <tr key={v.id}>
+                        <td>{v.name}</td>
+                        <td>{v.code}</td>
+                        <td>{v.phone_number}</td>
+                        <td>{v.dept.dept}</td>
+                        <td>{v.role}</td>
+                        <td>{v.status === 1 ? "Active" : "Not Active"}</td>
+                     </tr>
+                  )
+               })
+            }
+         </tbody>
+      </table>
+   )
+}
+
 const Index = () => {
    const { user } = useRecoilValue(authentication);
 
+   const { enqueueSnackbar } = useSnackbar()
    const navigate = useNavigate();
+   const [allData, setAllData] = useState([])
    const [rows, setRows] = useState();
    const [data, setData] = useState({
       code: "",
@@ -285,44 +400,62 @@ const Index = () => {
    const [params, setParams] = useState({
       search: "",
       department_id: "",
+      page: 1,
       role: "",
       limit: 5,
-      paginate: 0,
+      paginate: 1,
    });
    const [loading, setLoading] = useState(false);
 
    const getData = async () => {
+      const res = await http.get(`user`, {
+         params: params,
+      })
+      setRows(res.data.data);
+      return 1
+   };
+
+   const getAllData = async () => {
       http
          .get(`user`, {
-            params: params,
+            params: {
+               ...params,
+               paginate: 0,
+            },
          })
          .then((res) => {
-            //  console.log(res.data.data);
-            setRows(res.data.data.data);
+            setAllData(res.data.data.data)
          })
          .catch((err) => {
             //  console.log(err.response);
          });
-   };
+   }
 
    useEffect(() => {
       setRows(undefined);
       let timer = setTimeout(() => {
-         if (params) getData();
+         if (params) {
+            getAllData()
+            getData()
+         }
       }, 500);
       return () => clearTimeout(timer);
       // eslint-disable-next-line react-hooks/exhaustive-deps
    }, [params]);
 
-   const [page, setPage] = React.useState(0);
-   const [rowsPerPage, setRowsPerPage] = React.useState(5);
    const handleChangePage = (event, newPage) => {
-      setPage(newPage);
+      setParams({
+         ...params,
+         page: newPage + 1,
+      });
    };
 
    const handleChangeRowsPerPage = (event) => {
-      setRowsPerPage(parseInt(event.target.value, 10));
-      setPage(0);
+      setParams({
+         ...params,
+         page: 1,
+         limit: +event.target.value,
+      });
    };
 
    const handleSearch = (e) => {
@@ -357,6 +490,7 @@ const Index = () => {
             getData();
             handleMenu();
             handleModal();
+            enqueueSnackbar("Delete User Successfuly", { variant: 'success' })
          })
          .catch((err) => {
             setLoading(false);
@@ -379,6 +513,15 @@ const Index = () => {
       setAnchorEl(null);
    };
 
+   const handleExport = async () => {
+      exportTableToExcel("#table-export", "User-List")
+   }
+
+   const [openModalImport, setOpenModalImport] = useState(false)
+   const handleModalImport = () => {
+      setOpenModalImport(!openModalImport)
+   }
+
    return (
       <div className="main-content mb-5">
          <div className="page-content">
@@ -386,10 +529,10 @@ const Index = () => {
                <div className="d-flex align-items-center justify-content-between my-2">
                   <h3 className="fw-bold mb-0">User List</h3>
                   <Stack direction="row" spacing={1}>
-                     <Button variant="contained" startIcon={<FileDownload />}>
+                     <Button onClick={handleModalImport} variant="contained" startIcon={<FileDownload />}>
                         Import
                      </Button>
-                     <Button variant="contained" startIcon={<FileUpload />}>
+                     <Button disabled={allData.length === 0 ? true : false} variant="contained" startIcon={<FileUpload />} onClick={handleExport}>
                         Export
                      </Button>
                      {Permission(user.permission, "create user") && (
@@ -430,7 +573,7 @@ const Index = () => {
                                  />
                               </Grid>
                               <Grid item xs={2}>
-                                 <Button variant="link" startIcon={<FilterListRounded />}>
+                                 <Button onClick={handleModalFilter} variant="link" startIcon={<FilterListRounded />}>
                                     Filter
                                  </Button>
                               </Grid>
@@ -458,11 +601,11 @@ const Index = () => {
                                  </TableHead>
                                  <TableBody>
                                     {rows !== undefined ? (
-                                       rows.length > 0 ? (
-                                          rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((value, key) => (
+                                       rows.data.length > 0 ? (
+                                          rows.data.map((value, key) => (
                                              <TableRow key={key}>
                                                 <TableCell component="th" scope="row" align="center">
-                                                   {page * rowsPerPage + key + 1}.
+                                                   {rows.meta.from + key}.
                                                 </TableCell>
                                                 <TableCell>
                                                    <Stack direction="row" width="250px">
@@ -509,15 +652,17 @@ const Index = () => {
                                  </TableBody>
                               </Table>
                            </TableContainer>
-                           {rows !== undefined && rows.length > 0 && (
+                           {rows !== undefined && rows.data.length > 0 && (
                               <TablePagination
-                                 rowsPerPageOptions={[5, 10, 25]}
                                  component="div"
-                                 count={rows.length}
-                                 page={page}
-                                 rowsPerPage={rowsPerPage}
+                                 count={rows.meta.total}
+                                 page={params.page - 1}
+                                 rowsPerPage={params.limit}
                                  onPageChange={handleChangePage}
                                  onRowsPerPageChange={handleChangeRowsPerPage}
+                                 rowsPerPageOptions={[5, 10, 25, 50, 100]}
+                                 showFirstButton
+                                 showLastButton
                               />
                            )}
                         </CardContent>
@@ -570,6 +715,15 @@ const Index = () => {
                            )}
                         </Menu>
                      ) : null}
+
+                     <TableExport data={allData} />
+                     <ImportModal 
+                        buttonTitle={"Import Data User (.xlsx)"} 
+                        handleClose={handleModalImport} 
+                        url={'user/import_excel'} open={openModalImport} 
+                        getData={getData} 
+                     />
+
                   </div>
                </div>
             </div>

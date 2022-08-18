@@ -11,7 +11,11 @@ export const LabelTable = (props) => {
     useEffect(() => {
         let mounted = true 
         if(mounted){
-            setAssetCode(ConvertLabel(props.data))
+            if(props.capitalizedSplit){
+                setAssetCode(ConvertLabel(props.data, props.capitalizedSplit))
+            }else{
+                setAssetCode(ConvertLabel(props.data))
+            }
         }
 
       return () => mounted = false

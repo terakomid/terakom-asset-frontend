@@ -43,6 +43,7 @@ import {
    Search,
    DoneOutline,
    Close,
+   InfoOutlined,
 } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import FileUploadIcon from "@mui/icons-material/FileUpload";
@@ -387,7 +388,7 @@ const Index = () => {
                         >
                            <MenuItem onClick={handleDetail}>
                               <ListItemIcon>
-                                 <Edit />
+                                 <InfoOutlined />
                               </ListItemIcon>
                               Detail
                            </MenuItem>

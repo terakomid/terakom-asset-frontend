@@ -27,8 +27,10 @@ import http from "../../../component/api/Api";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import Loading from "../../../component/Loading";
+import { useSnackbar } from "notistack";
 
 const Form = (props) => {
+   const { enqueueSnackbar } = useSnackbar()
    const navigate = useNavigate();
    const [form, setForm] = useState({
       employ_code: "",
@@ -166,6 +168,7 @@ const Form = (props) => {
             .then((res) => {
                // console.log(res.data)
                navigate("/user-list");
+               enqueueSnackbar("Add User Successfuly", { variant: 'success' })
             })
             .catch((err) => {
                // console.log(err.response)
@@ -183,6 +186,7 @@ const Form = (props) => {
             .post(`user/${props.data.id}`, formData)
             .then((res) => {
                // console.log(res.data)
+               enqueueSnackbar("Edit User Successfuly", { variant: 'success' })
                navigate("/user-list");
             })
             .catch((err) => {

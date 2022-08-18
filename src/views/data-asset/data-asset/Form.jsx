@@ -54,29 +54,40 @@ import QRCode from "react-qr-code";
 import { NumberFormat } from "../../../component/Format";
 import { ConvertLabel } from "../../../help/LabelHelp";
 import { LabelTable } from "../../../component/LabelTable";
+import { useSnackbar } from "notistack";
 
 const DetailModal = (props) => {
    const navigate = useNavigate();
+   const { enqueueSnackbar } = useSnackbar()
+   const handleClose = () => {
+      if(props.title === "add"){
+         enqueueSnackbar("Add Asset Successfuly", { variant: 'success' })
+      }else{
+         enqueueSnackbar("Edit Asset Successfuly", { variant: 'success' })
+      }
+      navigate("/data-asset")
+   }
 
    return (
       <Dialog
          fullWidth
          maxWidth="xs"
          open={props.open}
-         onClose={() => navigate("/data-asset")}
+         onClose={handleClose}
          aria-labelledby="alert-dialog-title"
          aria-describedby="alert-dialog-description"
       >
-         <DialogTitle>Detail</DialogTitle>
+         <DialogTitle>QR Asset</DialogTitle>
          <DialogContent>
-            <DialogContentText>QR Asset</DialogContentText>
-            <LabelTable data={props.data} />
-            <Button sx={{ mt: 2 }} variant="contained" disabled>
-               Print
-            </Button>
+            <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
+               <LabelTable data={props.data} capitalizedSplit={'/'} />
+               <Button sx={{ mt: 2 }} variant="contained">
+                  Print
+               </Button>
+            </Box>
          </DialogContent>
          <DialogActions>
-            <Button variant="success" onClick={() => navigate("/data-asset")}>
+            <Button variant="success" onClick={handleClose}>
                Close
             </Button>
          </DialogActions>
@@ -255,13 +266,7 @@ const TabPanel = (props) => {
                            ) : (
                               <TableRow>
                                  <TableCell component="th" scope="row" sx={{ textAlign: "center", py: 10 }} colSpan={100}>
-                                    No result found
-                                    {params.search !== "" && (
-                                       <div style={{ display: "inline-block" }}>
-                                          &nbsp;for "<b>{params.search}</b>"
-                                       </div>
-                                    )}
-                                    .
+                                    No result found.
                                  </TableCell>
                               </TableRow>
                            )
@@ -329,13 +334,7 @@ const TabPanel = (props) => {
                            ) : (
                               <TableRow>
                                  <TableCell component="th" scope="row" sx={{ textAlign: "center", py: 10 }} colSpan={100}>
-                                    No result found
-                                    {params.search !== "" && (
-                                       <div style={{ display: "inline-block" }}>
-                                          &nbsp;for "<b>{params.search}</b>"
-                                       </div>
-                                    )}
-                                    .
+                                    No result found.
                                  </TableCell>
                               </TableRow>
                            )
@@ -411,13 +410,7 @@ const TabPanel = (props) => {
                            ) : (
                               <TableRow>
                                  <TableCell component="th" scope="row" sx={{ textAlign: "center", py: 10 }} colSpan={100}>
-                                    No result found
-                                    {params.search !== "" && (
-                                       <div style={{ display: "inline-block" }}>
-                                          &nbsp;for "<b>{params.search}</b>"
-                                       </div>
-                                    )}
-                                    .
+                                    No result found.
                                  </TableCell>
                               </TableRow>
                            )
@@ -487,13 +480,7 @@ const TabPanel = (props) => {
                            ) : (
                               <TableRow>
                                  <TableCell component="th" scope="row" sx={{ textAlign: "center", py: 10 }} colSpan={10}>
-                                    No result found
-                                    {params.search !== "" && (
-                                       <div style={{ display: "inline-block" }}>
-                                          &nbsp;for "<b>{params.search}</b>"
-                                       </div>
-                                    )}
-                                    .
+                                    No result found.
                                  </TableCell>
                               </TableRow>
                            )
@@ -675,6 +662,7 @@ const Form = (props) => {
 
    // utils
    const navigate = useNavigate();
+   const { enqueueSnackbar } = useSnackbar()
    const [isComplete, setIsComplete] = useState(false);
    const [loading, setLoading] = useState(false);
    const [errors, setErrors] = useState({});
@@ -871,6 +859,13 @@ const Form = (props) => {
          });
       }
    };
+   
+   const handleChangeForBlurField = (e) => {
+      setForm({
+         ...form,
+         [e.target.name]: e.target.value
+      })
+   }
 
    const handleModal = () => {
       setOpen(true);
@@ -939,6 +934,7 @@ const Form = (props) => {
          handleDetailModal();
       } catch (err) {
          setLoading(false);
+         handleClose()
          if (err.response) {
             setErrors(err.response.data.errors);
          }
@@ -953,6 +949,7 @@ const Form = (props) => {
          handleDetailModal();
       } catch (err) {
          setLoading(false);
+         handleClose()
          if (err.response) {
             setErrors(err.response.data.errors);
          }
@@ -979,19 +976,19 @@ const Form = (props) => {
       formData.append("department_id", form.department_id);
       formData.append("location_id", form.location_id);
       formData.append("condition_id", form.condition_id);
-      formData.append("latitude", form.latitude);
-      formData.append("longitude", form.longitude);
+      form.latitude !== "" && formData.append("latitude", form.latitude);
+      form.longitude !== "" && formData.append("longitude", form.longitude);
 
       //depreciation asset
       formData.append("cost_id", form.cost_id);
-      formData.append("acquisition_value", form.acquisition_value);
+      formData.append("acquisition_value", form.acquisition_value.replaceAll('Rp', '').replaceAll('.', ''));
       // formData.append('depreciation_value', form.depreciation_value)
       // formData.append('value_book', form.value_book)
       formData.append("depreciation", form.depreciation);
 
       //Vendor information
       formData.append("vendor_id", form.vendor_id);
-      if (form.notes !== "") formData.append("notes", form.notes);
+      form.notes !== "" &&  formData.append("notes", form.notes);
 
       if (props.title === "add") {
          pictures.map((v, i) => {
@@ -1104,7 +1101,6 @@ const Form = (props) => {
          ]).then((res) => {
             if (props.data) {
                const data = props.data;
-
                //otomatic value
                setAutomatic(data);
 
@@ -1131,12 +1127,12 @@ const Form = (props) => {
                         department_id: data.department.id,
                         location_id: data.location.id,
                         condition_id: data.condition.id,
-                        latitude: data.latitude,
-                        longitude: data.longitude,
+                        latitude: data.latitude === null ? "" : data.latitude,
+                        longitude: data.longitude === null ? "" : data.longitude,
 
                         // depreciation asset
                         cost_id: data.cost.id,
-                        acquisition_value: data.acquisition_value,
+                        acquisition_value: NumberFormat(data.acquisition_value),
                         depreciation_value: data.depreciation_value,
                         value_book: data.value_book,
                         depreciation: data.depreciation,
@@ -1169,7 +1165,7 @@ const Form = (props) => {
                         antivirus_id: data.antivirus === null ? "" : data.antivirus.id,
 
                         // information support
-                        notes: data.notes,
+                        notes: data.notes === null ? "" : data.notes,
                      });
                   } else {
                      setForm({
@@ -1189,12 +1185,12 @@ const Form = (props) => {
                         department_id: data.department.id,
                         location_id: data.location.id,
                         condition_id: data.condition.id,
-                        latitude: data.latitude,
-                        longitude: data.longitude,
+                        latitude: data.latitude === null ? "" : data.latitude,
+                        longitude: data.longitude === null ? "" : data.longitude,
 
                         // depreciation asset
                         cost_id: data.cost.id,
-                        acquisition_value: data.acquisition_value,
+                        acquisition_value: NumberFormat(data.acquisition_value),
                         depreciation_value: data.depreciation_value,
                         value_book: data.value_book,
                         depreciation: data.depreciation,
@@ -1203,7 +1199,7 @@ const Form = (props) => {
                         vendor_id: data.vendor.id,
 
                         // information support
-                        notes: data.notes,
+                        notes: data.notes === null ? "" : data.notes,
                      });
                   }
                   setIsComplete(true);
@@ -1233,7 +1229,8 @@ const Form = (props) => {
                               <Grid item md={4} xs={12}>
                                  <TextField
                                     disabled
-                                    onChange={handleChange}
+                                    onBlur={handleChange}
+                                    onChange={handleChangeForBlurField}
                                     value={form.asset_code}
                                     name="asset_code"
                                     fullWidth
@@ -1248,7 +1245,8 @@ const Form = (props) => {
                                     name="category_id"
                                     value={form.category_id}
                                     disabled={props.detail}
-                                    onChange={handleChange}
+                                    onBlur={handleChange}
+                                    onChange={handleChangeForBlurField}
                                     fullWidth
                                     label="Category Code"
                                     select
@@ -1266,7 +1264,8 @@ const Form = (props) => {
                                     name="sub_category_id"
                                     value={form.sub_category_id}
                                     disabled={props.detail}
-                                    onChange={handleChange}
+                                    onBlur={handleChange}
+                                    onChange={handleChangeForBlurField}
                                     fullWidth
                                     label="Sub Category Code"
                                     select
@@ -1292,7 +1291,8 @@ const Form = (props) => {
                               <Grid item md={4} xs={12}>
                                  <TextField
                                     disabled={props.detail}
-                                    onChange={handleChange}
+                                    onBlur={handleChange}
+                                    onChange={handleChangeForBlurField}
                                     value={form.asset_name}
                                     name="asset_name"
                                     fullWidth
@@ -1305,7 +1305,8 @@ const Form = (props) => {
                               <Grid item md={4} xs={12}>
                                  <TextField
                                     disabled={props.detail}
-                                    onChange={handleChange}
+                                    onBlur={handleChange}
+                                    onChange={handleChangeForBlurField}
                                     value={form.specification}
                                     name="specification"
                                     fullWidth
@@ -1351,7 +1352,8 @@ const Form = (props) => {
                               <Grid item md={6} xs={12}>
                                  <TextField
                                     disabled={props.detail}
-                                    onChange={handleChange}
+                                    onBlur={handleChange}
+                                    onChange={handleChangeForBlurField}
                                     value={form.sap_code}
                                     name="sap_code"
                                     fullWidth
@@ -1373,21 +1375,6 @@ const Form = (props) => {
                            <Typography>Asset Holder</Typography>
                            <Grid container mt={2} spacing={2}>
                               <Grid item md={6} xs={12}>
-                                 {/* <TextField
-                                    disabled={props.detail}
-                                    onChange={handleChange}
-                                    value={form.employee_id}
-                                    name="employee_id"
-                                    fullWidth
-                                    label="Employ Name / PIC"
-                                    select
-                                    required
-                                    helperText={typeof errors?.employee_id !== "undefined" ? errors.employee_id[0] : ""}
-                                    error={typeof errors?.employee_id !== "undefined" ? true : false}
-                                 >
-                                    {employees.length > 0 && employees.map((v) => <MenuItem key={v.id} value={v.id}>{`${v.code} - ${v.name}`}</MenuItem>)}
-                                    {employees.length == 0 && <MenuItem disabled>Kosong</MenuItem>}
-                                 </TextField> */}
                                  <Autocomplete
                                     freeSolo
                                     disableClearable
@@ -1435,7 +1422,8 @@ const Form = (props) => {
                                     name="location_id"
                                     fullWidth
                                     disabled
-                                    onChange={handleChange}
+                                    onChange={handleChangeForBlurField}
+                                    onBlur={handleChange}
                                     value={form.location_id}
                                     label="Asset Location"
                                     select
@@ -1451,7 +1439,8 @@ const Form = (props) => {
                               <Grid item md={6} xs={12}>
                                  <TextField
                                     disabled={props.detail}
-                                    onChange={handleChange}
+                                    onBlur={handleChange}
+                                    onChange={handleChangeForBlurField}
                                     value={form.condition_id}
                                     name="condition_id"
                                     fullWidth
@@ -1474,11 +1463,11 @@ const Form = (props) => {
                                  <TextField
                                     value={form.latitude}
                                     disabled={props.detail}
-                                    onChange={handleChange}
+                                    onBlur={handleChange}
+                                    onChange={handleChangeForBlurField}
                                     name="latitude"
                                     fullWidth
                                     label="Asset Coordinate Latitude"
-                                    required
                                     helperText={typeof errors?.latitude !== "undefined" ? errors.latitude[0] : ""}
                                     error={typeof errors?.latitude !== "undefined" ? true : false}
                                  />
@@ -1487,11 +1476,11 @@ const Form = (props) => {
                                  <TextField
                                     value={form.longitude}
                                     disabled={props.detail}
-                                    onChange={handleChange}
+                                    onBlur={handleChange}
+                                    onChange={handleChangeForBlurField}
                                     name="longitude"
                                     fullWidth
                                     label="Asset Coordinate Longitude"
-                                    required
                                     helperText={typeof errors?.longitude !== "undefined" ? errors.longitude[0] : ""}
                                     error={typeof errors?.longitude !== "undefined" ? true : false}
                                  />
@@ -1511,7 +1500,8 @@ const Form = (props) => {
                                  <TextField
                                     value={form.cost_id}
                                     disabled={props.detail}
-                                    onChange={handleChange}
+                                    onBlur={handleChange}
+                                    onChange={handleChangeForBlurField}
                                     name="cost_id"
                                     fullWidth
                                     label="Cost Center Name"
@@ -1526,9 +1516,10 @@ const Form = (props) => {
                               </Grid>
                               <Grid item md={6} xs={12}>
                                  <TextField
-                                    value={form.acquisition_value}
+                                    value={NumberFormat(form.acquisition_value, "Rp")}
                                     disabled={props.detail}
-                                    onChange={handleChange}
+                                    onBlur={handleChange}
+                                    onChange={handleChangeForBlurField}
                                     name="acquisition_value"
                                     fullWidth
                                     label="Acquisition Value"
@@ -2070,7 +2061,7 @@ const Form = (props) => {
                                  onSubmit={onSubmit}
                               />
 
-                              {detailModalData !== undefined && <DetailModal handleClose={handleDetailClose} open={detailModal} data={detailModalData} />}
+                              {detailModalData !== undefined && <DetailModal handleClose={handleDetailClose} title={props.title} open={detailModal} data={detailModalData} />}
                            </CardContent>
                         </Card>
                      </Grid>

@@ -168,7 +168,7 @@ export default function Sidebar() {
                   {/* Disposal Asset */}
                   {Permission(user.permission, "get asset disposal") && (
                      <li role="menuitem">
-                        <Link to="/" onClick={(e) => e.preventDefault()} className="waves-effect">
+                        <Link to="/" onClick={(e) => e.preventDefault()} className="has-arrow waves-effect">
                            <i className="mdi mdi-trash-can"></i>
                            <span className="text-capitalize">disposal asset</span>
                         </Link>

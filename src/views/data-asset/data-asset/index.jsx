@@ -30,88 +30,616 @@ import {
    Checkbox,
    ListItemText,
    FormControl,
-   Chip
+   Chip,
+   Divider,
+   Box,
 } from "@mui/material";
 import { Close, CloseRounded, Edit, FileDownload, FileUploadOutlined, FilterListRounded, InfoOutlined, InsertDriveFile, MoreVert, Search } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
+import { DatePicker } from "@mui/x-date-pickers";
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 
 import http from "../../../component/api/Api";
 import Loading from "../../../component/Loading";
 import ModalDelete from "../../../component/Delete";
 import moment from "moment";
+import { LoadingButton } from '@mui/lab'
 
 import { useRecoilValue } from "recoil";
 import { authentication } from "../../../store/Authentication";
 import { Permission } from "../../../component/Permission";
-import { LoadingButton } from "@mui/lab";
+import { NumberFormat } from "../../../component/Format";
 
 const ModalFilter = (props) => {
-   const [roleOptions, setRoleOptions] = useState([]);
-   const [departmentOptions, setDepartmentOptions] = useState([]);
-   const [filter, setFilter] = useState({
-      role: "",
-      department_id: "",
-   });
-   const [isComplete, setIsComplete] = useState(false);
+   const [loading, setLoading] = useState(false)
+   const [complete, setComplete] = useState(false)
+   const [rows, setRows] = useState({
+      category_id: [],
+      employees_id: [],
+      capitalized_from: null,
+      capitalized_until: null,
+      vendor_id: [],
+      department_id: [],
+      location_id: [],
+      condition_id: [],
+      cost_id: [],
+      useful_id: [],
 
+      device_id: [],
+      brand_id: [],
+      processor_id: [],
+      windows_id: [],
+      office_id: [],
+      antivirus_id: [],
+   }); 
+   const [data, setData] = useState();
+   const getCategory = async () => {
+      const res = await http.get(`category`);
+      return res.data.data;
+   };
+   const getEmployee = async () => {
+      const res = await http.get(`user?paginate=0`);
+      return res.data.data.data;
+   };
+   const getVendor = async () => {
+      const res = await http.get(`vendor`);
+      return res.data.data;
+   };
    const getDepartment = async () => {
       const res = await http.get(`dept`);
-      setDepartmentOptions([...res.data.data]);
-      return 1;
+      return res.data.data;
+   };
+   const getLocation = async () => {
+      const res = await http.get(`location`);
+      return res.data.data;
+   };
+   const getCondition = async () => {
+      const res = await http.get(`condition`);
+      return res.data.data;
+   };
+   const getCost = async () => {
+      const res = await http.get(`cost`);
+      return res.data.data;
+   };
+   const getUseful = async () => {
+      const arr = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20];
+      const res = arr.map((value) => value * 12);
+      return res;
+   };
+   const getMasterit = async () => {
+      const res = await http.get(`master_it?child=1`);
+      return res.data.data;
    };
 
-   const getRole = async () => {
-      const res = await http.get(`role`);
-      setRoleOptions([...res.data.data]);
-      return 1;
+   const handleChange = async (e) => {
+      const {
+         target: { value },
+      } = e;
+      setRows({
+         ...rows,
+         [e.target.name]: typeof value === "string" ? value.split(",") : value,
+      });
+   };
+
+   const handleComplete = () => {
+      setComplete(!complete);
    };
 
    useEffect(() => {
       let mounted = true;
-      if (mounted && props.open) {
-         Promise.all([getDepartment(), getRole()]).then((res) => {
-            setIsComplete(true);
-         });
+      if (mounted) {
+         Promise.all([getCategory(), getEmployee(), getVendor(), getDepartment(), getLocation(), getCondition(), getCost(), getUseful(), getMasterit()]).then(
+            (res) => {
+               handleComplete();
+               setData({
+                  category: res[0],
+                  employee: res[1],
+                  vendor: res[2],
+                  department: res[3],
+                  location: res[4],
+                  condition: res[5],
+                  cost: res[6],
+                  useful: res[7],
+                  device: res[8].filter((value) => value.id === 1),
+                  brand: res[8].filter((value) => value.id === 2),
+                  processor: res[8].filter((value) => value.id === 3),
+                  windows: res[8].filter((value) => value.id === 4),
+                  office: res[8].filter((value) => value.id === 5),
+                  antivirus: res[8].filter((value) => value.id === 6),
+               });
+               // console.clear();
+               // console.log(res[8].filter((value) => value.id === 1));
+            }
+         );
       }
-      return () => (mounted = false);
-   }, [props.open]);
+   }, []);
+
+   const handleSubmit = () =>{
+      props.setParams({
+         ...props.params,
+         ...rows,
+         capitalized_from: rows.capitalized_from === null ? '' : moment(rows.capitalized_from).format('yyyy-MM-DD'),
+         capitalized_until: rows.capitalized_until === null ? '' : moment(rows.capitalized_until).format('yyyy-MM-DD'),
+      })
+      props.handleClose()
+   }
 
    return (
-      <Dialog
-         fullWidth
-         maxWidth="xs"
-         open={props.open}
-         onClose={props.handleClose}
-         aria-labelledby="alert-dialog-title"
-         aria-describedby="alert-dialog-description"
-      >
-         <DialogTitle>Filter</DialogTitle>
-         <DialogContent>
-            <DialogContentText>Filter</DialogContentText>
-            {isComplete && (
-               <Grid container>
+      <Dialog open={props.open} onClose={props.handleClose} maxWidth="md" fullWidth>
+         <DialogTitle>Filter Data Asset</DialogTitle>
+         <Divider />
+         {complete ? (
+            <DialogContent>
+               <Grid container spacing={2}>
                   <Grid item xs={12} md={6}>
-                     <TextField select multiple size="small" name="role" label="role" value={filter.role} fullWidth>
-                        {roleOptions.length > 0 &&
-                           roleOptions.map((v) => (
-                              <MenuItem key={v.id} value={v.name}>
-                                 {v.name}
-                              </MenuItem>
-                           ))}
-                        {roleOptions.length == 0 && <MenuItem disabled>Kosong</MenuItem>}
-                     </TextField>
+                     <FormControl sx={{ mt: 1 }} fullWidth>
+                        <InputLabel>Category</InputLabel>
+                        <Select
+                           multiple
+                           name="category_id"
+                           value={rows.category_id}
+                           onChange={handleChange}
+                           input={<OutlinedInput label="Category" />}
+                           renderValue={(selected) => {
+                              return data.category
+                                 .filter((v) => selected.includes(v.id))
+                                 .map((v, i) => {
+                                    return <Chip key={i} label={v.category} onDelete={() => "cemas"} sx={{ mr: 0.5 }} />;
+                                 });
+                           }}
+                        >
+                           {data.category.length > 0 &&
+                              data.category.map((v, i) => {
+                                 return (
+                                    <MenuItem key={i} value={v.id}>
+                                       <Checkbox checked={rows.category_id.indexOf(v.id) > -1} />
+                                       <ListItemText primary={v.category} />
+                                    </MenuItem>
+                                 );
+                              })}
+                        </Select>
+                     </FormControl>
+                  </Grid>
+                  <Grid item xs={12} md={6}>
+                     <FormControl sx={{ mt: 1 }} fullWidth>
+                        <InputLabel>Employee</InputLabel>
+                        <Select
+                           multiple
+                           name="employees_id"
+                           value={rows.employees_id}
+                           onChange={handleChange}
+                           input={<OutlinedInput label="Employee" />}
+                           renderValue={(selected) => {
+                              return data.employee
+                                 .filter((v) => selected.includes(v.id))
+                                 .map((v, i) => {
+                                    return <Chip key={i} label={v.name} onDelete={() => "cemas"} sx={{ mr: 0.5 }} />;
+                                 });
+                           }}
+                        >
+                           {data.employee.length > 0 &&
+                              data.employee.map((v, i) => {
+                                 return (
+                                    <MenuItem key={i} value={v.id}>
+                                       <Checkbox checked={rows.employees_id.indexOf(v.id) > -1} />
+                                       <ListItemText primary={v.name} />
+                                    </MenuItem>
+                                 );
+                              })}
+                        </Select>
+                     </FormControl>
+                  </Grid>
+                  <Grid item xs={12} md={6}>
+                     <FormControl margin="normal" fullWidth>
+                        <LocalizationProvider dateAdapter={AdapterDateFns}>
+                           <DatePicker
+                              value={rows.capitalized_from}
+                              name="capitalized_from"
+                              label="Capitalized From"
+                              inputFormat="dd/MM/yyyy"
+                              mask="__/__/____"
+                              onChange={(newValue) => {
+                                 setRows({
+                                    ...rows,
+                                    capitalized_from: newValue,
+                                 });
+                              }}
+                              renderInput={(params) => <TextField fullWidth {...params} />}
+                           />
+                        </LocalizationProvider>
+                     </FormControl>
+                  </Grid>
+                  <Grid item xs={12} md={6}>
+                     <FormControl margin="normal" fullWidth>
+                        <LocalizationProvider dateAdapter={AdapterDateFns}>
+                           <DatePicker
+                              minDate={rows.capitalized_from}
+                              value={rows.capitalized_until}
+                              name="capitalized_until"
+                              label="Capitalized Until"
+                              inputFormat="dd/MM/yyyy"
+                              mask="__/__/____"
+                              onChange={(newValue) => {
+                                 setRows({
+                                    ...rows,
+                                    capitalized_until: newValue,
+                                 });
+                              }}
+                              renderInput={(params) => <TextField fullWidth {...params} />}
+                           />
+                        </LocalizationProvider>
+                     </FormControl>
+                  </Grid>
+                  <Grid item xs={12} md={6}>
+                     <FormControl sx={{ mt: 1 }} fullWidth>
+                        <InputLabel>Vendor Name</InputLabel>
+                        <Select
+                           multiple
+                           name="vendor_id"
+                           value={rows.vendor_id}
+                           onChange={handleChange}
+                           input={<OutlinedInput label="Vendor Name" />}
+                           renderValue={(selected) => {
+                              return data.vendor
+                                 .filter((v) => selected.includes(v.id))
+                                 .map((v, i) => {
+                                    return <Chip key={i} label={v.name} onDelete={() => "cemas"} sx={{ mr: 0.5 }} />;
+                                 });
+                           }}
+                        >
+                           {data.vendor.length > 0 &&
+                              data.vendor.map((v, i) => {
+                                 return (
+                                    <MenuItem key={i} value={v.id}>
+                                       <Checkbox checked={rows.vendor_id.indexOf(v.id) > -1} />
+                                       <ListItemText primary={v.name} />
+                                    </MenuItem>
+                                 );
+                              })}
+                        </Select>
+                     </FormControl>
+                  </Grid>
+                  <Grid item xs={12} md={6}>
+                     <FormControl sx={{ mt: 1 }} fullWidth>
+                        <InputLabel>Department Using</InputLabel>
+                        <Select
+                           multiple
+                           name="department_id"
+                           value={rows.department_id}
+                           onChange={handleChange}
+                           input={<OutlinedInput label="Department Using" />}
+                           renderValue={(selected) => {
+                              return data.department
+                                 .filter((v) => selected.includes(v.id))
+                                 .map((v, i) => {
+                                    return <Chip key={i} label={v.dept} onDelete={() => "cemas"} sx={{ mr: 0.5 }} />;
+                                 });
+                           }}
+                        >
+                           {data.department.length > 0 &&
+                              data.department.map((v, i) => {
+                                 return (
+                                    <MenuItem key={i} value={v.id}>
+                                       <Checkbox checked={rows.department_id.indexOf(v.id) > -1} />
+                                       <ListItemText primary={v.dept} />
+                                    </MenuItem>
+                                 );
+                              })}
+                        </Select>
+                     </FormControl>
+                  </Grid>
+                  <Grid item xs={12} md={6}>
+                     <FormControl sx={{ mt: 1 }} fullWidth>
+                        <InputLabel>Asset Location</InputLabel>
+                        <Select
+                           multiple
+                           name="location_id"
+                           value={rows.location_id}
+                           onChange={handleChange}
+                           input={<OutlinedInput label="Asset Location" />}
+                           renderValue={(selected) => {
+                              return data.location
+                                 .filter((v) => selected.includes(v.id))
+                                 .map((v, i) => {
+                                    return <Chip key={i} label={v.location} onDelete={() => "cemas"} sx={{ mr: 0.5 }} />;
+                                 });
+                           }}
+                        >
+                           {data.location.length > 0 &&
+                              data.location.map((v, i) => {
+                                 return (
+                                    <MenuItem key={i} value={v.id}>
+                                       <Checkbox checked={rows.location_id.indexOf(v.id) > -1} />
+                                       <ListItemText primary={v.location} />
+                                    </MenuItem>
+                                 );
+                              })}
+                        </Select>
+                     </FormControl>
+                  </Grid>
+                  <Grid item xs={12} md={6}>
+                     <FormControl sx={{ mt: 1 }} fullWidth>
+                        <InputLabel>Asset Condition</InputLabel>
+                        <Select
+                           multiple
+                           name="condition_id"
+                           value={rows.condition_id}
+                           onChange={handleChange}
+                           input={<OutlinedInput label="Asset Condition" />}
+                           renderValue={(selected) => {
+                              return data.condition
+                                 .filter((v) => selected.includes(v.id))
+                                 .map((v, i) => {
+                                    return <Chip key={i} label={v.condition} onDelete={() => "cemas"} sx={{ mr: 0.5 }} />;
+                                 });
+                           }}
+                        >
+                           {data.condition.length > 0 &&
+                              data.condition.map((v, i) => {
+                                 return (
+                                    <MenuItem key={i} value={v.id}>
+                                       <Checkbox checked={rows.condition_id.indexOf(v.id) > -1} />
+                                       <ListItemText primary={v.condition} />
+                                    </MenuItem>
+                                 );
+                              })}
+                        </Select>
+                     </FormControl>
+                  </Grid>
+                  <Grid item xs={12} md={6}>
+                     <FormControl sx={{ mt: 1 }} fullWidth>
+                        <InputLabel>Cost Center Name</InputLabel>
+                        <Select
+                           multiple
+                           name="cost_id"
+                           value={rows.cost_id}
+                           onChange={handleChange}
+                           input={<OutlinedInput label="Cost Center Name" />}
+                           renderValue={(selected) => {
+                              return data.cost
+                                 .filter((v) => selected.includes(v.id))
+                                 .map((v, i) => {
+                                    return <Chip key={i} label={v.name} onDelete={() => "cemas"} sx={{ mr: 0.5 }} />;
+                                 });
+                           }}
+                        >
+                           {data.cost.length > 0 &&
+                              data.cost.map((v, i) => {
+                                 return (
+                                    <MenuItem key={i} value={v.id}>
+                                       <Checkbox checked={rows.cost_id.indexOf(v.id) > -1} />
+                                       <ListItemText primary={v.name} />
+                                    </MenuItem>
+                                 );
+                              })}
+                        </Select>
+                     </FormControl>
+                  </Grid>
+                  <Grid item xs={12} md={6}>
+                     <FormControl sx={{ mt: 1 }} fullWidth>
+                        <InputLabel>Useful Life (Month)</InputLabel>
+                        <Select
+                           multiple
+                           name="useful_id"
+                           value={rows.useful_id}
+                           onChange={handleChange}
+                           input={<OutlinedInput label="Useful Life (Month)" />}
+                           renderValue={(selected) => {
+                              return data.useful
+                                 .filter((v) => selected.includes(v))
+                                 .map((v, i) => {
+                                    return <Chip key={i} label={`${v} Month`} onDelete={() => "cemas"} sx={{ mr: 0.5 }} />;
+                                 });
+                           }}
+                        >
+                           {data.useful.length > 0 &&
+                              data.useful.map((v, i) => {
+                                 return (
+                                    <MenuItem key={i} value={v}>
+                                       <Checkbox checked={rows.useful_id.indexOf(v) > -1} />
+                                       <ListItemText primary={`${v} Month`} />
+                                    </MenuItem>
+                                 );
+                              })}
+                        </Select>
+                     </FormControl>
                   </Grid>
                </Grid>
-            )}
-         </DialogContent>
-         <DialogActions>
-            <Button variant="text" onClick={props.handleClose}>
-               Cancel
-            </Button>
-            <Button variant="text" color="error" onClick={() => console.log("filter")} autoFocus>
-               Delete
-            </Button>
-         </DialogActions>
+               <Divider sx={{ my: 5 }} />
+               <Typography fontWeight="bold" pb={2}>
+                  Filter IT
+               </Typography>
+               <Grid container spacing={2}>
+                  <Grid item xs={12} md={6}>
+                     <FormControl sx={{ mt: 1 }} fullWidth>
+                        <InputLabel>Device</InputLabel>
+                        <Select
+                           multiple
+                           name="device_id"
+                           value={rows.device_id}
+                           onChange={handleChange}
+                           input={<OutlinedInput label="Device" />}
+                           renderValue={(selected) => {
+                              return data.device[0].sub_master_it
+                                 .filter((v) => selected.includes(v.id))
+                                 .map((v, i) => {
+                                    return <Chip key={i} label={v.sub_type} onDelete={() => "cemas"} sx={{ mr: 0.5 }} />;
+                                 });
+                           }}
+                        >
+                           {data.device[0].sub_master_it?.length > 0 &&
+                              data.device[0].sub_master_it.map((v, i) => {
+                                 return (
+                                    <MenuItem key={i} value={v.id}>
+                                       <Checkbox checked={rows.device_id.indexOf(v.id) > -1} />
+                                       <ListItemText primary={v.sub_type} />
+                                    </MenuItem>
+                                 );
+                              })}
+                        </Select>
+                     </FormControl>
+                  </Grid>
+                  <Grid item xs={12} md={6}>
+                     <FormControl sx={{ mt: 1 }} fullWidth>
+                        <InputLabel>Brand</InputLabel>
+                        <Select
+                           multiple
+                           name="brand_id"
+                           value={rows.brand_id}
+                           onChange={handleChange}
+                           input={<OutlinedInput label="Brand" />}
+                           renderValue={(selected) => {
+                              return data.brand[0].sub_master_it
+                                 .filter((v) => selected.includes(v.id))
+                                 .map((v, i) => {
+                                    return <Chip key={i} label={v.sub_type} onDelete={() => "cemas"} sx={{ mr: 0.5 }} />;
+                                 });
+                           }}
+                        >
+                           {data.brand[0].sub_master_it?.length > 0 &&
+                              data.brand[0].sub_master_it.map((v, i) => {
+                                 return (
+                                    <MenuItem key={i} value={v.id}>
+                                       <Checkbox checked={rows.brand_id.indexOf(v.id) > -1} />
+                                       <ListItemText primary={v.sub_type} />
+                                    </MenuItem>
+                                 );
+                              })}
+                        </Select>
+                     </FormControl>
+                  </Grid>
+                  <Grid item xs={12} md={6}>
+                     <FormControl sx={{ mt: 1 }} fullWidth>
+                        <InputLabel>Processor</InputLabel>
+                        <Select
+                           multiple
+                           name="processor_id"
+                           value={rows.processor_id}
+                           onChange={handleChange}
+                           input={<OutlinedInput label="Processor" />}
+                           renderValue={(selected) => {
+                              return data.processor[0].sub_master_it
+                                 .filter((v) => selected.includes(v.id))
+                                 .map((v, i) => {
+                                    return <Chip key={i} label={v.sub_type} onDelete={() => "cemas"} sx={{ mr: 0.5 }} />;
+                                 });
+                           }}
+                        >
+                           {data.processor[0].sub_master_it?.length > 0 &&
+                              data.processor[0].sub_master_it.map((v, i) => {
+                                 return (
+                                    <MenuItem key={i} value={v.id}>
+                                       <Checkbox checked={rows.processor_id.indexOf(v.id) > -1} />
+                                       <ListItemText primary={v.sub_type} />
+                                    </MenuItem>
+                                 );
+                              })}
+                        </Select>
+                     </FormControl>
+                  </Grid>
+                  <Grid item xs={12} md={6}>
+                     <FormControl sx={{ mt: 1 }} fullWidth>
+                        <InputLabel>Windows OS</InputLabel>
+                        <Select
+                           multiple
+                           name="windows_id"
+                           value={rows.windows_id}
+                           onChange={handleChange}
+                           input={<OutlinedInput label="Windows OS" />}
+                           renderValue={(selected) => {
+                              return data.windows[0].sub_master_it
+                                 .filter((v) => selected.includes(v.id))
+                                 .map((v, i) => {
+                                    return <Chip key={i} label={v.sub_type} onDelete={() => "cemas"} sx={{ mr: 0.5 }} />;
+                                 });
+                           }}
+                        >
+                           {data.windows[0].sub_master_it?.length > 0 &&
+                              data.windows[0].sub_master_it.map((v, i) => {
+                                 return (
+                                    <MenuItem key={i} value={v.id}>
+                                       <Checkbox checked={rows.windows_id.indexOf(v.id) > -1} />
+                                       <ListItemText primary={v.sub_type} />
+                                    </MenuItem>
+                                 );
+                              })}
+                        </Select>
+                     </FormControl>
+                  </Grid>
+                  <Grid item xs={12} md={6}>
+                     <FormControl sx={{ mt: 1 }} fullWidth>
+                        <InputLabel>Office</InputLabel>
+                        <Select
+                           multiple
+                           name="office_id"
+                           value={rows.office_id}
+                           onChange={handleChange}
+                           input={<OutlinedInput label="Office" />}
+                           renderValue={(selected) => {
+                              return data.office[0].sub_master_it
+                                 .filter((v) => selected.includes(v.id))
+                                 .map((v, i) => {
+                                    return <Chip key={i} label={v.sub_type} onDelete={() => "cemas"} sx={{ mr: 0.5 }} />;
+                                 });
+                           }}
+                        >
+                           {data.office[0].sub_master_it?.length > 0 &&
+                              data.office[0].sub_master_it.map((v, i) => {
+                                 return (
+                                    <MenuItem key={i} value={v.id}>
+                                       <Checkbox checked={rows.office_id.indexOf(v.id) > -1} />
+                                       <ListItemText primary={v.sub_type} />
+                                    </MenuItem>
+                                 );
+                              })}
+                        </Select>
+                     </FormControl>
+                  </Grid>
+                  <Grid item xs={12} md={6}>
+                     <FormControl sx={{ mt: 1 }} fullWidth>
+                        <InputLabel>Antivirus</InputLabel>
+                        <Select
+                           multiple
+                           name="antivirus_id"
+                           value={rows.antivirus_id}
+                           onChange={handleChange}
+                           input={<OutlinedInput label="Antivirus" />}
+                           renderValue={(selected) => {
+                              return data.antivirus[0].sub_master_it
+                                 .filter((v) => selected.includes(v.id))
+                                 .map((v, i) => {
+                                    return <Chip key={i} label={v.sub_type} onDelete={() => "cemas"} sx={{ mr: 0.5 }} />;
+                                 });
+                           }}
+                        >
+                           {data.antivirus[0].sub_master_it?.length > 0 &&
+                              data.antivirus[0].sub_master_it.map((v, i) => {
+                                 return (
+                                    <MenuItem key={i} value={v.id}>
+                                       <Checkbox checked={rows.antivirus_id.indexOf(v.id) > -1} />
+                                       <ListItemText primary={v.sub_type} />
+                                    </MenuItem>
+                                 );
+                              })}
+                        </Select>
+                     </FormControl>
+                  </Grid>
+               </Grid>
+            </DialogContent>
+         ) : (
+            <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", height: "60vh" }}>
+               <Loading />
+            </Box>
+         )}
+         <Divider />
+         {complete && (
+            <DialogActions sx={{ py: 2, px: 3 }}>
+               <LoadingButton loading={loading} variant="contained" onClick={handleSubmit}>
+                  Apply
+               </LoadingButton>
+            </DialogActions>
+         )}
       </Dialog>
    );
 };
@@ -236,6 +764,7 @@ const Index = () => {
    const [fieldOption, setFieldOption] = useState([])
 
    const getData = async () => {
+      console.log(params)
       http
          .get(`/asset`, {
             params: {
@@ -412,7 +941,7 @@ const Index = () => {
                                     <InputLabel>Field</InputLabel>
                                     <Select
                                        multiple
-                                       name='field'
+                                       name='filed'
                                        value={field}
                                        onChange={(e) => {
                                           const {
@@ -471,7 +1000,7 @@ const Index = () => {
                                  />
                               </Grid>
                               <Grid item xs={2}>
-                                 <Button variant="link" startIcon={<FilterListRounded />}>
+                                 <Button onClick={handleModalFilter} variant="link" startIcon={<FilterListRounded />}>
                                     Filter
                                  </Button>
                               </Grid>
@@ -510,7 +1039,7 @@ const Index = () => {
                                                 <TableCell>{value.category.category}</TableCell>
                                                 <TableCell>{moment(value.capitalized).format("ll")}</TableCell>
                                                 <TableCell>{value.sub_category.useful_life}</TableCell>
-                                                <TableCell>{value.acquisition_value}</TableCell>
+                                                <TableCell>{NumberFormat(value.acquisition_value, "Rp")}</TableCell>
                                                 <TableCell align="center">
                                                    <IconButton onClick={(e) => handleClick(e, value)}>
                                                       <MoreVert />
@@ -560,7 +1089,7 @@ const Index = () => {
                   <div className="col-xl-4 col-12 mt-3">
                      {/* utils */}
                      <ModalDelete open={openModal} delete={onDelete} handleClose={handleModal} />
-                     <ModalFilter open={modalFilter} setParams={setParams} handleClose={handleModalFilter} />
+                     <ModalFilter open={modalFilter} params={params} setParams={setParams} handleClose={handleModalFilter} />
                      <ModalImport open={openImport} handleClose={handleCloseImport} getData={getData} />
 
                      {/* menu */}

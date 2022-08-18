@@ -43,9 +43,12 @@ import { useNavigate } from "react-router-dom";
 import Loading from "../../component/Loading";
 import { produce } from "immer";
 import moment from "moment";
+import { useSnackbar } from "notistack";
+
 
 const Form = (props) => {
 	const navigate = useNavigate();
+	const { enqueueSnackbar } = useSnackbar()
 	const [id, setId] = useState('')
 	const [rows, setRows] = useState([])
 	const [tableData, setTableData] = useState([])
@@ -173,6 +176,7 @@ const Form = (props) => {
 				.post("asset_disposal", formData)
 				.then((res) => {
 					// console.log(res.data)
+					enqueueSnackbar("Add Disposal Successfull", { variant: 'success' })
 					navigate("/disposal-asset");
 				})
 				.catch((err) => {
@@ -188,6 +192,7 @@ const Form = (props) => {
 				.post(`asset_disposal/${id}`, formData)
 				.then((res) => {
 					// console.log(res.data)
+					enqueueSnackbar("Edit Disposal Successfull", { variant: 'success' })
 					navigate("/disposal-asset");
 				})
 				.catch((err) => {

@@ -3,6 +3,7 @@ import Header from "./Header";
 import Sidebar from "./Sidebar";
 import Footer from "./Footer";
 import { createTheme, ThemeProvider } from "@mui/material";
+import { SnackbarProvider } from "notistack";
 
 let theme = createTheme({
    palette: {
@@ -62,10 +63,12 @@ let theme = createTheme({
 export default function Layout(props) {
    return (
       <ThemeProvider theme={theme}>
-         <Header />
-         <Sidebar />
-         {props.render}
-         <Footer />
+         <SnackbarProvider maxSnack={3}>
+            <Header />
+            <Sidebar />
+            {props.render}
+            <Footer />
+         </SnackbarProvider>
       </ThemeProvider>
    );
 }
