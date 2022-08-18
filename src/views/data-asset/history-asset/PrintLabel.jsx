@@ -25,7 +25,6 @@ import {
    TableRow,
    TableCell,
    TableBody,
-   IconButton,
    Stack,
    Button,
 } from "@mui/material";
@@ -36,34 +35,31 @@ import { DatePicker } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 
-// import { useNavigate } from "react-router-dom";
 import http from "../../../component/api/Api";
 import Loading from "../../../component/Loading";
 import { NumberFormat } from "../../../component/Format";
-import { FilterListRounded, MoreVert } from "@mui/icons-material";
-import QRCode from "react-qr-code";
+import { FilterListRounded } from "@mui/icons-material";
+import { LabelTable } from "../../../component/LabelTable";
 
 export default function Print() {
-   // const navigate = useNavigate();
-
    const [rows, setRows] = useState({
-      category: [],
-      employee: [],
+      category_id: [],
+      employees_id: [],
       capitalized_from: null,
       capitalized_until: null,
-      vendor: [],
-      department: [],
-      location: [],
-      condition: [],
-      cost: [],
-      useful: [],
+      vendor_id: [],
+      department_id: [],
+      location_id: [],
+      condition_id: [],
+      cost_id: [],
+      useful_id: [],
 
-      device: [],
-      brand: [],
-      processor: [],
-      windows: [],
-      office: [],
-      antivirus: [],
+      device_id: [],
+      brand_id: [],
+      processor_id: [],
+      windows_id: [],
+      office_id: [],
+      antivirus_id: [],
    });
    const [data, setData] = useState();
    const getCategory = async () => {
@@ -137,9 +133,17 @@ export default function Print() {
    const handleSubmit = async (e) => {
       e.preventDefault();
       handleLoading();
+      setStaging({
+         ...staging,
+         asset: [],
+      });
       await http
          .get(`asset`, {
-            params: data,
+            params: {
+               ...rows,
+               capitalized_from: rows.capitalized_from !== null ? moment(rows.capitalized_from).format("yyyy-MM-DD") : "",
+               capitalized_until: rows.capitalized_until !== null ? moment(rows.capitalized_until).format("yyyy-MM-DD") : "",
+            },
          })
          .then((res) => {
             // console.log(res.data.data);
@@ -156,17 +160,30 @@ export default function Print() {
       asset: [],
    });
    const handleCheckbox = (e) => {
-      if (staging.asset.indexOf(e.target.value) === -1) {
+      if (staging.asset.indexOf(e.target.value) == -1) {
          let newState = staging.asset.concat(e.target.value);
          setStaging({
             ...staging,
             [e.target.name]: newState,
          });
       } else {
-         let newState = staging.asset.filter((value) => value !== e.target.value);
+         let newState = staging.asset.filter((value) => value != e.target.value);
          setStaging({
             ...staging,
             [e.target.name]: newState,
+         });
+      }
+   };
+   const handleAllCheckbox = (e) => {
+      if (staging.asset.length === asset.length) {
+         setStaging({
+            ...staging,
+            asset: [],
+         });
+      } else {
+         setStaging({
+            ...staging,
+            asset: asset.map((v) => v.id.toString()),
          });
       }
    };
@@ -229,7 +246,10 @@ export default function Print() {
                                     }}
                                  >
                                     <TableCell align="center">
-                                       <Checkbox />
+                                       <Checkbox
+                                          onClick={handleAllCheckbox}
+                                          checked={staging.asset.length > 0 && staging.asset.length === asset.length ? true : false}
+                                       />
                                     </TableCell>
                                     <TableCell align="center">No.</TableCell>
                                     <TableCell>Code Asset</TableCell>
@@ -242,7 +262,6 @@ export default function Print() {
                                     {/* <TableCell>Usage Period</TableCell> */}
                                     <TableCell>Asset Acquistion Value</TableCell>
                                     <TableCell>Deprecation</TableCell>
-                                    <TableCell align="center">Action</TableCell>
                                  </TableRow>
                               </TableHead>
                               <TableBody>
@@ -250,7 +269,12 @@ export default function Print() {
                                     asset.map((value, index) => (
                                        <TableRow key={index}>
                                           <TableCell component="th" scope="row" align="center">
-                                             <Checkbox name="asset" value={value.id} onChange={handleCheckbox} checked={staging.asset.indexOf(value.id) > -1} />
+                                             <Checkbox
+                                                name="asset"
+                                                value={value.id}
+                                                onChange={handleCheckbox}
+                                                checked={staging.asset.filter((v) => v == value.id).length > 0 ? true : false}
+                                             />
                                           </TableCell>
                                           <TableCell align="center">{index + 1}.</TableCell>
                                           <TableCell>{value.asset_code}</TableCell>
@@ -265,11 +289,6 @@ export default function Print() {
                                           {/* <TableCell>{value.asset_code}</TableCell> */}
                                           <TableCell>{NumberFormat(value.acquisition_value)}</TableCell>
                                           <TableCell>{NumberFormat(value.depreciation)}</TableCell>
-                                          <TableCell align="center">
-                                             <IconButton onClick={(e) => handleClick(e, value)}>
-                                                <MoreVert />
-                                             </IconButton>
-                                          </TableCell>
                                        </TableRow>
                                     ))
                                  ) : (
@@ -285,63 +304,11 @@ export default function Print() {
                      </CardContent>
                   </Card>
                ) : (
-                  asset.map((value, index) => (
-                     <Box sx={{ display: "flex" }} key={index}>
-                        <table style={{ border: "1px solid black" }}>
-                           <tbody>
-                              <tr>
-                                 <td rowSpan={4} style={{ border: "1px solid black", padding: "40px 10px", background: "#fff" }}>
-                                    <QRCode size={100} value={value.asset_code} />
-                                 </td>
-                              </tr>
-                              <tr>
-                                 <td colSpan={5} style={{ border: "1px solid black", padding: "0px 30px" }}>
-                                    <Typography variant="h6" fontWeight="bold" textAlign="center" color="black">
-                                       PT. Haier Sales Indonesia
-                                    </Typography>
-                                 </td>
-                              </tr>
-                              <tr>
-                                 <td style={{ border: "1px solid black" }}>
-                                    <Typography variant="body2" fontWeight="bold" textAlign="center" color="black">
-                                       {value.asset_code.split("/")[0]}
-                                    </Typography>
-                                 </td>
-                                 <td style={{ border: "1px solid black" }}>
-                                    <Typography variant="body2" fontWeight="bold" textAlign="center" color="black">
-                                       {value.asset_code.split("/")[1]}
-                                    </Typography>
-                                 </td>
-                                 <td style={{ border: "1px solid black" }}>
-                                    <Typography variant="body2" fontWeight="bold" textAlign="center" color="black">
-                                       {value.asset_code.split("/")[2]}
-                                    </Typography>
-                                 </td>
-                                 <td style={{ border: "1px solid black" }}>
-                                    <Typography variant="body2" fontWeight="bold" textAlign="center" color="black">
-                                       {value.asset_code.split("/")[3]}
-                                    </Typography>
-                                 </td>
-                                 <td style={{ border: "1px solid black" }}>
-                                    <Typography variant="body2" fontWeight="bold" textAlign="center" color="black">
-                                       {value.asset_code.split("/")[4]}
-                                    </Typography>
-                                 </td>
-                              </tr>
-                              <tr>
-                                 <td colSpan={5} style={{ border: "1px solid black", padding: "0px 30px" }}>
-                                    <Typography
-                                       variant="subtitle2"
-                                       fontWeight="bold"
-                                       textAlign="center"
-                                       color="black"
-                                    >{`${value.asset_name} - ${value.employee.name} - ${value.department.dept}`}</Typography>
-                                 </td>
-                              </tr>
-                           </tbody>
-                        </table>
-                     </Box>
-                  ))
+                  <Stack direction="row" spacing={2}>
+                     {asset.map((value, index) => (
+                        <LabelTable data={value} key={index} />
+                     ))}
+                  </Stack>
                )}
                <Dialog open={dialog} onClose={handleDialog} maxWidth="md" fullWidth>
                   <DialogTitle>Filter Print Label</DialogTitle>
@@ -354,8 +321,8 @@ export default function Print() {
                                  <InputLabel>Category</InputLabel>
                                  <Select
                                     multiple
-                                    name="category"
-                                    value={rows.category}
+                                    name="category_id"
+                                    value={rows.category_id}
                                     onChange={handleChange}
                                     input={<OutlinedInput label="Category" />}
                                     renderValue={(selected) => {
@@ -370,7 +337,7 @@ export default function Print() {
                                        data.category.map((v, i) => {
                                           return (
                                              <MenuItem key={i} value={v.id}>
-                                                <Checkbox checked={rows.category.indexOf(v.id) > -1} />
+                                                <Checkbox checked={rows.category_id.indexOf(v.id) > -1} />
                                                 <ListItemText primary={v.category} />
                                              </MenuItem>
                                           );
@@ -383,8 +350,8 @@ export default function Print() {
                                  <InputLabel>Employee</InputLabel>
                                  <Select
                                     multiple
-                                    name="employee"
-                                    value={rows.employee}
+                                    name="employees_id"
+                                    value={rows.employees_id}
                                     onChange={handleChange}
                                     input={<OutlinedInput label="Employee" />}
                                     renderValue={(selected) => {
@@ -399,7 +366,7 @@ export default function Print() {
                                        data.employee.map((v, i) => {
                                           return (
                                              <MenuItem key={i} value={v.id}>
-                                                <Checkbox checked={rows.employee.indexOf(v.id) > -1} />
+                                                <Checkbox checked={rows.employees_id.indexOf(v.id) > -1} />
                                                 <ListItemText primary={v.name} />
                                              </MenuItem>
                                           );
@@ -453,8 +420,8 @@ export default function Print() {
                                  <InputLabel>Vendor Name</InputLabel>
                                  <Select
                                     multiple
-                                    name="vendor"
-                                    value={rows.vendor}
+                                    name="vendor_id"
+                                    value={rows.vendor_id}
                                     onChange={handleChange}
                                     input={<OutlinedInput label="Vendor Name" />}
                                     renderValue={(selected) => {
@@ -469,7 +436,7 @@ export default function Print() {
                                        data.vendor.map((v, i) => {
                                           return (
                                              <MenuItem key={i} value={v.id}>
-                                                <Checkbox checked={rows.vendor.indexOf(v.id) > -1} />
+                                                <Checkbox checked={rows.vendor_id.indexOf(v.id) > -1} />
                                                 <ListItemText primary={v.name} />
                                              </MenuItem>
                                           );
@@ -482,8 +449,8 @@ export default function Print() {
                                  <InputLabel>Department Using</InputLabel>
                                  <Select
                                     multiple
-                                    name="department"
-                                    value={rows.department}
+                                    name="department_id"
+                                    value={rows.department_id}
                                     onChange={handleChange}
                                     input={<OutlinedInput label="Department Using" />}
                                     renderValue={(selected) => {
@@ -498,7 +465,7 @@ export default function Print() {
                                        data.department.map((v, i) => {
                                           return (
                                              <MenuItem key={i} value={v.id}>
-                                                <Checkbox checked={rows.department.indexOf(v.id) > -1} />
+                                                <Checkbox checked={rows.department_id.indexOf(v.id) > -1} />
                                                 <ListItemText primary={v.dept} />
                                              </MenuItem>
                                           );
@@ -511,8 +478,8 @@ export default function Print() {
                                  <InputLabel>Asset Location</InputLabel>
                                  <Select
                                     multiple
-                                    name="location"
-                                    value={rows.location}
+                                    name="location_id"
+                                    value={rows.location_id}
                                     onChange={handleChange}
                                     input={<OutlinedInput label="Asset Location" />}
                                     renderValue={(selected) => {
@@ -527,7 +494,7 @@ export default function Print() {
                                        data.location.map((v, i) => {
                                           return (
                                              <MenuItem key={i} value={v.id}>
-                                                <Checkbox checked={rows.location.indexOf(v.id) > -1} />
+                                                <Checkbox checked={rows.location_id.indexOf(v.id) > -1} />
                                                 <ListItemText primary={v.location} />
                                              </MenuItem>
                                           );
@@ -540,8 +507,8 @@ export default function Print() {
                                  <InputLabel>Asset Condition</InputLabel>
                                  <Select
                                     multiple
-                                    name="condition"
-                                    value={rows.condition}
+                                    name="condition_id"
+                                    value={rows.condition_id}
                                     onChange={handleChange}
                                     input={<OutlinedInput label="Asset Condition" />}
                                     renderValue={(selected) => {
@@ -556,7 +523,7 @@ export default function Print() {
                                        data.condition.map((v, i) => {
                                           return (
                                              <MenuItem key={i} value={v.id}>
-                                                <Checkbox checked={rows.condition.indexOf(v.id) > -1} />
+                                                <Checkbox checked={rows.condition_id.indexOf(v.id) > -1} />
                                                 <ListItemText primary={v.condition} />
                                              </MenuItem>
                                           );
@@ -569,8 +536,8 @@ export default function Print() {
                                  <InputLabel>Cost Center Name</InputLabel>
                                  <Select
                                     multiple
-                                    name="cost"
-                                    value={rows.cost}
+                                    name="cost_id"
+                                    value={rows.cost_id}
                                     onChange={handleChange}
                                     input={<OutlinedInput label="Cost Center Name" />}
                                     renderValue={(selected) => {
@@ -585,7 +552,7 @@ export default function Print() {
                                        data.cost.map((v, i) => {
                                           return (
                                              <MenuItem key={i} value={v.id}>
-                                                <Checkbox checked={rows.cost.indexOf(v.id) > -1} />
+                                                <Checkbox checked={rows.cost_id.indexOf(v.id) > -1} />
                                                 <ListItemText primary={v.name} />
                                              </MenuItem>
                                           );
@@ -598,8 +565,8 @@ export default function Print() {
                                  <InputLabel>Useful Life (Month)</InputLabel>
                                  <Select
                                     multiple
-                                    name="useful"
-                                    value={rows.useful}
+                                    name="useful_id"
+                                    value={rows.useful_id}
                                     onChange={handleChange}
                                     input={<OutlinedInput label="Useful Life (Month)" />}
                                     renderValue={(selected) => {
@@ -614,7 +581,7 @@ export default function Print() {
                                        data.useful.map((v, i) => {
                                           return (
                                              <MenuItem key={i} value={v}>
-                                                <Checkbox checked={rows.useful.indexOf(v) > -1} />
+                                                <Checkbox checked={rows.useful_id.indexOf(v) > -1} />
                                                 <ListItemText primary={`${v} Month`} />
                                              </MenuItem>
                                           );
@@ -633,8 +600,8 @@ export default function Print() {
                                  <InputLabel>Device</InputLabel>
                                  <Select
                                     multiple
-                                    name="device"
-                                    value={rows.device}
+                                    name="device_id"
+                                    value={rows.device_id}
                                     onChange={handleChange}
                                     input={<OutlinedInput label="Device" />}
                                     renderValue={(selected) => {
@@ -649,7 +616,7 @@ export default function Print() {
                                        data.device[0].sub_master_it.map((v, i) => {
                                           return (
                                              <MenuItem key={i} value={v.id}>
-                                                <Checkbox checked={rows.device.indexOf(v.id) > -1} />
+                                                <Checkbox checked={rows.device_id.indexOf(v.id) > -1} />
                                                 <ListItemText primary={v.sub_type} />
                                              </MenuItem>
                                           );
@@ -662,8 +629,8 @@ export default function Print() {
                                  <InputLabel>Brand</InputLabel>
                                  <Select
                                     multiple
-                                    name="brand"
-                                    value={rows.brand}
+                                    name="brand_id"
+                                    value={rows.brand_id}
                                     onChange={handleChange}
                                     input={<OutlinedInput label="Brand" />}
                                     renderValue={(selected) => {
@@ -678,7 +645,7 @@ export default function Print() {
                                        data.brand[0].sub_master_it.map((v, i) => {
                                           return (
                                              <MenuItem key={i} value={v.id}>
-                                                <Checkbox checked={rows.brand.indexOf(v.id) > -1} />
+                                                <Checkbox checked={rows.brand_id.indexOf(v.id) > -1} />
                                                 <ListItemText primary={v.sub_type} />
                                              </MenuItem>
                                           );
@@ -691,8 +658,8 @@ export default function Print() {
                                  <InputLabel>Processor</InputLabel>
                                  <Select
                                     multiple
-                                    name="processor"
-                                    value={rows.processor}
+                                    name="processor_id"
+                                    value={rows.processor_id}
                                     onChange={handleChange}
                                     input={<OutlinedInput label="Processor" />}
                                     renderValue={(selected) => {
@@ -707,7 +674,7 @@ export default function Print() {
                                        data.processor[0].sub_master_it.map((v, i) => {
                                           return (
                                              <MenuItem key={i} value={v.id}>
-                                                <Checkbox checked={rows.processor.indexOf(v.id) > -1} />
+                                                <Checkbox checked={rows.processor_id.indexOf(v.id) > -1} />
                                                 <ListItemText primary={v.sub_type} />
                                              </MenuItem>
                                           );
@@ -720,8 +687,8 @@ export default function Print() {
                                  <InputLabel>Windows OS</InputLabel>
                                  <Select
                                     multiple
-                                    name="windows"
-                                    value={rows.windows}
+                                    name="windows_id"
+                                    value={rows.windows_id}
                                     onChange={handleChange}
                                     input={<OutlinedInput label="Windows OS" />}
                                     renderValue={(selected) => {
@@ -736,7 +703,7 @@ export default function Print() {
                                        data.windows[0].sub_master_it.map((v, i) => {
                                           return (
                                              <MenuItem key={i} value={v.id}>
-                                                <Checkbox checked={rows.windows.indexOf(v.id) > -1} />
+                                                <Checkbox checked={rows.windows_id.indexOf(v.id) > -1} />
                                                 <ListItemText primary={v.sub_type} />
                                              </MenuItem>
                                           );
@@ -749,8 +716,8 @@ export default function Print() {
                                  <InputLabel>Office</InputLabel>
                                  <Select
                                     multiple
-                                    name="office"
-                                    value={rows.office}
+                                    name="office_id"
+                                    value={rows.office_id}
                                     onChange={handleChange}
                                     input={<OutlinedInput label="Office" />}
                                     renderValue={(selected) => {
@@ -765,7 +732,7 @@ export default function Print() {
                                        data.office[0].sub_master_it.map((v, i) => {
                                           return (
                                              <MenuItem key={i} value={v.id}>
-                                                <Checkbox checked={rows.office.indexOf(v.id) > -1} />
+                                                <Checkbox checked={rows.office_id.indexOf(v.id) > -1} />
                                                 <ListItemText primary={v.sub_type} />
                                              </MenuItem>
                                           );
@@ -778,8 +745,8 @@ export default function Print() {
                                  <InputLabel>Antivirus</InputLabel>
                                  <Select
                                     multiple
-                                    name="antivirus"
-                                    value={rows.antivirus}
+                                    name="antivirus_id"
+                                    value={rows.antivirus_id}
                                     onChange={handleChange}
                                     input={<OutlinedInput label="Antivirus" />}
                                     renderValue={(selected) => {
@@ -794,7 +761,7 @@ export default function Print() {
                                        data.antivirus[0].sub_master_it.map((v, i) => {
                                           return (
                                              <MenuItem key={i} value={v.id}>
-                                                <Checkbox checked={rows.antivirus.indexOf(v.id) > -1} />
+                                                <Checkbox checked={rows.antivirus_id.indexOf(v.id) > -1} />
                                                 <ListItemText primary={v.sub_type} />
                                              </MenuItem>
                                           );
