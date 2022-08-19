@@ -158,12 +158,14 @@ export default function Sidebar() {
                   ) : null}
 
                   {/* Qr Code Tagging */}
-                  <li role="menuitem">
-                     <Link to="/qr-tagging" className="waves-effect">
-                        <i className="mdi mdi-qrcode"></i>
-                        <span className="text-capitalize">qrcode tagging</span>
-                     </Link>
-                  </li>
+                  {Permission(user.permission, "qrcode") && (
+                     <li role="menuitem">
+                        <Link to="/qr-tagging" className="waves-effect">
+                           <i className="mdi mdi-qrcode"></i>
+                           <span className="text-capitalize">qrcode tagging</span>
+                        </Link>
+                     </li>
+                  )}
 
                   {/* Disposal Asset */}
                   {Permission(user.permission, "get asset disposal") && (
@@ -183,7 +185,6 @@ export default function Sidebar() {
                                  History Disposal
                               </Link>
                            </li>
-
                         </ul>
                      </li>
                   )}
