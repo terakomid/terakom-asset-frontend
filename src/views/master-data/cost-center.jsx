@@ -32,6 +32,7 @@ import ModalDelete from "../../component/Delete";
 import { useRecoilValue } from "recoil";
 import { authentication } from "../../store/Authentication";
 import { Permission } from "../../component/Permission";
+import { ImportModal } from "../../component/ImportModal";
 
 export default function CostCenter() {
    const { user } = useRecoilValue(authentication);
@@ -182,6 +183,11 @@ export default function CostCenter() {
       setAnchorEl(null);
    };
 
+   const [openModalImport, setOpenModalImport] = useState(false);
+   const handleModalImport = () => {
+      setOpenModalImport(!openModalImport);
+   };
+
    return (
       <div className="main-content mb-5">
          <div className="page-content">
@@ -189,7 +195,7 @@ export default function CostCenter() {
                <div className="d-flex align-items-center justify-content-between my-2">
                   <h3 className="fw-bold mb-0">Master Cost Center</h3>
                   <Stack direction="row" spacing={1}>
-                     <Button variant="contained" startIcon={<FileDownload />}>
+                     <Button variant="contained" startIcon={<FileDownload />} onClick={handleModalImport}>
                         Import
                      </Button>
                      <Button variant="contained" startIcon={<FileUpload />}>
@@ -376,6 +382,13 @@ export default function CostCenter() {
                            )}
                         </Menu>
                      ) : null}
+                     <ImportModal
+                        buttonTitle={"Import Data Cost Center (.xlsx)"}
+                        handleClose={handleModalImport}
+                        url={"cost/import_excel"}
+                        open={openModalImport}
+                        getData={getData}
+                     />
                   </div>
                </div>
             </div>

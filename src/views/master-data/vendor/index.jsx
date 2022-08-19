@@ -29,6 +29,7 @@ import ModalDelete from "../../../component/Delete";
 import { useRecoilValue } from "recoil";
 import { authentication } from "../../../store/Authentication";
 import { Permission } from "../../../component/Permission";
+import { ImportModal } from "../../../component/ImportModal";
 
 export default function Vendor() {
    const { user } = useRecoilValue(authentication);
@@ -110,6 +111,11 @@ export default function Vendor() {
       setAnchorEl(null);
    };
 
+   const [openModalImport, setOpenModalImport] = useState(false);
+   const handleModalImport = () => {
+      setOpenModalImport(!openModalImport);
+   };
+
    return (
       <div className="main-content mb-5">
          <div className="page-content">
@@ -117,7 +123,7 @@ export default function Vendor() {
                <div className="d-flex align-items-center justify-content-between mt-2 mb-4">
                   <h3 className="fw-bold mb-0">Master Vendor Name</h3>
                   <Stack direction="row" spacing={1}>
-                     <Button variant="contained" startIcon={<FileDownload />}>
+                     <Button variant="contained" startIcon={<FileDownload />} onClick={handleModalImport}>
                         Import
                      </Button>
                      <Button variant="contained" startIcon={<FileUpload />}>
@@ -265,6 +271,13 @@ export default function Vendor() {
                      )}
                   </Menu>
                ) : null}
+               <ImportModal
+                  buttonTitle={"Import Data Vendor (.xlsx)"}
+                  handleClose={handleModalImport}
+                  url={"vendor/import_excel"}
+                  open={openModalImport}
+                  getData={getData}
+               />
             </div>
          </div>
       </div>

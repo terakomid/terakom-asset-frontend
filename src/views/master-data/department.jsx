@@ -32,6 +32,7 @@ import ModalDelete from "../../component/Delete";
 import { useRecoilValue } from "recoil";
 import { authentication } from "../../store/Authentication";
 import { Permission } from "../../component/Permission";
+import { ImportModal } from "../../component/ImportModal";
 
 export default function Department() {
    const { user } = useRecoilValue(authentication);
@@ -178,6 +179,11 @@ export default function Department() {
       setAnchorEl(null);
    };
 
+   const [openModalImport, setOpenModalImport] = useState(false);
+   const handleModalImport = () => {
+      setOpenModalImport(!openModalImport);
+   };
+
    return (
       <div className="main-content mb-5">
          <div className="page-content">
@@ -185,7 +191,7 @@ export default function Department() {
                <div className="d-flex align-items-center justify-content-between my-2">
                   <h3 className="fw-bold mb-0">Master Department</h3>
                   <Stack direction="row" spacing={1}>
-                     <Button variant="contained" startIcon={<FileDownload />}>
+                     <Button variant="contained" startIcon={<FileDownload />} onClick={handleModalImport}>
                         Import
                      </Button>
                      <Button variant="contained" startIcon={<FileUpload />}>
@@ -364,6 +370,13 @@ export default function Department() {
                            )}
                         </Menu>
                      ) : null}
+                     <ImportModal
+                        buttonTitle={"Import Data Department (.xlsx)"}
+                        handleClose={handleModalImport}
+                        url={"dept/import_excel"}
+                        open={openModalImport}
+                        getData={getData}
+                     />
                   </div>
                </div>
             </div>
