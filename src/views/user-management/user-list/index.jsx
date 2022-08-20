@@ -426,7 +426,6 @@ const Index = () => {
             setAllData(res.data.data.data)
          })
          .catch((err) => {
-            //  console.log(err.response);
          });
    }
 

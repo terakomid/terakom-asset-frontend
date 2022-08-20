@@ -247,8 +247,6 @@ const index = () => {
         setDataByLoc(res.data.data)
     }
 
-
-
     const covertDataConditionCount = (arr) => {
         return arr.map(v => v.asset_count)
     }
@@ -306,11 +304,11 @@ const index = () => {
                 <div className="container">
                     <div className="my-2">
                         <Stack direction="row" justifyContent={"space-between"}>
-                            <h3 className="fw-bold mb-2">Dashboard</h3>
+                            <h3 className="fw-bold mb-2">{user.user.role !== 'Employee' ? 'Dashboard' : 'Menu'}</h3>
                         </Stack>
                         
                     </div>
-                    {isComplete &&
+                    {isComplete && user.user.role !== 'Employee' &&
                     <div className="row">
                         <div className="col-xl-12 col-12 mt-3">
                            <Grid container spacing={2}>
@@ -488,6 +486,34 @@ const index = () => {
                            </Grid>
                         </div>
                         
+                    </div>
+                    }
+                    {isComplete && user.user.role === 'Employee' &&
+                    <div className="row">
+                        <div className="col-xl-12 col-12 mt-3">
+                            <Grid container spacing={2}>
+                                <Grid item xs={12} md={4}>
+                                    <Card>
+                                        <CardContent sx={{ cursor: 'pointer' }} onClick={() => navigate('/acceptance-asset')}>
+                                            <Typography>
+                                                Acceptance Asset
+                                            </Typography>
+                                        </CardContent>
+                                    </Card>
+                                </Grid>
+                                <Grid item xs={12} md={4}>
+                                    <Card>
+                                        <CardContent sx={{ cursor: 'pointer' }} onClick={() => navigate('/help')}>
+                                            <Typography>
+                                                Help
+                                            </Typography>
+                                        </CardContent>
+                                    </Card>
+                                </Grid>
+
+                            </Grid>
+
+                        </div>
                     </div>
                     }
                 </div>

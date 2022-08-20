@@ -55,6 +55,8 @@ import { NumberFormat } from "../../../component/Format";
 import { ConvertLabel } from "../../../help/LabelHelp";
 import { LabelTable } from "../../../component/LabelTable";
 import { useSnackbar } from "notistack";
+import { useRecoilValue } from "recoil";
+import { authentication } from "../../../store/Authentication";
 
 const DetailModal = (props) => {
    const navigate = useNavigate();
@@ -599,6 +601,7 @@ const DetailComponent = (props) => {
 
 const Form = (props) => {
    const [id, setId] = useState("");
+   const { user } = useRecoilValue(authentication)
 
    //form
    const [form, setForm] = useState({
@@ -981,7 +984,7 @@ const Form = (props) => {
 
       //depreciation asset
       formData.append("cost_id", form.cost_id);
-      formData.append("acquisition_value", form.acquisition_value.replaceAll('Rp', '').replaceAll('.', ''));
+      formData.append("acquisition_value", form.acquisition_value.replaceAll('IDR ', '').replaceAll('.', ''));
       // formData.append('depreciation_value', form.depreciation_value)
       // formData.append('value_book', form.value_book)
       formData.append("depreciation", form.depreciation);
@@ -1220,6 +1223,7 @@ const Form = (props) => {
                <>
                   {/* Print Label*/}
                   {props.detail && <DetailComponent data={props.data} />}
+                  
                   {/* Asset Information */}
                   <Grid item xs={12} md={12}>
                      <Card>
@@ -1244,7 +1248,7 @@ const Form = (props) => {
                                  <TextField
                                     name="category_id"
                                     value={form.category_id}
-                                    disabled={props.detail}
+                                    disabled={props.detail || user.role === 'Admin Department' ? true : false}
                                     onBlur={handleChange}
                                     onChange={handleChangeForBlurField}
                                     fullWidth
@@ -1263,7 +1267,7 @@ const Form = (props) => {
                                  <TextField
                                     name="sub_category_id"
                                     value={form.sub_category_id}
-                                    disabled={props.detail}
+                                    disabled={props.detail || user.role === 'Admin Department' ? true : false}
                                     onBlur={handleChange}
                                     onChange={handleChangeForBlurField}
                                     fullWidth
@@ -1290,7 +1294,7 @@ const Form = (props) => {
                               </Grid>
                               <Grid item md={4} xs={12}>
                                  <TextField
-                                    disabled={props.detail}
+                                    disabled={props.detail || user.role === 'Admin Department' ? true : false}
                                     onBlur={handleChange}
                                     onChange={handleChangeForBlurField}
                                     value={form.asset_name}
@@ -1304,7 +1308,7 @@ const Form = (props) => {
                               </Grid>
                               <Grid item md={4} xs={12}>
                                  <TextField
-                                    disabled={props.detail}
+                                    disabled={props.detail || user.role === 'Admin Department' ? true : false}
                                     onBlur={handleChange}
                                     onChange={handleChangeForBlurField}
                                     value={form.specification}
@@ -1327,7 +1331,7 @@ const Form = (props) => {
                                        label="Capitalized On"
                                        inputFormat="yyyy/MM/dd"
                                        mask="____/__/__"
-                                       disabled={props.detail}
+                                       disabled={props.detail || user.role === 'Admin Department' ? true : false}
                                        onChange={(newValue) => {
                                           const splitCode = form.asset_code.split("/");
                                           splitCode[0] = newValue.toString().split(" ")[3];
@@ -1351,7 +1355,7 @@ const Form = (props) => {
                               </Grid>
                               <Grid item md={6} xs={12}>
                                  <TextField
-                                    disabled={props.detail}
+                                    disabled={props.detail || user.role === 'Admin Department' ? true : false}
                                     onBlur={handleChange}
                                     onChange={handleChangeForBlurField}
                                     value={form.sap_code}
@@ -1376,6 +1380,7 @@ const Form = (props) => {
                            <Grid container mt={2} spacing={2}>
                               <Grid item md={6} xs={12}>
                                  <Autocomplete
+                                    disabled={props.detail || user.role === 'Admin Department' ? true : false}
                                     freeSolo
                                     disableClearable
                                     options={employees}
@@ -1462,7 +1467,7 @@ const Form = (props) => {
                               <Grid item md={6} xs={12}>
                                  <TextField
                                     value={form.latitude}
-                                    disabled={props.detail}
+                                    disabled={props.detail || user.role === 'Admin Department' ? true : false}
                                     onBlur={handleChange}
                                     onChange={handleChangeForBlurField}
                                     name="latitude"
@@ -1475,7 +1480,7 @@ const Form = (props) => {
                               <Grid item md={6} xs={12}>
                                  <TextField
                                     value={form.longitude}
-                                    disabled={props.detail}
+                                    disabled={props.detail || user.role === 'Admin Department' ? true : false}
                                     onBlur={handleChange}
                                     onChange={handleChangeForBlurField}
                                     name="longitude"
@@ -1490,6 +1495,8 @@ const Form = (props) => {
                      </Card>
                   </Grid>
 
+                  {user.role !== 'Admin Department' &&
+                  <>
                   {/* Depreciation Asset */}
                   <Grid item xs={12} md={12}>
                      <Card>
@@ -1548,7 +1555,7 @@ const Form = (props) => {
                         </CardContent>
                      </Card>
                   </Grid>
-
+                  
                   {/* Vendor Information */}
                   <Grid item xs={12} md={12}>
                      <Card>
@@ -1864,6 +1871,8 @@ const Form = (props) => {
                         </Grid>
                      </>
                   )}
+                  </>
+                  }
 
                   {/* Information Support */}
                   <Grid item xs={12} md={12}>
@@ -1873,7 +1882,7 @@ const Form = (props) => {
                            <Grid container mt={2} spacing={2}>
                               <Grid Grid item md={12} xs={12}>
                                  <TextField
-                                    disabled={props.detail}
+                                    disabled={props.detail || user.role === 'Admin Department' ? true : false}
                                     onChange={handleChange}
                                     value={form.notes}
                                     name="notes"
@@ -1907,7 +1916,7 @@ const Form = (props) => {
                                                    )} */}
                                                 </Box>
                                                 <input
-                                                   disabled={props.detail}
+                                                   disabled={props.detail || user.role === 'Admin Department' ? true : false}
                                                    type="file"
                                                    style={{ display: "none" }}
                                                    id={`img-${i}`}
@@ -1927,7 +1936,7 @@ const Form = (props) => {
                                                 />
                                                 {pictures.length > 1 && (
                                                    <Chip
-                                                      disabled={props.detail}
+                                                      disabled={props.detail || user.role === 'Admin Department' ? true : false}
                                                       color="error"
                                                       label="delete"
                                                       onClick={() => {
@@ -1941,7 +1950,7 @@ const Form = (props) => {
                                     })}
                                     <Grid item md={12} xs={12}>
                                        <Chip
-                                          disabled={props.detail}
+                                          disabled={props.detail || user.role === 'Admin Department' ? true : false}
                                           color="primary"
                                           sx={{ width: { xs: "100%", md: "auto" }, mt: { xs: 2, md: 5 } }}
                                           label="Tambah Image"
@@ -1978,7 +1987,7 @@ const Form = (props) => {
                                                 </Box>
                                                 <input
                                                    type="file"
-                                                   disabled={props.detail}
+                                                   disabled={props.detail || user.role === 'Admin Department' ? true : false}
                                                    style={{ display: "none" }}
                                                    id={`ev-${i}`}
                                                    onChange={(e) => {
@@ -1996,12 +2005,15 @@ const Form = (props) => {
                                                    }}
                                                 />
                                                 <Stack direction="row" justifyContent={"center"} alignContent="center">
+                                                   {!props.detail || user.role !== 'Admin Department' &&
                                                    <a target="_blank" href={v.file_url} style={{ cursor: "pointer" }}>
                                                       <DownloadForOfflineOutlined sx={{ fontSize: "10x", marginTop: "3px", marginRight: "3px" }} />
                                                    </a>
+                                                   }
 
                                                    {evidences.length > 1 && (
                                                       <Chip
+                                                         disabled={props.detail || user.role === 'Admin Department' ? true : false}
                                                          color="error"
                                                          label="delete"
                                                          onClick={() => {
@@ -2016,7 +2028,7 @@ const Form = (props) => {
                                     })}
                                     <Grid item md={12} xs={12}>
                                        <Chip
-                                          disabled={props.detail}
+                                          disabled={props.detail || user.role === 'Admin Department' ? true : false}
                                           color="primary"
                                           sx={{ width: { xs: "100%", md: "auto" }, mt: { xs: 2, md: 5 } }}
                                           label="Tambah Document"
@@ -2078,6 +2090,7 @@ const Form = (props) => {
                   )}
                </>
             )}
+
             {!isComplete && (
                <Grid item xs={12} md={12}>
                   <Loading />

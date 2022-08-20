@@ -166,12 +166,10 @@ const Form = (props) => {
          http
             .post("user", formData)
             .then((res) => {
-               // console.log(res.data)
                navigate("/user-list");
                enqueueSnackbar("Add User Successfuly", { variant: 'success' })
             })
             .catch((err) => {
-               // console.log(err.response)
                if(err.response){
                   setErrors(err.response.data.errors)
                }

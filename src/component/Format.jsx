@@ -157,7 +157,7 @@ function NumberFormat(bilangan, prefix) {
    }
 
    rupiah = split[1] !== undefined ? rupiah + "," + split[1] : rupiah;
-   return prefix === undefined ? rupiah : prefix === "Rp" ? "Rp" + rupiah : rupiah + "%";
+   return prefix === undefined ? rupiah : prefix === "Rp" ? "IDR " + rupiah : rupiah + "%";
 }
 
 export { DateFormat, TimeFormat, Duration, TimeAgo, NumberFormat };

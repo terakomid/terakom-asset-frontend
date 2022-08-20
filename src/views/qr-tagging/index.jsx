@@ -47,17 +47,21 @@ const Index = () => {
    };
 
    useEffect(() => {
+      let mounted = true 
       const temp = setScanner()
-      temp.start()
-      console.log('dipasang')
-      if(!isOn){
-         temp.destroy()
-         setDisplay("none");
-
+      if(Permission(user.permission, "qrcode") && mounted){
+         temp.start()
+         if(!isOn){
+            temp.destroy()
+            setDisplay("none");
+   
+         }
+      }else{
+         navigate('/dashboard')
       }
       return () => {
-         console.log('dicopot')
          temp.destroy()
+         mounted = false
       }
    }, [isOn])
 
@@ -76,10 +80,6 @@ const Index = () => {
          navigate(`/edit-data-asset-non-it/${data.id}`);
       }
    };
-
-   useEffect(() => {
-      Permission(user.permission, "qrcode") === true ? '' : navigate("/dashboard");
-   }, []);
 
    return (
       <div className="main-content mb-5">
