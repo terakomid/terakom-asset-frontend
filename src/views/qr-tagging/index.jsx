@@ -11,7 +11,7 @@ import { Permission } from "../../component/Permission";
 
 const Index = () => {
    const { user } = useRecoilValue(authentication);
-
+   const [isOn, setIsOn] = useState(true)
    const [code, setCode] = useState("");
    const [data, setData] = useState({});
    const [display, setDisplay] = useState("block");
@@ -22,33 +22,44 @@ const Index = () => {
          const formData = new FormData();
          formData.append("asset_code", asset_code);
          const res = await http.post(`asset/show_by_code`, formData);
-         // console.log(res.data)
          setData(res.data.data);
+         setCode(asset_code);
       } catch (err) {
-         console.log(err.response);
       }
    };
 
    const setScanner = (isOn = true) => {
+      setCode('')
+      setData({})
       setDisplay("block");
       const videoElem = document.querySelector("#video-elem");
       const qrScanner = new QrScanner(
          videoElem,
          (result) => {
-            setCode(result);
-            setDisplay("none");
-            getDetailAsset(result);
             qrScanner.destroy();
-         },
+            setDisplay("none");
+            setIsOn(false)
+            getDetailAsset(result);
+         }, 
          true
       );
-      if (isOn) {
-         qrScanner.start();
-      } else {
-         qrScanner.start();
-         qrScanner.destroy();
-      }
+      return qrScanner
    };
+
+   useEffect(() => {
+      const temp = setScanner()
+      temp.start()
+      console.log('dipasang')
+      if(!isOn){
+         temp.destroy()
+         setDisplay("none");
+
+      }
+      return () => {
+         console.log('dicopot')
+         temp.destroy()
+      }
+   }, [isOn])
 
    const handleDetail = () => {
       if (data.asset_type === "it") {
@@ -67,7 +78,7 @@ const Index = () => {
    };
 
    useEffect(() => {
-      Permission(user.permission, "qrcode") === true ? setScanner() : navigate("/dashboard");
+      Permission(user.permission, "qrcode") === true ? '' : navigate("/dashboard");
    }, []);
 
    return (
@@ -97,10 +108,13 @@ const Index = () => {
                                  <Button
                                     variant="contained"
                                     onClick={() => {
-                                       setScanner();
+                                       setIsOn(true)
                                     }}
                                  >
                                     Re-Scan QR Code
+                                 </Button>
+                                 <Button variant="contained" onClick={() => setIsOn(false)}>
+                                    Stop Scan
                                  </Button>
                                  {JSON.stringify(data) !== "{}" && (
                                     <>

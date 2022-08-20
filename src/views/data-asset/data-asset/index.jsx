@@ -148,8 +148,7 @@ const ModalFilter = (props) => {
                   office: res[8].filter((value) => value.id === 5),
                   antivirus: res[8].filter((value) => value.id === 6),
                });
-               // console.clear();
-               // console.log(res[8].filter((value) => value.id === 1));
+               
             }
          );
       }
@@ -665,7 +664,6 @@ const ModalImport = (props) => {
          props.handleClose()
       })
       .catch(err => {
-         err.response && console.log(err.response)
       })
       .finally(() => {
          setLoading(false)
@@ -764,7 +762,6 @@ const Index = () => {
    const [fieldOption, setFieldOption] = useState([])
 
    const getData = async () => {
-      console.log(params)
       http
          .get(`/asset`, {
             params: {
@@ -773,11 +770,9 @@ const Index = () => {
             },
          })
          .then((res) => {
-            //  console.log(res.data.data);
             setRows(res.data.data);
          })
          .catch((err) => {
-            //  console.log(err.response);
          });
    };
 

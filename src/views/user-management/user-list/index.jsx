@@ -73,7 +73,6 @@ const ModalFilter = (props) => {
    const getRole = async () => {
       const res = await http.get(`role`);
       setRoleOptions([...res.data.data]);
-      console.log(res.data)
       return 1;
    };
 
@@ -373,7 +372,7 @@ const TableExport = (props) => {
                      <tr key={v.id}>
                         <td>{v.name}</td>
                         <td>{v.code}</td>
-                        <td>{v.phone_number}</td>
+                        <td>`{v.phone_number}</td>
                         <td>{v.dept.dept}</td>
                         <td>{v.role}</td>
                         <td>{v.status === 1 ? "Active" : "Not Active"}</td>
@@ -459,7 +458,6 @@ const Index = () => {
    };
 
    const handleSearch = (e) => {
-      setPage(0);
       setParams({
          ...params,
          page: 1,
