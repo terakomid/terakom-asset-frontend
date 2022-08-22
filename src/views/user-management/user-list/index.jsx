@@ -53,6 +53,7 @@ import { useSnackbar } from 'notistack'
 const ModalFilter = (props) => {
    const [roleOptions, setRoleOptions] = useState([]);
    const [departmentOptions, setDepartmentOptions] = useState([]);
+   const [locationOptions, setLocationOptions] = useState([]);
    const [filter, setFilter] = useState({
       role: "",
       department_id: "",
@@ -61,6 +62,7 @@ const ModalFilter = (props) => {
       department_id: [],
       employee_id: [],
       role_id: [],
+      location_id: [],
    })
    const [isComplete, setIsComplete] = useState(false);
 
@@ -73,6 +75,12 @@ const ModalFilter = (props) => {
    const getRole = async () => {
       const res = await http.get(`role`);
       setRoleOptions([...res.data.data]);
+      return 1;
+   };
+
+   const getLocation = async () => {
+      const res = await http.get(`location`);
+      setLocationOptions([...res.data.data]);
       return 1;
    };
 
@@ -89,13 +97,21 @@ const ModalFilter = (props) => {
    useEffect(() => {
       let mounted = true;
       if (mounted && props.open) {
-         Promise.all([getDepartment(), getRole()]).then((res) => {
+         Promise.all([getDepartment(), getRole(), getLocation()]).then((res) => {
             setIsComplete(true);
          });
       }
 
       return () => (mounted = false);
    }, [props.open]);
+
+   const onFilter = () => {
+      props.setParams({
+         ...props.params,
+         ...data
+      })
+      props.handleClose()
+   }
 
    return (
       <Dialog
@@ -180,6 +196,41 @@ const ModalFilter = (props) => {
                         </Select>
                      </FormControl>
                   </Grid>
+                  <Grid item xs={12} md={6}>
+                     <FormControl fullWidth>
+                        <InputLabel>Location</InputLabel>
+                        <Select
+                           labelId="demo-multiple-checkbox-label"
+                           id="demo-multiple-checkbox"
+                           multiple
+                           name='location_id'
+                           value={data.location_id}
+                           onChange={handleChange}
+                           input={<OutlinedInput label="Location" />}
+                           renderValue={(selected) => {
+                                 return locationOptions.filter(v => selected.includes(v.id)).map(v => {
+                                    return (
+                                       <Chip 
+                                             label={v.location} 
+                                             onDelete={() => 's'}
+                                       />
+                                    )
+                                 })
+                           }}
+                        >
+                           {locationOptions.length > 0 && locationOptions.map((v, i) => {
+                                 return (
+                                 <MenuItem key={v.id} value={v.id}>
+                                    <Checkbox 
+                                       checked={data.location_id.indexOf(v.id) > -1} 
+                                    />
+                                    <ListItemText primary={v.location} />
+                                 </MenuItem>
+                                 )
+                           })}
+                        </Select>
+                     </FormControl>
+                  </Grid>
                </Grid>
             )}
          </DialogContent>
@@ -187,7 +238,7 @@ const ModalFilter = (props) => {
             <Button variant="text" onClick={props.handleClose}>
                Cancel
             </Button>
-            <Button variant="text" color="primary" onClick={() => console.log("filter")} autoFocus>
+            <Button variant="text" color="primary" onClick={onFilter} autoFocus>
                Filter
             </Button>
          </DialogActions>
@@ -668,7 +719,7 @@ const Index = () => {
                   <div className="col-xl-4 col-12 mt-3">
                      {/* utils */}
                      <ModalDelete open={openModal} delete={onDelete} handleClose={handleModal} />
-                     <ModalFilter open={modalFilter} setParams={setParams} handleClose={handleModalFilter} />
+                     <ModalFilter open={modalFilter} setParams={setParams} params={params} handleClose={handleModalFilter} />
                      <ModalResetPassword 
                         open={openResetPassword} 
                         handleMenu={handleMenu}

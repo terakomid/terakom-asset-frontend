@@ -562,8 +562,6 @@ const Index = () => {
                                        <TableCell>Date Created</TableCell>
                                        <TableCell>SK Number</TableCell>
                                        <TableCell>Description</TableCell>
-                                       <TableCell>Amount Delete</TableCell>
-                                       <TableCell>Total Value</TableCell>
                                        <TableCell>Update</TableCell>
                                        <TableCell>Status</TableCell>
                                        {Permission(user.permission, "update asset disposal") || Permission(user.permission, "delete asset disposal") ? (
@@ -582,8 +580,6 @@ const Index = () => {
                                                 <TableCell>{moment(value.created_at).format("ll")}</TableCell>
                                                 <TableCell>{value.sk_number}</TableCell>
                                                 <TableCell>{value.description}</TableCell>
-                                                <TableCell>{value.amount_delete}</TableCell>
-                                                <TableCell>{value.total_value}</TableCell>
                                                 <TableCell>{moment(value.updated_at).format("ll")}</TableCell>
                                                 <TableCell>
                                                    {value.status === "process" && <Chip label="Process" color="warning" />}

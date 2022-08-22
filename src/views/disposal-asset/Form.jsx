@@ -44,6 +44,7 @@ import Loading from "../../component/Loading";
 import { produce } from "immer";
 import moment from "moment";
 import { useSnackbar } from "notistack";
+import { NumberFormat } from "../../component/Format";
 
 
 const Form = (props) => {
@@ -403,6 +404,8 @@ const Form = (props) => {
 												<TableCell>Capitalized On</TableCell>
 												<TableCell>Useful Life</TableCell>
 												<TableCell>Acquisition Value</TableCell>
+												<TableCell>Book Value</TableCell>
+												<TableCell>Condition</TableCell>
 												<TableCell align="center">Action</TableCell>
 												</TableRow>
 											</TableHead>
@@ -422,7 +425,9 @@ const Form = (props) => {
 															<TableCell>{value.category.category}</TableCell>
 															<TableCell>{moment(value.capitalized).format('ll') }</TableCell>
 															<TableCell>{value.sub_category.useful_life}</TableCell>
-															<TableCell>{value.acquisition_value}</TableCell>
+															<TableCell>{NumberFormat(value.acquisition_value, "Rp")}</TableCell>
+															<TableCell>{NumberFormat(value.book_value, "Rp")}</TableCell>
+															<TableCell>{value.condition.condition}</TableCell>
 															<TableCell align="center">
 																<IconButton 
 																	onClick={() => {
@@ -479,6 +484,8 @@ const Form = (props) => {
 												<TableCell>Capitalized On</TableCell>
 												<TableCell>Useful Life</TableCell>
 												<TableCell>Acquisition Value</TableCell>
+												<TableCell>Book Value</TableCell>
+												<TableCell>Asset Condition</TableCell>
 												</TableRow>
 											</TableHead>
 											<TableBody>
@@ -497,7 +504,9 @@ const Form = (props) => {
 															<TableCell>{value.asset.category.category}</TableCell>
 															<TableCell>{moment(value.asset.capitalized).format('ll') }</TableCell>
 															<TableCell>{value.asset.sub_category.useful_life}</TableCell>
-															<TableCell>{value.asset.acquisition_value}</TableCell>
+															<TableCell>{NumberFormat(value.asset.acquisition_value, "Rp")}</TableCell>
+															<TableCell>{NumberFormat(value.asset.book_value, "Rp")}</TableCell>
+															<TableCell>{value.asset.condition.condition}</TableCell>
 														</TableRow>
 													))
 												) : (

@@ -20,7 +20,7 @@ import {
    ListItemIcon,
    Chip,
 } from "@mui/material";
-import { AddRounded, CloseRounded, Delete, Edit, FilterListRounded, MoreVert, Search } from "@mui/icons-material";
+import { AddRounded, Check, Close, CloseRounded, Delete, Edit, FilterListRounded, MoreVert, Search } from "@mui/icons-material";
 import { Link as RouterLink } from "react-router-dom";
 
 import http from "../../../component/api/Api";
@@ -119,6 +119,19 @@ export default function AcceptanceAsset() {
       setAnchorEl(null);
    };
 
+   const handleUpdateStatus = async (status) => {
+      try {
+         const res = await http.patch(`asset_acceptance/${staging.id}/update_status?status=${status}`, {})
+
+         getData()
+         handleMenu()
+         
+      } catch (error) {
+         console.log(error.response)
+      }
+      
+   }
+
    return (
       <div className="main-content mb-5">
          <div className="page-content">
@@ -183,7 +196,7 @@ export default function AcceptanceAsset() {
                                  <TableCell>Department</TableCell>
                                  <TableCell>Date</TableCell>
                                  <TableCell>Status</TableCell>
-                                 {Permission(user.permission, "update asset acceptance") || Permission(user.permission, "delete asset acceptance") ? (
+                                 {Permission(user.permission, "update status asset acceptance") || Permission(user.permission, "update asset acceptance") || Permission(user.permission, "delete asset acceptance") ? (
                                     <TableCell align="center">Action</TableCell>
                                  ) : null}
                               </TableRow>
@@ -209,7 +222,7 @@ export default function AcceptanceAsset() {
                                                 label={value.status === "received" ? "Received" : "Not Received"}
                                              />
                                           </TableCell>
-                                          {Permission(user.permission, "update asset acceptance") || Permission(user.permission, "delete asset acceptance") ? (
+                                          {Permission(user.permission, "update status asset acceptance") || Permission(user.permission, "update asset acceptance") || Permission(user.permission, "delete asset acceptance") ? (
                                              <TableCell align="center">
                                                 <IconButton onClick={(e) => handleAction(e, value)}>
                                                    <MoreVert />
@@ -255,7 +268,7 @@ export default function AcceptanceAsset() {
                   </CardContent>
                </Card>
                <ModalDelete open={openModal} delete={onDelete} handleClose={handleModal} />
-               {Permission(user.permission, "update asset acceptance") || Permission(user.permission, "delete asset acceptance") ? (
+               {Permission(user.permission, "update status asset acceptance") || Permission(user.permission, "update asset acceptance") || Permission(user.permission, "delete asset acceptance") ? (
                   <Menu
                      anchorEl={anchorEl}
                      open={open}
@@ -277,6 +290,22 @@ export default function AcceptanceAsset() {
                               <Delete />
                            </ListItemIcon>
                            Delete
+                        </MenuItem>
+                     )}
+                     {Permission(user.permission, "update status asset acceptance") && (
+                        <MenuItem onClick={() => handleUpdateStatus('received')}>
+                           <ListItemIcon>
+                              <Check />
+                           </ListItemIcon>
+                           Receive
+                        </MenuItem>
+                     )}
+                     {Permission(user.permission, "update status asset acceptance") && (
+                        <MenuItem onClick={() => handleUpdateStatus('not_received')}>
+                           <ListItemIcon>
+                              <Close />
+                           </ListItemIcon>
+                           Not Receive
                         </MenuItem>
                      )}
                   </Menu>
