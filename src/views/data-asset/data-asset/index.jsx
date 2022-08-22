@@ -34,7 +34,18 @@ import {
    Divider,
    Box,
 } from "@mui/material";
-import { Close, CloseRounded, Edit, FileDownload, FileUploadOutlined, FilterListRounded, InfoOutlined, InsertDriveFile, MoreVert, Search } from "@mui/icons-material";
+import {
+   Close,
+   CloseRounded,
+   Edit,
+   FileDownload,
+   FileUploadOutlined,
+   FilterListRounded,
+   InfoOutlined,
+   InsertDriveFile,
+   MoreVert,
+   Search,
+} from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import { DatePicker } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
@@ -44,7 +55,7 @@ import http from "../../../component/api/Api";
 import Loading from "../../../component/Loading";
 import ModalDelete from "../../../component/Delete";
 import moment from "moment";
-import { LoadingButton } from '@mui/lab'
+import { LoadingButton } from "@mui/lab";
 
 import { useRecoilValue } from "recoil";
 import { authentication } from "../../../store/Authentication";
@@ -52,8 +63,8 @@ import { Permission } from "../../../component/Permission";
 import { NumberFormat } from "../../../component/Format";
 
 const ModalFilter = (props) => {
-   const [loading, setLoading] = useState(false)
-   const [complete, setComplete] = useState(false)
+   const [loading, setLoading] = useState(false);
+   const [complete, setComplete] = useState(false);
    const [rows, setRows] = useState({
       category_id: [],
       employees_id: [],
@@ -72,7 +83,7 @@ const ModalFilter = (props) => {
       windows_id: [],
       office_id: [],
       antivirus_id: [],
-   }); 
+   });
    const [data, setData] = useState();
    const getCategory = async () => {
       const res = await http.get(`category`);
@@ -148,21 +159,20 @@ const ModalFilter = (props) => {
                   office: res[8].filter((value) => value.id === 5),
                   antivirus: res[8].filter((value) => value.id === 6),
                });
-               
             }
          );
       }
    }, []);
 
-   const handleSubmit = () =>{
+   const handleSubmit = () => {
       props.setParams({
          ...props.params,
          ...rows,
-         capitalized_from: rows.capitalized_from === null ? '' : moment(rows.capitalized_from).format('yyyy-MM-DD'),
-         capitalized_until: rows.capitalized_until === null ? '' : moment(rows.capitalized_until).format('yyyy-MM-DD'),
-      })
-      props.handleClose()
-   }
+         capitalized_from: rows.capitalized_from === null ? "" : moment(rows.capitalized_from).format("yyyy-MM-DD"),
+         capitalized_until: rows.capitalized_until === null ? "" : moment(rows.capitalized_until).format("yyyy-MM-DD"),
+      });
+      props.handleClose();
+   };
 
    return (
       <Dialog open={props.open} onClose={props.handleClose} maxWidth="md" fullWidth>
@@ -647,28 +657,27 @@ const ModalImport = (props) => {
    const [document, setDocument] = useState({
       file: "",
       file_url: "",
-   })
+   });
    const [loading, setLoading] = useState(false);
 
    const submitData = async () => {
-      const formData = new FormData()
-      formData.append("file", document.file)
-      const res = http.post(`asset/import_excel`, formData)
-      
-   }
+      const formData = new FormData();
+      formData.append("file", document.file);
+      const res = http.post(`asset/import_excel`, formData);
+   };
 
    const onSubmit = () => {
-      setLoading(true)
-      submitData().then(res => {
-         props.getData()
-         props.handleClose()
-      })
-      .catch(err => {
-      })
-      .finally(() => {
-         setLoading(false)
-      })
-   }
+      setLoading(true);
+      submitData()
+         .then((res) => {
+            props.getData();
+            props.handleClose();
+         })
+         .catch((err) => {})
+         .finally(() => {
+            setLoading(false);
+         });
+   };
 
    return (
       <Dialog
@@ -681,8 +690,7 @@ const ModalImport = (props) => {
       >
          <DialogTitle>Import</DialogTitle>
          <DialogContent>
-         {
-            document.file_url !== "" ? (
+            {document.file_url !== "" ? (
                <TextField
                   variant="outlined"
                   label="Supporting Document *"
@@ -697,10 +705,14 @@ const ModalImport = (props) => {
                      endAdornment: (
                         <InputAdornment position="end">
                            <Tooltip title="Delete">
-                              <IconButton onClick={() => setDocument({ 
-                                 file: '',
-                                 file_url: '' 
-                              })}>
+                              <IconButton
+                                 onClick={() =>
+                                    setDocument({
+                                       file: "",
+                                       file_url: "",
+                                    })
+                                 }
+                              >
                                  <Close />
                               </IconButton>
                            </Tooltip>
@@ -712,28 +724,28 @@ const ModalImport = (props) => {
             ) : (
                <Button size="large" variant="outlined" component="label" fullWidth startIcon={<FileUploadOutlined />}>
                   Import Data Asset(.xlsx)
-                  <input 
-                     name="document" 
-                     type="file" 
+                  <input
+                     name="document"
+                     type="file"
                      onChange={(e) => {
-                        let file = e.target.files[0]
-                        let file_url = file.name
+                        let file = e.target.files[0];
+                        let file_url = file.name;
                         setDocument({
                            file,
-                           file_url
-                        })
+                           file_url,
+                        });
                      }}
-                     hidden 
-                     required />
+                     hidden
+                     required
+                  />
                </Button>
-            )
-         }
+            )}
          </DialogContent>
          <DialogActions>
             <Button variant="text" onClick={props.handleClose}>
                Cancel
             </Button>
-            <LoadingButton loading={loading}  variant="text" color="success" onClick={onSubmit} autoFocus>
+            <LoadingButton loading={loading} variant="text" color="success" onClick={onSubmit} autoFocus>
                Submit
             </LoadingButton>
          </DialogActions>
@@ -750,7 +762,7 @@ const Index = () => {
       code: "",
       location: "",
    });
-   const [field, setField] = useState([])
+   const [field, setField] = useState([]);
    const [params, setParams] = useState({
       search: "",
       order_by_name: 0,
@@ -759,38 +771,35 @@ const Index = () => {
       paginate: 1,
    });
    const [loading, setLoading] = useState(false);
-   const [fieldOption, setFieldOption] = useState([])
+   const [fieldOption, setFieldOption] = useState([]);
 
    const getData = async () => {
       http
          .get(`/asset`, {
             params: {
                ...params,
-               field
+               field,
             },
          })
          .then((res) => {
             setRows(res.data.data);
          })
-         .catch((err) => {
-         });
+         .catch((err) => {});
    };
 
    const getField = async () => {
-      const res = await http.get('asset/field_asset')
-      setFieldOption([...res.data.data])
-   }
+      const res = await http.get("asset/field_asset");
+      setFieldOption([...res.data.data]);
+   };
 
    useEffect(() => {
-      let mounted = true
-      if(mounted){
-         getField()
+      let mounted = true;
+      if (mounted) {
+         getField();
       }
 
-      return () => mounted = false
-
-   }, [])
-   
+      return () => (mounted = false);
+   }, []);
 
    useEffect(() => {
       setRows(undefined);
@@ -870,10 +879,10 @@ const Index = () => {
    };
 
    //Import
-   const [openImport, setOpenImport] = useState(false)
+   const [openImport, setOpenImport] = useState(false);
    const handleCloseImport = () => {
-      setOpenImport(!openImport)
-   }
+      setOpenImport(!openImport);
+   };
 
    //staging
    const [staging, setStaging] = useState();
@@ -899,7 +908,6 @@ const Index = () => {
                            Import
                         </Button>
                      )}
-
                   </div>
                   {Permission(user.permission, "create asset") && (
                      <Grid container spacing={3}>
@@ -936,36 +944,32 @@ const Index = () => {
                                     <InputLabel>Field</InputLabel>
                                     <Select
                                        multiple
-                                       name='filed'
+                                       name="filed"
                                        value={field}
                                        onChange={(e) => {
                                           const {
                                              target: { value },
                                           } = e;
-                                          setField(typeof value === 'string' ? value.split(',') : value);
+                                          setField(typeof value === "string" ? value.split(",") : value);
                                        }}
                                        input={<OutlinedInput label="Field" />}
                                        renderValue={(selected) => {
-                                             return fieldOption.filter(v => selected.includes(v.field)).map(v => {
-                                                return (
-                                                   <Chip 
-                                                         label={v.title} 
-                                                         onDelete={() => 's'}
-                                                   />
-                                                )
-                                             })
+                                          return fieldOption
+                                             .filter((v) => selected.includes(v.field))
+                                             .map((v) => {
+                                                return <Chip label={v.title} onDelete={() => "s"} />;
+                                             });
                                        }}
                                     >
-                                       {fieldOption.length > 0 && fieldOption.map((v, i) => {
+                                       {fieldOption.length > 0 &&
+                                          fieldOption.map((v, i) => {
                                              return (
-                                             <MenuItem key={v.field} value={v.field}>
-                                                <Checkbox 
-                                                   checked={field.indexOf(v.field) > -1} 
-                                                />
-                                                <ListItemText primary={v.title} />
-                                             </MenuItem>
-                                             )
-                                       })}
+                                                <MenuItem key={v.field} value={v.field}>
+                                                   <Checkbox checked={field.indexOf(v.field) > -1} />
+                                                   <ListItemText primary={v.title} />
+                                                </MenuItem>
+                                             );
+                                          })}
                                     </Select>
                                  </FormControl>
                               </Grid>

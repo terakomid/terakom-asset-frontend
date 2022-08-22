@@ -60,29 +60,22 @@ import { authentication } from "../../../store/Authentication";
 
 const DetailModal = (props) => {
    const navigate = useNavigate();
-   const { enqueueSnackbar } = useSnackbar()
+   const { enqueueSnackbar } = useSnackbar();
    const handleClose = () => {
-      if(props.title === "add"){
-         enqueueSnackbar("Add Asset Successfuly", { variant: 'success' })
-      }else{
-         enqueueSnackbar("Edit Asset Successfuly", { variant: 'success' })
+      if (props.title === "add") {
+         enqueueSnackbar("Add Asset Successfuly", { variant: "success" });
+      } else {
+         enqueueSnackbar("Edit Asset Successfuly", { variant: "success" });
       }
-      navigate("/data-asset")
-   }
+      navigate("/data-asset");
+   };
 
    return (
-      <Dialog
-         fullWidth
-         maxWidth="xs"
-         open={props.open}
-         onClose={handleClose}
-         aria-labelledby="alert-dialog-title"
-         aria-describedby="alert-dialog-description"
-      >
+      <Dialog fullWidth maxWidth="xs" open={props.open} onClose={handleClose} aria-labelledby="alert-dialog-title" aria-describedby="alert-dialog-description">
          <DialogTitle>QR Asset</DialogTitle>
          <DialogContent>
-            <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
-               <LabelTable data={props.data} capitalizedSplit={'/'} />
+            <Box sx={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" }}>
+               <LabelTable data={props.data} capitalizedSplit={"/"} />
                <Button sx={{ mt: 2 }} variant="contained">
                   Print
                </Button>
@@ -601,7 +594,7 @@ const DetailComponent = (props) => {
 
 const Form = (props) => {
    const [id, setId] = useState("");
-   const { user } = useRecoilValue(authentication)
+   const { user } = useRecoilValue(authentication);
 
    //form
    const [form, setForm] = useState({
@@ -665,7 +658,7 @@ const Form = (props) => {
 
    // utils
    const navigate = useNavigate();
-   const { enqueueSnackbar } = useSnackbar()
+   const { enqueueSnackbar } = useSnackbar();
    const [isComplete, setIsComplete] = useState(false);
    const [loading, setLoading] = useState(false);
    const [errors, setErrors] = useState({});
@@ -862,13 +855,13 @@ const Form = (props) => {
          });
       }
    };
-   
+
    const handleChangeForBlurField = (e) => {
       setForm({
          ...form,
-         [e.target.name]: e.target.value
-      })
-   }
+         [e.target.name]: e.target.value,
+      });
+   };
 
    const handleModal = () => {
       setOpen(true);
@@ -937,7 +930,7 @@ const Form = (props) => {
          handleDetailModal();
       } catch (err) {
          setLoading(false);
-         handleClose()
+         handleClose();
          if (err.response) {
             setErrors(err.response.data.errors);
          }
@@ -952,7 +945,7 @@ const Form = (props) => {
          handleDetailModal();
       } catch (err) {
          setLoading(false);
-         handleClose()
+         handleClose();
          if (err.response) {
             setErrors(err.response.data.errors);
          }
@@ -984,14 +977,14 @@ const Form = (props) => {
 
       //depreciation asset
       formData.append("cost_id", form.cost_id);
-      formData.append("acquisition_value", form.acquisition_value.replaceAll('IDR ', '').replaceAll('.', ''));
+      formData.append("acquisition_value", form.acquisition_value.replaceAll("IDR ", "").replaceAll(".", ""));
       // formData.append('depreciation_value', form.depreciation_value)
       // formData.append('value_book', form.value_book)
       formData.append("depreciation", form.depreciation);
 
       //Vendor information
       formData.append("vendor_id", form.vendor_id);
-      form.notes !== "" &&  formData.append("notes", form.notes);
+      form.notes !== "" && formData.append("notes", form.notes);
 
       if (props.title === "add") {
          pictures.map((v, i) => {
@@ -1223,7 +1216,7 @@ const Form = (props) => {
                <>
                   {/* Print Label*/}
                   {props.detail && <DetailComponent data={props.data} />}
-                  
+
                   {/* Asset Information */}
                   <Grid item xs={12} md={12}>
                      <Card>
@@ -1248,7 +1241,7 @@ const Form = (props) => {
                                  <TextField
                                     name="category_id"
                                     value={form.category_id}
-                                    disabled={props.detail || user.role === 'Admin Department' ? true : false}
+                                    disabled={props.detail || user.role === "Admin Department" ? true : false}
                                     onBlur={handleChange}
                                     onChange={handleChangeForBlurField}
                                     fullWidth
@@ -1267,7 +1260,7 @@ const Form = (props) => {
                                  <TextField
                                     name="sub_category_id"
                                     value={form.sub_category_id}
-                                    disabled={props.detail || user.role === 'Admin Department' ? true : false}
+                                    disabled={props.detail || user.role === "Admin Department" ? true : false}
                                     onBlur={handleChange}
                                     onChange={handleChangeForBlurField}
                                     fullWidth
@@ -1294,7 +1287,7 @@ const Form = (props) => {
                               </Grid>
                               <Grid item md={4} xs={12}>
                                  <TextField
-                                    disabled={props.detail || user.role === 'Admin Department' ? true : false}
+                                    disabled={props.detail || user.role === "Admin Department" ? true : false}
                                     onBlur={handleChange}
                                     onChange={handleChangeForBlurField}
                                     value={form.asset_name}
@@ -1308,7 +1301,7 @@ const Form = (props) => {
                               </Grid>
                               <Grid item md={4} xs={12}>
                                  <TextField
-                                    disabled={props.detail || user.role === 'Admin Department' ? true : false}
+                                    disabled={props.detail || user.role === "Admin Department" ? true : false}
                                     onBlur={handleChange}
                                     onChange={handleChangeForBlurField}
                                     value={form.specification}
@@ -1331,7 +1324,7 @@ const Form = (props) => {
                                        label="Capitalized On"
                                        inputFormat="yyyy/MM/dd"
                                        mask="____/__/__"
-                                       disabled={props.detail || user.role === 'Admin Department' ? true : false}
+                                       disabled={props.detail || user.role === "Admin Department" ? true : false}
                                        onChange={(newValue) => {
                                           const splitCode = form.asset_code.split("/");
                                           splitCode[0] = newValue.toString().split(" ")[3];
@@ -1355,7 +1348,7 @@ const Form = (props) => {
                               </Grid>
                               <Grid item md={6} xs={12}>
                                  <TextField
-                                    disabled={props.detail || user.role === 'Admin Department' ? true : false}
+                                    disabled={props.detail || user.role === "Admin Department" ? true : false}
                                     onBlur={handleChange}
                                     onChange={handleChangeForBlurField}
                                     value={form.sap_code}
@@ -1380,7 +1373,7 @@ const Form = (props) => {
                            <Grid container mt={2} spacing={2}>
                               <Grid item md={6} xs={12}>
                                  <Autocomplete
-                                    disabled={props.detail || user.role === 'Admin Department' ? true : false}
+                                    disabled={props.detail || user.role === "Admin Department" ? true : false}
                                     freeSolo
                                     disableClearable
                                     options={employees}
@@ -1467,7 +1460,7 @@ const Form = (props) => {
                               <Grid item md={6} xs={12}>
                                  <TextField
                                     value={form.latitude}
-                                    disabled={props.detail || user.role === 'Admin Department' ? true : false}
+                                    disabled={props.detail || user.role === "Admin Department" ? true : false}
                                     onBlur={handleChange}
                                     onChange={handleChangeForBlurField}
                                     name="latitude"
@@ -1480,7 +1473,7 @@ const Form = (props) => {
                               <Grid item md={6} xs={12}>
                                  <TextField
                                     value={form.longitude}
-                                    disabled={props.detail || user.role === 'Admin Department' ? true : false}
+                                    disabled={props.detail || user.role === "Admin Department" ? true : false}
                                     onBlur={handleChange}
                                     onChange={handleChangeForBlurField}
                                     name="longitude"
@@ -1495,384 +1488,393 @@ const Form = (props) => {
                      </Card>
                   </Grid>
 
-                  {user.role !== 'Admin Department' &&
-                  <>
-                  {/* Depreciation Asset */}
-                  <Grid item xs={12} md={12}>
-                     <Card>
-                        <CardContent>
-                           <Typography>Depreciation Asset</Typography>
-                           <Grid container mt={2} spacing={2}>
-                              <Grid item md={6} xs={12}>
-                                 <TextField
-                                    value={form.cost_id}
-                                    disabled={props.detail}
-                                    onBlur={handleChange}
-                                    onChange={handleChangeForBlurField}
-                                    name="cost_id"
-                                    fullWidth
-                                    label="Cost Center Name"
-                                    select
-                                    required
-                                    helperText={typeof errors?.cost_id !== "undefined" ? errors.cost_id[0] : ""}
-                                    error={typeof errors?.cost_id !== "undefined" ? true : false}
-                                 >
-                                    {assetCost.length > 0 && assetCost.map((v) => <MenuItem key={v.id} value={v.id}>{`${v.code} - ${v.name}`}</MenuItem>)}
-                                    {assetCost.length == 0 && <MenuItem disabled>Kosong</MenuItem>}
-                                 </TextField>
-                              </Grid>
-                              <Grid item md={6} xs={12}>
-                                 <TextField
-                                    value={NumberFormat(form.acquisition_value, "Rp")}
-                                    disabled={props.detail}
-                                    onBlur={handleChange}
-                                    onChange={handleChangeForBlurField}
-                                    name="acquisition_value"
-                                    fullWidth
-                                    label="Acquisition Value"
-                                    required
-                                    helperText={typeof errors?.acquisition_value !== "undefined" ? errors.acquisition_value[0] : ""}
-                                    error={typeof errors?.acquisition_value !== "undefined" ? true : false}
-                                 />
-                              </Grid>
-                              <Grid item md={4} xs={12}>
-                                 <FormControl>
-                                    <FormLabel id="demo-row-radio-buttons-group-label">Calculate Asset Depreciation ? </FormLabel>
-                                    <RadioGroup
-                                       row
-                                       aria-labelledby="demo-row-radio-buttons-group-label"
-                                       name="depreciation"
-                                       value={form.depreciation}
-                                       disabled={props.detail}
-                                       onChange={handleChange}
-                                    >
-                                       <FormControlLabel disabled={props.detail} value={"1"} control={<Radio />} label="Yes" />
-                                       <FormControlLabel disabled={props.detail} value={"0"} control={<Radio />} label="No" />
-                                    </RadioGroup>
-                                 </FormControl>
-                              </Grid>
-                           </Grid>
-                        </CardContent>
-                     </Card>
-                  </Grid>
-                  
-                  {/* Vendor Information */}
-                  <Grid item xs={12} md={12}>
-                     <Card>
-                        <CardContent>
-                           <Typography>Vendor Information</Typography>
-                           <Grid container mt={2} spacing={2}>
-                              <Grid item md={6} xs={12}>
-                                 <TextField
-                                    disabled={props.detail}
-                                    onChange={handleChange}
-                                    value={form.vendor_id}
-                                    name="vendor_id"
-                                    fullWidth
-                                    label="Vendor Name"
-                                    select
-                                    required
-                                    helperText={typeof errors?.vendor_id !== "undefined" ? errors.vendor_id[0] : ""}
-                                    error={typeof errors?.vendor_id !== "undefined" ? true : false}
-                                 >
-                                    {assetVendor.length > 0 && assetVendor.map((v) => <MenuItem key={v.id} value={v.id}>{`${v.code} - ${v.name}`}</MenuItem>)}
-                                    {assetVendor.length == 0 && <MenuItem disabled>Kosong</MenuItem>}
-                                 </TextField>
-                              </Grid>
-                              <Grid item md={6} xs={12}>
-                                 <TextField value={vendor.vendor_address} name="vendor_address" fullWidth label="Vendor Address" disabled />
-                              </Grid>
-                              <Grid item md={6} xs={12}>
-                                 <TextField value={vendor.pic_contact} name="pic_contact" fullWidth label="PIC Contact" disabled />
-                              </Grid>
-                              <Grid item md={6} xs={12}>
-                                 <TextField value={vendor.contact} name="contact" fullWidth label="Contact" disabled />
-                              </Grid>
-                           </Grid>
-                        </CardContent>
-                     </Card>
-                  </Grid>
-
-                  {props.type === "it" && (
+                  {user.role !== "Admin Department" && (
                      <>
-                        {/* Device Information */}
+                        {/* Depreciation Asset */}
                         <Grid item xs={12} md={12}>
                            <Card>
                               <CardContent>
-                                 <Typography>Device Information</Typography>
+                                 <Typography>Depreciation Asset</Typography>
                                  <Grid container mt={2} spacing={2}>
-                                    <Grid Grid item md={4} xs={12}>
+                                    <Grid item md={6} xs={12}>
                                        <TextField
+                                          value={form.cost_id}
                                           disabled={props.detail}
-                                          onChange={handleChange}
-                                          value={form.device_id}
-                                          name="device_id"
+                                          onBlur={handleChange}
+                                          onChange={handleChangeForBlurField}
+                                          name="cost_id"
                                           fullWidth
-                                          label="Device"
+                                          label="Cost Center Name"
                                           select
-                                          helperText={typeof errors?.device_id !== "undefined" ? errors.device_id[0] : ""}
-                                          error={typeof errors?.device_id !== "undefined" ? true : false}
+                                          required
+                                          helperText={typeof errors?.cost_id !== "undefined" ? errors.cost_id[0] : ""}
+                                          error={typeof errors?.cost_id !== "undefined" ? true : false}
                                        >
-                                          {masterDevices.length > 0 &&
-                                             masterDevices.map((v) => (
-                                                <MenuItem key={v.id} value={v.id}>
-                                                   {v.sub_type}
-                                                </MenuItem>
-                                             ))}
-                                          {masterDevices.length == 0 && <MenuItem disabled>Kosong</MenuItem>}
+                                          {assetCost.length > 0 && assetCost.map((v) => <MenuItem key={v.id} value={v.id}>{`${v.code} - ${v.name}`}</MenuItem>)}
+                                          {assetCost.length == 0 && <MenuItem disabled>Kosong</MenuItem>}
                                        </TextField>
                                     </Grid>
-                                    <Grid Grid item md={4} xs={12}>
+                                    <Grid item md={6} xs={12}>
                                        <TextField
+                                          value={NumberFormat(form.acquisition_value, "Rp")}
                                           disabled={props.detail}
-                                          onChange={handleChange}
-                                          value={form.type}
-                                          name="type"
+                                          onBlur={handleChange}
+                                          onChange={handleChangeForBlurField}
+                                          name="acquisition_value"
                                           fullWidth
-                                          label="Type"
-                                          helperText={typeof errors?.type !== "undefined" ? errors.type[0] : ""}
-                                          error={typeof errors?.type !== "undefined" ? true : false}
+                                          label="Acquisition Value"
+                                          required
+                                          helperText={typeof errors?.acquisition_value !== "undefined" ? errors.acquisition_value[0] : ""}
+                                          error={typeof errors?.acquisition_value !== "undefined" ? true : false}
                                        />
                                     </Grid>
-                                    <Grid Grid item md={4} xs={12}>
-                                       <TextField
-                                          disabled={props.detail}
-                                          onChange={handleChange}
-                                          value={form.brand_id}
-                                          name="brand_id"
-                                          fullWidth
-                                          label="Brand"
-                                          select
-                                          helperText={typeof errors?.brand_id !== "undefined" ? errors.brand_id[0] : ""}
-                                          error={typeof errors?.brand_id !== "undefined" ? true : false}
-                                       >
-                                          {masterBrands.length > 0 &&
-                                             masterBrands.map((v) => (
-                                                <MenuItem key={v.id} value={v.id}>
-                                                   {v.sub_type}
-                                                </MenuItem>
-                                             ))}
-                                          {masterBrands.length == 0 && <MenuItem disabled>Kosong</MenuItem>}
-                                       </TextField>
-                                    </Grid>
-                                    <Grid Grid item md={4} xs={12}>
-                                       <TextField
-                                          disabled={props.detail}
-                                          onChange={handleChange}
-                                          value={form.monitor_inch}
-                                          name="monitor_inch"
-                                          fullWidth
-                                          label="Monitor Inch"
-                                          helperText={typeof errors?.monitor_inch !== "undefined" ? errors.monitor_inch[0] : ""}
-                                          error={typeof errors?.monitor_inch !== "undefined" ? true : false}
-                                       />
-                                    </Grid>
-                                    <Grid Grid item md={4} xs={12}>
-                                       <TextField
-                                          disabled={props.detail}
-                                          onChange={handleChange}
-                                          value={form.model_brand}
-                                          name="model_brand"
-                                          fullWidth
-                                          label="Model Brand"
-                                          helperText={typeof errors?.model_brand !== "undefined" ? errors.model_brand[0] : ""}
-                                          error={typeof errors?.model_brand !== "undefined" ? true : false}
-                                       />
-                                    </Grid>
-                                    <Grid Grid item md={4} xs={12}>
-                                       <TextField
-                                          disabled={props.detail}
-                                          onChange={handleChange}
-                                          value={form.mac_address}
-                                          name="mac_address"
-                                          fullWidth
-                                          label="Mac Address"
-                                          helperText={typeof errors?.mac_address !== "undefined" ? errors.mac_address[0] : ""}
-                                          error={typeof errors?.mac_address !== "undefined" ? true : false}
-                                       />
-                                    </Grid>
-                                    <Grid Grid item md={6} xs={12}>
-                                       <LocalizationProvider dateAdapter={AdapterDateFns}>
-                                          <DatePicker
-                                             value={form.warranty}
-                                             name="warranty"
-                                             label="Warranty Expiry"
-                                             inputFormat="yyyy/MM/dd"
-                                             mask="____/__/__"
+                                    <Grid item md={4} xs={12}>
+                                       <FormControl>
+                                          <FormLabel id="demo-row-radio-buttons-group-label">Calculate Asset Depreciation ? </FormLabel>
+                                          <RadioGroup
+                                             row
+                                             aria-labelledby="demo-row-radio-buttons-group-label"
+                                             name="depreciation"
+                                             value={form.depreciation}
                                              disabled={props.detail}
-                                             onChange={(newValue) => {
-                                                setForm({
-                                                   ...form,
-                                                   warranty: newValue,
-                                                });
-                                             }}
-                                             renderInput={(params) => (
-                                                <TextField
-                                                   helperText={typeof errors?.warranty !== "undefined" ? errors.warranty[0] : ""}
-                                                   error={typeof errors?.warranty !== "undefined" ? true : false}
-                                                   fullWidth
-                                                   {...params}
+                                             onChange={handleChange}
+                                          >
+                                             <FormControlLabel disabled={props.detail} value={"1"} control={<Radio />} label="Yes" />
+                                             <FormControlLabel disabled={props.detail} value={"0"} control={<Radio />} label="No" />
+                                          </RadioGroup>
+                                       </FormControl>
+                                    </Grid>
+                                 </Grid>
+                              </CardContent>
+                           </Card>
+                        </Grid>
+
+                        {/* Vendor Information */}
+                        <Grid item xs={12} md={12}>
+                           <Card>
+                              <CardContent>
+                                 <Typography>Vendor Information</Typography>
+                                 <Grid container mt={2} spacing={2}>
+                                    <Grid item md={6} xs={12}>
+                                       <TextField
+                                          disabled={props.detail}
+                                          onChange={handleChange}
+                                          value={form.vendor_id}
+                                          name="vendor_id"
+                                          fullWidth
+                                          label="Vendor Name"
+                                          select
+                                          required
+                                          helperText={typeof errors?.vendor_id !== "undefined" ? errors.vendor_id[0] : ""}
+                                          error={typeof errors?.vendor_id !== "undefined" ? true : false}
+                                       >
+                                          {assetVendor.length > 0 &&
+                                             assetVendor.map((v) => <MenuItem key={v.id} value={v.id}>{`${v.code} - ${v.name}`}</MenuItem>)}
+                                          {assetVendor.length == 0 && <MenuItem disabled>Kosong</MenuItem>}
+                                       </TextField>
+                                    </Grid>
+                                    <Grid item md={6} xs={12}>
+                                       <TextField value={vendor.vendor_address} name="vendor_address" fullWidth label="Vendor Address" disabled />
+                                    </Grid>
+                                    <Grid item md={6} xs={12}>
+                                       <TextField value={vendor.pic_contact} name="pic_contact" fullWidth label="PIC Contact" disabled />
+                                    </Grid>
+                                    <Grid item md={6} xs={12}>
+                                       <TextField value={vendor.contact} name="contact" fullWidth label="Contact" disabled />
+                                    </Grid>
+                                 </Grid>
+                              </CardContent>
+                           </Card>
+                        </Grid>
+
+                        {props.type === "it" && (
+                           <>
+                              {/* Device Information */}
+                              <Grid item xs={12} md={12}>
+                                 <Card>
+                                    <CardContent>
+                                       <Typography>Device Information</Typography>
+                                       <Grid container mt={2} spacing={2}>
+                                          <Grid Grid item md={4} xs={12}>
+                                             <TextField
+                                                disabled={props.detail}
+                                                onChange={handleChange}
+                                                value={form.device_id}
+                                                name="device_id"
+                                                fullWidth
+                                                label="Device"
+                                                select
+                                                helperText={typeof errors?.device_id !== "undefined" ? errors.device_id[0] : ""}
+                                                error={typeof errors?.device_id !== "undefined" ? true : false}
+                                             >
+                                                {masterDevices.length > 0 &&
+                                                   masterDevices.map((v) => (
+                                                      <MenuItem key={v.id} value={v.id}>
+                                                         {v.sub_type}
+                                                      </MenuItem>
+                                                   ))}
+                                                {masterDevices.length == 0 && <MenuItem disabled>Kosong</MenuItem>}
+                                             </TextField>
+                                          </Grid>
+                                          <Grid Grid item md={4} xs={12}>
+                                             <TextField
+                                                disabled={props.detail}
+                                                onChange={handleChange}
+                                                value={form.type}
+                                                name="type"
+                                                fullWidth
+                                                label="Type"
+                                                helperText={typeof errors?.type !== "undefined" ? errors.type[0] : ""}
+                                                error={typeof errors?.type !== "undefined" ? true : false}
+                                             />
+                                          </Grid>
+                                          <Grid Grid item md={4} xs={12}>
+                                             <TextField
+                                                disabled={props.detail}
+                                                onChange={handleChange}
+                                                value={form.brand_id}
+                                                name="brand_id"
+                                                fullWidth
+                                                label="Brand"
+                                                select
+                                                helperText={typeof errors?.brand_id !== "undefined" ? errors.brand_id[0] : ""}
+                                                error={typeof errors?.brand_id !== "undefined" ? true : false}
+                                             >
+                                                {masterBrands.length > 0 &&
+                                                   masterBrands.map((v) => (
+                                                      <MenuItem key={v.id} value={v.id}>
+                                                         {v.sub_type}
+                                                      </MenuItem>
+                                                   ))}
+                                                {masterBrands.length == 0 && <MenuItem disabled>Kosong</MenuItem>}
+                                             </TextField>
+                                          </Grid>
+                                          <Grid Grid item md={4} xs={12}>
+                                             <TextField
+                                                disabled={props.detail}
+                                                onChange={handleChange}
+                                                value={form.monitor_inch}
+                                                name="monitor_inch"
+                                                fullWidth
+                                                label="Monitor Inch"
+                                                helperText={typeof errors?.monitor_inch !== "undefined" ? errors.monitor_inch[0] : ""}
+                                                error={typeof errors?.monitor_inch !== "undefined" ? true : false}
+                                             />
+                                          </Grid>
+                                          <Grid Grid item md={4} xs={12}>
+                                             <TextField
+                                                disabled={props.detail}
+                                                onChange={handleChange}
+                                                value={form.model_brand}
+                                                name="model_brand"
+                                                fullWidth
+                                                label="Model Brand"
+                                                helperText={typeof errors?.model_brand !== "undefined" ? errors.model_brand[0] : ""}
+                                                error={typeof errors?.model_brand !== "undefined" ? true : false}
+                                             />
+                                          </Grid>
+                                          <Grid Grid item md={4} xs={12}>
+                                             <TextField
+                                                disabled={props.detail}
+                                                onChange={handleChange}
+                                                value={form.mac_address}
+                                                name="mac_address"
+                                                fullWidth
+                                                label="Mac Address"
+                                                helperText={typeof errors?.mac_address !== "undefined" ? errors.mac_address[0] : ""}
+                                                error={typeof errors?.mac_address !== "undefined" ? true : false}
+                                             />
+                                          </Grid>
+                                          <Grid Grid item md={6} xs={12}>
+                                             <LocalizationProvider dateAdapter={AdapterDateFns}>
+                                                <DatePicker
+                                                   value={form.warranty}
+                                                   name="warranty"
+                                                   label="Warranty Expiry"
+                                                   inputFormat="yyyy/MM/dd"
+                                                   mask="____/__/__"
+                                                   disabled={props.detail}
+                                                   onChange={(newValue) => {
+                                                      setForm({
+                                                         ...form,
+                                                         warranty: newValue,
+                                                      });
+                                                   }}
+                                                   renderInput={(params) => (
+                                                      <TextField
+                                                         helperText={typeof errors?.warranty !== "undefined" ? errors.warranty[0] : ""}
+                                                         error={typeof errors?.warranty !== "undefined" ? true : false}
+                                                         fullWidth
+                                                         {...params}
+                                                      />
+                                                   )}
                                                 />
-                                             )}
-                                          />
-                                       </LocalizationProvider>
-                                    </Grid>
-                                    <Grid Grid item md={6} xs={12}>
-                                       <TextField
-                                          disabled={props.detail}
-                                          onChange={handleChange}
-                                          value={form.computer_name}
-                                          name="computer_name"
-                                          fullWidth
-                                          label="Computer Name"
-                                          helperText={typeof errors?.computer_name !== "undefined" ? errors.computer_name[0] : ""}
-                                          error={typeof errors?.computer_name !== "undefined" ? true : false}
-                                       />
-                                    </Grid>
-                                 </Grid>
-                              </CardContent>
-                           </Card>
-                        </Grid>
+                                             </LocalizationProvider>
+                                          </Grid>
+                                          <Grid Grid item md={6} xs={12}>
+                                             <TextField
+                                                disabled={props.detail}
+                                                onChange={handleChange}
+                                                value={form.computer_name}
+                                                name="computer_name"
+                                                fullWidth
+                                                label="Computer Name"
+                                                helperText={typeof errors?.computer_name !== "undefined" ? errors.computer_name[0] : ""}
+                                                error={typeof errors?.computer_name !== "undefined" ? true : false}
+                                             />
+                                          </Grid>
+                                       </Grid>
+                                    </CardContent>
+                                 </Card>
+                              </Grid>
 
-                        {/* Hardware */}
-                        <Grid item xs={12} md={12}>
-                           <Card>
-                              <CardContent>
-                                 <Typography>Hardware</Typography>
-                                 <Grid container mt={2} spacing={2}>
-                                    <Grid Grid item md={4} xs={12}>
-                                       <TextField disabled={props.detail} onChange={handleChange} value={form.dlp} name="dlp" fullWidth label="DLP" />
-                                    </Grid>
-                                    <Grid Grid item md={4} xs={12}>
-                                       <TextField disabled={props.detail} onChange={handleChange} value={form.soc} name="soc" fullWidth label="SOC" />
-                                    </Grid>
-                                    <Grid Grid item md={4} xs={12}>
-                                       <TextField
-                                          disabled={props.detail}
-                                          onChange={handleChange}
-                                          value={form.snnbpc}
-                                          name="snnbpc"
-                                          fullWidth
-                                          label="SN NB & PC"
-                                       />
-                                    </Grid>
-                                    <Grid Grid item md={6} xs={12}>
-                                       <TextField
-                                          disabled={props.detail}
-                                          onChange={handleChange}
-                                          value={form.processor_id}
-                                          name="processor_id"
-                                          fullWidth
-                                          label="Processor"
-                                          select
-                                       >
-                                          {masterProcessors.length > 0 &&
-                                             masterProcessors.map((v) => (
-                                                <MenuItem key={v.id} value={v.id}>
-                                                   {v.sub_type}
-                                                </MenuItem>
-                                             ))}
-                                          {masterProcessors.length == 0 && <MenuItem disabled>Kosong</MenuItem>}
-                                       </TextField>
-                                    </Grid>
-                                    <Grid Grid item md={6} xs={12}>
-                                       <TextField
-                                          disabled={props.detail}
-                                          onChange={handleChange}
-                                          value={form.hardware}
-                                          name="hardware"
-                                          fullWidth
-                                          label="Hardware"
-                                       />
-                                    </Grid>
-                                 </Grid>
-                              </CardContent>
-                           </Card>
-                        </Grid>
+                              {/* Hardware */}
+                              <Grid item xs={12} md={12}>
+                                 <Card>
+                                    <CardContent>
+                                       <Typography>Hardware</Typography>
+                                       <Grid container mt={2} spacing={2}>
+                                          <Grid Grid item md={4} xs={12}>
+                                             <TextField disabled={props.detail} onChange={handleChange} value={form.dlp} name="dlp" fullWidth label="DLP" />
+                                          </Grid>
+                                          <Grid Grid item md={4} xs={12}>
+                                             <TextField disabled={props.detail} onChange={handleChange} value={form.soc} name="soc" fullWidth label="SOC" />
+                                          </Grid>
+                                          <Grid Grid item md={4} xs={12}>
+                                             <TextField
+                                                disabled={props.detail}
+                                                onChange={handleChange}
+                                                value={form.snnbpc}
+                                                name="snnbpc"
+                                                fullWidth
+                                                label="SN NB & PC"
+                                             />
+                                          </Grid>
+                                          <Grid Grid item md={6} xs={12}>
+                                             <TextField
+                                                disabled={props.detail}
+                                                onChange={handleChange}
+                                                value={form.processor_id}
+                                                name="processor_id"
+                                                fullWidth
+                                                label="Processor"
+                                                select
+                                             >
+                                                {masterProcessors.length > 0 &&
+                                                   masterProcessors.map((v) => (
+                                                      <MenuItem key={v.id} value={v.id}>
+                                                         {v.sub_type}
+                                                      </MenuItem>
+                                                   ))}
+                                                {masterProcessors.length == 0 && <MenuItem disabled>Kosong</MenuItem>}
+                                             </TextField>
+                                          </Grid>
+                                          <Grid Grid item md={6} xs={12}>
+                                             <TextField
+                                                disabled={props.detail}
+                                                onChange={handleChange}
+                                                value={form.hardware}
+                                                name="hardware"
+                                                fullWidth
+                                                label="Hardware"
+                                             />
+                                          </Grid>
+                                       </Grid>
+                                    </CardContent>
+                                 </Card>
+                              </Grid>
 
-                        {/* Software */}
-                        <Grid item xs={12} md={12}>
-                           <Card>
-                              <CardContent>
-                                 <Typography>Software</Typography>
-                                 <Grid container mt={2} spacing={2}>
-                                    <Grid Grid item md={6} xs={12}>
-                                       <TextField disabled={props.detail} onChange={handleChange} value={form.os_id} name="os_id" fullWidth label="OS" select>
-                                          {masterWindowOS.length > 0 &&
-                                             masterWindowOS.map((v) => (
-                                                <MenuItem key={v.id} value={v.id}>
-                                                   {v.sub_type}
-                                                </MenuItem>
-                                             ))}
-                                          {masterWindowOS.length == 0 && <MenuItem disabled>Kosong</MenuItem>}
-                                       </TextField>
-                                    </Grid>
-                                    <Grid Grid item md={6} xs={12}>
-                                       <TextField
-                                          disabled={props.detail}
-                                          onChange={handleChange}
-                                          value={form.sn_windows}
-                                          name="sn_windows"
-                                          fullWidth
-                                          label="SN Windows"
-                                       />
-                                    </Grid>
-                                    <Grid Grid item md={4} xs={12}>
-                                       <TextField
-                                          disabled={props.detail}
-                                          onChange={handleChange}
-                                          value={form.office_id}
-                                          name="office_id"
-                                          fullWidth
-                                          label="MS Office"
-                                          select
-                                       >
-                                          {masterOffices.length > 0 &&
-                                             masterOffices.map((v) => (
-                                                <MenuItem key={v.id} value={v.id}>
-                                                   {v.sub_type}
-                                                </MenuItem>
-                                             ))}
-                                          {masterOffices.length == 0 && <MenuItem disabled>Kosong</MenuItem>}
-                                       </TextField>
-                                    </Grid>
-                                    <Grid Grid item md={4} xs={12}>
-                                       <TextField
-                                          disabled={props.detail}
-                                          onChange={handleChange}
-                                          value={form.sn_office}
-                                          name="sn_office"
-                                          fullWidth
-                                          label="SN Office"
-                                       />
-                                    </Grid>
-                                    <Grid Grid item md={4} xs={12}>
-                                       <TextField
-                                          disabled={props.detail}
-                                          onChange={handleChange}
-                                          value={form.antivirus_id}
-                                          name="antivirus_id"
-                                          fullWidth
-                                          label="Anti Virus"
-                                          select
-                                       >
-                                          {masterAntiVirus.length > 0 &&
-                                             masterAntiVirus.map((v) => (
-                                                <MenuItem key={v.id} value={v.id}>
-                                                   {v.sub_type}
-                                                </MenuItem>
-                                             ))}
-                                          {masterAntiVirus.length == 0 && <MenuItem disabled>Kosong</MenuItem>}
-                                       </TextField>
-                                    </Grid>
-                                 </Grid>
-                              </CardContent>
-                           </Card>
-                        </Grid>
+                              {/* Software */}
+                              <Grid item xs={12} md={12}>
+                                 <Card>
+                                    <CardContent>
+                                       <Typography>Software</Typography>
+                                       <Grid container mt={2} spacing={2}>
+                                          <Grid Grid item md={6} xs={12}>
+                                             <TextField
+                                                disabled={props.detail}
+                                                onChange={handleChange}
+                                                value={form.os_id}
+                                                name="os_id"
+                                                fullWidth
+                                                label="OS"
+                                                select
+                                             >
+                                                {masterWindowOS.length > 0 &&
+                                                   masterWindowOS.map((v) => (
+                                                      <MenuItem key={v.id} value={v.id}>
+                                                         {v.sub_type}
+                                                      </MenuItem>
+                                                   ))}
+                                                {masterWindowOS.length == 0 && <MenuItem disabled>Kosong</MenuItem>}
+                                             </TextField>
+                                          </Grid>
+                                          <Grid Grid item md={6} xs={12}>
+                                             <TextField
+                                                disabled={props.detail}
+                                                onChange={handleChange}
+                                                value={form.sn_windows}
+                                                name="sn_windows"
+                                                fullWidth
+                                                label="SN Windows"
+                                             />
+                                          </Grid>
+                                          <Grid Grid item md={4} xs={12}>
+                                             <TextField
+                                                disabled={props.detail}
+                                                onChange={handleChange}
+                                                value={form.office_id}
+                                                name="office_id"
+                                                fullWidth
+                                                label="MS Office"
+                                                select
+                                             >
+                                                {masterOffices.length > 0 &&
+                                                   masterOffices.map((v) => (
+                                                      <MenuItem key={v.id} value={v.id}>
+                                                         {v.sub_type}
+                                                      </MenuItem>
+                                                   ))}
+                                                {masterOffices.length == 0 && <MenuItem disabled>Kosong</MenuItem>}
+                                             </TextField>
+                                          </Grid>
+                                          <Grid Grid item md={4} xs={12}>
+                                             <TextField
+                                                disabled={props.detail}
+                                                onChange={handleChange}
+                                                value={form.sn_office}
+                                                name="sn_office"
+                                                fullWidth
+                                                label="SN Office"
+                                             />
+                                          </Grid>
+                                          <Grid Grid item md={4} xs={12}>
+                                             <TextField
+                                                disabled={props.detail}
+                                                onChange={handleChange}
+                                                value={form.antivirus_id}
+                                                name="antivirus_id"
+                                                fullWidth
+                                                label="Anti Virus"
+                                                select
+                                             >
+                                                {masterAntiVirus.length > 0 &&
+                                                   masterAntiVirus.map((v) => (
+                                                      <MenuItem key={v.id} value={v.id}>
+                                                         {v.sub_type}
+                                                      </MenuItem>
+                                                   ))}
+                                                {masterAntiVirus.length == 0 && <MenuItem disabled>Kosong</MenuItem>}
+                                             </TextField>
+                                          </Grid>
+                                       </Grid>
+                                    </CardContent>
+                                 </Card>
+                              </Grid>
+                           </>
+                        )}
                      </>
                   )}
-                  </>
-                  }
 
                   {/* Information Support */}
                   <Grid item xs={12} md={12}>
@@ -1882,7 +1884,7 @@ const Form = (props) => {
                            <Grid container mt={2} spacing={2}>
                               <Grid Grid item md={12} xs={12}>
                                  <TextField
-                                    disabled={props.detail || user.role === 'Admin Department' ? true : false}
+                                    disabled={props.detail || user.role === "Admin Department" ? true : false}
                                     onChange={handleChange}
                                     value={form.notes}
                                     name="notes"
@@ -1916,7 +1918,7 @@ const Form = (props) => {
                                                    )} */}
                                                 </Box>
                                                 <input
-                                                   disabled={props.detail || user.role === 'Admin Department' ? true : false}
+                                                   disabled={props.detail || user.role === "Admin Department" ? true : false}
                                                    type="file"
                                                    style={{ display: "none" }}
                                                    id={`img-${i}`}
@@ -1936,7 +1938,7 @@ const Form = (props) => {
                                                 />
                                                 {pictures.length > 1 && (
                                                    <Chip
-                                                      disabled={props.detail || user.role === 'Admin Department' ? true : false}
+                                                      disabled={props.detail || user.role === "Admin Department" ? true : false}
                                                       color="error"
                                                       label="delete"
                                                       onClick={() => {
@@ -1950,7 +1952,7 @@ const Form = (props) => {
                                     })}
                                     <Grid item md={12} xs={12}>
                                        <Chip
-                                          disabled={props.detail || user.role === 'Admin Department' ? true : false}
+                                          disabled={props.detail || user.role === "Admin Department" ? true : false}
                                           color="primary"
                                           sx={{ width: { xs: "100%", md: "auto" }, mt: { xs: 2, md: 5 } }}
                                           label="Tambah Image"
@@ -1987,7 +1989,7 @@ const Form = (props) => {
                                                 </Box>
                                                 <input
                                                    type="file"
-                                                   disabled={props.detail || user.role === 'Admin Department' ? true : false}
+                                                   disabled={props.detail || user.role === "Admin Department" ? true : false}
                                                    style={{ display: "none" }}
                                                    id={`ev-${i}`}
                                                    onChange={(e) => {
@@ -2005,15 +2007,16 @@ const Form = (props) => {
                                                    }}
                                                 />
                                                 <Stack direction="row" justifyContent={"center"} alignContent="center">
-                                                   {!props.detail || user.role !== 'Admin Department' &&
-                                                   <a target="_blank" href={v.file_url} style={{ cursor: "pointer" }}>
-                                                      <DownloadForOfflineOutlined sx={{ fontSize: "10x", marginTop: "3px", marginRight: "3px" }} />
-                                                   </a>
-                                                   }
+                                                   {!props.detail ||
+                                                      (user.role !== "Admin Department" && (
+                                                         <a target="_blank" href={v.file_url} style={{ cursor: "pointer" }}>
+                                                            <DownloadForOfflineOutlined sx={{ fontSize: "10x", marginTop: "3px", marginRight: "3px" }} />
+                                                         </a>
+                                                      ))}
 
                                                    {evidences.length > 1 && (
                                                       <Chip
-                                                         disabled={props.detail || user.role === 'Admin Department' ? true : false}
+                                                         disabled={props.detail || user.role === "Admin Department" ? true : false}
                                                          color="error"
                                                          label="delete"
                                                          onClick={() => {
@@ -2028,7 +2031,7 @@ const Form = (props) => {
                                     })}
                                     <Grid item md={12} xs={12}>
                                        <Chip
-                                          disabled={props.detail || user.role === 'Admin Department' ? true : false}
+                                          disabled={props.detail || user.role === "Admin Department" ? true : false}
                                           color="primary"
                                           sx={{ width: { xs: "100%", md: "auto" }, mt: { xs: 2, md: 5 } }}
                                           label="Tambah Document"
@@ -2073,7 +2076,9 @@ const Form = (props) => {
                                  onSubmit={onSubmit}
                               />
 
-                              {detailModalData !== undefined && <DetailModal handleClose={handleDetailClose} title={props.title} open={detailModal} data={detailModalData} />}
+                              {detailModalData !== undefined && (
+                                 <DetailModal handleClose={handleDetailClose} title={props.title} open={detailModal} data={detailModalData} />
+                              )}
                            </CardContent>
                         </Card>
                      </Grid>
