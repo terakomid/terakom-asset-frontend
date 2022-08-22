@@ -15,6 +15,8 @@ import {
    TableBody,
    IconButton,
    Tooltip,
+   Autocomplete,
+   Divider,
 } from "@mui/material";
 import { Delete, Edit } from "@mui/icons-material";
 import { LoadingButton } from "@mui/lab";
@@ -36,13 +38,22 @@ export default function AddAcceptanceAsset() {
    const { user } = useRecoilValue(authentication);
    const navigate = useNavigate();
 
-   const [rows, setRows] = useState([]);
    const [data, setData] = useState();
+   const [rows, setRows] = useState([]);
+   const [params, setParams] = useState({
+      search: "",
+      order_by_name: 0,
+      limit: 10,
+      page: 1,
+      paginate: 1,
+   });
 
    const [asset, setAsset] = useState([]);
    const getAsset = async () => {
       http
-         .get(`asset`)
+         .get(`asset`, {
+            params: params,
+         })
          .then((res) => {
             // console.log(res.data.data.data);
             setAsset(res.data.data.data);
@@ -65,6 +76,7 @@ export default function AddAcceptanceAsset() {
    const handleReset = (e) => {
       setData({
          asset_id: "",
+         asset_name: "",
          master_asset: "",
          location: "",
          department: "",
@@ -93,22 +105,10 @@ export default function AddAcceptanceAsset() {
    };
 
    const handleChange = (e) => {
-      if (e.target.name === "asset_id") {
-         const obj = asset.find((value) => value.id == e.target.value);
-         setData({
-            ...data,
-            [e.target.name]: e.target.value,
-            master_asset: obj,
-            location: `${obj.location.code} - ${obj.location.location}`,
-            department: obj.department.dept,
-            vendor: `${obj.vendor.code} - ${obj.vendor.name}`,
-         });
-      } else {
-         setData({
-            ...data,
-            [e.target.name]: e.target.value,
-         });
-      }
+      setData({
+         ...data,
+         [e.target.name]: e.target.value,
+      });
    };
 
    const [loading, setLoading] = useState(false);
@@ -150,34 +150,48 @@ export default function AddAcceptanceAsset() {
                            <Box component="form" onSubmit={handleStaging}>
                               <Grid container spacing={2}>
                                  <Grid item xs={12}>
-                                    <TextField
-                                       name="asset_id"
-                                       label="Choose Asset"
-                                       variant="outlined"
-                                       value={data.asset_id}
-                                       onChange={handleChange}
-                                       defaultValue=""
-                                       select
+                                    <Autocomplete
+                                       freeSolo
                                        fullWidth
-                                       required
-                                       disabled={asset.length < 1}
-                                    >
-                                       {asset.length > 0 ? (
-                                          asset.map((value, index) => (
-                                             <MenuItem
-                                                value={value.id}
-                                                key={index}
-                                                disabled={rows.find(function (row) {
-                                                   return row.master_asset.asset_code === value.asset_code;
-                                                })}
-                                             >
-                                                {value.asset_code} - {value.asset_name}
-                                             </MenuItem>
-                                          ))
-                                       ) : (
-                                          <MenuItem value="">Pilih</MenuItem>
+                                       disableClearable
+                                       options={asset}
+                                       getOptionLabel={(option) => option.asset_name}
+                                       inputValue={params.search}
+                                       onInputChange={(event, newInputValue, reason) => {
+                                          setParams({
+                                             ...params,
+                                             search: reason === "reset" ? "" : newInputValue,
+                                          });
+                                       }}
+                                       onChange={(e, value) => {
+                                          let exist = rows.find((v) => v.asset_id == value.id);
+                                          exist === undefined
+                                             ? setData({
+                                                  ...data,
+                                                  asset_id: value.id,
+                                                  asset_name: `${value.asset_code} - ${value.asset_name}`,
+                                                  master_asset: value,
+                                                  location: `${value.location.code} - ${value.location.location}`,
+                                                  department: value.department.dept,
+                                                  vendor: `${value.vendor.code} - ${value.vendor.name}`,
+                                               })
+                                             : handleReset();
+                                       }}
+                                       renderInput={(params) => (
+                                          <TextField
+                                             {...params}
+                                             label="Choose Asset *"
+                                             InputProps={{
+                                                ...params.InputProps,
+                                                type: "search",
+                                             }}
+                                          />
                                        )}
-                                    </TextField>
+                                    />
+                                    <Divider sx={{ mt: 3, mb: 1 }} />
+                                 </Grid>
+                                 <Grid item xs={12}>
+                                    <TextField label="Asset" variant="outlined" value={data.asset_name} fullWidth disabled />
                                  </Grid>
                                  <Grid item xs={12} sm={6} md={4}>
                                     <TextField label="Location" variant="outlined" value={data.location} fullWidth disabled />
