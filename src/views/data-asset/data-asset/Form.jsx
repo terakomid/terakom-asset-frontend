@@ -1894,7 +1894,8 @@ const Form = (props) => {
                                     error={typeof errors?.notes !== "undefined" ? true : false}
                                  />
                               </Grid>
-                              <Grid Grid item md={12} xs={12}>
+                              {/* image */}
+                              {/* <Grid Grid item md={12} xs={12}>
                                  <Typography>Picture </Typography>
                                  <Grid container>
                                     {pictures.map((v, i) => {
@@ -1911,9 +1912,9 @@ const Form = (props) => {
                                                          alt="test"
                                                       />
                                                    )}
-                                                   {/* {typeof errors[`picture.${i}.file`] !== "undefined" && (
+                                                   {typeof errors[`picture.${i}.file`] !== "undefined" && (
                                                       <Typography sx={{ color: "red" }}>Image </Typography>
-                                                   )} */}
+                                                   )}
                                                 </Box>
                                                 <input
                                                    disabled={props.detail || user.role === 'Admin Department' ? true : false}
@@ -1967,9 +1968,11 @@ const Form = (props) => {
                                        />
                                     </Grid>
                                  </Grid>
-                              </Grid>
+                              </Grid> */}
+
+                              {/*  */}
                               <Grid Grid item md={12} xs={12}>
-                                 <Typography>Evidences</Typography>
+                                 <Typography>Upload Image & Attachment</Typography>
                                  <Grid container>
                                     {evidences.map((v, i) => {
                                        return (

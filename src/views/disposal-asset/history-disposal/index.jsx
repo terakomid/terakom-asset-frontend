@@ -25,7 +25,7 @@ import {
    DialogActions,
    Chip,
 } from "@mui/material";
-import { Add, CloseRounded, Delete, DownloadOutlined, Edit, FilterListRounded, MoreVert, Search, DoneOutline, Close } from "@mui/icons-material";
+import { Add, CloseRounded, Delete, DownloadOutlined, Edit, FilterListRounded, MoreVert, Search, DoneOutline, Close, Details, InfoOutlined } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 
 import http from "../../../component/api/Api";
@@ -36,6 +36,7 @@ import moment from "moment";
 import { useRecoilValue } from "recoil";
 import { authentication } from "../../../store/Authentication";
 import { Permission } from "../../../component/Permission";
+import { NumberFormat } from "../../../component/Format";
 
 const ModalFilter = (props) => {
    const [roleOptions, setRoleOptions] = useState([]);
@@ -307,6 +308,10 @@ const Index = () => {
       handleMenu();
    };
 
+   const handleDetail = () => {
+      navigate(`/detail-disposal-asset/${staging.id}`)
+   }
+
    return (
       <div className="main-content mb-5">
          <div className="page-content">
@@ -367,6 +372,8 @@ const Index = () => {
                                         <TableCell>Capitalized On</TableCell>
                                         <TableCell>Useful Life</TableCell>
                                         <TableCell>Acquisition Value</TableCell>
+                                        <TableCell>Book Value</TableCell>
+                                        <TableCell>Condition</TableCell>
                                         <TableCell align="center">Action</TableCell>
                                         </TableRow>
                                     </TableHead>
@@ -384,7 +391,9 @@ const Index = () => {
                                                     <TableCell>{value.category.category}</TableCell>
                                                     <TableCell>{moment(value.capitalized).format("ll")}</TableCell>
                                                     <TableCell>{value.sub_category.useful_life}</TableCell>
-                                                    <TableCell>{value.acquisition_value}</TableCell>
+                                                    <TableCell>{NumberFormat(value.acquisition_value, "Rp")}</TableCell>
+                                                    <TableCell>{NumberFormat(value.book_value, "Rp")}</TableCell>
+                                                    <TableCell>{value.condition.condition}</TableCell>
                                                     <TableCell align="center">
                                                     <IconButton onClick={(e) => handleClick(e, value)}>
                                                         <MoreVert />
@@ -430,6 +439,22 @@ const Index = () => {
                            )}
                         </CardContent>
                      </Card>
+                  </div>
+                  <div className="col-xl-12 col-12 mt-3">
+                     <Menu
+                        anchorEl={anchorEl}
+                        open={open}
+                        onClose={handleMenu}
+                        transformOrigin={{ horizontal: "right", vertical: "top" }}
+                        anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
+                     >
+                           <MenuItem onClick={handleDetail}>
+                              <ListItemIcon>
+                                 <InfoOutlined />
+                              </ListItemIcon>
+                              Detail
+                           </MenuItem>
+                     </Menu>
                   </div>
                </div>
             </div>

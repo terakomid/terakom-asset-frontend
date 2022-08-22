@@ -70,6 +70,7 @@ import DisposalAsset from "../views/disposal-asset";
 import AddDisposalAsset from "../views/disposal-asset/Add";
 import EditDisposalAsset from "../views/disposal-asset/Edit";
 import HistoryDisposal from "../views/disposal-asset/history-disposal";
+import DetailDisposal from '../views/disposal-asset/history-disposal/Detail'
 
 // Activity Log
 import ActivityLog from "../views/activity-log";
@@ -447,6 +448,15 @@ export default function Router() {
                element={
                   <Middleware.After>
                      <Layout render={<HistoryDisposal />} />
+                  </Middleware.After>
+               }
+            />
+            {/* Disposal Asset */}
+            <Route
+               path="/detail-disposal-asset/:id"
+               element={
+                  <Middleware.After>
+                     <Layout render={<DetailDisposal />} />
                   </Middleware.After>
                }
             />
