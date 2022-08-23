@@ -262,64 +262,58 @@ const Form = (props) => {
                                                 error={typeof errors?.email !== 'undefined' ? true : false}
                                             />
                                         </Grid>
-                                        {console.log(auth.user.role)}
-                                        {role.includes(auth.user.role) &&
-                                        <>
-                                            <Grid item xs={12} md={6}>
-                                                <TextField
-                                                    name="department"
-                                                    label="Department"
-                                                    fullWidth
-                                                    select
-                                                    value={form.department}
-                                                    onChange={onChange}
-                                                    disabled={!isComplete}
-                                                    required
-                                                >
-                                                    {departmentOptions.length > 0 &&
-                                                    departmentOptions.map((v) => (
-                                                        <MenuItem key={v.id} value={v.id}>
-                                                            {v.dept}
-                                                        </MenuItem>
-                                                    ))}
-                                                    {departmentOptions.length == 0 && <MenuItem disabled>Kosong</MenuItem>}
-                                                </TextField>
-                                            </Grid>
-                                            <Grid item xs={12} md={6}>
-                                                <TextField name="role" label="Role" fullWidth select value={form.role} onChange={onChange} disabled={!isComplete} required>
-                                                    {roleOptions.length > 0 &&
-                                                    roleOptions.map((v) => (
-                                                        <MenuItem key={v.id} value={v.name}>
-                                                            {v.name}
-                                                        </MenuItem>
-                                                    ))}
-                                                    {roleOptions.length == 0 && <MenuItem disabled>Kosong</MenuItem>}
-                                                </TextField>
-                                            </Grid>
-                                            <Grid item xs={12} md={12}>
-                                                <TextField 
-                                                    name="location_id" 
-                                                    label="Location" 
-                                                    fullWidth 
-                                                    multiline 
-                                                    rows={4} 
-                                                    value={form.location_id} 
-                                                    onChange={onChange} 
-                                                    helperText={typeof errors?.location_id !== 'undefined' ? errors.location_id[0] : ''}
-                                                    error={typeof errors?.location_id !== 'undefined' ? true : false}
-                                                    select
-                                                >
-                                                    {locationOptions.length > 0 &&
-                                                    locationOptions.map((v) => (
-                                                        <MenuItem key={v.id} value={v.id}>
-                                                        {`${v.code} - ${v.location}`}
-                                                        </MenuItem>
-                                                    ))}
-                                                    {locationOptions.length == 0 && <MenuItem disabled>Kosong</MenuItem>}
-                                                </TextField>
-                                            </Grid>
-                                        </>
-                                        }
+                                        <Grid item xs={12} md={6}>
+                                            <TextField
+                                                name="department"
+                                                label="Department"
+                                                fullWidth
+                                                select
+                                                disabled={!role.includes(auth.user.role) ? true : false}
+                                                value={form.department}
+                                                onChange={onChange}
+                                                required
+                                            >
+                                                {departmentOptions.length > 0 &&
+                                                departmentOptions.map((v) => (
+                                                    <MenuItem key={v.id} value={v.id}>
+                                                        {v.dept}
+                                                    </MenuItem>
+                                                ))}
+                                                {departmentOptions.length == 0 && <MenuItem disabled>Kosong</MenuItem>}
+                                            </TextField>
+                                        </Grid>
+                                        <Grid item xs={12} md={6}>
+                                            <TextField name="role" label="Role" fullWidth select value={form.role} onChange={onChange} disabled={!role.includes(auth.user.role) ? true : false} required>
+                                                {roleOptions.length > 0 &&
+                                                roleOptions.map((v) => (
+                                                    <MenuItem key={v.id} value={v.name}>
+                                                        {v.name}
+                                                    </MenuItem>
+                                                ))}
+                                                {roleOptions.length == 0 && <MenuItem disabled>Kosong</MenuItem>}
+                                            </TextField>
+                                        </Grid>
+                                        <Grid item xs={12} md={12}>
+                                            <TextField 
+                                                name="location_id" 
+                                                label="Location" 
+                                                fullWidth 
+                                                disabled={!role.includes(auth.user.role) ? true : false}
+                                                value={form.location_id} 
+                                                onChange={onChange} 
+                                                helperText={typeof errors?.location_id !== 'undefined' ? errors.location_id[0] : ''}
+                                                error={typeof errors?.location_id !== 'undefined' ? true : false}
+                                                select
+                                            >
+                                                {locationOptions.length > 0 &&
+                                                locationOptions.map((v) => (
+                                                    <MenuItem key={v.id} value={v.id}>
+                                                    {`${v.code} - ${v.location}`}
+                                                    </MenuItem>
+                                                ))}
+                                                {locationOptions.length == 0 && <MenuItem disabled>Kosong</MenuItem>}
+                                            </TextField>
+                                        </Grid>
                                         <Grid item xs={12} md={12}>
                                             <TextField 
                                                 name="address" 

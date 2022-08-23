@@ -494,9 +494,9 @@ const index = () => {
                             <Grid container spacing={2}>
                                 <Grid item xs={12} md={4}>
                                     <Card>
-                                        <CardContent sx={{ cursor: 'pointer' }} onClick={() => navigate('/acceptance-asset')}>
+                                        <CardContent sx={{ cursor: 'pointer' }} onClick={() => navigate('/data-asset')}>
                                             <Typography>
-                                                Acceptance Asset
+                                                My Asset
                                             </Typography>
                                         </CardContent>
                                     </Card>
