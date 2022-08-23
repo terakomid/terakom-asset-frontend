@@ -250,7 +250,6 @@ const TableExcel = (props) => {
                   <td className="tg-0lax" colspan="5"></td>
                   <td className="tg-0lax" colspan="3">
                      {props.data.sk_number}
-                     {console.log(props.data)}
                   </td>
                   <td className="tg-0lax" colspan="4"></td>
                   <td className="tg-0lax" colspan="5">

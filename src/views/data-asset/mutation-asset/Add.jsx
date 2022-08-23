@@ -29,10 +29,13 @@ import Loading from "../../../component/Loading";
 import { useRecoilValue } from "recoil";
 import { authentication } from "../../../store/Authentication";
 import { Permission } from "../../../component/Permission";
+import { useSnackbar } from "notistack";
 
 export default function AddMutationAsset() {
    const { user } = useRecoilValue(authentication);
    const navigate = useNavigate();
+
+   const { enqueueSnackbar } = useSnackbar()
 
    const [rows, setRows] = useState([]);
    const [data, setData] = useState();
@@ -111,9 +114,14 @@ export default function AddMutationAsset() {
 
    const handleStaging = (e) => {
       e.preventDefault();
-      let newState = rows.concat(data);
-      setRows(newState);
-      handleReset();
+      console.log(data.document)
+      if(data.document === null){
+         enqueueSnackbar("Fill Supporting Document", { variant: 'error' })
+      }else{
+         let newState = rows.concat(data);
+         setRows(newState);
+         handleReset();
+      }
    };
 
    const handleEdit = (value, key) => {
@@ -376,7 +384,7 @@ export default function AddMutationAsset() {
                                     ) : (
                                        <Button size="large" variant="outlined" component="label" fullWidth startIcon={<FileUploadOutlined />}>
                                           Supporting Document *
-                                          <input name="document" type="file" onChange={handleChange} hidden required />
+                                          <input name="document" type="file" onChange={handleChange} hidden />
                                        </Button>
                                     )}
                                  </Grid>

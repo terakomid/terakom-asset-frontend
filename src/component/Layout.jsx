@@ -63,7 +63,7 @@ let theme = createTheme({
 export default function Layout(props) {
    return (
       <ThemeProvider theme={theme}>
-         <SnackbarProvider maxSnack={3}>
+         <SnackbarProvider maxSnack={1}>
             <Header />
             <Sidebar />
             {props.render}

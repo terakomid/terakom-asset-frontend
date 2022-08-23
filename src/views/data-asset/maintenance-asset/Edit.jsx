@@ -14,8 +14,10 @@ import {
    TableBody,
    IconButton,
    Tooltip,
+   InputAdornment,
+   Button,
 } from "@mui/material";
-import { Delete, Edit } from "@mui/icons-material";
+import { Close, Delete, Edit, FileUploadOutlined, InsertDriveFile } from "@mui/icons-material";
 import { LoadingButton } from "@mui/lab";
 import { Link as RouterLink, useNavigate, useParams } from "react-router-dom";
 
@@ -30,11 +32,14 @@ import Loading from "../../../component/Loading";
 import { useRecoilValue } from "recoil";
 import { authentication } from "../../../store/Authentication";
 import { Permission } from "../../../component/Permission";
+import { NumberFormat } from "../../../component/Format";
+import { useSnackbar } from "notistack";
 
 export default function EditMaintenanceAsset() {
    const { user } = useRecoilValue(authentication);
    const { id } = useParams();
    const navigate = useNavigate();
+   const { enqueueSnackbar } = useSnackbar()
 
    const [rows, setRows] = useState([]);
    const [data, setData] = useState();
@@ -42,7 +47,7 @@ export default function EditMaintenanceAsset() {
       http
          .get(`asset_maintenance/${id}`)
          .then((res) => {
-            // console.log(res.data.data);
+            console.log(res.data.data);
             let value = res.data.data;
             getAsset(value.pic.id, value);
          })
@@ -79,13 +84,14 @@ export default function EditMaintenanceAsset() {
                testing_finish_date: value.testing_finish_date.substr(0, 10),
                testing_result: value.testing_result,
                person_testing: value.person_testing,
-               final_cost: value.final_cost,
+               final_cost: NumberFormat(value.final_cost, "Rp"),
                returning_date: value.returning_date.substr(0, 10),
                repair_record: value.repair_record,
                master_asset: res.data.data.data,
                asset_id: "",
                asset_dept: "",
                reason: "",
+               document: { name: value.document.split("/").pop() },
             });
 
             let newState;
@@ -163,6 +169,14 @@ export default function EditMaintenanceAsset() {
             asset_id: e.target.value,
             asset_dept: obj.department.dept,
          });
+      } else if (e.target.type === "file") {
+         if (e.target.files[0] !== undefined) {
+            setData({
+               ...data,
+               [e.target.name]: e.target.files[0],
+            });
+            e.target.value = null;
+         }
       } else {
          setData({
             ...data,
@@ -185,7 +199,7 @@ export default function EditMaintenanceAsset() {
       formData.append("testing_finish_date", moment(data.testing_finish_date).format("yyyy/MM/DD"));
       formData.append("testing_result", data.testing_result);
       formData.append("person_testing", data.person_testing);
-      formData.append("final_cost", data.final_cost);
+      formData.append("final_cost", data.final_cost.replaceAll("IDR ", "").replaceAll(".", ""));
       formData.append("returning_date", moment(data.returning_date).format("yyyy/MM/DD"));
       formData.append("repair_record", data.repair_record);
       rows.map((value, index) => {
@@ -193,16 +207,22 @@ export default function EditMaintenanceAsset() {
          formData.append(`asset_data[${index}][reason]`, value.reason);
       });
       // console.log(Object.fromEntries(formData));
-      http
-         .post(`asset_maintenance/${id}`, formData)
-         .then((res) => {
-            // console.log(res.data.data);
-            navigate("/history-asset/maintenance-asset");
-         })
-         .catch((err) => {
-            // console.log(err.response.data);
-            setLoading(false);
-         });
+      if(data.document === null) {
+         enqueueSnackbar("Fill Supporting Document", { variant: 'error' })
+         setLoading(false);
+      }else{
+         data.document.size !== undefined && formData.append("document", data.document);
+         http
+            .post(`asset_maintenance/${id}`, formData)
+            .then((res) => {
+               // console.log(res.data.data);
+               navigate("/history-asset/maintenance-asset");
+            })
+            .catch((err) => {
+               // console.log(err.response.data);
+               setLoading(false);
+            });
+      }
    };
 
    return (
@@ -400,6 +420,38 @@ export default function EditMaintenanceAsset() {
                                     fullWidth
                                     required
                                  />
+                              </Grid>
+                              <Grid item xs={12} sm={6}>
+                                 {data.document !== null ? (
+                                    <TextField
+                                       variant="outlined"
+                                       label="Supporting Document *"
+                                       value={data.document.name}
+                                       disabled
+                                       InputProps={{
+                                          startAdornment: (
+                                             <InputAdornment position="start">
+                                                <InsertDriveFile />
+                                             </InputAdornment>
+                                          ),
+                                          endAdornment: (
+                                             <InputAdornment position="end">
+                                                <Tooltip title="Delete">
+                                                   <IconButton onClick={() => setData({ ...data, document: null })}>
+                                                      <Close />
+                                                   </IconButton>
+                                                </Tooltip>
+                                             </InputAdornment>
+                                          ),
+                                       }}
+                                       fullWidth
+                                    />
+                                 ) : (
+                                    <Button size="large" variant="outlined" component="label" fullWidth startIcon={<FileUploadOutlined />}>
+                                       Supporting Document *
+                                       <input name="document" type="file" onChange={handleChange} hidden />
+                                    </Button>
+                                 )}
                               </Grid>
                            </Grid>
                         </CardContent>

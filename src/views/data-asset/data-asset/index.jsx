@@ -1020,7 +1020,9 @@ const Index = () => {
                                        <TableCell>Category Asset</TableCell>
                                        <TableCell>Capitalized On</TableCell>
                                        <TableCell>Useful Life</TableCell>
+                                       {user.role !== 'Employee' && 
                                        <TableCell>Acquisition Value</TableCell>
+                                       }
                                        <TableCell align="center">Action</TableCell>
                                     </TableRow>
                                  </TableHead>
@@ -1038,7 +1040,9 @@ const Index = () => {
                                                 <TableCell>{value.category.category}</TableCell>
                                                 <TableCell>{moment(value.capitalized).format("ll")}</TableCell>
                                                 <TableCell>{value.sub_category.useful_life}</TableCell>
+                                                {user.role !== 'Employee' &&
                                                 <TableCell>{NumberFormat(value.acquisition_value, "Rp")}</TableCell>
+                                                }
                                                 <TableCell align="center">
                                                    <IconButton onClick={(e) => handleClick(e, value)}>
                                                       <MoreVert />

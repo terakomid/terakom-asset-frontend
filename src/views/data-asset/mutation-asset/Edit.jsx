@@ -10,11 +10,13 @@ import Loading from "../../../component/Loading";
 import { useRecoilValue } from "recoil";
 import { authentication } from "../../../store/Authentication";
 import { Permission } from "../../../component/Permission";
+import { useSnackbar } from "notistack";
 
 export default function EditMutationAsset() {
    const { user } = useRecoilValue(authentication);
    const navigate = useNavigate();
    const { id } = useParams();
+   const { enqueueSnackbar } = useSnackbar()
 
    const [users, setUsers] = useState();
    const getUsers = async () => {
@@ -111,18 +113,26 @@ export default function EditMutationAsset() {
       formData.append("from_room", data.from_room);
       formData.append("to_branch_id", data.to_branch);
       formData.append("to_room", data.to_room);
-      data.document.size !== undefined && formData.append("document", data.document);
-      // console.log(Object.fromEntries(formData));
-      http
-         .post(`asset_mutation/${id}`, formData)
-         .then((res) => {
-            // console.log(res.data.data);
-            navigate("/history-asset/mutation-asset");
-         })
-         .catch((err) => {
-            // console.log(err.response.data);
-            setLoading(false);
-         });
+
+      if(data.document === null) {
+         enqueueSnackbar("Fill Supporting Document", { variant: 'error' })
+         setLoading(false);
+
+      }else{
+         data.document.size !== undefined && formData.append("document", data.document);
+         // console.log(Object.fromEntries(formData));
+         http
+            .post(`asset_mutation/${id}`, formData)
+            .then((res) => {
+               // console.log(res.data.data);
+               navigate("/history-asset/mutation-asset");
+            })
+            .catch((err) => {
+               // console.log(err.response.data);
+               setLoading(false);
+            });
+      }
+
    };
 
    return (
@@ -279,7 +289,7 @@ export default function EditMutationAsset() {
                                  ) : (
                                     <Button size="large" variant="outlined" component="label" fullWidth startIcon={<FileUploadOutlined />}>
                                        Supporting Document *
-                                       <input name="document" type="file" onChange={handleChange} hidden required />
+                                       <input name="document" type="file" onChange={handleChange} hidden />
                                     </Button>
                                  )}
                               </Grid>

@@ -61,7 +61,7 @@ const ModalFilter = (props) => {
    const [data, setData] = useState({
       department_id: [],
       employee_id: [],
-      role_id: [],
+      role: [],
       location_id: [],
    })
    const [isComplete, setIsComplete] = useState(false);
@@ -106,6 +106,7 @@ const ModalFilter = (props) => {
    }, [props.open]);
 
    const onFilter = () => {
+      console.log(data)
       props.setParams({
          ...props.params,
          ...data
@@ -168,12 +169,12 @@ const ModalFilter = (props) => {
                            labelId="demo-multiple-checkbox-label"
                            id="demo-multiple-checkbox"
                            multiple
-                           name='role_id'
-                           value={data.role_id}
+                           name='role'
+                           value={data.role}
                            onChange={handleChange}
                            input={<OutlinedInput label="Role" />}
                            renderValue={(selected) => {
-                                 return roleOptions.filter(v => selected.includes(v.id)).map(v => {
+                                 return roleOptions.filter(v => selected.includes(v.name)).map(v => {
                                     return (
                                        <Chip 
                                              label={v.name} 
@@ -185,9 +186,9 @@ const ModalFilter = (props) => {
                         >
                            {roleOptions.length > 0 && roleOptions.map((v, i) => {
                                  return (
-                                 <MenuItem key={v.id} value={v.id}>
+                                 <MenuItem key={v.name} value={v.name}>
                                     <Checkbox 
-                                       checked={data.role_id.indexOf(v.id) > -1} 
+                                       checked={data.role.indexOf(v.name) > -1} 
                                     />
                                     <ListItemText primary={v.name} />
                                  </MenuItem>

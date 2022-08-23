@@ -14,8 +14,10 @@ import {
    TableBody,
    IconButton,
    Tooltip,
+   InputAdornment,
+   Button,
 } from "@mui/material";
-import { Delete, Edit } from "@mui/icons-material";
+import { Close, Delete, Edit, FileUploadOutlined, InsertDriveFile } from "@mui/icons-material";
 import { LoadingButton } from "@mui/lab";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
 
@@ -30,10 +32,14 @@ import Loading from "../../../component/Loading";
 import { useRecoilValue } from "recoil";
 import { authentication } from "../../../store/Authentication";
 import { Permission } from "../../../component/Permission";
+import { NumberFormat } from "../../../component/Format";
+import { useSnackbar } from "notistack";
 
 export default function AddMaintenanceAsset() {
    const { user } = useRecoilValue(authentication);
    const navigate = useNavigate();
+   const { enqueueSnackbar } = useSnackbar()
+
 
    const [rows, setRows] = useState([]);
    const [data, setData] = useState();
@@ -97,6 +103,7 @@ export default function AddMaintenanceAsset() {
          asset_id: "",
          asset_dept: "",
          reason: "",
+         document: null,
       });
    };
 
@@ -111,16 +118,20 @@ export default function AddMaintenanceAsset() {
 
    const handleStaging = (e) => {
       e.preventDefault();
-      const obj = data.master_asset.find((value) => value.id == data.asset_id);
-      let staging = {
-         asset_id: data.asset_id,
-         asset_dept: obj.department.dept,
-         master_asset: obj,
-         reason: data.reason,
-      };
-      let newState = rows.concat(staging);
-      setRows(newState);
-      handleResetStaging();
+      if(data.document === null){
+         enqueueSnackbar("Fill Supporting Document", { variant: 'error' })
+      }else{
+         const obj = data.master_asset.find((value) => value.id == data.asset_id);
+         let staging = {
+            asset_id: data.asset_id,
+            asset_dept: obj.department.dept,
+            master_asset: obj,
+            reason: data.reason,
+         };
+         let newState = rows.concat(staging);
+         setRows(newState);
+         handleResetStaging();
+      }
    };
 
    const handleEdit = (value, key) => {
@@ -147,7 +158,15 @@ export default function AddMaintenanceAsset() {
             asset_id: e.target.value,
             asset_dept: obj.department.dept,
          });
-      } else {
+      } else if (e.target.type === "file") {
+         if (e.target.files[0] !== undefined) {
+            setData({
+               ...data,
+               [e.target.name]: e.target.files[0],
+            });
+            e.target.value = null;
+         }
+      }else {
          setData({
             ...data,
             [e.target.name]: e.target.value,
@@ -168,9 +187,10 @@ export default function AddMaintenanceAsset() {
       formData.append("testing_finish_date", moment(data.testing_finish_date).format("yyyy/MM/DD"));
       formData.append("testing_result", data.testing_result);
       formData.append("person_testing", data.person_testing);
-      formData.append("final_cost", data.final_cost);
+      formData.append("final_cost", data.final_cost.replaceAll("IDR ", "").replaceAll(".", ""));
       formData.append("returning_date", moment(data.returning_date).format("yyyy/MM/DD"));
       formData.append("repair_record", data.repair_record);
+      formData.append("document", data.document);
       rows.map((value, index) => {
          formData.append(`asset_data[${index}][asset_id]`, value.asset_id);
          formData.append(`asset_data[${index}][reason]`, value.reason);
@@ -347,7 +367,7 @@ export default function AddMaintenanceAsset() {
                                     name="final_cost"
                                     label="Final Cost"
                                     variant="outlined"
-                                    value={data.final_cost}
+                                    value={NumberFormat(data.final_cost, "Rp")}
                                     onChange={handleChange}
                                     fullWidth
                                     required
@@ -384,9 +404,42 @@ export default function AddMaintenanceAsset() {
                                     required
                                  />
                               </Grid>
+                              <Grid item xs={12} sm={6}>
+                                 {data.document !== null ? (
+                                    <TextField
+                                       variant="outlined"
+                                       label="Supporting Document *"
+                                       value={data.document.name}
+                                       disabled
+                                       InputProps={{
+                                          startAdornment: (
+                                             <InputAdornment position="start">
+                                                <InsertDriveFile />
+                                             </InputAdornment>
+                                          ),
+                                          endAdornment: (
+                                             <InputAdornment position="end">
+                                                <Tooltip title="Delete">
+                                                   <IconButton onClick={() => setData({ ...data, document: null })}>
+                                                      <Close />
+                                                   </IconButton>
+                                                </Tooltip>
+                                             </InputAdornment>
+                                          ),
+                                       }}
+                                       fullWidth
+                                    />
+                                 ) : (
+                                    <Button size="large" variant="outlined" component="label" fullWidth startIcon={<FileUploadOutlined />}>
+                                       Supporting Document *
+                                       <input name="document" type="file" onChange={handleChange} hidden />
+                                    </Button>
+                                 )}
+                              </Grid>
                            </Grid>
                         </CardContent>
                      </Card>
+
                      <Card sx={{ mb: 3 }}>
                         <CardContent>
                            <Grid container spacing={2}>

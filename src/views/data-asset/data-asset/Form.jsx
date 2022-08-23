@@ -58,6 +58,8 @@ import { useSnackbar } from "notistack";
 import { useRecoilValue } from "recoil";
 import { authentication } from "../../../store/Authentication";
 
+const role = ["Admin Department", "Employee"]
+
 const DetailModal = (props) => {
    const navigate = useNavigate();
    const { enqueueSnackbar } = useSnackbar();
@@ -582,7 +584,9 @@ const DetailComponent = (props) => {
             )}
 
             <Grid item md={6} xs={12}>
-               <LabelTable data={props.data} />
+               <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                  <LabelTable data={props.data} />
+               </Box>
             </Grid>
          </Grid>
          <Button sx={{ mt: 2 }} variant="contained">
@@ -931,6 +935,11 @@ const Form = (props) => {
       } catch (err) {
          setLoading(false);
          handleClose();
+         enqueueSnackbar("Complete All Mandatory Field!", { variant: 'error' })
+         window.scrollTo({
+            top: 0, 
+            behavior: 'smooth'
+         });
          if (err.response) {
             setErrors(err.response.data.errors);
          }
@@ -946,6 +955,11 @@ const Form = (props) => {
       } catch (err) {
          setLoading(false);
          handleClose();
+         enqueueSnackbar("Complete All Mandatory Field", { variant: 'error' })
+         window.scrollTo({
+            top: 0, 
+            behavior: 'smooth'
+         });
          if (err.response) {
             setErrors(err.response.data.errors);
          }
@@ -955,6 +969,7 @@ const Form = (props) => {
    const onSubmit = (e) => {
       e.preventDefault();
       setLoading(true);
+      setErrors({})
       let url = "";
       const formData = new FormData();
 
@@ -1002,9 +1017,9 @@ const Form = (props) => {
          });
          evidences.map((v, i) => {
             if (i === 0) {
-               v.file !== "" && formData.append(`evidence[${i}][file]`, v.file);
+               formData.append(`evidence[${i}][file]`, v.file);
             } else {
-               v.file !== "" && formData.append(`evidence[${i}][file]`, v.file);
+               formData.append(`evidence[${i}][file]`, v.file);
             }
          });
       } else {
@@ -1252,7 +1267,15 @@ const Form = (props) => {
                                     error={typeof errors?.category_id !== "undefined" ? true : false}
                                  >
                                     {assetCategories.length > 0 &&
-                                       assetCategories.map((v) => <MenuItem key={v.id} value={v.id}>{`${v.code} - ${v.category}`}</MenuItem>)}
+                                       assetCategories.map((v) => {
+                                          if(props.type === "it"){
+                                             if(v.code === "ID08" || v.code === "ID03" || v.code === "ID11"){
+                                                return <MenuItem key={v.id} value={v.id}>{`${v.code} - ${v.category}`}</MenuItem>
+                                             }
+                                          }else{
+                                             return <MenuItem key={v.id} value={v.id}>{`${v.code} - ${v.category}`}</MenuItem>
+                                          }
+                                       })}
                                     {assetCategories.length == 0 && <MenuItem disabled>Kosong</MenuItem>}
                                  </TextField>
                               </Grid>
@@ -1326,13 +1349,15 @@ const Form = (props) => {
                                        mask="____/__/__"
                                        disabled={props.detail || user.role === "Admin Department" ? true : false}
                                        onChange={(newValue) => {
-                                          const splitCode = form.asset_code.split("/");
-                                          splitCode[0] = newValue.toString().split(" ")[3];
-                                          setForm({
-                                             ...form,
-                                             capitalized: newValue,
-                                             asset_code: splitCode.join("/"),
-                                          });
+                                          if(newValue){
+                                             const splitCode = form.asset_code.split("/");
+                                             splitCode[0] = newValue.toString().split(" ")[3];
+                                             setForm({
+                                                ...form,
+                                                capitalized: newValue,
+                                                asset_code: splitCode.join("/"),
+                                             });
+                                          }
                                        }}
                                        renderInput={(params) => (
                                           <TextField
@@ -1488,7 +1513,7 @@ const Form = (props) => {
                      </Card>
                   </Grid>
 
-                  {user.role !== "Admin Department" && (
+                  {!role.includes(user.role) && (
                      <>
                         {/* Depreciation Asset */}
                         <Grid item xs={12} md={12}>
@@ -2087,7 +2112,7 @@ const Form = (props) => {
                      </Grid>
                   )}
 
-                  {props.detail && (
+                  {props.detail && user.role !== "Employee" && (
                      <Grid item xs={12} md={12}>
                         <Card>
                            <CardContent>
