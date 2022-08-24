@@ -163,7 +163,7 @@ const Form = (props) => {
                 .post(`user/${auth.user.id}`, formData)
                 .then((res) => {
                     resetDataUser().then(res => {
-                        navigate("/user-list");
+                        navigate("/dashboard");
                     })
                 })
                 .catch((err) => {
@@ -222,7 +222,8 @@ const Form = (props) => {
                                                 name="employ_code" 
                                                 label="Employe code" 
                                                 fullWidth 
-                                                value={form.employ_code} 
+                                                value={form.employ_code}
+                                                disabled={!role.includes(auth.user.role) ? true : false} 
                                                 onChange={onChange}
                                                 required
                                                 helperText={typeof errors?.code !== 'undefined' ? errors.code[0] : ''}
