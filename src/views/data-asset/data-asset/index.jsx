@@ -692,6 +692,7 @@ const ModalImport = (props) => {
          <DialogContent>
             {document.file_url !== "" ? (
                <TextField
+                  sx={{ my: 3 }}
                   variant="outlined"
                   label="Supporting Document *"
                   value={document.file_url}
