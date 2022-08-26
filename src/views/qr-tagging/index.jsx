@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Button, Card, CardContent, Grid, Typography, Stack } from "@mui/material";
+import { Button, Card, CardContent, Grid, Typography, Stack, Box } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 
 import http from "../../component/api/Api";
@@ -8,6 +8,7 @@ import QrScanner from "qr-scanner";
 import { useRecoilValue } from "recoil";
 import { authentication } from "../../store/Authentication";
 import { Permission } from "../../component/Permission";
+import { LabelTable } from "../../component/LabelTable";
 
 const Index = () => {
    const { user } = useRecoilValue(authentication);
@@ -21,8 +22,13 @@ const Index = () => {
       try {
          const formData = new FormData();
          formData.append("asset_code", asset_code);
-         const res = await http.post(`asset/show_by_code`, formData);
-         setData(res.data.data);
+         const res = await http.get(`asset`, {
+            params: {
+               field: ['asset_code'],
+               search: asset_code,
+            }
+         });
+         setData(res.data.data.data[0]);
          setCode(asset_code);
       } catch (err) {
       }
@@ -103,8 +109,9 @@ const Index = () => {
                      <Grid item md={12} xs={12}>
                         <Card>
                            <CardContent>
-                              <Typography>Asset Code : {code}</Typography>
-                              <Stack direction="row" spacing={2}>
+                              <Typography sx={{ fontWeight: 'bold' }}>Asset Code : {code}</Typography>
+                              <Stack direction={{ md: 'row', xs: 'column' }} mt={2} spacing={3}>
+                                 {!isOn &&
                                  <Button
                                     variant="contained"
                                     onClick={() => {
@@ -112,10 +119,15 @@ const Index = () => {
                                     }}
                                  >
                                     Re-Scan QR Code
-                                 </Button>
+                                 </Button> 
+                                 }
+                                 
+                                 {isOn &&
                                  <Button variant="contained" onClick={() => setIsOn(false)}>
                                     Stop Scan
                                  </Button>
+                                 }
+                                 
                                  {JSON.stringify(data) !== "{}" && (
                                     <>
                                        <Button variant="contained" onClick={handleDetail}>
@@ -127,9 +139,22 @@ const Index = () => {
                                     </>
                                  )}
                               </Stack>
+                              
                            </CardContent>
                         </Card>
                      </Grid>
+                     {JSON.stringify(data) !== "{}" &&
+                     <Grid item md={12} xs={12}>
+                        <Card sx={{ p: 2 }}>
+                           <CardContent>
+                              <Typography sx={{ fontWeight: 'bold', textAlign: 'center' }}>Qr Asset</Typography>
+                              <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', mt: 2 }}>
+                                 <LabelTable data={data} />
+                              </Box>
+                           </CardContent>
+                        </Card>
+                     </Grid>
+                     }
                   </Grid>
                </div>
             </div>

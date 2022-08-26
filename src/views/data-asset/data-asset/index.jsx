@@ -1015,13 +1015,16 @@ const Index = () => {
                                     >
                                        <TableCell align="center">No.</TableCell>
                                        <TableCell>Code Asset</TableCell>
-                                       <TableCell>SAP Code </TableCell>
                                        <TableCell>Asset Name</TableCell>
+                                       <TableCell>PIC Name</TableCell>
                                        <TableCell>Category Asset</TableCell>
                                        <TableCell>Capitalized On</TableCell>
                                        <TableCell>Useful Life</TableCell>
                                        {user.role !== 'Employee' && 
+                                       <>
                                        <TableCell>Acquisition Value</TableCell>
+                                       <TableCell>Book Value</TableCell>
+                                       </>
                                        }
                                        <TableCell align="center">Action</TableCell>
                                     </TableRow>
@@ -1035,13 +1038,16 @@ const Index = () => {
                                                    {rows.meta.from + key}.
                                                 </TableCell>
                                                 <TableCell>{value.asset_code}</TableCell>
-                                                <TableCell>{value.sap_code}</TableCell>
                                                 <TableCell>{value.asset_name}</TableCell>
+                                                <TableCell>{value.employee.name}</TableCell>
                                                 <TableCell>{value.category.category}</TableCell>
                                                 <TableCell>{moment(value.capitalized).format("ll")}</TableCell>
                                                 <TableCell>{value.sub_category.useful_life}</TableCell>
                                                 {user.role !== 'Employee' &&
+                                                <>
                                                 <TableCell>{NumberFormat(value.acquisition_value, "Rp")}</TableCell>
+                                                <TableCell>{NumberFormat(value.book_value, "Rp")}</TableCell>
+                                                </>
                                                 }
                                                 <TableCell align="center">
                                                    <IconButton onClick={(e) => handleClick(e, value)}>

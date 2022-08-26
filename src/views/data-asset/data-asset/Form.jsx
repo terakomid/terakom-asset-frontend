@@ -1775,7 +1775,7 @@ const Form = (props) => {
                                                 label="SN NB & PC"
                                              />
                                           </Grid>
-                                          <Grid Grid item md={6} xs={12}>
+                                          <Grid Grid item md={12} xs={12}>
                                              <TextField
                                                 disabled={props.detail}
                                                 onChange={handleChange}
@@ -1794,16 +1794,7 @@ const Form = (props) => {
                                                 {masterProcessors.length == 0 && <MenuItem disabled>Kosong</MenuItem>}
                                              </TextField>
                                           </Grid>
-                                          <Grid Grid item md={6} xs={12}>
-                                             <TextField
-                                                disabled={props.detail}
-                                                onChange={handleChange}
-                                                value={form.hardware}
-                                                name="hardware"
-                                                fullWidth
-                                                label="Hardware"
-                                             />
-                                          </Grid>
+                                         
                                        </Grid>
                                     </CardContent>
                                  </Card>

@@ -25,7 +25,7 @@ import {
    DialogActions,
    Chip,
 } from "@mui/material";
-import { Add, CloseRounded, Delete, DownloadOutlined, Edit, FilterListRounded, MoreVert, Search, DoneOutline, Close } from "@mui/icons-material";
+import { Add, CloseRounded, Delete, DownloadOutlined, Edit, FilterListRounded, MoreVert, Search, DoneOutline, Close, InfoOutlined } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 
 import http from "../../component/api/Api";
@@ -191,10 +191,14 @@ const TableExcel = (props) => {
       return arr.reduce((prev, cur) => prev + cur.asset.acquisition_value, 0)
    }
 
+   const totalValueBook = (arr) => {
+      return arr.reduce((prev, cur) => prev + cur.asset.book_value, 0)
+   }
+
     return (
       <>
          {/* Table */}
-         <table id="table" border={1} class="tg" style={{ tableLayout: "fixed", width: "100%", display: "none" }}>
+         <table id="table" border={1} class="tg" style={{ tableLayout: "fixed", width: "100%", display: 'none' }}>
             <colgroup>
                <col style={{ width: "56px" }} />
                <col style={{ width: "56px" }} />
@@ -213,6 +217,7 @@ const TableExcel = (props) => {
                <col style={{ width: "56px" }} />
                <col style={{ width: "56px" }} />
                <col style={{ width: "77px" }} />
+               <col style={{ width: "100px" }} />
             </colgroup>
             <thead>
                <tr>
@@ -222,7 +227,7 @@ const TableExcel = (props) => {
                      <br />
                      PT. Haier Sales Indonesia
                   </th>
-                  <th className="tg-hjji" colspan="12" rowspan="4">
+                  <th className="tg-hjji" colspan="13" rowspan="4">
                      <br />
                      <span style={{ fontWeight: "bold" }}>Asset Disposal Request Form</span>
                   </th>
@@ -242,7 +247,7 @@ const TableExcel = (props) => {
                   <td className="tg-baqh" colspan="4">
                      <span style={{ fontWeight: "bold" }}>Departmen</span>
                   </td>
-                  <td className="tg-baqh" colspan="5">
+                  <td className="tg-baqh" colspan="6">
                      <span style={{ fontWeight: "bold" }}>Tanggal</span>
                   </td>
                </tr>
@@ -252,7 +257,7 @@ const TableExcel = (props) => {
                      {props.data.sk_number}
                   </td>
                   <td className="tg-0lax" colspan="4"></td>
-                  <td className="tg-0lax" colspan="5">
+                  <td className="tg-0lax" colspan="6">
                      {moment(props.data.created_at).format("LL")}
                   </td>
                </tr>
@@ -277,6 +282,9 @@ const TableExcel = (props) => {
                   </td>
                   <td className="tg-baqh" colspan="2">
                      <span style={{ fontWeight: "bold" }}>Purchase Price</span>
+                  </td>
+                  <td className="tg-baqh">
+                     <span style={{ fontWeight: "bold" }}>Value Book</span>
                   </td>
                </tr>
                {props.data.asset_disposal_data.length > 0 &&
@@ -304,6 +312,9 @@ const TableExcel = (props) => {
                            <td className="tg-0lax" colspan="2">
                               {v.asset.acquisition_value}
                            </td>
+                           <td className="tg-0lax">
+                              {v.asset.book_value}
+                           </td>
                         </tr>
                      );
                   })}
@@ -312,9 +323,10 @@ const TableExcel = (props) => {
                      <span style={{ fontWeight: "bold" }}>Total Harga</span>
                   </td>
                   <td className="tg-0lax" colspan="2">{totalPrice(props.data.asset_disposal_data)}</td>
+                  <td className="tg-0lax">{totalValueBook(props.data.asset_disposal_data)}</td>
                </tr>
                <tr>
-                  <td className="tg-baqh" colspan="17">
+                  <td className="tg-baqh" colspan="18">
                      <span style={{ fontWeight: "bold" }}>Untuk Informasi Lebih Lanjut</span>
                   </td>
                </tr>
@@ -326,7 +338,7 @@ const TableExcel = (props) => {
                   <td className="tg-0lax" colspan="2">
                      <span style={{ fontWeight: "bold" }}>Phone</span>
                   </td>
-                  <td className="tg-0lax" colspan="8"></td>
+                  <td className="tg-0lax" colspan="9"></td>
                </tr>
                <tr>
                   <td className="tg-baqh" colspan="9">
@@ -335,7 +347,7 @@ const TableExcel = (props) => {
                   <td className="tg-baqh" colspan="2">
                      <span style={{ fontWeight: "bold" }}>Chekcer</span>
                   </td>
-                  <td className="tg-baqh" colspan="6">
+                  <td className="tg-baqh" colspan="7">
                      <span style={{ fontWeight: "bold" }}>Approved</span>
                   </td>
                </tr>
@@ -345,7 +357,7 @@ const TableExcel = (props) => {
                   <td className="tg-0lax" colspan="3" rowspan="5"></td>
                   <td className="tg-0lax" colspan="2" rowspan="5"></td>
                   <td className="tg-0lax" colspan="3" rowspan="5"></td>
-                  <td className="tg-0lax" colspan="3" rowspan="5"></td>
+                  <td className="tg-0lax" colspan="4" rowspan="5"></td>
                </tr>
                <tr></tr>
                <tr></tr>
@@ -367,7 +379,7 @@ const TableExcel = (props) => {
                   <td className="tg-baqh" colspan="3">
                      <span style={{ fontWeight: "bold" }}>HRGA Head</span>
                   </td>
-                  <td className="tg-baqh" colspan="3">
+                  <td className="tg-baqh" colspan="4">
                      <span style={{ fontWeight: "bold" }}>President Director</span>
                   </td>
                </tr>
@@ -476,12 +488,27 @@ const Index = () => {
          });
    };
 
+   const [title, setTitle] = useState({
+      title: 'Edit',
+      icon: <Edit />,
+   })
    const [staging, setStaging] = useState();
    const [anchorEl, setAnchorEl] = useState(null);
    const open = Boolean(anchorEl);
    const handleClick = async (event, value) => {
       setAnchorEl(event.currentTarget);
       setStaging(value);
+      if(value.status === "accepted") {
+         setTitle({
+            title: 'Detail',
+            icon: <InfoOutlined />,
+         })
+      }else{
+         setTitle({
+            title: 'Edit',
+            icon: <Edit />,
+         })
+      }
       setTableData(undefined);
       const res = await http.get(`/asset_disposal/${value.id}`);
       setTableData(res.data.data);
@@ -651,9 +678,9 @@ const Index = () => {
                            {Permission(user.permission, "update asset disposal") && (
                               <MenuItem onClick={handleEdit}>
                                  <ListItemIcon>
-                                    <Edit />
+                                    {title.icon}
                                  </ListItemIcon>
-                                 Edit
+                                 {title.title}
                               </MenuItem>
                            )}
                            {Permission(user.permission, "delete asset disposal") && staging !== undefined && staging.status === "process" &&  (
@@ -671,20 +698,20 @@ const Index = () => {
                               Download Template
                            </MenuItem>
                            {staging !== undefined && staging.status === "process" && (
-                              <>
-                                 <MenuItem onClick={handleAccept}>
-                                    <ListItemIcon>
-                                       <DoneOutline />
-                                    </ListItemIcon>
-                                    Accept
-                                 </MenuItem>
-                                 <MenuItem onClick={handleReject}>
-                                    <ListItemIcon>
-                                       <Close />
-                                    </ListItemIcon>
-                                    Reject
-                                 </MenuItem>
-                              </>
+                              <MenuItem onClick={handleAccept}>
+                                 <ListItemIcon>
+                                    <DoneOutline />
+                                 </ListItemIcon>
+                                 Accept
+                              </MenuItem>
+                           )}
+                           {staging !== undefined && staging.status === "process" && (
+                              <MenuItem onClick={handleReject}>
+                                 <ListItemIcon>
+                                    <Close />
+                                 </ListItemIcon>
+                                 Reject
+                              </MenuItem>
                            )}
                         </Menu>
                      ) : null}

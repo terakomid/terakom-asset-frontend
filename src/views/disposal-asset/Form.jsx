@@ -70,6 +70,10 @@ const Form = (props) => {
 
 	const [params, setParams] = useState({
         search: "",
+		field: [
+			'asset_name',
+			'asset_code',
+		],
         order_by_name: 0,
         limit: 5,
         page: 1,
@@ -85,7 +89,6 @@ const Form = (props) => {
            		setRows(res.data.data.data);
             })
             .catch((err) => {
-            	//  console.log(err.response);
             });
 	}
 	const getDataMultipleAsset = () => {
@@ -99,7 +102,6 @@ const Form = (props) => {
 				setTableData(res.data.data)
             })
             .catch((err) => {
-            	//  console.log(err.response);
             });
 	}
 	useEffect(() => {
@@ -294,7 +296,7 @@ const Form = (props) => {
 											disableClearable
 											options={rows}
 											fullWidth
-											getOptionLabel={(option) => option.asset_name}
+											getOptionLabel={(option) => `${option.asset_code} - ${option.asset_name}`}
 											inputValue={params.search}
 											onInputChange={(event, newInputValue, reason) => {
 												setParams({
@@ -309,7 +311,7 @@ const Form = (props) => {
 											renderInput={(params) => (
 											<TextField
 												{...params}
-												label="Search input"
+												label="Search input (Add)"
 												InputProps={{
 												...params.InputProps,
 												type: 'search',
@@ -343,7 +345,7 @@ const Form = (props) => {
 												renderInput={(params) => (
 												<TextField
 													{...params}
-													label="Search input"
+													label="Search input (Add)"
 													InputProps={{
 														...params.InputProps,
 														type: 'search',
@@ -398,8 +400,8 @@ const Form = (props) => {
 												>
 												<TableCell align="center">No.</TableCell>
 												<TableCell>Code Asset</TableCell>
-												<TableCell>SAP Code </TableCell>
 												<TableCell>Asset Name</TableCell>
+												<TableCell>PIC Name</TableCell>
 												<TableCell>Category Asset</TableCell>
 												<TableCell>Capitalized On</TableCell>
 												<TableCell>Useful Life</TableCell>
@@ -418,10 +420,10 @@ const Form = (props) => {
 															{1 + key}.
 															</TableCell>
 															<TableCell>
-															{value.asset_code}
+																{value.asset_code}
 															</TableCell>
-															<TableCell>{value.sap_code}</TableCell>
 															<TableCell>{value.asset_name}</TableCell>
+															<TableCell>{value.employee.name}</TableCell>
 															<TableCell>{value.category.category}</TableCell>
 															<TableCell>{moment(value.capitalized).format('ll') }</TableCell>
 															<TableCell>{value.sub_category.useful_life}</TableCell>
