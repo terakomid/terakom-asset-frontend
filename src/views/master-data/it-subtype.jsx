@@ -30,12 +30,15 @@ import http from "../../component/api/Api";
 import Loading from "../../component/Loading";
 import ModalDelete from "../../component/Delete";
 
+import { useSnackbar } from "notistack";
 import { useRecoilValue } from "recoil";
 import { authentication } from "../../store/Authentication";
 import { Permission } from "../../component/Permission";
+import { Capitalize } from "../../component/Format";
 
 export default function ItSubType() {
    const { user } = useRecoilValue(authentication);
+   const { enqueueSnackbar } = useSnackbar();
    const { id } = useParams();
 
    const [rows, setRows] = useState();
@@ -83,11 +86,12 @@ export default function ItSubType() {
          formData.append("sub_type", data.sub_type);
          // console.log(Object.fromEntries(formData));
          http
-            .post(`sub_master_it`, formData, {})
+            .post(`sub_master_it`, formData)
             .then((res) => {
                // console.log(res.data.data);
                handleClear();
                getData();
+               enqueueSnackbar(Capitalize(res.data.meta.message), { variant: "success" });
             })
             .catch((xhr) => {
                // console.log(xhr.response.data);
@@ -102,12 +106,13 @@ export default function ItSubType() {
          formData.append("master_it_id", id);
          formData.append("sub_type", data.sub_type);
          http
-            .post(`sub_master_it/${data.id}`, formData, {})
+            .post(`sub_master_it/${data.id}`, formData)
             .then((res) => {
                // console.log(res.data.data);
                setMethod("add");
                handleClear();
                getData();
+               enqueueSnackbar(Capitalize(res.data.meta.message), { variant: "success" });
             })
             .catch((xhr) => {
                // console.log(xhr.response.data);
@@ -157,6 +162,7 @@ export default function ItSubType() {
    const handleEdit = () => {
       setMethod("edit");
       setData(staging);
+      setError("");
       handleMenu();
    };
 
@@ -167,7 +173,7 @@ export default function ItSubType() {
 
    const onDelete = async () => {
       http
-         .delete(`sub_master_it/${staging.id}`, {})
+         .delete(`sub_master_it/${staging.id}`)
          .then((res) => {
             getData();
             handleMenu();

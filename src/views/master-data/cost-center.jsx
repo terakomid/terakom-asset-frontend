@@ -29,13 +29,16 @@ import http from "../../component/api/Api";
 import Loading from "../../component/Loading";
 import ModalDelete from "../../component/Delete";
 
+import { useSnackbar } from "notistack";
 import { useRecoilValue } from "recoil";
 import { authentication } from "../../store/Authentication";
 import { Permission } from "../../component/Permission";
 import { ImportModal } from "../../component/ImportModal";
+import { Capitalize } from "../../component/Format";
 
 export default function CostCenter() {
    const { user } = useRecoilValue(authentication);
+   const { enqueueSnackbar } = useSnackbar();
 
    const [rows, setRows] = useState();
    const [data, setData] = useState({
@@ -82,11 +85,12 @@ export default function CostCenter() {
          formData.append("name", data.name);
          // console.log(Object.fromEntries(formData));
          http
-            .post(`cost`, formData, {})
+            .post(`cost`, formData)
             .then((res) => {
                // console.log(res.data.data);
                handleClear();
                getData();
+               enqueueSnackbar(Capitalize(res.data.meta.message), { variant: "success" });
             })
             .catch((xhr) => {
                // console.log(xhr.response.data);
@@ -101,12 +105,13 @@ export default function CostCenter() {
          formData.append("code", data.code);
          formData.append("name", data.name);
          http
-            .post(`cost/${data.id}`, formData, {})
+            .post(`cost/${data.id}`, formData)
             .then((res) => {
                // console.log(res.data.data);
                setMethod("add");
                handleClear();
                getData();
+               enqueueSnackbar(Capitalize(res.data.meta.message), { variant: "success" });
             })
             .catch((xhr) => {
                // console.log(xhr.response.data);
@@ -157,6 +162,7 @@ export default function CostCenter() {
    const handleEdit = () => {
       setMethod("edit");
       setData(staging);
+      setError("");
       handleMenu();
    };
 
@@ -167,14 +173,14 @@ export default function CostCenter() {
 
    const onDelete = async () => {
       http
-         .delete(`cost/${staging.id}`, {})
+         .delete(`cost/${staging.id}`)
          .then((res) => {
             getData();
             handleMenu();
             handleModal();
          })
          .catch((err) => {
-            console.log(err.response.data);
+            // console.log(err.response.data);
             setLoading(false);
          });
    };

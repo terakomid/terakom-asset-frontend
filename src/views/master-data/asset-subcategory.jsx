@@ -30,12 +30,15 @@ import http from "../../component/api/Api";
 import Loading from "../../component/Loading";
 import ModalDelete from "../../component/Delete";
 
+import { useSnackbar } from "notistack";
 import { useRecoilValue } from "recoil";
 import { authentication } from "../../store/Authentication";
 import { Permission } from "../../component/Permission";
+import { Capitalize } from "../../component/Format";
 
 export default function AssetSubCategory() {
    const { user } = useRecoilValue(authentication);
+   const { enqueueSnackbar } = useSnackbar();
    const { id } = useParams();
 
    const [rows, setRows] = useState();
@@ -43,6 +46,7 @@ export default function AssetSubCategory() {
       useful_life: "",
       sub_category: "",
    });
+   const [error, setError] = useState("");
    const [usefulLife] = useState([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]);
    const [params, setParams] = useState({
       category_id: id,
@@ -66,7 +70,7 @@ export default function AssetSubCategory() {
    const [category, setCategory] = useState();
    const getCategory = async () => {
       http
-         .get(`/category/${id}`, {})
+         .get(`/category/${id}`)
          .then((res) => {
             // console.log(res.data.data);
             setCategory(res.data.data);
@@ -93,6 +97,7 @@ export default function AssetSubCategory() {
    const [loading, setLoading] = useState(false);
    const handleSubmit = async (e) => {
       e.preventDefault();
+      setError("");
       setLoading(true);
       if (method === "add") {
          let formData = new FormData();
@@ -101,15 +106,18 @@ export default function AssetSubCategory() {
          formData.append("useful_life", data.useful_life);
          // console.log(Object.fromEntries(formData));
          http
-            .post(`sub_category`, formData, {})
+            .post(`sub_category`, formData)
             .then((res) => {
                // console.log(res.data.data);
-               setLoading(false);
                handleClear();
                getData();
+               enqueueSnackbar(Capitalize(res.data.meta.message), { variant: "success" });
             })
-            .catch((err) => {
-               // console.log(err.response.data);
+            .catch((xhr) => {
+               // console.log(xhr.response.data);
+               xhr.response && setError(xhr.response.data.errors);
+            })
+            .finally(() => {
                setLoading(false);
             });
       } else {
@@ -119,16 +127,19 @@ export default function AssetSubCategory() {
          formData.append("sub_category", data.sub_category);
          formData.append("useful_life", data.useful_life);
          http
-            .post(`sub_category/${data.id}`, formData, {})
+            .post(`sub_category/${data.id}`, formData)
             .then((res) => {
                // console.log(res.data.data);
                setMethod("add");
-               setLoading(false);
                handleClear();
                getData();
+               enqueueSnackbar(Capitalize(res.data.meta.message), { variant: "success" });
             })
-            .catch((err) => {
-               // console.log(err.response.data);
+            .catch((xhr) => {
+               // console.log(xhr.response.data);
+               xhr.response && setError(xhr.response.data.errors);
+            })
+            .finally(() => {
                setLoading(false);
             });
       }
@@ -147,6 +158,7 @@ export default function AssetSubCategory() {
 
    const handleClear = (e) => {
       setMethod("add");
+      setError("");
       setData({
          sub_category: "",
          useful_life: "",
@@ -172,6 +184,7 @@ export default function AssetSubCategory() {
    const handleEdit = () => {
       setMethod("edit");
       setData(staging);
+      setError("");
       handleMenu();
    };
 
@@ -182,7 +195,7 @@ export default function AssetSubCategory() {
 
    const onDelete = async () => {
       http
-         .delete(`sub_category/${staging.id}`, {})
+         .delete(`sub_category/${staging.id}`)
          .then((res) => {
             getData();
             handleMenu();
@@ -320,6 +333,8 @@ export default function AssetSubCategory() {
                                  rowsPerPage={rowsPerPage}
                                  onPageChange={handleChangePage}
                                  onRowsPerPageChange={handleChangeRowsPerPage}
+                                 showFirstButton
+                                 showLastButton
                               />
                            )}
                         </CardContent>
@@ -337,7 +352,7 @@ export default function AssetSubCategory() {
                            <Typography variant="subtitle1" fontWeight="bold" mb={2}>
                               {method === "add" ? "Add" : "Edit"} Asset Sub Category
                            </Typography>
-                           <Box component="form" onSubmit={handleSubmit}>
+                           <Box component="form" noValidate={true} onSubmit={handleSubmit}>
                               <TextField
                                  name="sub_category"
                                  label="Sub Category"
@@ -345,6 +360,8 @@ export default function AssetSubCategory() {
                                  variant="outlined"
                                  value={data.sub_category}
                                  onChange={handleChange}
+                                 error={!!error.sub_category}
+                                 helperText={error.sub_category !== undefined && error.sub_category[0]}
                                  fullWidth
                                  required
                               />
@@ -355,6 +372,8 @@ export default function AssetSubCategory() {
                                  variant="outlined"
                                  value={data.useful_life}
                                  onChange={handleChange}
+                                 error={!!error.useful_life}
+                                 helperText={error.useful_life !== undefined && error.useful_life[0]}
                                  select
                                  fullWidth
                                  required

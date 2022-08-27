@@ -29,12 +29,15 @@ import http from "../../component/api/Api";
 import Loading from "../../component/Loading";
 import ModalDelete from "../../component/Delete";
 
+import { useSnackbar } from "notistack";
 import { useRecoilValue } from "recoil";
 import { authentication } from "../../store/Authentication";
 import { Permission } from "../../component/Permission";
+import { Capitalize } from "../../component/Format";
 
 export default function AssetLocation() {
    const { user } = useRecoilValue(authentication);
+   const { enqueueSnackbar } = useSnackbar();
 
    const [rows, setRows] = useState();
    const [data, setData] = useState({
@@ -81,7 +84,7 @@ export default function AssetLocation() {
    const [parent, setParent] = useState(null);
    const getParent = async (code) => {
       http
-         .get(`location/${code}`, {})
+         .get(`location/${code}`)
          .then((res) => {
             // console.log(res.data.data);
             setParent(res.data.data);
@@ -124,6 +127,7 @@ export default function AssetLocation() {
                setParent(null);
                handleClear();
                getData();
+               enqueueSnackbar(Capitalize(res.data.meta.message), { variant: "success" });
             })
             .catch((xhr) => {
                // console.log(xhr.response.data);
@@ -139,13 +143,14 @@ export default function AssetLocation() {
          formData.append("location", data.location);
          formData.append("parent_id", parent !== null ? parent.id : "");
          http
-            .post(`location/${data.id}`, formData, {})
+            .post(`location/${data.id}`, formData)
             .then((res) => {
                // console.log(res.data.data);
                setMethod("add");
                setParent(null);
                handleClear();
                getData();
+               enqueueSnackbar(Capitalize(res.data.meta.message), { variant: "success" });
             })
             .catch((xhr) => {
                // console.log(xhr.response.data);
@@ -201,6 +206,7 @@ export default function AssetLocation() {
    const handleEdit = () => {
       setMethod("edit");
       setData(staging);
+      setError("");
       handleMenu();
       staging.parent !== null ? setParent(staging.parent) : setParent(null);
    };
@@ -212,14 +218,14 @@ export default function AssetLocation() {
 
    const onDelete = async () => {
       http
-         .delete(`location/${staging.id}`, {})
+         .delete(`location/${staging.id}`)
          .then((res) => {
             getData();
             handleMenu();
             handleModal();
          })
          .catch((err) => {
-            console.log(err.response.data);
+            // console.log(err.response.data);
             setLoading(false);
          });
    };

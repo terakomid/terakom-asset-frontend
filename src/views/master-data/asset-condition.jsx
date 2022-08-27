@@ -29,12 +29,15 @@ import http from "../../component/api/Api";
 import Loading from "../../component/Loading";
 import ModalDelete from "../../component/Delete";
 
+import { useSnackbar } from "notistack";
 import { useRecoilValue } from "recoil";
 import { authentication } from "../../store/Authentication";
 import { Permission } from "../../component/Permission";
+import { Capitalize } from "../../component/Format";
 
 export default function AssetCondition() {
    const { user } = useRecoilValue(authentication);
+   const { enqueueSnackbar } = useSnackbar();
 
    const [rows, setRows] = useState();
    const [data, setData] = useState({
@@ -79,11 +82,12 @@ export default function AssetCondition() {
          formData.append("condition", data.condition);
          // console.log(Object.fromEntries(formData));
          http
-            .post(`condition`, formData, {})
+            .post(`condition`, formData)
             .then((res) => {
                // console.log(res.data.data);
                handleClear();
                getData();
+               enqueueSnackbar(Capitalize(res.data.meta.message), { variant: "success" });
             })
             .catch((xhr) => {
                // console.log(xhr.response.data);
@@ -97,12 +101,13 @@ export default function AssetCondition() {
          formData.append("_method", "PUT");
          formData.append("condition", data.condition);
          http
-            .post(`condition/${data.id}`, formData, {})
+            .post(`condition/${data.id}`, formData)
             .then((res) => {
                // console.log(res.data.data);
                setMethod("add");
                handleClear();
                getData();
+               enqueueSnackbar(Capitalize(res.data.meta.message), { variant: "success" });
             })
             .catch((xhr) => {
                // console.log(xhr.response.data);
@@ -152,6 +157,7 @@ export default function AssetCondition() {
    const handleEdit = () => {
       setMethod("edit");
       setData(staging);
+      setError("");
       handleMenu();
    };
 
@@ -162,14 +168,14 @@ export default function AssetCondition() {
 
    const onDelete = async () => {
       http
-         .delete(`condition/${staging.id}`, {})
+         .delete(`condition/${staging.id}`)
          .then((res) => {
             getData();
             handleMenu();
             handleModal();
          })
          .catch((err) => {
-            console.log(err.response.data);
+            // console.log(err.response.data);
             setLoading(false);
          });
    };

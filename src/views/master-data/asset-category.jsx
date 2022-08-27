@@ -31,12 +31,15 @@ import { Link as RouterLink } from "react-router-dom";
 import Loading from "../../component/Loading";
 import ModalDelete from "../../component/Delete";
 
+import { useSnackbar } from "notistack";
 import { useRecoilValue } from "recoil";
 import { authentication } from "../../store/Authentication";
 import { Permission } from "../../component/Permission";
+import { Capitalize } from "../../component/Format";
 
 export default function AssetCategory() {
    const { user } = useRecoilValue(authentication);
+   const { enqueueSnackbar } = useSnackbar();
 
    const [rows, setRows] = useState();
    const [data, setData] = useState({
@@ -83,11 +86,12 @@ export default function AssetCategory() {
          formData.append("category", data.category);
          // console.log(Object.fromEntries(formData));
          http
-            .post(`category`, formData, {})
+            .post(`category`, formData)
             .then((res) => {
                // console.log(res.data.data);
                handleClear();
                getData();
+               enqueueSnackbar(Capitalize(res.data.meta.message), { variant: "success" });
             })
             .catch((xhr) => {
                // console.log(xhr.response.data);
@@ -102,12 +106,13 @@ export default function AssetCategory() {
          formData.append("code", data.code);
          formData.append("category", data.category);
          http
-            .post(`category/${data.id}`, formData, {})
+            .post(`category/${data.id}`, formData)
             .then((res) => {
                // console.log(res.data.data);
                setMethod("add");
                handleClear();
                getData();
+               enqueueSnackbar(Capitalize(res.data.meta.message), { variant: "success" });
             })
             .catch((xhr) => {
                // console.log(xhr.response.data);
@@ -158,6 +163,7 @@ export default function AssetCategory() {
    const handleEdit = () => {
       setMethod("edit");
       setData(staging);
+      setError("");
       handleMenu();
    };
 
@@ -168,14 +174,14 @@ export default function AssetCategory() {
 
    const onDelete = async () => {
       http
-         .delete(`category/${staging.id}`, {})
+         .delete(`category/${staging.id}`)
          .then((res) => {
             getData();
             handleMenu();
             handleModal();
          })
          .catch((err) => {
-            console.log(err.response.data);
+            // console.log(err.response.data);
             setLoading(false);
          });
    };
