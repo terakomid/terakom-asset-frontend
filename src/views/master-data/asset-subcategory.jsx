@@ -35,6 +35,7 @@ import { useRecoilValue } from "recoil";
 import { authentication } from "../../store/Authentication";
 import { Permission } from "../../component/Permission";
 import { Capitalize } from "../../component/Format";
+import { exportTableToExcel } from "../../help/ExportToExcel";
 
 export default function AssetSubCategory() {
    const { user } = useRecoilValue(authentication);
@@ -188,6 +189,10 @@ export default function AssetSubCategory() {
       handleMenu();
    };
 
+   const handleExport = async () => {
+      exportTableToExcel("#table-export", `Asset-Sub-Category-${category !== undefined && category.category}`);
+   };
+
    const [openModal, setOpenModal] = useState(false);
    const handleModal = (e) => {
       setOpenModal(!openModal);
@@ -202,7 +207,7 @@ export default function AssetSubCategory() {
             handleModal();
          })
          .catch((err) => {
-            console.log(err.response.data);
+            // console.log(err.response.data);
             setLoading(false);
          });
    };
@@ -225,7 +230,7 @@ export default function AssetSubCategory() {
                <div className="d-flex align-items-center justify-content-between my-2">
                   <h3 className="fw-bold mb-0">Master Asset Sub Category {category !== undefined && ` - ${category.category}`}</h3>
                   <Stack direction="row" spacing={1}>
-                     <Button variant="contained" startIcon={<FileUpload />}>
+                     <Button variant="contained" startIcon={<FileUpload />} onClick={handleExport}>
                         Export
                      </Button>
                   </Stack>
@@ -339,6 +344,26 @@ export default function AssetSubCategory() {
                            )}
                         </CardContent>
                      </Card>
+                     {rows !== undefined && rows.length > 0 && (
+                        <table border={1} id="table-export" style={{ display: "none" }}>
+                           <thead>
+                              <tr>
+                                 <td>Sub Category</td>
+                                 <td>Useful Life</td>
+                              </tr>
+                           </thead>
+                           <tbody>
+                              {rows.map((value, key) => {
+                                 return (
+                                    <tr key={key}>
+                                       <td>{value.sub_category}</td>
+                                       <td>{value.useful_life}</td>
+                                    </tr>
+                                 );
+                              })}
+                           </tbody>
+                        </table>
+                     )}
                   </div>
                   <div
                      className={`${

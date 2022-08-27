@@ -35,6 +35,7 @@ import { authentication } from "../../store/Authentication";
 import { Permission } from "../../component/Permission";
 import { ImportModal } from "../../component/ImportModal";
 import { Capitalize } from "../../component/Format";
+import { exportTableToExcel } from "../../help/ExportToExcel";
 
 export default function Department() {
    const { user } = useRecoilValue(authentication);
@@ -162,6 +163,10 @@ export default function Department() {
       handleMenu();
    };
 
+   const handleExport = async () => {
+      exportTableToExcel("#table-export", "Department");
+   };
+
    const [openModal, setOpenModal] = useState(false);
    const handleModal = (e) => {
       setOpenModal(!openModal);
@@ -207,7 +212,7 @@ export default function Department() {
                      <Button variant="contained" startIcon={<FileDownload />} onClick={handleModalImport}>
                         Import
                      </Button>
-                     <Button variant="contained" startIcon={<FileUpload />}>
+                     <Button variant="contained" startIcon={<FileUpload />} onClick={handleExport}>
                         Export
                      </Button>
                   </Stack>
@@ -319,6 +324,24 @@ export default function Department() {
                            )}
                         </CardContent>
                      </Card>
+                     {rows !== undefined && rows.length > 0 && (
+                        <table border={1} id="table-export" style={{ display: "none" }}>
+                           <thead>
+                              <tr>
+                                 <td>Department</td>
+                              </tr>
+                           </thead>
+                           <tbody>
+                              {rows.map((value, key) => {
+                                 return (
+                                    <tr key={key}>
+                                       <td>{value.dept}</td>
+                                    </tr>
+                                 );
+                              })}
+                           </tbody>
+                        </table>
+                     )}
                   </div>
                   <div
                      className={`${

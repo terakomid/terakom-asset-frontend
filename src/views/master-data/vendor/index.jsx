@@ -30,6 +30,7 @@ import { useRecoilValue } from "recoil";
 import { authentication } from "../../../store/Authentication";
 import { Permission } from "../../../component/Permission";
 import { ImportModal } from "../../../component/ImportModal";
+import { exportTableToExcel } from "../../../help/ExportToExcel";
 
 export default function Vendor() {
    const { user } = useRecoilValue(authentication);
@@ -82,6 +83,10 @@ export default function Vendor() {
       });
    };
 
+   const handleExport = async () => {
+      exportTableToExcel("#table-export", "Vendor");
+   };
+
    const [openModal, setOpenModal] = useState(false);
    const handleModal = (e) => {
       setOpenModal(!openModal);
@@ -121,12 +126,12 @@ export default function Vendor() {
          <div className="page-content">
             <div className="container">
                <div className="d-flex align-items-center justify-content-between mt-2 mb-4">
-                  <h3 className="fw-bold mb-0">Master Vendor Name</h3>
+                  <h3 className="fw-bold mb-0">Master Vendor</h3>
                   <Stack direction="row" spacing={1}>
                      <Button variant="contained" startIcon={<FileDownload />} onClick={handleModalImport}>
                         Import
                      </Button>
-                     <Button variant="contained" startIcon={<FileUpload />}>
+                     <Button variant="contained" startIcon={<FileUpload />} onClick={handleExport}>
                         Export
                      </Button>
                      {Permission(user.permission, "create vendor") && (
@@ -243,6 +248,32 @@ export default function Vendor() {
                      )}
                   </CardContent>
                </Card>
+               {rows !== undefined && rows.length > 0 && (
+                  <table border={1} id="table-export" style={{ display: "none" }}>
+                     <thead>
+                        <tr>
+                           <td>Code</td>
+                           <td>Vendor Name</td>
+                           <td>Vendor Address</td>
+                           <td>PIC Contact</td>
+                           <td>Contact</td>
+                        </tr>
+                     </thead>
+                     <tbody>
+                        {rows.map((value, key) => {
+                           return (
+                              <tr key={key}>
+                                 <td>{value.code}</td>
+                                 <td>{value.name}</td>
+                                 <td>{value.address}</td>
+                                 <td>{value.pic_contact}</td>
+                                 <td>`{value.contact}</td>
+                              </tr>
+                           );
+                        })}
+                     </tbody>
+                  </table>
+               )}
                <ModalDelete open={openModal} delete={onDelete} handleClose={handleModal} />
 
                {Permission(user.permission, "update vendor") || Permission(user.permission, "delete vendor") ? (

@@ -35,6 +35,7 @@ import { authentication } from "../../store/Authentication";
 import { Permission } from "../../component/Permission";
 import { ImportModal } from "../../component/ImportModal";
 import { Capitalize } from "../../component/Format";
+import { exportTableToExcel } from "../../help/ExportToExcel";
 
 export default function CostCenter() {
    const { user } = useRecoilValue(authentication);
@@ -166,6 +167,10 @@ export default function CostCenter() {
       handleMenu();
    };
 
+   const handleExport = async () => {
+      exportTableToExcel("#table-export", "Cost Center");
+   };
+
    const [openModal, setOpenModal] = useState(false);
    const handleModal = (e) => {
       setOpenModal(!openModal);
@@ -211,7 +216,7 @@ export default function CostCenter() {
                      <Button variant="contained" startIcon={<FileDownload />} onClick={handleModalImport}>
                         Import
                      </Button>
-                     <Button variant="contained" startIcon={<FileUpload />}>
+                     <Button variant="contained" startIcon={<FileUpload />} onClick={handleExport}>
                         Export
                      </Button>
                   </Stack>
@@ -321,6 +326,26 @@ export default function CostCenter() {
                            )}
                         </CardContent>
                      </Card>
+                     {rows !== undefined && rows.length > 0 && (
+                        <table border={1} id="table-export" style={{ display: "none" }}>
+                           <thead>
+                              <tr>
+                                 <td>Cost Center Code</td>
+                                 <td>Cost Center Name</td>
+                              </tr>
+                           </thead>
+                           <tbody>
+                              {rows.map((value, key) => {
+                                 return (
+                                    <tr key={key}>
+                                       <td>{value.code}</td>
+                                       <td>{value.name}</td>
+                                    </tr>
+                                 );
+                              })}
+                           </tbody>
+                        </table>
+                     )}
                   </div>
                   <div
                      className={`${

@@ -34,6 +34,7 @@ import { useRecoilValue } from "recoil";
 import { authentication } from "../../store/Authentication";
 import { Permission } from "../../component/Permission";
 import { Capitalize } from "../../component/Format";
+import { exportTableToExcel } from "../../help/ExportToExcel";
 
 export default function AssetCondition() {
    const { user } = useRecoilValue(authentication);
@@ -161,6 +162,10 @@ export default function AssetCondition() {
       handleMenu();
    };
 
+   const handleExport = async () => {
+      exportTableToExcel("#table-export", "Asset-Condition");
+   };
+
    const [openModal, setOpenModal] = useState(false);
    const handleModal = (e) => {
       setOpenModal(!openModal);
@@ -198,7 +203,7 @@ export default function AssetCondition() {
                <div className="d-flex align-items-center justify-content-between my-2">
                   <h3 className="fw-bold mb-0">Master Asset Condition</h3>
                   <Stack direction="row" spacing={1}>
-                     <Button variant="contained" startIcon={<FileUpload />}>
+                     <Button variant="contained" startIcon={<FileUpload />} onClick={handleExport}>
                         Export
                      </Button>
                   </Stack>
@@ -310,6 +315,24 @@ export default function AssetCondition() {
                            )}
                         </CardContent>
                      </Card>
+                     {rows !== undefined && rows.length > 0 && (
+                        <table border={1} id="table-export" style={{ display: "none" }}>
+                           <thead>
+                              <tr>
+                                 <td>Asset Condition</td>
+                              </tr>
+                           </thead>
+                           <tbody>
+                              {rows.map((value, key) => {
+                                 return (
+                                    <tr key={key}>
+                                       <td>{value.condition}</td>
+                                    </tr>
+                                 );
+                              })}
+                           </tbody>
+                        </table>
+                     )}
                   </div>
                   <div
                      className={`${

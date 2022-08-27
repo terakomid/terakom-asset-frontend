@@ -35,6 +35,7 @@ import { useRecoilValue } from "recoil";
 import { authentication } from "../../store/Authentication";
 import { Permission } from "../../component/Permission";
 import { Capitalize } from "../../component/Format";
+import { exportTableToExcel } from "../../help/ExportToExcel";
 
 export default function ItSubType() {
    const { user } = useRecoilValue(authentication);
@@ -65,6 +66,19 @@ export default function ItSubType() {
          });
    };
 
+   const [category, setCategory] = useState();
+   const getCategory = async () => {
+      http
+         .get(`/master_it/${id}`)
+         .then((res) => {
+            // console.log(res.data.data);
+            setCategory(res.data.data);
+         })
+         .catch((err) => {
+            // console.log(err.response);
+         });
+   };
+
    useEffect(() => {
       setRows(undefined);
       let timer = setTimeout(() => {
@@ -73,6 +87,10 @@ export default function ItSubType() {
       return () => clearTimeout(timer);
       // eslint-disable-next-line react-hooks/exhaustive-deps
    }, [params]);
+
+   useEffect(() => {
+      getCategory();
+   }, []);
 
    const [method, setMethod] = useState("add");
    const [loading, setLoading] = useState(false);
@@ -166,6 +184,10 @@ export default function ItSubType() {
       handleMenu();
    };
 
+   const handleExport = async () => {
+      exportTableToExcel("#table-export", `Sub-IT-${category !== undefined && category.type}`);
+   };
+
    const [openModal, setOpenModal] = useState(false);
    const handleModal = (e) => {
       setOpenModal(!openModal);
@@ -200,9 +222,9 @@ export default function ItSubType() {
          <div className="page-content">
             <div className="container">
                <div className="d-flex align-items-center justify-content-between my-2">
-                  <h3 className="fw-bold mb-0">Sub Master IT</h3>
+                  <h3 className="fw-bold mb-0">Sub Master IT {category !== undefined && ` - ${category.type}`}</h3>
                   <Stack direction="row" spacing={1}>
-                     <Button variant="contained" startIcon={<FileUpload />}>
+                     <Button variant="contained" startIcon={<FileUpload />} onClick={handleExport}>
                         Export
                      </Button>
                   </Stack>
@@ -314,6 +336,24 @@ export default function ItSubType() {
                            )}
                         </CardContent>
                      </Card>
+                     {rows !== undefined && rows.length > 0 && (
+                        <table border={1} id="table-export" style={{ display: "none" }}>
+                           <thead>
+                              <tr>
+                                 <td>Sub Type</td>
+                              </tr>
+                           </thead>
+                           <tbody>
+                              {rows.map((value, key) => {
+                                 return (
+                                    <tr key={key}>
+                                       <td>{value.sub_type}</td>
+                                    </tr>
+                                 );
+                              })}
+                           </tbody>
+                        </table>
+                     )}
                   </div>
                   <div
                      className={`${
