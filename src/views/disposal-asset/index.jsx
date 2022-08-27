@@ -600,12 +600,11 @@ const Index = () => {
                                        rows.data.length > 0 ? (
                                           rows.data.map((value, key) => (
                                              <TableRow key={key}>
-                                                {console.log(value)}
                                                 <TableCell component="th" scope="row" align="center">
                                                    {rows.meta.from + key}.
                                                 </TableCell>
                                                 <TableCell>{moment(value.created_at).format("ll")}</TableCell>
-                                                <TableCell>{value.sk_number}</TableCell>
+                                                <TableCell>{value.sk_number !== null ? value.sk_number : '-'}</TableCell>
                                                 <TableCell>{value.description}</TableCell>
                                                 <TableCell>{moment(value.updated_at).format("ll")}</TableCell>
                                                 <TableCell>

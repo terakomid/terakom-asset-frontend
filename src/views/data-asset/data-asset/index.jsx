@@ -66,11 +66,13 @@ import { useRecoilValue } from "recoil";
 import { authentication } from "../../../store/Authentication";
 import { Permission } from "../../../component/Permission";
 import { NumberFormat } from "../../../component/Format";
+import { exportTableToExcel } from "../../../help/ExportToExcel";
 
 const ModalFilter = (props) => {
    const [loading, setLoading] = useState(false);
    const [complete, setComplete] = useState(false);
    const [rows, setRows] = useState({
+      asset_type: '',
       category_id: [],
       employees_id: [],
       capitalized_from: null,
@@ -186,6 +188,26 @@ const ModalFilter = (props) => {
          {complete ? (
             <DialogContent>
                <Grid container spacing={2}>
+                  <Grid item xs={12} md={12}>
+                     <TextField
+                        name="asset_type"
+                        value={rows.asset_type}
+                        fullWidth
+                        select
+                        onChange={(e) => {
+                           setRows({
+                              ...rows,
+                              asset_type: e.target.value
+                           })
+                        }}
+                        label="Type Asset"
+                     >
+                        <MenuItem value="it">IT</MenuItem>
+                        <MenuItem value="non-it">NON IT</MenuItem>
+
+                     </TextField>
+
+                  </Grid>
                   <Grid item xs={12} md={6}>
                      <FormControl sx={{ mt: 1 }} fullWidth>
                         <InputLabel>Category</InputLabel>
@@ -828,6 +850,110 @@ const RowComponent = (props) => {
    );
 }
 
+const TableExport = (props) => {
+   return (
+      <table id="table-export" style={{ display: 'none' }}>
+         <thead>
+            <tr>
+               <th>No</th>
+               <th>Asset Type</th>
+               <th>Asset Code</th>
+               <th>Category</th>
+               <th>Sub Category</th>
+               <th>Asset Name</th>
+               <th>Asset Spesification</th>
+               <th>Useful Life</th>
+               <th>Capitalized On</th>
+               <th>SAP Code</th>
+               <th>Employee Name</th>
+               <th>Location</th>
+               <th>Department</th>
+               <th>Asset Condition</th>
+               <th>Latitude</th>
+               <th>Longitude</th>
+               <th>Cons Center Name</th>
+               <th>Acquisition Value</th>
+               <th>Depreciation</th>
+               <th>Vendor Name</th>
+               <th>Book Value</th>
+               <th>Device</th>
+               <th>Type</th>
+               <th>Brand</th>
+               <th>Monitor INC</th>
+               <th>Model Brand</th>
+               <th>Mac Address</th>
+               <th>Warranty Expiry</th>
+               <th>Computer Name</th>
+               <th>DLP</th>
+               <th>SOC</th>
+               <th>SN NB and PC</th>
+               <th>Processor</th>
+               <th>OS</th>
+               <th>SN Windows</th>
+               <th>MS Office</th>
+               <th>SN Office</th>
+               <th>Antivirus</th>
+               <th>Notes</th>
+               <th>Attachment</th>
+            </tr>
+         </thead>
+         <tbody>
+            {props.data.map((val, i) => {
+               return (
+                  <tr key={i}>
+                     <td>{i + 1}</td>
+                     <td>{ val.asset_type }</td>
+                     <td>{ val.asset_code }</td>
+                     <td>{ val.category.category }</td>
+                     <td>{ val.sub_category.sub_category }</td>
+                     <td>{ val.asset_name }</td>
+                     <td>{ val.specification }</td>
+                     <td>{ val.useful_life }</td>
+                     <td>{ val.capitalized }</td>
+                     <td>{ val.sap_code }</td>
+                     <td>{ `${val.employee.code} - ${val.employee.name}` }</td>
+                     <td>{ `${val.location.code} - ${val.location.location}` }</td>
+                     <td>{ val.department.dept }</td>
+                     <td>{ val.condition.condition }</td>
+                     <td>{ val.latitude }</td>
+                     <td>{ val.longitude }</td>
+                     <td>{ `${val.cost.code} ${val.cost.name}` }</td>
+                     <td>{ val.acquisition_value }</td>
+                     <td>{ val.depreciation == 1 ? 'yes' : 'no' }</td>
+                     <td>{ `${val.vendor.code} - ${val.vendor.name}` }</td>
+                     <td>{ val.book_value }</td>
+                     <td>{ val.device ? val.device.sub_type : '' }</td>
+                     <td>{ val.type }</td>
+                     <td>{ val.brand ? val.brand.sub_type : '' }</td>
+                     <td>{ val.monitor_inch }</td>
+                     <td>{ val.model_brand }</td>
+                     <td>{ val.mac_address }</td>
+                     <td>{ val.warranty }</td>
+                     <td>{ val.computer_name }</td>
+                     <td>{ val.dlp }</td>
+                     <td>{ val.soc }</td>
+                     <td>{ val.snnbpc }</td>
+                     <td>{ val.processor ? val.processor.sub_type : '' }</td>
+                     <td>{ val.os ? val.os.sub_type : '' }</td>
+                     <td>{ val.sn_windows }</td>
+                     <td>{ val.office ? val.office.sub_type : '' }</td>
+                     <td>{ val.sn_office }</td>
+                     <td>{ val.antivirus ? val.antivirus.sub_type : '' }</td>
+                     <td>{ val.notes }</td>
+                     <td>
+                        {val.evidence.length > 0 && val.evidence.map(v => (
+                           <a href={v.file}>
+                              {v.file.split('/').pop()} <br/> 
+                           </a>  
+                        ))}
+                     </td>
+               </tr>
+               )
+            })}
+         </tbody>
+      </table>
+   )
+}
 const Index = () => {
    const { user } = useRecoilValue(authentication);
 
@@ -872,31 +998,31 @@ const Index = () => {
             },
          })
          .then((res) => {
-            console.log(res.data)
-            setExportData(res.data.data);
+            setExportData(res.data.data.data);
          })
          .catch((err) => {});
    };
    const handleDownload = async () => {
-      http
-         .get(`/asset`, {
-            responseType: 'blob',
-            params: {
-               ...params,
-               field,
-               paginate: 0,
-               export: 1
-            },
-         })
-         .then((res) => {
-               const temp = window.URL.createObjectURL(new Blob([res.data]));
-               const link = document.createElement("a");
-               link.href = temp;
-               link.setAttribute("download", `asset.xlsx`); 
-               document.body.appendChild(link);
-               link.click();
-         })
-         .catch((err) => {});
+      exportTableToExcel('#table-export', 'Data asset')
+      // http
+      //    .get(`/asset`, {
+      //       responseType: 'blob',
+      //       params: {
+      //          ...params,
+      //          field,
+      //          paginate: 0,
+      //          export: 1
+      //       },
+      //    })
+      //    .then((res) => {
+      //          const temp = window.URL.createObjectURL(new Blob([res.data]));
+      //          const link = document.createElement("a");
+      //          link.href = temp;
+      //          link.setAttribute("download", `asset.xlsx`); 
+      //          document.body.appendChild(link);
+      //          link.click();
+      //    })
+      //    .catch((err) => {});
    };
 
    const getField = async () => {
@@ -915,6 +1041,7 @@ const Index = () => {
 
    useEffect(() => {
       setRows(undefined);
+      setExportData(undefined)
       let timer = setTimeout(() => {
          if (params){
             getData();
@@ -1024,7 +1151,7 @@ const Index = () => {
                               Import
                            </Button>
                         )}
-                        <Button sx={{ ml: 2 }} variant="contained" onClick={handleDownload} startIcon={<Download />}>
+                        <Button disabled={exportData == undefined ? true : false}  sx={{ ml: 2 }} variant="contained" onClick={handleDownload} startIcon={<Download />}>
                            Export
                         </Button>
 
@@ -1255,6 +1382,9 @@ const Index = () => {
                            Delete
                         </MenuItem> */}
                      </Menu>
+                     {exportData !== undefined &&
+                     <TableExport data={exportData} />
+                     }
                   </div>
                </div>
             </div>

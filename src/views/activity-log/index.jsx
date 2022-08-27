@@ -341,8 +341,34 @@ const Index = () => {
                                         </LocalizationProvider>
                                     </Grid>
                                     <Grid item xs={2}>
-                                        <Button onClick={handleDownload} variant="link" startIcon={<DownloadOutlined />}>
+                                        <Button variant="contained" onClick={handleDownload} startIcon={<DownloadOutlined />}>
+                                            Export
                                         </Button>
+                                    </Grid>
+                                    <Grid item xs={12} md={12}>
+                                        <TextField
+                                            name="search"
+                                            variant="outlined"
+                                            label="Search"
+                                            autoComplete="off"
+                                            onChange={handleSearch}
+                                            value={params.search}
+                                            fullWidth
+                                            InputProps={{
+                                                startAdornment: (
+                                                    <InputAdornment position="start">
+                                                        <Search fontSize="small" />
+                                                    </InputAdornment>
+                                                ),
+                                                endAdornment: params.search !== "" && (
+                                                    <InputAdornment position="end">
+                                                        <IconButton onClick={() => setParams({ ...params, search: "" })}>
+                                                            <CloseRounded />
+                                                        </IconButton>
+                                                    </InputAdornment>
+                                                ),
+                                            }}
+                                        />
                                     </Grid>
                                 </Grid>
                                 <TableContainer>

@@ -131,7 +131,7 @@ const Form = (props) => {
 					setId(data.id)
 					setForm({
 						...form,
-						sk_number: data.sk_number,
+						sk_number: data.sk_number !== null ? data.sk_number : '',
 						description: data.description
 					})
 					if(data.document !== null){
