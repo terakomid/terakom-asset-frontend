@@ -33,16 +33,21 @@ import {
    Chip,
    Divider,
    Box,
+   Collapse,
+   Stack,
 } from "@mui/material";
 import {
    Close,
    CloseRounded,
+   Download,
    Edit,
    FileDownload,
    FileUploadOutlined,
    FilterListRounded,
    InfoOutlined,
    InsertDriveFile,
+   KeyboardArrowDown,
+   KeyboardArrowUp,
    MoreVert,
    Search,
 } from "@mui/icons-material";
@@ -754,11 +759,81 @@ const ModalImport = (props) => {
    );
 };
 
+const RowComponent = (props) => {
+   const [open, setOpen] = React.useState(false);
+   
+   return (
+      <React.Fragment>
+         <TableRow>
+               {props.data.evidence.length > 0 ?
+               <TableCell component="th" scope="row" align="center">
+                     <Stack direction="row" alignItems={"center"} justifyContent={"center"}>  
+                        <IconButton
+                           aria-label="expand row"
+                           size="small"
+                           onClick={() => setOpen(!open)}
+                        >
+                           {open ? <KeyboardArrowUp /> : <KeyboardArrowDown />}
+                        </IconButton>
+                        {props.from + props.i}.
+
+                     </Stack>
+               </TableCell>
+               :
+               <TableCell>
+                  {props.from + props.i}.
+               </TableCell>
+               }
+               <TableCell>{props.data.asset_code}</TableCell>
+               <TableCell>{props.data.asset_name}</TableCell>
+               <TableCell>{props.data.employee.name}</TableCell>
+               <TableCell>{props.data.category.category}</TableCell>
+               <TableCell>{moment(props.data.capitalized).format("ll")}</TableCell>
+               <TableCell>{props.data.sub_category.useful_life}</TableCell>
+               {props.user.role !== 'Employee' &&
+               <>
+               <TableCell>{NumberFormat(props.data.acquisition_value, "Rp")}</TableCell>
+               <TableCell>{NumberFormat(props.data.book_value, "Rp")}</TableCell>
+               </>
+               }
+               <TableCell align="center">
+                  <IconButton onClick={(e) => props.handleClick(e, props.data)}>
+                     <MoreVert />
+                  </IconButton>
+               </TableCell>
+         </TableRow>
+         <TableRow>
+            <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
+               <Collapse in={open} timeout="auto" unmountOnExit>
+                  <Box sx={{ margin: 1 }}>
+                  <Typography>Image & Evidence</Typography>
+                  <Table size="small" aria-label="purchases">
+                     <TableBody>
+                        {props.data.evidence.map((val, i) => (
+                        <TableRow key={val.id}>
+                           <TableCell component="th" scope="row">
+                              {i + 1}
+                           </TableCell>
+                           <TableCell>{val.file.split('/').pop()}</TableCell>
+                           <TableCell align="right"><Chip label="Download" component="a" href={val.file} target="_blank" /></TableCell>
+                        </TableRow>
+                        ))}
+                     </TableBody>
+                  </Table>
+                  </Box>
+               </Collapse>
+            </TableCell>
+         </TableRow>
+      </React.Fragment>
+   );
+}
+
 const Index = () => {
    const { user } = useRecoilValue(authentication);
 
    const navigate = useNavigate();
    const [rows, setRows] = useState();
+   const [exportData, setExportData] = useState()
    const [data, setData] = useState({
       code: "",
       location: "",
@@ -787,6 +862,42 @@ const Index = () => {
          })
          .catch((err) => {});
    };
+   const getDataExport = async () => {
+      http
+         .get(`/asset`, {
+            params: {
+               ...params,
+               field,
+               paginate: 0,
+            },
+         })
+         .then((res) => {
+            console.log(res.data)
+            setExportData(res.data.data);
+         })
+         .catch((err) => {});
+   };
+   const handleDownload = async () => {
+      http
+         .get(`/asset`, {
+            responseType: 'blob',
+            params: {
+               ...params,
+               field,
+               paginate: 0,
+               export: 1
+            },
+         })
+         .then((res) => {
+               const temp = window.URL.createObjectURL(new Blob([res.data]));
+               const link = document.createElement("a");
+               link.href = temp;
+               link.setAttribute("download", `asset.xlsx`); 
+               document.body.appendChild(link);
+               link.click();
+         })
+         .catch((err) => {});
+   };
 
    const getField = async () => {
       const res = await http.get("asset/field_asset");
@@ -805,7 +916,10 @@ const Index = () => {
    useEffect(() => {
       setRows(undefined);
       let timer = setTimeout(() => {
-         if (params) getData();
+         if (params){
+            getData();
+            getDataExport()
+         } 
       }, 500);
       return () => clearTimeout(timer);
       // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -903,12 +1017,18 @@ const Index = () => {
             <div className="container">
                <div className="my-2">
                   <div className="d-flex mb-3 align-items-center justify-content-between">
-                     <h3 className="fw-bold ">Data Asset</h3>
-                     {Permission(user.permission, "create asset") && (
-                        <Button variant="contained" onClick={handleCloseImport} startIcon={<FileDownload />}>
-                           Import
+                     <h3 className="fw-bold">Data Asset</h3>
+                     <Box>
+                        {Permission(user.permission, "create asset") && (
+                           <Button variant="contained" onClick={handleCloseImport} startIcon={<FileDownload />}>
+                              Import
+                           </Button>
+                        )}
+                        <Button sx={{ ml: 2 }} variant="contained" onClick={handleDownload} startIcon={<Download />}>
+                           Export
                         </Button>
-                     )}
+
+                     </Box>
                   </div>
                   {Permission(user.permission, "create asset") && (
                      <Grid container spacing={3}>
@@ -1034,28 +1154,32 @@ const Index = () => {
                                     {rows !== undefined ? (
                                        rows.data.length > 0 ? (
                                           rows.data.map((value, key) => (
-                                             <TableRow key={key}>
-                                                <TableCell component="th" scope="row" align="center">
-                                                   {rows.meta.from + key}.
-                                                </TableCell>
-                                                <TableCell>{value.asset_code}</TableCell>
-                                                <TableCell>{value.asset_name}</TableCell>
-                                                <TableCell>{value.employee.name}</TableCell>
-                                                <TableCell>{value.category.category}</TableCell>
-                                                <TableCell>{moment(value.capitalized).format("ll")}</TableCell>
-                                                <TableCell>{value.sub_category.useful_life}</TableCell>
-                                                {user.role !== 'Employee' &&
-                                                <>
-                                                <TableCell>{NumberFormat(value.acquisition_value, "Rp")}</TableCell>
-                                                <TableCell>{NumberFormat(value.book_value, "Rp")}</TableCell>
-                                                </>
-                                                }
-                                                <TableCell align="center">
-                                                   <IconButton onClick={(e) => handleClick(e, value)}>
-                                                      <MoreVert />
-                                                   </IconButton>
-                                                </TableCell>
-                                             </TableRow>
+                                             <>
+                                                <RowComponent i={key} key={key} data={value} user={user} from={rows.meta.from} handleClick={handleClick} />
+                                                {/* <TableRow key={key}>
+                                                   <TableCell component="th" scope="row" align="center">
+                                                      {rows.meta.from + key}.
+                                                   </TableCell>
+                                                   <TableCell>{value.asset_code}</TableCell>
+                                                   <TableCell>{value.asset_name}</TableCell>
+                                                   <TableCell>{value.employee.name}</TableCell>
+                                                   <TableCell>{value.category.category}</TableCell>
+                                                   <TableCell>{moment(value.capitalized).format("ll")}</TableCell>
+                                                   <TableCell>{value.sub_category.useful_life}</TableCell>
+                                                   {user.role !== 'Employee' &&
+                                                   <>
+                                                   <TableCell>{NumberFormat(value.acquisition_value, "Rp")}</TableCell>
+                                                   <TableCell>{NumberFormat(value.book_value, "Rp")}</TableCell>
+                                                   </>
+                                                   }
+                                                   <TableCell align="center">
+                                                      <IconButton onClick={(e) => handleClick(e, value)}>
+                                                         <MoreVert />
+                                                      </IconButton>
+                                                   </TableCell>
+                                                </TableRow> */}
+                                             </>
+                                          
                                           ))
                                        ) : (
                                           <TableRow>

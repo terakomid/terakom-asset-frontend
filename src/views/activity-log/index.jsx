@@ -33,11 +33,16 @@ import {
 import { Add, CloseRounded, Delete, DownloadOutlined, Edit, FileDownload, FileUpload, FilterListRounded, MoreVert, Search, DoneOutline, Close } from "@mui/icons-material";
 import { useNavigate } from 'react-router-dom'
 import FileUploadIcon from '@mui/icons-material/FileUpload';
+import moment from 'moment';
+
+import { DatePicker } from "@mui/x-date-pickers";
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 
 import http from "../../component/api/Api";
 import Loading from "../../component/Loading";
 import ModalDelete from "../../component/Delete";
-import moment from 'moment';
+import { param } from 'jquery';
 
 const ModalFilter = (props) => {
     const [roleOptions, setRoleOptions] = useState([])
@@ -128,12 +133,15 @@ const Index = () => {
         code: "",
         location: "",
     });
+    const [date, setDate] = useState([null, null])
     const [params, setParams] = useState({
         search: "",
-        order_by_name: 0,
         limit: 10,
         page: 1,
-        paginate: 1
+        paginate: 1,
+        from_date: moment(Date.now()).format('yyyy-MM-DD'), 
+        until_date: moment().add(1, 'M').format('yyyy-MM-DD'),
+        export: 0,
     });
     const [loading, setLoading] = useState(false)
 
@@ -147,9 +155,34 @@ const Index = () => {
             setRows(res.data.data);
             })
             .catch((err) => {
-            //  console.log(err.response);
+             console.log(err.response);
             });
     };
+
+    const handleDownload = async (e) => {
+        e.preventDefault()
+        http
+            .get(`/activity_log`, {
+            responseType: 'blob',
+            params: {
+                ...params,
+                export: 1,
+                paginate: 0,
+            },
+            })
+            .then((res) => {
+                const temp = window.URL.createObjectURL(new Blob([res.data]));
+                const link = document.createElement("a");
+                link.href = temp;
+                link.setAttribute("download", `activity.xlsx`); 
+                document.body.appendChild(link);
+                link.click();
+
+            })
+            .catch((err) => {
+             console.log(err.response);
+            });
+    }
 
 
     useEffect(() => {
@@ -256,32 +289,59 @@ const Index = () => {
                                 <CardContent>
                                 <Grid container spacing={2} sx={{ mb: 2 }} alignItems="center">
                                     <Grid item xs>
-                                        <TextField
-                                            name="search"
-                                            variant="outlined"
-                                            label="Search"
-                                            autoComplete="off"
-                                            onChange={handleSearch}
-                                            value={params.search}
-                                            InputProps={{
-                                            startAdornment: (
-                                                <InputAdornment position="start">
-                                                    <Search fontSize="small" />
-                                                </InputAdornment>
-                                            ),
-                                            endAdornment: params.search !== "" && (
-                                                <InputAdornment position="end">
-                                                    <IconButton onClick={() => setParams({ ...params, search: "" })}>
-                                                        <CloseRounded />
-                                                    </IconButton>
-                                                </InputAdornment>
-                                            ),
-                                            }}
-                                            fullWidth
-                                        />
+                                        <LocalizationProvider dateAdapter={AdapterDateFns}>
+                                            <DatePicker
+                                                value={params.from_date}
+                                                name="from_date"
+                                                label="From Date"
+                                                inputFormat="yyyy-MM-dd"
+                                                mask="____-__-__"
+                                                onChange={(newValue) => {
+                                                    setParams({
+                                                        ...params,
+                                                        from_date: moment(newValue).format('yyyy-MM-DD')
+                                                    })
+                                                }}
+                                                renderInput={(params) => (
+                                                    <TextField
+                                                        fullWidth
+                                                        {...params}
+                                                        required
+                                                    />
+                                                )}
+                                            />
+                                        </LocalizationProvider>
+                                    </Grid>
+                                    <Grid item>
+                                        <Typography>To</Typography>
+
+                                    </Grid>
+                                    <Grid item xs>
+                                        <LocalizationProvider dateAdapter={AdapterDateFns}>
+                                            <DatePicker
+                                                value={params.until_date}
+                                                name="until_date"
+                                                label="From Date"
+                                                inputFormat="yyyy-MM-dd"
+                                                mask="____-__-__"
+                                                onChange={(newValue) => {
+                                                    setParams({
+                                                        ...params,
+                                                        until_date: moment(newValue).format('yyyy-MM-DD')
+                                                    })
+                                                }}
+                                                renderInput={(params) => (
+                                                    <TextField
+                                                        fullWidth
+                                                        {...params}
+                                                        required
+                                                    />
+                                                )}
+                                            />
+                                        </LocalizationProvider>
                                     </Grid>
                                     <Grid item xs={2}>
-                                        <Button variant="link" startIcon={<FilterListRounded />}>
+                                        <Button onClick={handleDownload} variant="link" startIcon={<DownloadOutlined />}>
                                         </Button>
                                     </Grid>
                                 </Grid>
