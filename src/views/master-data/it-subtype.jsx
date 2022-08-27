@@ -42,6 +42,7 @@ export default function ItSubType() {
    const [data, setData] = useState({
       sub_type: "",
    });
+   const [error, setError] = useState("");
    const [params, setParams] = useState({
       master_it_id: id,
       search: "",
@@ -75,6 +76,7 @@ export default function ItSubType() {
    const handleSubmit = async (e) => {
       e.preventDefault();
       setLoading(true);
+      setError("");
       if (method === "add") {
          let formData = new FormData();
          formData.append("master_it_id", id);
@@ -84,12 +86,14 @@ export default function ItSubType() {
             .post(`sub_master_it`, formData, {})
             .then((res) => {
                // console.log(res.data.data);
-               setLoading(false);
                handleClear();
                getData();
             })
-            .catch((err) => {
-               // console.log(err.response.data);
+            .catch((xhr) => {
+               // console.log(xhr.response.data);
+               xhr.response && setError(xhr.response.data.errors);
+            })
+            .finally(() => {
                setLoading(false);
             });
       } else {
@@ -102,12 +106,14 @@ export default function ItSubType() {
             .then((res) => {
                // console.log(res.data.data);
                setMethod("add");
-               setLoading(false);
                handleClear();
                getData();
             })
-            .catch((err) => {
-               // console.log(err.response.data);
+            .catch((xhr) => {
+               // console.log(xhr.response.data);
+               xhr.response && setError(xhr.response.data.errors);
+            })
+            .finally(() => {
                setLoading(false);
             });
       }
@@ -126,6 +132,7 @@ export default function ItSubType() {
 
    const handleClear = (e) => {
       setMethod("add");
+      setError("");
       setData({
          sub_type: "",
       });
@@ -295,6 +302,8 @@ export default function ItSubType() {
                                  rowsPerPage={rowsPerPage}
                                  onPageChange={handleChangePage}
                                  onRowsPerPageChange={handleChangeRowsPerPage}
+                                 showFirstButton
+                                 showLastButton
                               />
                            )}
                         </CardContent>
@@ -312,7 +321,7 @@ export default function ItSubType() {
                            <Typography variant="subtitle1" fontWeight="bold" mb={2}>
                               {method === "add" ? "Add" : "Edit"} Sub Master IT
                            </Typography>
-                           <Box component="form" onSubmit={handleSubmit}>
+                           <Box component="form" noValidate={true} onSubmit={handleSubmit}>
                               <TextField
                                  name="sub_type"
                                  label="Sub Type"
@@ -320,6 +329,8 @@ export default function ItSubType() {
                                  variant="outlined"
                                  value={data.sub_type}
                                  onChange={handleChange}
+                                 error={!!error.sub_type}
+                                 helperText={error.sub_type !== undefined && error.sub_type[0]}
                                  fullWidth
                                  required
                               />

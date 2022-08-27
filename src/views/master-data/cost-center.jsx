@@ -42,6 +42,7 @@ export default function CostCenter() {
       code: "",
       name: "",
    });
+   const [error, setError] = useState("");
    const [params, setParams] = useState({
       search: "",
    });
@@ -73,6 +74,7 @@ export default function CostCenter() {
    const [loading, setLoading] = useState(false);
    const handleSubmit = async (e) => {
       e.preventDefault();
+      setError("");
       setLoading(true);
       if (method === "add") {
          let formData = new FormData();
@@ -83,12 +85,14 @@ export default function CostCenter() {
             .post(`cost`, formData, {})
             .then((res) => {
                // console.log(res.data.data);
-               setLoading(false);
                handleClear();
                getData();
             })
-            .catch((err) => {
-               // console.log(err.response.data);
+            .catch((xhr) => {
+               // console.log(xhr.response.data);
+               xhr.response && setError(xhr.response.data.errors);
+            })
+            .finally(() => {
                setLoading(false);
             });
       } else {
@@ -101,12 +105,14 @@ export default function CostCenter() {
             .then((res) => {
                // console.log(res.data.data);
                setMethod("add");
-               setLoading(false);
                handleClear();
                getData();
             })
-            .catch((err) => {
-               // console.log(err.response.data);
+            .catch((xhr) => {
+               // console.log(xhr.response.data);
+               xhr.response && setError(xhr.response.data.errors);
+            })
+            .finally(() => {
                setLoading(false);
             });
       }
@@ -125,6 +131,7 @@ export default function CostCenter() {
 
    const handleClear = (e) => {
       setMethod("add");
+      setError("");
       setData({
          code: "",
          name: "",
@@ -302,6 +309,8 @@ export default function CostCenter() {
                                  rowsPerPage={rowsPerPage}
                                  onPageChange={handleChangePage}
                                  onRowsPerPageChange={handleChangeRowsPerPage}
+                                 showFirstButton
+                                 showLastButton
                               />
                            )}
                         </CardContent>
@@ -317,7 +326,7 @@ export default function CostCenter() {
                            <Typography variant="subtitle1" fontWeight="bold" mb={2}>
                               {method === "add" ? "Add" : "Edit"} Cost Center
                            </Typography>
-                           <Box component="form" onSubmit={handleSubmit}>
+                           <Box component="form" noValidate={true} onSubmit={handleSubmit}>
                               <TextField
                                  name="code"
                                  label="Cost Center Code"
@@ -325,6 +334,8 @@ export default function CostCenter() {
                                  variant="outlined"
                                  value={data.code}
                                  onChange={handleChange}
+                                 error={!!error.code}
+                                 helperText={error.code !== undefined && error.code[0]}
                                  fullWidth
                                  required
                               />
@@ -335,6 +346,8 @@ export default function CostCenter() {
                                  variant="outlined"
                                  value={data.name}
                                  onChange={handleChange}
+                                 error={!!error.name}
+                                 helperText={error.name !== undefined && error.name[0]}
                                  fullWidth
                                  required
                               />

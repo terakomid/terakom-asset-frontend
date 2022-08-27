@@ -14,6 +14,7 @@ export default function VendorForm() {
    const { id } = useParams();
    const navigate = useNavigate();
 
+   const [error, setError] = useState("");
    const [data, setData] = useState({
       code: "",
       name: "",
@@ -45,6 +46,7 @@ export default function VendorForm() {
    const [loading, setLoading] = useState(false);
    const handleSubmit = async (e) => {
       e.preventDefault();
+      setError("");
       setLoading(true);
       if (id === undefined) {
          let formData = new FormData();
@@ -55,13 +57,14 @@ export default function VendorForm() {
          formData.append("contact", data.contact);
          // console.log(Object.fromEntries(formData));
          http
-            .post(`/vendor`, formData, {})
+            .post(`/vendor`, formData)
             .then((res) => {
                // console.log(res.data.data);
                navigate("/master-data/vendor");
             })
-            .catch((err) => {
-               // console.log(err.response.data);
+            .catch((xhr) => {
+               // console.log(xhr.response.data);
+               xhr.response && setError(xhr.response.data.errors);
                setLoading(false);
             });
       } else {
@@ -73,13 +76,14 @@ export default function VendorForm() {
          formData.append("pic_contact", data.pic_contact);
          formData.append("contact", data.contact);
          http
-            .post(`/vendor/${data.id}`, formData, {})
+            .post(`/vendor/${data.id}`, formData)
             .then((res) => {
                // console.log(res.data.data);
                navigate("/master-data/vendor");
             })
-            .catch((err) => {
-               // console.log(err.response.data);
+            .catch((xhr) => {
+               // console.log(xhr.response.data);
+               xhr.response && setError(xhr.response.data.errors);
                setLoading(false);
             });
       }
@@ -99,13 +103,34 @@ export default function VendorForm() {
                <h3 className="fw-bold mt-2 mb-4">{id === undefined ? "Create" : "Edit"} Master Vendor Name</h3>
                <Card>
                   <CardContent>
-                     <Box component="form" onSubmit={handleSubmit}>
+                     <Box component="form" noValidate={true} onSubmit={handleSubmit}>
                         <Grid container spacing={3}>
                            <Grid item xs={12} sm={6}>
-                              <TextField name="code" label="Code" variant="outlined" value={data.code} onChange={handleChange} autoFocus fullWidth required />
+                              <TextField
+                                 name="code"
+                                 label="Code"
+                                 variant="outlined"
+                                 value={data.code}
+                                 onChange={handleChange}
+                                 error={!!error.code}
+                                 helperText={error.code !== undefined && error.code[0]}
+                                 autoFocus
+                                 fullWidth
+                                 required
+                              />
                            </Grid>
                            <Grid item xs={12} sm={6}>
-                              <TextField name="name" label="Vendor Name" variant="outlined" value={data.name} onChange={handleChange} fullWidth required />
+                              <TextField
+                                 name="name"
+                                 label="Vendor Name"
+                                 variant="outlined"
+                                 value={data.name}
+                                 onChange={handleChange}
+                                 error={!!error.name}
+                                 helperText={error.name !== undefined && error.name[0]}
+                                 fullWidth
+                                 required
+                              />
                            </Grid>
                            <Grid item xs={12}>
                               <TextField
@@ -114,6 +139,8 @@ export default function VendorForm() {
                                  variant="outlined"
                                  value={data.address}
                                  onChange={handleChange}
+                                 error={!!error.address}
+                                 helperText={error.address !== undefined && error.address[0]}
                                  rows={5}
                                  multiline
                                  fullWidth
@@ -127,6 +154,8 @@ export default function VendorForm() {
                                  variant="outlined"
                                  value={data.pic_contact}
                                  onChange={handleChange}
+                                 error={!!error.pic_contact}
+                                 helperText={error.pic_contact !== undefined && error.pic_contact[0]}
                                  fullWidth
                                  required
                               />
@@ -138,8 +167,9 @@ export default function VendorForm() {
                                  variant="outlined"
                                  value={data.contact}
                                  onChange={handleChange}
+                                 error={!!error.cantact}
+                                 helperText={error.cantact !== undefined && error.cantact[0]}
                                  fullWidth
-                                 required
                               />
                            </Grid>
                            <Grid item xs={12}>

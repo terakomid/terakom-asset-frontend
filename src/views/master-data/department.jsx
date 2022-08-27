@@ -41,6 +41,7 @@ export default function Department() {
    const [data, setData] = useState({
       dept: "",
    });
+   const [error, setError] = useState("");
    const [params, setParams] = useState({
       search: "",
    });
@@ -72,6 +73,7 @@ export default function Department() {
    const [loading, setLoading] = useState(false);
    const handleSubmit = async (e) => {
       e.preventDefault();
+      setError("");
       setLoading(true);
       if (method === "add") {
          let formData = new FormData();
@@ -81,12 +83,14 @@ export default function Department() {
             .post(`dept`, formData, {})
             .then((res) => {
                // console.log(res.data.data);
-               setLoading(false);
                handleClear();
                getData();
             })
-            .catch((err) => {
-               // console.log(err.response.data);
+            .catch((xhr) => {
+               // console.log(xhr.response.data);
+               xhr.response && setError(xhr.response.data.errors);
+            })
+            .finally(() => {
                setLoading(false);
             });
       } else {
@@ -98,12 +102,14 @@ export default function Department() {
             .then((res) => {
                // console.log(res.data.data);
                setMethod("add");
-               setLoading(false);
                handleClear();
                getData();
             })
-            .catch((err) => {
-               // console.log(err.response.data);
+            .catch((xhr) => {
+               // console.log(xhr.response.data);
+               xhr.response && setError(xhr.response.data.errors);
+            })
+            .finally(() => {
                setLoading(false);
             });
       }
@@ -122,6 +128,7 @@ export default function Department() {
 
    const handleClear = (e) => {
       setMethod("add");
+      setError("");
       setData({
          dept: "",
       });
@@ -300,6 +307,8 @@ export default function Department() {
                                  rowsPerPage={rowsPerPage}
                                  onPageChange={handleChangePage}
                                  onRowsPerPageChange={handleChangeRowsPerPage}
+                                 showFirstButton
+                                 showLastButton
                               />
                            )}
                         </CardContent>
@@ -315,7 +324,7 @@ export default function Department() {
                            <Typography variant="subtitle1" fontWeight="bold" mb={2}>
                               {method === "add" ? "Add" : "Edit"} Department
                            </Typography>
-                           <Box component="form" onSubmit={handleSubmit}>
+                           <Box component="form" noValidate={true} onSubmit={handleSubmit}>
                               <TextField
                                  name="dept"
                                  label="Department"
@@ -323,6 +332,8 @@ export default function Department() {
                                  variant="outlined"
                                  value={data.dept}
                                  onChange={handleChange}
+                                 error={!!error.dept}
+                                 helperText={error.dept !== undefined && error.dept[0]}
                                  fullWidth
                                  required
                               />

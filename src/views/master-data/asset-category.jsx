@@ -43,6 +43,7 @@ export default function AssetCategory() {
       code: "",
       category: "",
    });
+   const [error, setError] = useState("");
    const [params, setParams] = useState({
       search: "",
    });
@@ -74,6 +75,7 @@ export default function AssetCategory() {
    const [loading, setLoading] = useState(false);
    const handleSubmit = async (e) => {
       e.preventDefault();
+      setError("");
       setLoading(true);
       if (method === "add") {
          let formData = new FormData();
@@ -84,12 +86,14 @@ export default function AssetCategory() {
             .post(`category`, formData, {})
             .then((res) => {
                // console.log(res.data.data);
-               setLoading(false);
                handleClear();
                getData();
             })
-            .catch((err) => {
-               // console.log(err.response.data);
+            .catch((xhr) => {
+               // console.log(xhr.response.data);
+               xhr.response && setError(xhr.response.data.errors);
+            })
+            .finally(() => {
                setLoading(false);
             });
       } else {
@@ -102,12 +106,14 @@ export default function AssetCategory() {
             .then((res) => {
                // console.log(res.data.data);
                setMethod("add");
-               setLoading(false);
                handleClear();
                getData();
             })
-            .catch((err) => {
-               // console.log(err.response.data);
+            .catch((xhr) => {
+               // console.log(xhr.response.data);
+               xhr.response && setError(xhr.response.data.errors);
+            })
+            .finally(() => {
                setLoading(false);
             });
       }
@@ -126,6 +132,7 @@ export default function AssetCategory() {
 
    const handleClear = (e) => {
       setMethod("add");
+      setError("");
       setData({
          code: "",
          category: "",
@@ -303,6 +310,8 @@ export default function AssetCategory() {
                                  rowsPerPage={rowsPerPage}
                                  onPageChange={handleChangePage}
                                  onRowsPerPageChange={handleChangeRowsPerPage}
+                                 showFirstButton
+                                 showLastButton
                               />
                            )}
                         </CardContent>
@@ -318,7 +327,7 @@ export default function AssetCategory() {
                            <Typography variant="subtitle1" fontWeight="bold" mb={2}>
                               {method === "add" ? "Add" : "Edit"} Asset Category
                            </Typography>
-                           <Box component="form" onSubmit={handleSubmit}>
+                           <Box component="form" noValidate={true} onSubmit={handleSubmit}>
                               <TextField
                                  name="code"
                                  label="Code"
@@ -326,6 +335,8 @@ export default function AssetCategory() {
                                  variant="outlined"
                                  value={data.code}
                                  onChange={handleChange}
+                                 error={!!error.code}
+                                 helperText={error.code !== undefined && error.code[0]}
                                  fullWidth
                                  required
                               />
@@ -336,6 +347,8 @@ export default function AssetCategory() {
                                  variant="outlined"
                                  value={data.category}
                                  onChange={handleChange}
+                                 error={!!error.category}
+                                 helperText={error.category !== undefined && error.category[0]}
                                  fullWidth
                                  required
                               />

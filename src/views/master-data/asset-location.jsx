@@ -41,6 +41,7 @@ export default function AssetLocation() {
       code: "",
       location: "",
    });
+   const [error, setError] = useState("");
    const [params, setParams] = useState({
       search: "",
       parent_id: "",
@@ -108,6 +109,7 @@ export default function AssetLocation() {
    const [loading, setLoading] = useState(false);
    const handleSubmit = async (e) => {
       e.preventDefault();
+      setError("");
       setLoading(true);
       if (method === "add") {
          let formData = new FormData();
@@ -120,12 +122,14 @@ export default function AssetLocation() {
             .then((res) => {
                // console.log(res.data.data);
                setParent(null);
-               setLoading(false);
                handleClear();
                getData();
             })
-            .catch((err) => {
-               // console.log(err.response.data);
+            .catch((xhr) => {
+               // console.log(xhr.response.data);
+               xhr.response && setError(xhr.response.data.errors);
+            })
+            .finally(() => {
                setLoading(false);
             });
       } else {
@@ -140,12 +144,14 @@ export default function AssetLocation() {
                // console.log(res.data.data);
                setMethod("add");
                setParent(null);
-               setLoading(false);
                handleClear();
                getData();
             })
-            .catch((err) => {
-               // console.log(err.response.data);
+            .catch((xhr) => {
+               // console.log(xhr.response.data);
+               xhr.response && setError(xhr.response.data.errors);
+            })
+            .finally(() => {
                setLoading(false);
             });
       }
@@ -165,6 +171,7 @@ export default function AssetLocation() {
    const handleClear = (e) => {
       setMethod("add");
       setParent(null);
+      setError("");
       setData({
          code: "",
          location: "",
@@ -364,6 +371,8 @@ export default function AssetLocation() {
                                  rowsPerPage={rowsPerPage}
                                  onPageChange={handleChangePage}
                                  onRowsPerPageChange={handleChangeRowsPerPage}
+                                 showFirstButton
+                                 showLastButton
                               />
                            )}
                         </CardContent>
@@ -379,7 +388,7 @@ export default function AssetLocation() {
                            <Typography variant="subtitle1" fontWeight="bold" mb={2}>
                               {method === "add" ? "Add" : "Edit"} Asset Location
                            </Typography>
-                           <Box component="form" onSubmit={handleSubmit}>
+                           <Box component="form" noValidate={true} onSubmit={handleSubmit}>
                               <TextField
                                  name="code"
                                  label="Code"
@@ -387,6 +396,8 @@ export default function AssetLocation() {
                                  variant="outlined"
                                  value={data.code}
                                  onChange={handleChange}
+                                 error={!!error.code}
+                                 helperText={error.code !== undefined && error.code[0]}
                                  fullWidth
                                  required
                               />
@@ -397,6 +408,8 @@ export default function AssetLocation() {
                                  variant="outlined"
                                  value={data.location}
                                  onChange={handleChange}
+                                 error={!!error.location}
+                                 helperText={error.location !== undefined && error.location[0]}
                                  fullWidth
                                  required
                               />

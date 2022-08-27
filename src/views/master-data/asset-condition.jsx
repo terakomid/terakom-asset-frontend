@@ -40,6 +40,7 @@ export default function AssetCondition() {
    const [data, setData] = useState({
       condition: "",
    });
+   const [error, setError] = useState("");
    const [params, setParams] = useState({
       search: "",
    });
@@ -72,6 +73,7 @@ export default function AssetCondition() {
    const handleSubmit = async (e) => {
       e.preventDefault();
       setLoading(true);
+      setError("");
       if (method === "add") {
          let formData = new FormData();
          formData.append("condition", data.condition);
@@ -80,12 +82,14 @@ export default function AssetCondition() {
             .post(`condition`, formData, {})
             .then((res) => {
                // console.log(res.data.data);
-               setLoading(false);
                handleClear();
                getData();
             })
-            .catch((err) => {
-               // console.log(err.response.data);
+            .catch((xhr) => {
+               // console.log(xhr.response.data);
+               xhr.response && setError(xhr.response.data.errors);
+            })
+            .finally(() => {
                setLoading(false);
             });
       } else {
@@ -97,12 +101,14 @@ export default function AssetCondition() {
             .then((res) => {
                // console.log(res.data.data);
                setMethod("add");
-               setLoading(false);
                handleClear();
                getData();
             })
-            .catch((err) => {
-               // console.log(err.response.data);
+            .catch((xhr) => {
+               // console.log(xhr.response.data);
+               xhr.response && setError(xhr.response.data.errors);
+            })
+            .finally(() => {
                setLoading(false);
             });
       }
@@ -121,6 +127,7 @@ export default function AssetCondition() {
 
    const handleClear = (e) => {
       setMethod("add");
+      setError("");
       setData({
          condition: "",
       });
@@ -291,6 +298,8 @@ export default function AssetCondition() {
                                  rowsPerPage={rowsPerPage}
                                  onPageChange={handleChangePage}
                                  onRowsPerPageChange={handleChangeRowsPerPage}
+                                 showFirstButton
+                                 showLastButton
                               />
                            )}
                         </CardContent>
@@ -306,7 +315,7 @@ export default function AssetCondition() {
                            <Typography variant="subtitle1" fontWeight="bold" mb={2}>
                               {method === "add" ? "Add" : "Edit"} Asset Condition
                            </Typography>
-                           <Box component="form" onSubmit={handleSubmit}>
+                           <Box component="form" noValidate={true} onSubmit={handleSubmit}>
                               <TextField
                                  name="condition"
                                  label="Asset Condition"
@@ -314,6 +323,8 @@ export default function AssetCondition() {
                                  variant="outlined"
                                  value={data.condition}
                                  onChange={handleChange}
+                                 error={!!error.condition}
+                                 helperText={error.condition !== undefined && error.condition[0]}
                                  fullWidth
                                  required
                               />
