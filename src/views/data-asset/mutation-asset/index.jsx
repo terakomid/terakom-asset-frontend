@@ -270,14 +270,14 @@ export default function MutationAsset() {
                            Edit
                         </MenuItem>
                      )}
-                     {Permission(user.permission, "delete asset mutation") && (
+                     {/* {Permission(user.permission, "delete asset mutation") && (
                         <MenuItem onClick={handleModal}>
                            <ListItemIcon>
                               <Delete />
                            </ListItemIcon>
                            Delete
                         </MenuItem>
-                     )}
+                     )} */}
                   </Menu>
                ) : null}
             </div>
