@@ -14,9 +14,9 @@ import { useSnackbar } from "notistack";
 
 export default function EditMutationAsset() {
    const { user } = useRecoilValue(authentication);
-   const navigate = useNavigate();
+   const { enqueueSnackbar } = useSnackbar();
    const { id } = useParams();
-   const { enqueueSnackbar } = useSnackbar()
+   const navigate = useNavigate();
 
    const [users, setUsers] = useState();
    const getUsers = async () => {
@@ -44,6 +44,7 @@ export default function EditMutationAsset() {
          });
    };
 
+   const [error, setError] = useState("");
    const [data, setData] = useState();
    const getMutation = async () => {
       http
@@ -102,6 +103,7 @@ export default function EditMutationAsset() {
    const handleSubmit = async (e) => {
       e.preventDefault();
       setLoading(true);
+      setError("");
       let formData = new FormData();
       formData.append("_method", "PUT");
       // formData.append("pic_id", data.pic);
@@ -114,11 +116,10 @@ export default function EditMutationAsset() {
       formData.append("to_branch_id", data.to_branch);
       formData.append("to_room", data.to_room);
 
-      if(data.document === null) {
-         enqueueSnackbar("Fill Supporting Document", { variant: 'error' })
+      if (data.document === null) {
+         enqueueSnackbar("Fill Supporting Document", { variant: "error" });
          setLoading(false);
-
-      }else{
+      } else {
          data.document.size !== undefined && formData.append("document", data.document);
          // console.log(Object.fromEntries(formData));
          http
@@ -127,12 +128,12 @@ export default function EditMutationAsset() {
                // console.log(res.data.data);
                navigate("/history-asset/mutation-asset");
             })
-            .catch((err) => {
-               // console.log(err.response.data);
+            .catch((xhr) => {
+               // console.log(xhr.response.data);
+               xhr.response && setError(xhr.response.data.errors);
                setLoading(false);
             });
       }
-
    };
 
    return (
@@ -145,7 +146,7 @@ export default function EditMutationAsset() {
                {data !== undefined && users !== undefined && location !== undefined ? (
                   <Card sx={{ mb: 3 }}>
                      <CardContent>
-                        <Box component="form" onSubmit={handleSubmit}>
+                        <Box component="form" noValidate={true} onSubmit={handleSubmit}>
                            <Grid container spacing={2}>
                               <Grid item xs={12}>
                                  <Typography color="primary" pb={2}>
@@ -203,6 +204,8 @@ export default function EditMutationAsset() {
                                     variant="outlined"
                                     value={data.reason}
                                     onChange={handleChange}
+                                    error={!!error.reason}
+                                    helperText={error.reason !== undefined && error.reason[0]}
                                     rows={4}
                                     multiline
                                     fullWidth
@@ -219,7 +222,7 @@ export default function EditMutationAsset() {
                                     defaultValue=""
                                     select
                                     fullWidth
-                                    required
+                                    disabled
                                  >
                                     {location.map((value, index) => (
                                        <MenuItem value={value.id} key={index}>
@@ -235,6 +238,8 @@ export default function EditMutationAsset() {
                                     variant="outlined"
                                     value={data.from_room}
                                     onChange={handleChange}
+                                    error={!!error.from_room}
+                                    helperText={error.from_room !== undefined && error.from_room[0]}
                                     fullWidth
                                     required
                                  />
@@ -249,7 +254,7 @@ export default function EditMutationAsset() {
                                     defaultValue=""
                                     select
                                     fullWidth
-                                    required
+                                    disabled
                                  >
                                     {location.map((value, index) => (
                                        <MenuItem value={value.id} key={index}>
@@ -259,7 +264,17 @@ export default function EditMutationAsset() {
                                  </TextField>
                               </Grid>
                               <Grid item xs={12} sm={6}>
-                                 <TextField name="to_room" label="To Room" variant="outlined" value={data.to_room} onChange={handleChange} fullWidth required />
+                                 <TextField
+                                    name="to_room"
+                                    label="To Room"
+                                    variant="outlined"
+                                    value={data.to_room}
+                                    onChange={handleChange}
+                                    error={!!error.to_room}
+                                    helperText={error.to_room !== undefined && error.to_room[0]}
+                                    fullWidth
+                                    required
+                                 />
                               </Grid>
                               <Grid item xs={12} sm={6}>
                                  {data.document !== null ? (
