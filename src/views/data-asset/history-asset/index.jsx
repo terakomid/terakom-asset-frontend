@@ -239,7 +239,7 @@ export default function HistoryAsset() {
                                  <TableCell>Usage Limit</TableCell>
                                  {/* <TableCell>Usage Period</TableCell> */}
                                  <TableCell>Asset Acquistion Value</TableCell>
-                                 <TableCell>Deprecation</TableCell>
+                                 <TableCell>Book Value</TableCell>
                                  <TableCell align="center">Action</TableCell>
                               </TableRow>
                            </TableHead>
@@ -261,8 +261,8 @@ export default function HistoryAsset() {
                                           <TableCell>{value.useful_life} Month</TableCell>
                                           <TableCell>{value.useful_life / 12} Year</TableCell>
                                           {/* <TableCell>{value.asset_code}</TableCell> */}
-                                          <TableCell>{NumberFormat(value.acquisition_value)}</TableCell>
-                                          <TableCell>{NumberFormat(value.depreciation)}</TableCell>
+                                          <TableCell>{NumberFormat(value.acquisition_value, "Rp")}</TableCell>
+                                          <TableCell>{NumberFormat(value.book_value, "Rp")}</TableCell>
                                           <TableCell align="center">
                                              <IconButton onClick={(e) => handleClick(e, value)}>
                                                 <MoreVert />
@@ -302,6 +302,8 @@ export default function HistoryAsset() {
                            onPageChange={handleChangePage}
                            onRowsPerPageChange={handleChangeRowsPerPage}
                            rowsPerPageOptions={[10, 25, 50]}
+                           showFirstButton
+                           showLastButton
                         />
                      )}
                   </CardContent>
