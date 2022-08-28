@@ -15,7 +15,7 @@ export default function Header() {
    const [notification, setNotification] = useState([]);
    const getNotification = async () => {
       await http.get(`notification`).then((res) => {
-         console.log(res.data.data);
+         // console.log(res.data.data);
          setNotification(res.data.data);
       });
    };
