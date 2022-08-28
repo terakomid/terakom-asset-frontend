@@ -16,6 +16,7 @@ import {
    Tooltip,
    InputAdornment,
    Button,
+   Autocomplete,
 } from "@mui/material";
 import { Close, Delete, Edit, FileUploadOutlined, InsertDriveFile } from "@mui/icons-material";
 import { LoadingButton } from "@mui/lab";
@@ -38,34 +39,62 @@ import { useSnackbar } from "notistack";
 export default function AddMaintenanceAsset() {
    const { user } = useRecoilValue(authentication);
    const navigate = useNavigate();
-   const { enqueueSnackbar } = useSnackbar()
-
+   const { enqueueSnackbar } = useSnackbar();
 
    const [rows, setRows] = useState([]);
    const [data, setData] = useState();
+   const [params, setParams] = useState({
+      users: {
+         search: "",
+         order_by_name: 0,
+         limit: 5,
+         page: 1,
+         paginate: 1,
+      },
+   });
 
    const [users, setUsers] = useState();
    const getUsers = async () => {
       http
-         .get(`user`)
+         .get(`user`, {
+            params: params,
+         })
          .then((res) => {
             // console.log(res.data.data);
-            setUsers(res.data.data);
+            setUsers(res.data.data.data);
          })
          .catch((err) => {
             // console.log(err.response);
          });
    };
 
-   const getAsset = async (employee_id) => {
+   // const getAsset = async (employee_id) => {
+   //    http
+   //       .get(`asset?employee_id=${employee_id}`)
+   //       .then((res) => {
+   //          // console.log(res.data.data.data);
+   //          const obj = users.data.find((value) => value.id == employee_id);
+   //          setData({
+   //             ...data,
+   //             pic_id: employee_id,
+   //             pic_dept: obj.dept.dept,
+   //             master_asset: res.data.data.data,
+   //          });
+   //       })
+   //       .catch((err) => {
+   //          // console.log(err.response);
+   //       });
+   // };
+
+   const getAsset = async (employee) => {
       http
-         .get(`asset?employee_id=${employee_id}`)
+         .get(`asset?employee_id=${employee.id}`)
          .then((res) => {
             // console.log(res.data.data.data);
-            const obj = users.data.find((value) => value.id == employee_id);
+            const obj = users.find((value) => value.id == employee.id);
             setData({
                ...data,
-               pic_id: employee_id,
+               pic_id: employee.id,
                pic_dept: obj.dept.dept,
                master_asset: res.data.data.data,
             });
@@ -84,6 +113,14 @@ export default function AddMaintenanceAsset() {
          navigate("/history-asset/maintenance-asset");
       }
    }, []);
+
+   useEffect(() => {
+      setUsers([]);
+      let timer = setTimeout(() => {
+         if (params) getUsers();
+      }, 500);
+      return () => clearTimeout(timer);
+   }, [params]);
 
    const handleReset = (e) => {
       setData({
@@ -118,9 +155,9 @@ export default function AddMaintenanceAsset() {
 
    const handleStaging = (e) => {
       e.preventDefault();
-      if(data.document === null){
-         enqueueSnackbar("Fill Supporting Document", { variant: 'error' })
-      }else{
+      if (data.document === null) {
+         enqueueSnackbar("Fill Supporting Document", { variant: "error" });
+      } else {
          const obj = data.master_asset.find((value) => value.id == data.asset_id);
          let staging = {
             asset_id: data.asset_id,
@@ -166,7 +203,7 @@ export default function AddMaintenanceAsset() {
             });
             e.target.value = null;
          }
-      }else {
+      } else {
          setData({
             ...data,
             [e.target.name]: e.target.value,
@@ -221,23 +258,38 @@ export default function AddMaintenanceAsset() {
                         <CardContent>
                            <Grid container spacing={2}>
                               <Grid item xs={12} sm={6}>
-                                 <TextField
-                                    name="pic_id"
-                                    label="PIC Asset"
-                                    variant="outlined"
-                                    value={data.pic_id}
-                                    onChange={handleChange}
-                                    defaultValue=""
-                                    select
+                                 <Autocomplete
+                                    freeSolo
                                     fullWidth
-                                    required
-                                 >
-                                    {users.data.map((value, index) => (
-                                       <MenuItem value={value.id} key={index}>
-                                          {value.code} - {value.name}
-                                       </MenuItem>
-                                    ))}
-                                 </TextField>
+                                    disableClearable
+                                    options={users}
+                                    getOptionLabel={(option) => {
+                                       return `${option.code} - ${option.name}`;
+                                    }}
+                                    inputValue={params.users.search}
+                                    onInputChange={(event, newInputValue, reason) => {
+                                       setParams({
+                                          ...params,
+                                          users: {
+                                             ...params.users,
+                                             search: newInputValue,
+                                          },
+                                       });
+                                    }}
+                                    onChange={(e, value) => {
+                                       getAsset(value);
+                                    }}
+                                    renderInput={(params) => (
+                                       <TextField
+                                          {...params}
+                                          label="PIC Asset *"
+                                          InputProps={{
+                                             ...params.InputProps,
+                                             type: "search",
+                                          }}
+                                       />
+                                    )}
+                                 />
                               </Grid>
                               <Grid item xs={12} sm={6}>
                                  <TextField label="Department" variant="outlined" value={data.pic_dept} fullWidth disabled />
@@ -343,8 +395,7 @@ export default function AddMaintenanceAsset() {
                                     name="testing_result"
                                     label="Testing Result"
                                     variant="outlined"
-                                    value={data.testing_result}
-                                    onChange={handleChange}
+                                    onBlur={handleChange}
                                     rows={4}
                                     multiline
                                     fullWidth
@@ -352,15 +403,7 @@ export default function AddMaintenanceAsset() {
                                  />
                               </Grid>
                               <Grid item xs={12} sm={6} md={4}>
-                                 <TextField
-                                    name="person_testing"
-                                    label="Person Testing"
-                                    variant="outlined"
-                                    value={data.person_testing}
-                                    onChange={handleChange}
-                                    fullWidth
-                                    required
-                                 />
+                                 <TextField name="person_testing" label="Person Testing" variant="outlined" onBlur={handleChange} fullWidth required />
                               </Grid>
                               <Grid item xs={12} sm={6} md={4}>
                                  <TextField
@@ -396,8 +439,7 @@ export default function AddMaintenanceAsset() {
                                     name="repair_record"
                                     label="Repair Record"
                                     variant="outlined"
-                                    value={data.repair_record}
-                                    onChange={handleChange}
+                                    onBlur={handleChange}
                                     rows={4}
                                     multiline
                                     fullWidth
