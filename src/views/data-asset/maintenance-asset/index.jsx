@@ -18,8 +18,12 @@ import {
    Menu,
    MenuItem,
    ListItemIcon,
+   Dialog,
+   DialogTitle,
+   DialogContent,
+   DialogActions,
 } from "@mui/material";
-import { AddRounded, CloseRounded, Delete, Edit, FilterListRounded, MoreVert, Search } from "@mui/icons-material";
+import { AddRounded, CloseRounded, Delete, Edit, FilterListRounded, MoreVert, Search, TableBar } from "@mui/icons-material";
 import { Link as RouterLink } from "react-router-dom";
 
 import http from "../../../component/api/Api";
@@ -114,8 +118,17 @@ export default function MaintenanceAsset() {
       setAnchorEl(event.currentTarget);
       setStaging(value);
    };
+   const handleAsset = (event, value) => {
+      setStaging(value);
+      handleDialog();
+   };
    const handleMenu = () => {
       setAnchorEl(null);
+   };
+
+   const [dialog, setDialog] = useState(false);
+   const handleDialog = () => {
+      setDialog(!dialog);
    };
 
    return (
@@ -181,6 +194,7 @@ export default function MaintenanceAsset() {
                                  <TableCell>Applicant Date</TableCell>
                                  <TableCell>Final Cost</TableCell>
                                  <TableCell>Request Time To Finish</TableCell>
+                                 <TableCell>Detail Asset</TableCell>
                                  {Permission(user.permission, "update asset maintenance") || Permission(user.permission, "delete asset maintenance") ? (
                                     <TableCell align="center">Action</TableCell>
                                  ) : null}
@@ -201,6 +215,9 @@ export default function MaintenanceAsset() {
                                           <TableCell>{moment(value.applicant_date).format("LL")}</TableCell>
                                           <TableCell>{NumberFormat(value.final_cost, "Rp")}</TableCell>
                                           <TableCell>{moment(value.request_time_finish).format("LL")}</TableCell>
+                                          <TableCell align="center">
+                                             <Button onClick={(e) => handleAsset(e, value)}>Detail</Button>
+                                          </TableCell>
                                           {Permission(user.permission, "update asset maintenance") ||
                                           Permission(user.permission, "delete asset maintenance") ? (
                                              <TableCell align="center">
@@ -243,6 +260,8 @@ export default function MaintenanceAsset() {
                            onPageChange={handleChangePage}
                            onRowsPerPageChange={handleChangeRowsPerPage}
                            rowsPerPageOptions={[10, 25, 50]}
+                           showFirstButton
+                           showLastButton
                         />
                      )}
                   </CardContent>
@@ -274,6 +293,49 @@ export default function MaintenanceAsset() {
                      )}
                   </Menu>
                ) : null}
+               <Dialog fullWidth maxWidth="md" open={dialog} onClose={handleDialog}>
+                  <DialogTitle>Detail Asset</DialogTitle>
+                  <DialogContent>
+                     <TableContainer>
+                        <Table>
+                           <TableHead>
+                              <TableRow
+                                 sx={{
+                                    "& th:first-of-type": { borderRadius: "0.5em 0 0 0.5em" },
+                                    "& th:last-of-type": { borderRadius: "0 0.5em 0.5em 0" },
+                                 }}
+                              >
+                                 <TableCell align="center">No.</TableCell>
+                                 <TableCell>Asset Code</TableCell>
+                                 <TableCell>Asset Name</TableCell>
+                                 <TableCell>Location</TableCell>
+                                 <TableCell>Reason For Repair</TableCell>
+                              </TableRow>
+                           </TableHead>
+                           <TableBody>
+                              {staging?.asset_maintenance_data.map((value, index) => (
+                                 <TableRow key={index}>
+                                    <TableCell component="th" scope="row" align="center">
+                                       {index + 1}.
+                                    </TableCell>
+                                    <TableCell>{value.asset.asset_code}</TableCell>
+                                    <TableCell>{value.asset.asset_name}</TableCell>
+                                    <TableCell>
+                                       {value.asset.location.code} - {value.asset.location.location}
+                                    </TableCell>
+                                    <TableCell>{value.reason}</TableCell>
+                                 </TableRow>
+                              ))}
+                           </TableBody>
+                        </Table>
+                     </TableContainer>
+                  </DialogContent>
+                  <DialogActions>
+                     <Button variant="text" onClick={handleDialog}>
+                        Close
+                     </Button>
+                  </DialogActions>
+               </Dialog>
             </div>
          </div>
       </div>
