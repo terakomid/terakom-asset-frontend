@@ -175,11 +175,10 @@ export default function MaintenanceAsset() {
                                  }}
                               >
                                  <TableCell align="center">No.</TableCell>
-                                 <TableCell>PIC Code</TableCell>
-                                 <TableCell>PIC Asset</TableCell>
+                                 <TableCell>PIC</TableCell>
                                  <TableCell>Department</TableCell>
                                  <TableCell>Applicant Date</TableCell>
-                                 <TableCell>Request Date Repair</TableCell>
+                                 <TableCell>Final Cost</TableCell>
                                  <TableCell>Request Time To Finish</TableCell>
                                  {Permission(user.permission, "update asset maintenance") || Permission(user.permission, "delete asset maintenance") ? (
                                     <TableCell align="center">Action</TableCell>
@@ -194,11 +193,12 @@ export default function MaintenanceAsset() {
                                           <TableCell component="th" scope="row" align="center">
                                              {index + 1}.
                                           </TableCell>
-                                          <TableCell>{value.pic.code}</TableCell>
-                                          <TableCell>{value.pic.name}</TableCell>
+                                          <TableCell>
+                                             {value.pic.code} - {value.pic.name}
+                                          </TableCell>
                                           <TableCell>{value.pic.department}</TableCell>
                                           <TableCell>{moment(value.applicant_date).format("LL")}</TableCell>
-                                          <TableCell>{moment(value.request_date_repair).format("LL")}</TableCell>
+                                          <TableCell></TableCell>
                                           <TableCell>{moment(value.request_time_finish).format("LL")}</TableCell>
                                           {Permission(user.permission, "update asset maintenance") ||
                                           Permission(user.permission, "delete asset maintenance") ? (
