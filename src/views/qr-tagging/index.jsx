@@ -22,15 +22,11 @@ const Index = () => {
       try {
          const formData = new FormData();
          formData.append("asset_code", asset_code);
-         const res = await http.get(`asset`, {
-            params: {
-               field: ['asset_code'],
-               search: asset_code,
-            }
-         });
-         setData(res.data.data.data[0]);
-         setCode(asset_code);
+         const res = await http.post(`asset/show_by_code`, formData);
+         setData(res.data.data);
       } catch (err) {
+      } finally {
+         setCode(asset_code);
       }
    };
 

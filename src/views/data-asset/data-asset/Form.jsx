@@ -45,6 +45,7 @@ import {
    AssignmentLateOutlined,
    AssignmentTurnedInOutlined,
    DescriptionOutlined,
+   Download,
    DownloadForOffline,
    DownloadForOfflineOutlined,
    InsertPhotoOutlined,
@@ -110,7 +111,7 @@ const SuccessModal = (props) => {
             <Button variant="text" onClick={props.handleClose}>
                Cancel
             </Button>
-            <Box component="form" onSubmit={props.onSubmit}>
+            <Box component="form" onSubmit={() => props.onSubmit()}>
                <LoadingButton loading={props.loading} type="submit" variant="text" color="success">
                   {props.title}
                </LoadingButton>
@@ -711,6 +712,7 @@ const Form = (props) => {
          id: "",
          file: "",
          file_url: "",
+         file_name: ""
       },
    ]);
 
@@ -921,6 +923,7 @@ const Form = (props) => {
             id: v.id,
             file: "",
             file_url: v.file,
+            file_name: v.file.split('/').pop()
          });
       });
       setEvidences([...temp]);
@@ -1996,15 +1999,19 @@ const Form = (props) => {
                                        return (
                                           <Grid key={i} item xs={6} md={4}>
                                              <Stack spacing={2} alignItems="center">
-                                                <Box component="label" sx={{ mt: { xs: 2 }, cursor: "pointer" }} htmlFor={`ev-${i}`}>
+                                                <Box component="label" sx={{ mt: { xs: 2 }, cursor: "pointer", display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column' }} htmlFor={`ev-${i}`}>
                                                    {v.file_url == "" ? (
                                                       <DescriptionOutlined sx={{ fontSize: "100px" }} />
                                                    ) : (
                                                       <AssignmentTurnedInOutlined sx={{ fontSize: "100px" }} />
                                                    )}
-                                                   {typeof errors[`evidence.${i}.file`] !== "undefined" && (
-                                                      <Typography sx={{ color: "red" }}>Evidence Required</Typography>
+                                                   { v.file_url !== "undefined" && (
+                                                      <Typography>{v.file_name}</Typography>
                                                    )}
+                                                   {typeof errors[`evidence.${i}.file`] !== "undefined" && (
+                                                      <Typography sx={{ color: 'red' }}>Evidence/Image Required</Typography>
+                                                   )}
+                                                   
                                                 </Box>
                                                 <input
                                                    type="file"
@@ -2013,25 +2020,26 @@ const Form = (props) => {
                                                    id={`ev-${i}`}
                                                    onChange={(e) => {
                                                       let file = e.target.files[0];
-                                                      let file_url = URL.createObjectURL(e.target.files[0]);
+                                                      let file_url = URL.createObjectURL(file)
+                                                      let file_name = file.name
                                                       setEvidences((currentAnswers) =>
                                                          produce(currentAnswers, (v) => {
                                                             v[i] = {
                                                                id: "",
                                                                file,
                                                                file_url,
+                                                               file_name,
                                                             };
                                                          })
                                                       );
                                                    }}
                                                 />
                                                 <Stack direction="row" justifyContent={"center"} alignContent="center">
-                                                   {!props.detail ||
-                                                      (user.role !== "Admin Department" && (
-                                                         <a target="_blank" href={v.file_url} style={{ cursor: "pointer" }}>
-                                                            <DownloadForOfflineOutlined sx={{ fontSize: "10x", marginTop: "3px", marginRight: "3px" }} />
-                                                         </a>
-                                                      ))}
+                                                   {user.role !== "Admin Department" && v.file_url !== "" && props.title !== "add" &&
+                                                      <a target="_blank" href={v.file_url} style={{ cursor: "pointer" }}>
+                                                         <Download sx={{ fontSize: "10x", marginTop: "1px", marginRight: "3px" }} />
+                                                      </a>
+                                                   }
 
                                                    {evidences.length > 1 && (
                                                       <Chip
@@ -2061,6 +2069,7 @@ const Form = (props) => {
                                                    id: "",
                                                    file: "",
                                                    file_url: "",
+                                                   file_name: "",
                                                 },
                                              ]);
                                           }}

@@ -320,7 +320,7 @@ const TableExcel = (props) => {
                   })}
                <tr>
                   <td className="tg-baqh" colspan="15">
-                     <span style={{ fontWeight: "bold" }}>Total Harga</span>
+                     <span style={{ fontWeight: "bold" }}>Total</span>
                   </td>
                   <td className="tg-0lax" colspan="2">{totalPrice(props.data.asset_disposal_data)}</td>
                   <td className="tg-0lax">{totalValueBook(props.data.asset_disposal_data)}</td>
@@ -604,7 +604,7 @@ const Index = () => {
                                                    {rows.meta.from + key}.
                                                 </TableCell>
                                                 <TableCell>{moment(value.created_at).format("ll")}</TableCell>
-                                                <TableCell>{value.sk_number}</TableCell>
+                                                <TableCell>{value.sk_number !== null ? value.sk_number : '-'}</TableCell>
                                                 <TableCell>{value.description}</TableCell>
                                                 <TableCell>{moment(value.updated_at).format("ll")}</TableCell>
                                                 <TableCell>
@@ -697,6 +697,14 @@ const Index = () => {
                               </ListItemIcon>
                               Download Template
                            </MenuItem>
+                           {staging !== undefined && staging.document && 
+                           <MenuItem component="a" href={staging.document} target="_blank">
+                              <ListItemIcon>
+                                 <DownloadOutlined />
+                              </ListItemIcon>
+                              Download Support Document
+                           </MenuItem>
+                           }
                            {staging !== undefined && staging.status === "process" && (
                               <MenuItem onClick={handleAccept}>
                                  <ListItemIcon>

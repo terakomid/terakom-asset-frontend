@@ -68,6 +68,11 @@ const Form = (props) => {
 	const [assetId, setAssetId] = useState([])
 	const [disposalAssetId, setDisposalAssetId] = useState([''])
 
+	const [isError, setIsError] = useState({
+		message: '',
+		boolean: false
+	})
+
 	const [params, setParams] = useState({
         search: "",
 		field: [
@@ -126,13 +131,13 @@ const Form = (props) => {
 					setId(data.id)
 					setForm({
 						...form,
-						sk_number: data.sk_number,
+						sk_number: data.sk_number !== null ? data.sk_number : '',
 						description: data.description
 					})
 					if(data.document !== null){
 						setDocument({
 							...document,
-							file_url: data.document
+							file_url: data.document.split('/').pop()
 						})
 					}
 					const assetIdTemp = data.asset_disposal_data.map(v => v.asset.id)
@@ -160,8 +165,12 @@ const Form = (props) => {
 	const onSubmit = (e) => {
 		e.preventDefault();
 		setLoading(true);
+		setIsError({
+			message: '',
+			boolean: false
+		})
 		const formData = new FormData();
-		formData.append('sk_number', form.sk_number)
+		if (form.sk_number !== "") formData.append('sk_number', form.sk_number)
 		formData.append('description', form.description)
 		if (document.file !== "") formData.append("document", document.file);
 		const assetIdTemp = [...new Set(assetId)]
@@ -181,29 +190,41 @@ const Form = (props) => {
 					// console.log(res.data)
 					enqueueSnackbar("Add Disposal Successfull", { variant: 'success' })
 					navigate("/disposal-asset");
+					setIsError({
+						message: 'Fill Supporting Document',
+						boolean: true
+					})
 				})
 				.catch((err) => {
-					// console.log(err.response)
+					console.log(err.response)
 				})
 				.finally((res) => {
 					setLoading(false);
 				});
 		} else {
-			if (document.file !== "") formData.append("document", document.file);
-			formData.append("_method", "PUT");
-			http
-				.post(`asset_disposal/${id}`, formData)
-				.then((res) => {
-					// console.log(res.data)
-					enqueueSnackbar("Edit Disposal Successfull", { variant: 'success' })
-					navigate("/disposal-asset");
+			if(document.file_url === "") {
+				enqueueSnackbar("Fill Supporting Document", { variant: 'error' })
+				setLoading(false);
+				setIsError({
+					message: '',
+					boolean: true
 				})
-				.catch((err) => {
-					// console.log(err.response)
-				})
-				.finally((res) => {
-					setLoading(false);
-				});
+			}else{
+				formData.append("_method", "PUT");
+				http
+					.post(`asset_disposal/${id}`, formData)
+					.then((res) => {
+						// console.log(res.data)
+						enqueueSnackbar("Edit Disposal Successfull", { variant: 'success' })
+						navigate("/disposal-asset");
+					})
+					.catch((err) => {
+						// console.log(err.response)
+					})
+					.finally((res) => {
+						setLoading(false);
+					});
+			}
 		}
 	};
 
@@ -225,7 +246,9 @@ const Form = (props) => {
 										disabled={props.title !== "add" && props.data.status === "accepted" ? true : false}
 									/>
 								</Grid>
+								{props.title !== "add" &&
 								<Grid item xs={12} md={6}>
+									
 								{
 									document.file_url !== "" ? (
 										<TextField
@@ -255,26 +278,27 @@ const Form = (props) => {
 											fullWidth
 										/>
 									) : (
-										<Button size="large" variant="outlined" component="label" fullWidth startIcon={<FileUploadOutlined />}>
+										<Button size="large" variant="outlined" sx={{ border: 1, borderColor: isError.boolean ? 'red' : 'blue' }} component="label" fullWidth startIcon={<FileUploadOutlined />}>
 											Supporting Document *
 											<input 
 												name="document" 
 												type="file" 
 												onChange={(e) => {
 													let file = e.target.files[0]
-													let file_url = URL.createObjectURL(file)
+													let file_url = file.name
 													setDocument({
 														file,
 														file_url
 													})
 												}}
 												hidden
-												disabled={props.title !== "add" && props.data.status === "accepted" ? true : false} 
+												disabled={props.title !== "add" && props.data.status === "accepted" ? true : false}
 											 />
 										</Button>
 									)
 								}
 								</Grid>
+								}
 								<Grid item xs={12} md={12}>
 									<TextField 
 										name="description" 

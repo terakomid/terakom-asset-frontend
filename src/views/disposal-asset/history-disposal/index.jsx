@@ -24,8 +24,11 @@ import {
    DialogContentText,
    DialogActions,
    Chip,
+   Collapse,
+   Box,
+   Typography,
 } from "@mui/material";
-import { Add, CloseRounded, Delete, DownloadOutlined, Edit, FilterListRounded, MoreVert, Search, DoneOutline, Close, Details, InfoOutlined } from "@mui/icons-material";
+import { Add, CloseRounded, Delete, DownloadOutlined, Edit, FilterListRounded, MoreVert, Search, DoneOutline, Close, Details, InfoOutlined, KeyboardArrowUp, KeyboardArrowDown } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 
 import http from "../../../component/api/Api";
@@ -182,6 +185,75 @@ const ModalTable = (props) => {
    );
 };
 
+const RowComponent = (props) => {
+   const [open, setOpen] = React.useState(false);
+   
+   return (
+      <React.Fragment>
+         <TableRow>
+               {props.data.evidence.length > 0 ?
+               <TableCell component="th" scope="row" align="center">
+                     <Stack direction="row" alignItems={"center"} justifyContent={"center"}>  
+                        <IconButton
+                           aria-label="expand row"
+                           size="small"
+                           onClick={() => setOpen(!open)}
+                        >
+                           {open ? <KeyboardArrowUp /> : <KeyboardArrowDown />}
+                        </IconButton>
+                        {props.from + props.i}.
+
+                     </Stack>
+               </TableCell>
+               :
+               <TableCell>
+                  {props.from + props.i}.
+               </TableCell>
+               }
+               <TableCell>{props.data.asset_code}</TableCell>
+               <TableCell>{props.data.asset_name}</TableCell>
+               <TableCell>{props.data.employee.name}</TableCell>
+               <TableCell>{props.data.category.category}</TableCell>
+               <TableCell>{moment(props.data.capitalized).format("ll")}</TableCell>
+               <TableCell>{props.data.sub_category.useful_life}</TableCell>
+               {props.user.role !== 'Employee' &&
+               <>
+               <TableCell>{NumberFormat(props.data.acquisition_value, "Rp")}</TableCell>
+               <TableCell>{NumberFormat(props.data.book_value, "Rp")}</TableCell>
+               </>
+               }
+               <TableCell align="center">
+                  <IconButton onClick={(e) => props.handleClick(e, props.data)}>
+                     <MoreVert />
+                  </IconButton>
+               </TableCell>
+         </TableRow>
+         <TableRow>
+            <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
+               <Collapse in={open} timeout="auto" unmountOnExit>
+                  <Box sx={{ margin: 1 }}>
+                  <Typography>Image & Evidence</Typography>
+                  <Table size="small" aria-label="purchases">
+                     <TableBody>
+                        {props.data.evidence.map((val, i) => (
+                        <TableRow key={val.id}>
+                           <TableCell component="th" scope="row">
+                              {i + 1}
+                           </TableCell>
+                           <TableCell>{val.file.split('/').pop()}</TableCell>
+                           <TableCell align="right"><Chip label="Download" component="a" href={val.file} target="_blank" /></TableCell>
+                        </TableRow>
+                        ))}
+                     </TableBody>
+                  </Table>
+                  </Box>
+               </Collapse>
+            </TableCell>
+         </TableRow>
+      </React.Fragment>
+   );
+}
+
 const Index = () => {
    const { user } = useRecoilValue(authentication);
    const navigate = useNavigate();
@@ -207,11 +279,9 @@ const Index = () => {
             params: params,
          })
          .then((res) => {
-            //  console.log(res.data.data);
             setRows(res.data.data);
          })
          .catch((err) => {
-            //  console.log(err.response);
          });
    };
 
@@ -278,7 +348,6 @@ const Index = () => {
             handleModal();
          })
          .catch((err) => {
-            console.log(err.response.data);
             setLoading(false);
          });
    };
@@ -291,7 +360,6 @@ const Index = () => {
       setStaging(value);
       setTableData(undefined);
       const res = await http.get(`/asset_disposal/${value.id}`);
-      // console.log(res.data)
       setTableData(res.data.data);
    };
    const handleMenu = () => {
@@ -364,42 +432,29 @@ const Index = () => {
                                             "& th:last-of-type": { borderRadius: "0 0.5em 0.5em 0" },
                                         }}
                                         >
-                                        <TableCell align="center">No.</TableCell>
-                                        <TableCell>Code Asset</TableCell>
-                                        <TableCell>SAP Code </TableCell>
-                                        <TableCell>Asset Name</TableCell>
-                                        <TableCell>Category Asset</TableCell>
-                                        <TableCell>Capitalized On</TableCell>
-                                        <TableCell>Useful Life</TableCell>
-                                        <TableCell>Acquisition Value</TableCell>
-                                        <TableCell>Book Value</TableCell>
-                                        <TableCell>Condition</TableCell>
-                                        <TableCell align="center">Action</TableCell>
+                                          <TableCell align="center">No.</TableCell>
+                                          <TableCell>Code Asset</TableCell>
+                                          <TableCell>Asset Name</TableCell>
+                                          <TableCell>PIC Name</TableCell>
+                                          <TableCell>Category Asset</TableCell>
+                                          <TableCell>Capitalized On</TableCell>
+                                          <TableCell>Useful Life</TableCell>
+                                          {user.role !== 'Employee' && 
+                                          <>
+                                          <TableCell>Acquisition Value</TableCell>
+                                          <TableCell>Book Value</TableCell>
+                                          </>
+                                          }
+                                          <TableCell align="center">Action</TableCell>
                                         </TableRow>
                                     </TableHead>
                                     <TableBody>
                                         {rows !== undefined ? (
                                         rows.data.length > 0 ? (
                                             rows.data.map((value, key) => (
-                                                <TableRow key={key}>
-                                                    <TableCell component="th" scope="row" align="center">
-                                                    {rows.meta.from + key}.
-                                                    </TableCell>
-                                                    <TableCell>{value.asset_code}</TableCell>
-                                                    <TableCell>{value.sap_code}</TableCell>
-                                                    <TableCell>{value.asset_name}</TableCell>
-                                                    <TableCell>{value.category.category}</TableCell>
-                                                    <TableCell>{moment(value.capitalized).format("ll")}</TableCell>
-                                                    <TableCell>{value.sub_category.useful_life}</TableCell>
-                                                    <TableCell>{NumberFormat(value.acquisition_value, "Rp")}</TableCell>
-                                                    <TableCell>{NumberFormat(value.book_value, "Rp")}</TableCell>
-                                                    <TableCell>{value.condition.condition}</TableCell>
-                                                    <TableCell align="center">
-                                                    <IconButton onClick={(e) => handleClick(e, value)}>
-                                                        <MoreVert />
-                                                    </IconButton>
-                                                    </TableCell>
-                                                </TableRow>
+                                             <>
+                                                <RowComponent i={key} key={key} data={value} user={user} from={rows.meta.from} handleClick={handleClick} />
+                                             </>
                                             ))
                                         ) : (
                                             <TableRow>
