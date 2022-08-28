@@ -44,7 +44,6 @@ export default function AddMutationAsset() {
 
    const [rows, setRows] = useState([]);
    const [data, setData] = useState();
-
    const [params, setParams] = useState({
       users: {
          search: "",
@@ -193,21 +192,10 @@ export default function AddMutationAsset() {
             e.target.value = null;
          }
       } else {
-         if (e.target.name === "pic") {
-            getAsset(e.target.value);
-         } else if (e.target.name === "receive") {
-            setData({
-               ...data,
-               [e.target.name]: e.target.value,
-               receive_dept: e.target.value.dept.dept,
-               to_branch: e.target.value.location.id,
-            });
-         } else {
-            setData({
-               ...data,
-               [e.target.name]: e.target.value,
-            });
-         }
+         setData({
+            ...data,
+            [e.target.name]: e.target.value,
+         });
       }
    };
 
