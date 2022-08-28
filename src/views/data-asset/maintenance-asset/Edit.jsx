@@ -39,7 +39,7 @@ export default function EditMaintenanceAsset() {
    const { user } = useRecoilValue(authentication);
    const { id } = useParams();
    const navigate = useNavigate();
-   const { enqueueSnackbar } = useSnackbar()
+   const { enqueueSnackbar } = useSnackbar();
 
    const [rows, setRows] = useState([]);
    const [data, setData] = useState();
@@ -47,9 +47,9 @@ export default function EditMaintenanceAsset() {
       http
          .get(`asset_maintenance/${id}`)
          .then((res) => {
-            console.log(res.data.data);
+            // console.log(res.data.data);
             let value = res.data.data;
-            getAsset(value.pic.id, value);
+            getAssetStaging(value.pic.id, value);
          })
          .catch((err) => {
             // console.log(err.response);
@@ -69,7 +69,7 @@ export default function EditMaintenanceAsset() {
          });
    };
 
-   const getAsset = async (employee_id, value) => {
+   const getAssetStaging = async (employee_id, value) => {
       http
          .get(`asset?employee_id=${employee_id}`)
          .then((res) => {
@@ -94,18 +94,41 @@ export default function EditMaintenanceAsset() {
                document: { name: value.document.split("/").pop() },
             });
 
-            let newState;
+            let newState = [];
             value.asset_maintenance_data.map((row) => {
-               const obj = res.data.data.data.find((value) => value.id == row.asset.id);
-               newState = rows.concat({
+               // const obj = res.data.data.data.find((value) => value.id == row.asset.id);
+               newState = newState.concat({
                   asset_id: row.asset.id,
-                  asset_dept: obj.department.dept,
-                  master_asset: obj,
+                  asset_dept: value.pic.department,
+                  master_asset: {
+                     asset_name: row.asset.asset_name,
+                     asset_code: row.asset.asset_code,
+                     department: {
+                        dept: value.pic.department,
+                     },
+                  },
                   reason: row.reason,
                });
             });
-            // console.log(newState);
             setRows(newState);
+         })
+         .catch((err) => {
+            // console.log(err.response);
+         });
+   };
+
+   const getAsset = async (employee) => {
+      http
+         .get(`asset?employee_id=${employee.id}`)
+         .then((res) => {
+            // console.log(res.data.data.data);
+            const obj = users.find((value) => value.id == employee.id);
+            setData({
+               ...data,
+               pic_id: employee.id,
+               pic_dept: obj.dept.dept,
+               master_asset: res.data.data.data,
+            });
          })
          .catch((err) => {
             // console.log(err.response);
@@ -207,10 +230,10 @@ export default function EditMaintenanceAsset() {
          formData.append(`asset_data[${index}][reason]`, value.reason);
       });
       // console.log(Object.fromEntries(formData));
-      if(data.document === null) {
-         enqueueSnackbar("Fill Supporting Document", { variant: 'error' })
+      if (data.document === null) {
+         enqueueSnackbar("Fill Supporting Document", { variant: "error" });
          setLoading(false);
-      }else{
+      } else {
          data.document.size !== undefined && formData.append("document", data.document);
          http
             .post(`asset_maintenance/${id}`, formData)
