@@ -57,7 +57,7 @@ export default function AddMaintenanceAsset() {
    const getUsers = async () => {
       http
          .get(`user`, {
-            params: params,
+            params: params.users,
          })
          .then((res) => {
             // console.log(res.data.data);
@@ -67,24 +67,6 @@ export default function AddMaintenanceAsset() {
             // console.log(err.response);
          });
    };
-
-   // const getAsset = async (employee_id) => {
-   //    http
-   //       .get(`asset?employee_id=${employee_id}`)
-   //       .then((res) => {
-   //          // console.log(res.data.data.data);
-   //          const obj = users.data.find((value) => value.id == employee_id);
-   //          setData({
-   //             ...data,
-   //             pic_id: employee_id,
-   //             pic_dept: obj.dept.dept,
-   //             master_asset: res.data.data.data,
-   //          });
-   //       })
-   //       .catch((err) => {
-   //          // console.log(err.response);
-   //       });
-   // };
 
    const getAsset = async (employee) => {
       http
@@ -186,9 +168,7 @@ export default function AddMaintenanceAsset() {
    };
 
    const handleChange = (e) => {
-      if (e.target.name === "pic_id") {
-         getAsset(e.target.value);
-      } else if (e.target.name === "asset_id") {
+      if (e.target.name === "asset_id") {
          const obj = data.master_asset.find((value) => value.id == e.target.value);
          setData({
             ...data,
