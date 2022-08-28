@@ -41,6 +41,7 @@ export default function EditMaintenanceAsset() {
    const navigate = useNavigate();
    const { enqueueSnackbar } = useSnackbar();
 
+   const [error, setError] = useState("");
    const [rows, setRows] = useState([]);
    const [data, setData] = useState();
    const getData = async () => {
@@ -183,9 +184,7 @@ export default function EditMaintenanceAsset() {
    };
 
    const handleChange = (e) => {
-      if (e.target.name === "pic_id") {
-         getAsset(e.target.value);
-      } else if (e.target.name === "asset_id") {
+      if (e.target.name === "asset_id") {
          const obj = data.master_asset.find((value) => value.id == e.target.value);
          setData({
             ...data,
@@ -212,6 +211,7 @@ export default function EditMaintenanceAsset() {
    const handleSubmit = async (e) => {
       e.preventDefault();
       setLoading(true);
+      setError("");
       let formData = new FormData();
       formData.append("_method", "PUT");
       formData.append("pic_id", data.pic_id);
@@ -241,8 +241,10 @@ export default function EditMaintenanceAsset() {
                // console.log(res.data.data);
                navigate("/history-asset/maintenance-asset");
             })
-            .catch((err) => {
-               // console.log(err.response.data);
+            .catch((xhr) => {
+               // console.log(xhr.response.data);
+               xhr.response && setError(xhr.response.data.errors);
+               window.scrollTo(0, 0);
                setLoading(false);
             });
       }
@@ -296,7 +298,14 @@ export default function EditMaintenanceAsset() {
                                              applicant_date: newValue,
                                           });
                                        }}
-                                       renderInput={(params) => <TextField fullWidth {...params} />}
+                                       renderInput={(params) => (
+                                          <TextField
+                                             fullWidth
+                                             {...params}
+                                             error={!!error.applicant_date}
+                                             helperText={error.applicant_date !== undefined && error.applicant_date[0]}
+                                          />
+                                       )}
                                     />
                                  </LocalizationProvider>
                               </Grid>
@@ -314,7 +323,14 @@ export default function EditMaintenanceAsset() {
                                              request_date_repair: newValue,
                                           });
                                        }}
-                                       renderInput={(params) => <TextField fullWidth {...params} />}
+                                       renderInput={(params) => (
+                                          <TextField
+                                             fullWidth
+                                             {...params}
+                                             error={!!error.request_date_repair}
+                                             helperText={error.request_date_repair !== undefined && error.request_date_repair[0]}
+                                          />
+                                       )}
                                     />
                                  </LocalizationProvider>
                               </Grid>
@@ -332,7 +348,14 @@ export default function EditMaintenanceAsset() {
                                              request_time_finish: newValue,
                                           });
                                        }}
-                                       renderInput={(params) => <TextField fullWidth {...params} />}
+                                       renderInput={(params) => (
+                                          <TextField
+                                             fullWidth
+                                             {...params}
+                                             error={!!error.request_time_finish}
+                                             helperText={error.request_time_finish !== undefined && error.request_time_finish[0]}
+                                          />
+                                       )}
                                     />
                                  </LocalizationProvider>
                               </Grid>
@@ -356,7 +379,14 @@ export default function EditMaintenanceAsset() {
                                              testing_date: newValue,
                                           });
                                        }}
-                                       renderInput={(params) => <TextField fullWidth {...params} />}
+                                       renderInput={(params) => (
+                                          <TextField
+                                             fullWidth
+                                             {...params}
+                                             error={!!error.testing_date}
+                                             helperText={error.testing_date !== undefined && error.testing_date[0]}
+                                          />
+                                       )}
                                     />
                                  </LocalizationProvider>
                               </Grid>
@@ -374,7 +404,14 @@ export default function EditMaintenanceAsset() {
                                              testing_finish_date: newValue,
                                           });
                                        }}
-                                       renderInput={(params) => <TextField fullWidth {...params} />}
+                                       renderInput={(params) => (
+                                          <TextField
+                                             fullWidth
+                                             {...params}
+                                             error={!!error.testing_finish_date}
+                                             helperText={error.testing_finish_date !== undefined && error.testing_finish_date[0]}
+                                          />
+                                       )}
                                     />
                                  </LocalizationProvider>
                               </Grid>
@@ -385,6 +422,8 @@ export default function EditMaintenanceAsset() {
                                     variant="outlined"
                                     value={data.testing_result}
                                     onChange={handleChange}
+                                    error={!!error.testing_result}
+                                    helperText={error.testing_result !== undefined && error.testing_result[0]}
                                     rows={4}
                                     multiline
                                     fullWidth
@@ -398,6 +437,8 @@ export default function EditMaintenanceAsset() {
                                     variant="outlined"
                                     value={data.person_testing}
                                     onChange={handleChange}
+                                    error={!!error.person_testing}
+                                    helperText={error.person_testing !== undefined && error.person_testing[0]}
                                     fullWidth
                                     required
                                  />
@@ -409,6 +450,8 @@ export default function EditMaintenanceAsset() {
                                     variant="outlined"
                                     value={data.final_cost}
                                     onChange={handleChange}
+                                    error={!!error.final_cost}
+                                    helperText={error.final_cost !== undefined && error.final_cost[0]}
                                     fullWidth
                                     required
                                  />
@@ -427,7 +470,14 @@ export default function EditMaintenanceAsset() {
                                              returning_date: newValue,
                                           });
                                        }}
-                                       renderInput={(params) => <TextField fullWidth {...params} />}
+                                       renderInput={(params) => (
+                                          <TextField
+                                             fullWidth
+                                             {...params}
+                                             error={!!error.returning_date}
+                                             helperText={error.returning_date !== undefined && error.returning_date[0]}
+                                          />
+                                       )}
                                     />
                                  </LocalizationProvider>
                               </Grid>
@@ -438,6 +488,8 @@ export default function EditMaintenanceAsset() {
                                     variant="outlined"
                                     value={data.repair_record}
                                     onChange={handleChange}
+                                    error={!!error.repair_record}
+                                    helperText={error.repair_record !== undefined && error.repair_record[0]}
                                     rows={4}
                                     multiline
                                     fullWidth

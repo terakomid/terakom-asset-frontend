@@ -41,6 +41,7 @@ export default function AddMaintenanceAsset() {
    const navigate = useNavigate();
    const { enqueueSnackbar } = useSnackbar();
 
+   const [error, setError] = useState("");
    const [rows, setRows] = useState([]);
    const [data, setData] = useState();
    const [params, setParams] = useState({
@@ -137,20 +138,16 @@ export default function AddMaintenanceAsset() {
 
    const handleStaging = (e) => {
       e.preventDefault();
-      if (data.document === null) {
-         enqueueSnackbar("Fill Supporting Document", { variant: "error" });
-      } else {
-         const obj = data.master_asset.find((value) => value.id == data.asset_id);
-         let staging = {
-            asset_id: data.asset_id,
-            asset_dept: obj.department.dept,
-            master_asset: obj,
-            reason: data.reason,
-         };
-         let newState = rows.concat(staging);
-         setRows(newState);
-         handleResetStaging();
-      }
+      const obj = data.master_asset.find((value) => value.id == data.asset_id);
+      let staging = {
+         asset_id: data.asset_id,
+         asset_dept: obj.department.dept,
+         master_asset: obj,
+         reason: data.reason,
+      };
+      let newState = rows.concat(staging);
+      setRows(newState);
+      handleResetStaging();
    };
 
    const handleEdit = (value, key) => {
@@ -194,35 +191,42 @@ export default function AddMaintenanceAsset() {
    const [loading, setLoading] = useState(false);
    const handleSubmit = async (e) => {
       e.preventDefault();
-      setLoading(true);
-      let formData = new FormData();
-      formData.append("pic_id", data.pic_id);
-      formData.append("applicant_date", moment(data.applicant_date).format("yyyy/MM/DD"));
-      formData.append("request_date_repair", moment(data.request_date_repair).format("yyyy/MM/DD"));
-      formData.append("request_time_finish", moment(data.request_time_finish).format("yyyy/MM/DD"));
-      formData.append("testing_date", moment(data.testing_date).format("yyyy/MM/DD"));
-      formData.append("testing_finish_date", moment(data.testing_finish_date).format("yyyy/MM/DD"));
-      formData.append("testing_result", data.testing_result);
-      formData.append("person_testing", data.person_testing);
-      formData.append("final_cost", data.final_cost.replaceAll("IDR ", "").replaceAll(".", ""));
-      formData.append("returning_date", moment(data.returning_date).format("yyyy/MM/DD"));
-      formData.append("repair_record", data.repair_record);
-      formData.append("document", data.document);
-      rows.map((value, index) => {
-         formData.append(`asset_data[${index}][asset_id]`, value.asset_id);
-         formData.append(`asset_data[${index}][reason]`, value.reason);
-      });
-      // console.log(Object.fromEntries(formData));
-      http
-         .post(`asset_maintenance`, formData)
-         .then((res) => {
-            // console.log(res.data.data);
-            navigate("/history-asset/maintenance-asset");
-         })
-         .catch((err) => {
-            // console.log(err.response.data);
-            setLoading(false);
+      if (data.document !== null) {
+         setLoading(true);
+         setError("");
+         let formData = new FormData();
+         formData.append("pic_id", data.pic_id);
+         formData.append("applicant_date", moment(data.applicant_date).format("yyyy/MM/DD"));
+         formData.append("request_date_repair", moment(data.request_date_repair).format("yyyy/MM/DD"));
+         formData.append("request_time_finish", moment(data.request_time_finish).format("yyyy/MM/DD"));
+         formData.append("testing_date", moment(data.testing_date).format("yyyy/MM/DD"));
+         formData.append("testing_finish_date", moment(data.testing_finish_date).format("yyyy/MM/DD"));
+         formData.append("testing_result", data.testing_result);
+         formData.append("person_testing", data.person_testing);
+         formData.append("final_cost", data.final_cost.replaceAll("IDR ", "").replaceAll(".", ""));
+         formData.append("returning_date", moment(data.returning_date).format("yyyy/MM/DD"));
+         formData.append("repair_record", data.repair_record);
+         formData.append("document", data.document);
+         rows.map((value, index) => {
+            formData.append(`asset_data[${index}][asset_id]`, value.asset_id);
+            formData.append(`asset_data[${index}][reason]`, value.reason);
          });
+         // console.log(Object.fromEntries(formData));
+         http
+            .post(`asset_maintenance`, formData)
+            .then((res) => {
+               // console.log(res.data.data);
+               navigate("/history-asset/maintenance-asset");
+            })
+            .catch((xhr) => {
+               // console.log(xhr.response.data);
+               xhr.response && setError(xhr.response.data.errors);
+               window.scrollTo(0, 0);
+               setLoading(false);
+            });
+      } else {
+         enqueueSnackbar("Fill Supporting Document", { variant: "error" });
+      }
    };
 
    return (
@@ -288,7 +292,14 @@ export default function AddMaintenanceAsset() {
                                              applicant_date: newValue,
                                           });
                                        }}
-                                       renderInput={(params) => <TextField fullWidth {...params} />}
+                                       renderInput={(params) => (
+                                          <TextField
+                                             fullWidth
+                                             {...params}
+                                             error={!!error.applicant_date}
+                                             helperText={error.applicant_date !== undefined && error.applicant_date[0]}
+                                          />
+                                       )}
                                     />
                                  </LocalizationProvider>
                               </Grid>
@@ -306,7 +317,14 @@ export default function AddMaintenanceAsset() {
                                              request_date_repair: newValue,
                                           });
                                        }}
-                                       renderInput={(params) => <TextField fullWidth {...params} />}
+                                       renderInput={(params) => (
+                                          <TextField
+                                             fullWidth
+                                             {...params}
+                                             error={!!error.request_date_repair}
+                                             helperText={error.request_date_repair !== undefined && error.request_date_repair[0]}
+                                          />
+                                       )}
                                     />
                                  </LocalizationProvider>
                               </Grid>
@@ -324,7 +342,14 @@ export default function AddMaintenanceAsset() {
                                              request_time_finish: newValue,
                                           });
                                        }}
-                                       renderInput={(params) => <TextField fullWidth {...params} />}
+                                       renderInput={(params) => (
+                                          <TextField
+                                             fullWidth
+                                             {...params}
+                                             error={!!error.request_time_finish}
+                                             helperText={error.request_time_finish !== undefined && error.request_time_finish[0]}
+                                          />
+                                       )}
                                     />
                                  </LocalizationProvider>
                               </Grid>
@@ -348,7 +373,14 @@ export default function AddMaintenanceAsset() {
                                              testing_date: newValue,
                                           });
                                        }}
-                                       renderInput={(params) => <TextField fullWidth {...params} />}
+                                       renderInput={(params) => (
+                                          <TextField
+                                             fullWidth
+                                             {...params}
+                                             error={!!error.testing_date}
+                                             helperText={error.testing_date !== undefined && error.testing_date[0]}
+                                          />
+                                       )}
                                     />
                                  </LocalizationProvider>
                               </Grid>
@@ -366,7 +398,14 @@ export default function AddMaintenanceAsset() {
                                              testing_finish_date: newValue,
                                           });
                                        }}
-                                       renderInput={(params) => <TextField fullWidth {...params} />}
+                                       renderInput={(params) => (
+                                          <TextField
+                                             fullWidth
+                                             {...params}
+                                             error={!!error.testing_finish_date}
+                                             helperText={error.testing_finish_date !== undefined && error.testing_finish_date[0]}
+                                          />
+                                       )}
                                     />
                                  </LocalizationProvider>
                               </Grid>
@@ -376,6 +415,8 @@ export default function AddMaintenanceAsset() {
                                     label="Testing Result"
                                     variant="outlined"
                                     onBlur={handleChange}
+                                    error={!!error.testing_result}
+                                    helperText={error.testing_result !== undefined && error.testing_result[0]}
                                     rows={4}
                                     multiline
                                     fullWidth
@@ -383,7 +424,16 @@ export default function AddMaintenanceAsset() {
                                  />
                               </Grid>
                               <Grid item xs={12} sm={6} md={4}>
-                                 <TextField name="person_testing" label="Person Testing" variant="outlined" onBlur={handleChange} fullWidth required />
+                                 <TextField
+                                    name="person_testing"
+                                    label="Person Testing"
+                                    variant="outlined"
+                                    onBlur={handleChange}
+                                    error={!!error.person_testing}
+                                    helperText={error.person_testing !== undefined && error.person_testing[0]}
+                                    fullWidth
+                                    required
+                                 />
                               </Grid>
                               <Grid item xs={12} sm={6} md={4}>
                                  <TextField
@@ -392,6 +442,8 @@ export default function AddMaintenanceAsset() {
                                     variant="outlined"
                                     value={NumberFormat(data.final_cost, "Rp")}
                                     onChange={handleChange}
+                                    error={!!error.final_cost}
+                                    helperText={error.final_cost !== undefined && error.final_cost[0]}
                                     fullWidth
                                     required
                                  />
@@ -410,7 +462,14 @@ export default function AddMaintenanceAsset() {
                                              returning_date: newValue,
                                           });
                                        }}
-                                       renderInput={(params) => <TextField fullWidth {...params} />}
+                                       renderInput={(params) => (
+                                          <TextField
+                                             fullWidth
+                                             {...params}
+                                             error={!!error.returning_date}
+                                             helperText={error.returning_date !== undefined && error.returning_date[0]}
+                                          />
+                                       )}
                                     />
                                  </LocalizationProvider>
                               </Grid>
@@ -420,6 +479,8 @@ export default function AddMaintenanceAsset() {
                                     label="Repair Record"
                                     variant="outlined"
                                     onBlur={handleChange}
+                                    error={!!error.repair_record}
+                                    helperText={error.repair_record !== undefined && error.repair_record[0]}
                                     rows={4}
                                     multiline
                                     fullWidth
