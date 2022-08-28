@@ -13,8 +13,8 @@ const LeftMessage = (props) => {
         <Box sx={{ mr: 'auto', my: 1, display: 'flex', flexDirection: 'column',  backgroundColor: '#fff', width: '50%', borderRadius: 5, p: 2, color: 'black'}}>
             <Typography sx={{ mr: 'auto' }}>{props.message}</Typography>
             {props.attachment !== null && 
-                <IconButton>
-                    <Download sx={{ fontSize: '12px' }} />
+                <IconButton component="a" target="_blank" href={props.attachment}>
+                    <Download sx={{ fontSize: '20px' }} />
                 </IconButton>
             }
             <Typography sx={{ ml: 'auto', fontSize: '12px' }}>{moment(props.tanggal).fromNow()}</Typography>
@@ -26,7 +26,9 @@ const RightMessage = (props) => {
         <Box sx={{ ml: 'auto', my: 1, display: 'flex', flexDirection: 'column',  backgroundColor: '#7aff7a', width: '50%', borderRadius: 5, p: 2, color: 'black' }}>
             <Typography sx={{ mr: 'auto' }}>{props.message}</Typography>
             {props.attachment !== null && 
-                <Download sx={{ fontSize: '20px', mt: 2, cursor: 'pointer' }} />
+                <IconButton component="a" target="_blank" href={props.attachment}>
+                    <Download sx={{ fontSize: '20px', mt: 2, cursor: 'pointer' }} />
+                </IconButton>
             }
             <Typography sx={{ ml: 'auto', fontSize: '12px' }}>{moment(props.tanggal).fromNow()}</Typography>
         </Box>
@@ -127,11 +129,12 @@ const Index = (props) => {
                                         label="Created At"
                                     />
                                 </Grid>
-                                <Grid item xs={12} md={12}> 
+                                {props.data.file !== null &&  
+                                <Grid item xs={12} md={12}>
                                     <TextField
                                         variant="outlined"
                                         label="Supporting Document *"
-                                        value={props.data.file}
+                                        value={props.data.file.split('/').pop()}
                                         disabled
                                         InputProps={{
                                             startAdornment: (
@@ -139,11 +142,17 @@ const Index = (props) => {
                                                     <InsertDriveFile />
                                                 </InputAdornment>
                                             ),
+                                            endAdornment: (
+                                                <InputAdornment component="a" href={props.data.file} target="_blank"  position="end">
+                                                    <Download />
+                                                </InputAdornment>
+                                            )
                                             
                                         }}
                                         fullWidth
                                     />
                                 </Grid>
+                                }
                                 <Grid item xs={12} md={12}> 
                                     <TextField 
                                         value={props.data.purpose}
