@@ -67,6 +67,7 @@ import { authentication } from "../../../store/Authentication";
 import { Permission } from "../../../component/Permission";
 import { NumberFormat } from "../../../component/Format";
 import { exportTableToExcel } from "../../../help/ExportToExcel";
+import { ImportModal } from "../../../component/ImportModal";
 
 const ModalFilter = (props) => {
    const [loading, setLoading] = useState(false);
@@ -680,107 +681,6 @@ const ModalFilter = (props) => {
    );
 };
 
-const ModalImport = (props) => {
-   const [document, setDocument] = useState({
-      file: "",
-      file_url: "",
-   });
-   const [loading, setLoading] = useState(false);
-
-   const submitData = async () => {
-      const formData = new FormData();
-      formData.append("file", document.file);
-      const res = http.post(`asset/import_excel`, formData);
-   };
-
-   const onSubmit = () => {
-      setLoading(true);
-      submitData()
-         .then((res) => {
-            props.getData();
-            props.handleClose();
-         })
-         .catch((err) => {})
-         .finally(() => {
-            setLoading(false);
-         });
-   };
-
-   return (
-      <Dialog
-         fullWidth
-         maxWidth="xs"
-         open={props.open}
-         onClose={props.handleClose}
-         aria-labelledby="alert-dialog-title"
-         aria-describedby="alert-dialog-description"
-      >
-         <DialogTitle>Import</DialogTitle>
-         <DialogContent>
-            {document.file_url !== "" ? (
-               <TextField
-                  sx={{ my: 3 }}
-                  variant="outlined"
-                  label="Supporting Document *"
-                  value={document.file_url}
-                  disabled
-                  InputProps={{
-                     startAdornment: (
-                        <InputAdornment position="start">
-                           <InsertDriveFile />
-                        </InputAdornment>
-                     ),
-                     endAdornment: (
-                        <InputAdornment position="end">
-                           <Tooltip title="Delete">
-                              <IconButton
-                                 onClick={() =>
-                                    setDocument({
-                                       file: "",
-                                       file_url: "",
-                                    })
-                                 }
-                              >
-                                 <Close />
-                              </IconButton>
-                           </Tooltip>
-                        </InputAdornment>
-                     ),
-                  }}
-                  fullWidth
-               />
-            ) : (
-               <Button size="large" variant="outlined" component="label" fullWidth startIcon={<FileUploadOutlined />}>
-                  Import Data Asset(.xlsx)
-                  <input
-                     name="document"
-                     type="file"
-                     onChange={(e) => {
-                        let file = e.target.files[0];
-                        let file_url = file.name;
-                        setDocument({
-                           file,
-                           file_url,
-                        });
-                     }}
-                     hidden
-                     required
-                  />
-               </Button>
-            )}
-         </DialogContent>
-         <DialogActions>
-            <Button variant="text" onClick={props.handleClose}>
-               Cancel
-            </Button>
-            <LoadingButton loading={loading} variant="text" color="success" onClick={onSubmit} autoFocus>
-               Submit
-            </LoadingButton>
-         </DialogActions>
-      </Dialog>
-   );
-};
-
 const RowComponent = (props) => {
    const [open, setOpen] = React.useState(false);
    
@@ -954,6 +854,7 @@ const TableExport = (props) => {
       </table>
    )
 }
+
 const Index = () => {
    const { user } = useRecoilValue(authentication);
 
@@ -1351,7 +1252,8 @@ const Index = () => {
                      {/* utils */}
                      <ModalDelete open={openModal} delete={onDelete} handleClose={handleModal} />
                      <ModalFilter open={modalFilter} params={params} setParams={setParams} handleClose={handleModalFilter} />
-                     <ModalImport open={openImport} handleClose={handleCloseImport} getData={getData} />
+                     {/* <ModalImport open={openImport} handleClose={handleCloseImport} getData={getData} /> */}
+                     <ImportModal buttonTitle={"Import Asset (.xlsx)"} getData={getData} handleClose={handleCloseImport} open={openImport} url={"asset/import_excel"} />
 
                      {/* menu */}
                      <Menu

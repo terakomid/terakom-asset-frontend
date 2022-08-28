@@ -111,11 +111,12 @@ const SuccessModal = (props) => {
             <Button variant="text" onClick={props.handleClose}>
                Cancel
             </Button>
-            <Box component="form" onSubmit={() => props.onSubmit()}>
-               <LoadingButton loading={props.loading} type="submit" variant="text" color="success">
-                  {props.title}
-               </LoadingButton>
-            </Box>
+            {/* <Box component="form" onSubmit={() => props.onSubmit()}>
+               
+            </Box> */}
+            <LoadingButton loading={props.loading} onClick={props.onSubmit}  variant="text" color="success">
+               {props.title}
+            </LoadingButton>
          </DialogActions>
       </Dialog>
    );
@@ -2008,10 +2009,9 @@ const Form = (props) => {
                                                    { v.file_url !== "undefined" && (
                                                       <Typography>{v.file_name}</Typography>
                                                    )}
-                                                   {typeof errors[`evidence.${i}.file`] !== "undefined" && (
+                                                   {errors !== undefined && typeof errors[`evidence.${i}.file`] !== "undefined" && (
                                                       <Typography sx={{ color: 'red' }}>Evidence/Image Required</Typography>
                                                    )}
-                                                   
                                                 </Box>
                                                 <input
                                                    type="file"
