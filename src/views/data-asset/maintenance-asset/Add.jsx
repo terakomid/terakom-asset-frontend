@@ -532,8 +532,8 @@ export default function AddMaintenanceAsset() {
                                        }}
                                     >
                                        <TableCell align="center">No.</TableCell>
-                                       <TableCell>Asset Name</TableCell>
                                        <TableCell>Asset Code</TableCell>
+                                       <TableCell>Asset Name</TableCell>
                                        <TableCell>Department</TableCell>
                                        <TableCell>Reason For Repair</TableCell>
                                        <TableCell align="center">Action</TableCell>
@@ -546,8 +546,8 @@ export default function AddMaintenanceAsset() {
                                              <TableCell component="th" scope="row" align="center">
                                                 {key + 1}.
                                              </TableCell>
-                                             <TableCell>{value.master_asset.asset_name}</TableCell>
                                              <TableCell>{value.master_asset.asset_code}</TableCell>
+                                             <TableCell>{value.master_asset.asset_name}</TableCell>
                                              <TableCell>{value.master_asset.department.dept}</TableCell>
                                              <TableCell>{value.reason}</TableCell>
                                              <TableCell align="center">
