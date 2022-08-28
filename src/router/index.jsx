@@ -61,6 +61,7 @@ import StockOpname from "../views/data-asset/stock-opname";
 import AcceptanceAsset from "../views/data-asset/acceptance-asset";
 import AddAcceptanceAsset from "../views/data-asset/acceptance-asset/Add";
 import EditAcceptanceAsset from "../views/data-asset/acceptance-asset/Edit";
+import DetailAcceptanceAsset from "../views/data-asset/acceptance-asset/Detail";
 
 //Qr Tagging
 import QrTagging from "../views/qr-tagging";
@@ -70,7 +71,7 @@ import DisposalAsset from "../views/disposal-asset";
 import AddDisposalAsset from "../views/disposal-asset/Add";
 import EditDisposalAsset from "../views/disposal-asset/Edit";
 import HistoryDisposal from "../views/disposal-asset/history-disposal";
-import DetailDisposal from '../views/disposal-asset/history-disposal/Detail'
+import DetailDisposal from "../views/disposal-asset/history-disposal/Detail";
 
 // Activity Log
 import ActivityLog from "../views/activity-log";
@@ -428,6 +429,14 @@ export default function Router() {
                element={
                   <Middleware.After>
                      <Layout render={<EditAcceptanceAsset />} />
+                  </Middleware.After>
+               }
+            />
+            <Route
+               path="/acceptance-asset/detail/:id"
+               element={
+                  <Middleware.After>
+                     <Layout render={<DetailAcceptanceAsset />} />
                   </Middleware.After>
                }
             />
