@@ -20,7 +20,7 @@ import {
    ListItemIcon,
    Chip,
 } from "@mui/material";
-import { AddRounded, Check, Close, CloseRounded, Delete, Edit, FilterListRounded, MoreVert, Search } from "@mui/icons-material";
+import { AddRounded, Check, Close, CloseRounded, Delete, Edit, FilterListRounded, InfoOutlined, MoreVert, Search } from "@mui/icons-material";
 import { Link as RouterLink } from "react-router-dom";
 
 import http from "../../../component/api/Api";
@@ -121,16 +121,13 @@ export default function AcceptanceAsset() {
 
    const handleUpdateStatus = async (status) => {
       try {
-         const res = await http.patch(`asset_acceptance/${staging.id}/update_status?status=${status}`, {})
-
-         getData()
-         handleMenu()
-         
+         const res = await http.patch(`asset_acceptance/${staging.id}/update_status?status=${status}`, {});
+         getData();
+         handleMenu();
       } catch (error) {
-         console.log(error.response)
+         // console.log(error.response);
       }
-      
-   }
+   };
 
    return (
       <div className="main-content mb-5">
@@ -190,13 +187,16 @@ export default function AcceptanceAsset() {
                                  }}
                               >
                                  <TableCell align="center">No.</TableCell>
-                                 <TableCell>Invoce Number</TableCell>
-                                 <TableCell>Vendor Name</TableCell>
-                                 <TableCell>Location</TableCell>
+                                 <TableCell>Asset Code</TableCell>
+                                 <TableCell>Asset Name</TableCell>
+                                 <TableCell>PIC</TableCell>
                                  <TableCell>Department</TableCell>
+                                 <TableCell>Location</TableCell>
                                  <TableCell>Date</TableCell>
                                  <TableCell>Status</TableCell>
-                                 {Permission(user.permission, "update status asset acceptance") || Permission(user.permission, "update asset acceptance") || Permission(user.permission, "delete asset acceptance") ? (
+                                 {Permission(user.permission, "update status asset acceptance") ||
+                                 Permission(user.permission, "update asset acceptance") ||
+                                 Permission(user.permission, "delete asset acceptance") ? (
                                     <TableCell align="center">Action</TableCell>
                                  ) : null}
                               </TableRow>
@@ -209,10 +209,13 @@ export default function AcceptanceAsset() {
                                           <TableCell component="th" scope="row" align="center">
                                              {index + 1}.
                                           </TableCell>
-                                          <TableCell>{value.po_number}</TableCell>
-                                          <TableCell>{value.asset.veendor}</TableCell>
-                                          <TableCell>{value.asset.location}</TableCell>
+                                          <TableCell>{value.asset.asset_code}</TableCell>
+                                          <TableCell>{value.asset.asset_name}</TableCell>
+                                          <TableCell>
+                                             {value.asset.employee.code} - {value.asset.employee.name}
+                                          </TableCell>
                                           <TableCell>{value.asset.dept}</TableCell>
+                                          <TableCell>{value.asset.location}</TableCell>
                                           <TableCell>{moment(value.date).format("LL")}</TableCell>
                                           <TableCell>
                                              <Chip
@@ -222,7 +225,9 @@ export default function AcceptanceAsset() {
                                                 label={value.status === "received" ? "Received" : "Not Received"}
                                              />
                                           </TableCell>
-                                          {Permission(user.permission, "update status asset acceptance") || Permission(user.permission, "update asset acceptance") || Permission(user.permission, "delete asset acceptance") ? (
+                                          {Permission(user.permission, "update status asset acceptance") ||
+                                          Permission(user.permission, "update asset acceptance") ||
+                                          Permission(user.permission, "delete asset acceptance") ? (
                                              <TableCell align="center">
                                                 <IconButton onClick={(e) => handleAction(e, value)}>
                                                    <MoreVert />
@@ -263,12 +268,16 @@ export default function AcceptanceAsset() {
                            onPageChange={handleChangePage}
                            onRowsPerPageChange={handleChangeRowsPerPage}
                            rowsPerPageOptions={[10, 25, 50]}
+                           showFirstButton
+                           showLastButton
                         />
                      )}
                   </CardContent>
                </Card>
                <ModalDelete open={openModal} delete={onDelete} handleClose={handleModal} />
-               {Permission(user.permission, "update status asset acceptance") || Permission(user.permission, "update asset acceptance") || Permission(user.permission, "delete asset acceptance") ? (
+               {Permission(user.permission, "update status asset acceptance") ||
+               Permission(user.permission, "update asset acceptance") ||
+               Permission(user.permission, "delete asset acceptance") ? (
                   <Menu
                      anchorEl={anchorEl}
                      open={open}
@@ -276,7 +285,13 @@ export default function AcceptanceAsset() {
                      transformOrigin={{ horizontal: "right", vertical: "top" }}
                      anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
                   >
-                     {Permission(user.permission, "update asset acceptance") && (
+                     <MenuItem component={RouterLink} to={`/acceptance-asset/detail/${staging?.id}`}>
+                        <ListItemIcon>
+                           <InfoOutlined />
+                        </ListItemIcon>
+                        Detail
+                     </MenuItem>
+                     {staging?.status === "not_received" && Permission(user.permission, "update asset acceptance") && (
                         <MenuItem component={RouterLink} to={`/acceptance-asset/edit/${staging?.id}`}>
                            <ListItemIcon>
                               <Edit />
@@ -284,7 +299,7 @@ export default function AcceptanceAsset() {
                            Edit
                         </MenuItem>
                      )}
-                     {Permission(user.permission, "delete asset acceptance") && (
+                     {staging?.status === "not_received" && Permission(user.permission, "delete asset acceptance") && (
                         <MenuItem onClick={handleModal}>
                            <ListItemIcon>
                               <Delete />
@@ -292,20 +307,12 @@ export default function AcceptanceAsset() {
                            Delete
                         </MenuItem>
                      )}
-                     {Permission(user.permission, "update status asset acceptance") && (
-                        <MenuItem onClick={() => handleUpdateStatus('received')}>
+                     {staging?.status === "not_received" && Permission(user.permission, "update status asset acceptance") && (
+                        <MenuItem onClick={() => handleUpdateStatus("received")}>
                            <ListItemIcon>
                               <Check />
                            </ListItemIcon>
                            Receive
-                        </MenuItem>
-                     )}
-                     {Permission(user.permission, "update status asset acceptance") && (
-                        <MenuItem onClick={() => handleUpdateStatus('not_received')}>
-                           <ListItemIcon>
-                              <Close />
-                           </ListItemIcon>
-                           Not Receive
                         </MenuItem>
                      )}
                   </Menu>
