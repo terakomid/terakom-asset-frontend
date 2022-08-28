@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import {
    Box,
    Card,
@@ -18,6 +18,7 @@ import {
    IconButton,
    InputAdornment,
    Tooltip,
+   Autocomplete,
 } from "@mui/material";
 import { Close, Delete, Edit, FileUploadOutlined, InsertDriveFile } from "@mui/icons-material";
 import { LoadingButton } from "@mui/lab";
@@ -33,37 +34,53 @@ import { useSnackbar } from "notistack";
 
 export default function AddMutationAsset() {
    const { user } = useRecoilValue(authentication);
+   const { enqueueSnackbar } = useSnackbar();
    const navigate = useNavigate();
 
-   const { enqueueSnackbar } = useSnackbar()
+   const [complete, setComplete] = useState(false);
+   const handleComplete = () => {
+      setComplete(!complete);
+   };
 
    const [rows, setRows] = useState([]);
    const [data, setData] = useState();
 
+   const [params, setParams] = useState({
+      users: {
+         search: "",
+         order_by_name: 0,
+         limit: 5,
+         page: 1,
+         paginate: 1,
+      },
+      receive: {
+         search: "",
+         order_by_name: 0,
+         limit: 5,
+         page: 1,
+         paginate: 1,
+      },
+   });
+
    const [users, setUsers] = useState();
    const getUsers = async () => {
-      http
-         .get(`user`)
-         .then((res) => {
-            // console.log(res.data.data);
-            setUsers(res.data.data);
-         })
-         .catch((err) => {
-            // console.log(err.response);
-         });
+      const res = await http.get(`user`, { params: params.users });
+      setUsers(res.data.data.data);
+      return 1;
+   };
+
+   const [receive, setReceive] = useState();
+   const getReceive = async () => {
+      const res = await http.get(`user`, { params: params.receive });
+      setReceive(res.data.data.data);
+      return 1;
    };
 
    const [location, setLocation] = useState();
    const getLocation = async () => {
-      http
-         .get(`location`)
-         .then((res) => {
-            // console.log(res.data.data);
-            setLocation(res.data.data);
-         })
-         .catch((err) => {
-            // console.log(err.response);
-         });
+      const res = await http.get(`location`);
+      setLocation(res.data.data);
+      return 1;
    };
 
    const getAsset = async (employee) => {
@@ -87,15 +104,38 @@ export default function AddMutationAsset() {
    useEffect(() => {
       if (Permission(user.permission, "create asset mutation")) {
          window.scrollTo(0, 0);
-         getUsers();
-         getLocation();
-         handleReset();
+         let mounted = true;
+         if (mounted) {
+            Promise.all([getUsers(), getReceive(), getLocation()]).then((res) => {
+               handleReset();
+               handleComplete();
+            });
+         }
       } else {
          navigate("/history-asset/mutation-asset");
       }
    }, []);
 
+   useEffect(() => {
+      setUsers([]);
+      let timer = setTimeout(() => {
+         if (params) getUsers();
+      }, 500);
+      return () => clearTimeout(timer);
+   }, [params]);
+
    const handleReset = (e) => {
+      setParams({
+         ...params,
+         users: {
+            ...params.users,
+            search: "",
+         },
+         receive: {
+            ...params.receive,
+            search: "",
+         },
+      });
       setData({
          pic: "",
          pic_dept: "",
@@ -114,10 +154,9 @@ export default function AddMutationAsset() {
 
    const handleStaging = (e) => {
       e.preventDefault();
-      console.log(data.document)
-      if(data.document === null){
-         enqueueSnackbar("Fill Supporting Document", { variant: 'error' })
-      }else{
+      if (data.document === null) {
+         enqueueSnackbar("Fill Supporting Document", { variant: "error" });
+      } else {
          let newState = rows.concat(data);
          setRows(newState);
          handleReset();
@@ -127,6 +166,17 @@ export default function AddMutationAsset() {
    const handleEdit = (value, key) => {
       setRows([...rows.slice(0, key), ...rows.slice(key + 1, rows.length)]);
       setData(value);
+      setParams({
+         ...params,
+         users: {
+            ...params.users,
+            search: `${value.pic.code} - ${value.pic.name}`,
+         },
+         receive: {
+            ...params.receive,
+            search: `${value.receive.code} - ${value.receive.name}`,
+         },
+      });
    };
 
    const handleDelete = (key) => {
@@ -198,8 +248,8 @@ export default function AddMutationAsset() {
                <div className="d-flex align-items-center justify-content-between my-2 mb-4" style={{ height: "36px" }}>
                   <h3 className="fw-bold mb-0">Add Mutation Asset</h3>
                </div>
-               {data !== undefined && users !== undefined && location !== undefined ? (
-                  <>
+               {complete ? (
+                  <Fragment>
                      <Card sx={{ mb: 3 }}>
                         <CardContent>
                            <Box component="form" onSubmit={handleStaging}>
@@ -210,45 +260,87 @@ export default function AddMutationAsset() {
                                     </Typography>
                                  </Grid>
                                  <Grid item xs={12} sm={6}>
-                                    <TextField
-                                       name="pic"
-                                       label="PIC Asset"
-                                       variant="outlined"
-                                       value={data.pic}
-                                       onChange={handleChange}
-                                       defaultValue=""
-                                       select
+                                    <Autocomplete
+                                       freeSolo
                                        fullWidth
-                                       required
-                                    >
-                                       {users.data.map((value, index) => (
-                                          <MenuItem value={value} key={index}>
-                                             {value.code} - {value.name}
-                                          </MenuItem>
-                                       ))}
-                                    </TextField>
+                                       disableClearable
+                                       options={users}
+                                       getOptionLabel={(option) => {
+                                          return `${option.code} - ${option.name}`;
+                                       }}
+                                       inputValue={params.users.search}
+                                       onInputChange={(event, newInputValue, reason) => {
+                                          setParams({
+                                             ...params,
+                                             users: {
+                                                ...params.users,
+                                                search: newInputValue,
+                                             },
+                                          });
+                                       }}
+                                       onChange={(e, value) => {
+                                          getAsset(value);
+                                       }}
+                                       renderInput={(params) => (
+                                          <TextField
+                                             {...params}
+                                             label="PIC Asset *"
+                                             InputProps={{
+                                                ...params.InputProps,
+                                                type: "search",
+                                             }}
+                                          />
+                                       )}
+                                    />
                                  </Grid>
                                  <Grid item xs={12} sm={6}>
                                     <TextField label="Department" variant="outlined" value={data.pic_dept} fullWidth disabled />
                                  </Grid>
                                  <Grid item xs={12} sm={6}>
-                                    <TextField
-                                       name="receive"
-                                       label="Receive Name"
-                                       variant="outlined"
-                                       value={data.receive}
-                                       onChange={handleChange}
-                                       defaultValue=""
-                                       select
+                                    <Autocomplete
+                                       freeSolo
                                        fullWidth
-                                       required
-                                    >
-                                       {users.data.map((value, index) => (
-                                          <MenuItem value={value} key={index} disabled={data.pic.id === value.id}>
-                                             {value.code} - {value.name}
-                                          </MenuItem>
-                                       ))}
-                                    </TextField>
+                                       disableClearable
+                                       options={receive}
+                                       getOptionLabel={(option) => {
+                                          return `${option.code} - ${option.name}`;
+                                       }}
+                                       inputValue={params.receive.search}
+                                       onInputChange={(event, newInputValue, reason) => {
+                                          setParams({
+                                             ...params,
+                                             receive: {
+                                                ...params.receive,
+                                                search: newInputValue,
+                                             },
+                                          });
+                                       }}
+                                       onChange={(e, value) => {
+                                          data.pic.id !== value.id
+                                             ? setData({
+                                                  ...data,
+                                                  receive: value,
+                                                  receive_dept: value.dept.dept,
+                                                  to_branch: value.location.id,
+                                               })
+                                             : setData({
+                                                  ...data,
+                                                  receive: "",
+                                                  receive_dept: "",
+                                                  to_branch: "",
+                                               });
+                                       }}
+                                       renderInput={(params) => (
+                                          <TextField
+                                             {...params}
+                                             label="Receive Name *"
+                                             InputProps={{
+                                                ...params.InputProps,
+                                                type: "search",
+                                             }}
+                                          />
+                                       )}
+                                    />
                                  </Grid>
                                  <Grid item xs={12} sm={6}>
                                     <TextField label="Department" variant="outlined" value={data.receive_dept} fullWidth disabled />
@@ -485,7 +577,7 @@ export default function AddMutationAsset() {
                            Back
                         </LoadingButton>
                      </Stack>
-                  </>
+                  </Fragment>
                ) : (
                   <Loading />
                )}
