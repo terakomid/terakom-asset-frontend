@@ -392,7 +392,7 @@ const Index = () => {
                               </ListItemIcon>
                               Detail
                            </MenuItem>
-                           {Permission(user.permission, "delete help") && (
+                           {Permission(user.permission, "delete help") && user.role !== "Employee" && (
                               <MenuItem onClick={handleModal}>
                                  <ListItemIcon>
                                     <Delete />
@@ -400,7 +400,7 @@ const Index = () => {
                                  Delete
                               </MenuItem>
                            )}
-                           {staging !== undefined && staging.status === "open" && (
+                           {staging !== undefined && staging.status === "open" && user.role !== "Employee" && (
                               <MenuItem onClick={handleClose}>
                                  <ListItemIcon>
                                     <Close />
