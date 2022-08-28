@@ -14,7 +14,8 @@ const LeftMessage = (props) => {
             <Typography sx={{ mr: 'auto' }}>{props.message}</Typography>
             {props.attachment !== null && 
                 <IconButton component="a" target="_blank" href={props.attachment}>
-                    <Download sx={{ fontSize: '20px' }} />
+                    <Typography sx={{ mx: 2, fontSize: '12px' }}>{props.attachment.split('/').pop()}</Typography> 
+                    <Download />
                 </IconButton>
             }
             <Typography sx={{ ml: 'auto', fontSize: '12px' }}>{moment(props.tanggal).fromNow()}</Typography>
@@ -27,7 +28,7 @@ const RightMessage = (props) => {
             <Typography sx={{ mr: 'auto' }}>{props.message}</Typography>
             {props.attachment !== null && 
                 <IconButton component="a" target="_blank" href={props.attachment}>
-                    <Download sx={{ fontSize: '20px', mt: 2, cursor: 'pointer' }} />
+                  {props.attachment.split('/').pop()}  <Download />
                 </IconButton>
             }
             <Typography sx={{ ml: 'auto', fontSize: '12px' }}>{moment(props.tanggal).fromNow()}</Typography>

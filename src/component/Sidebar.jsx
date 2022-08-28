@@ -133,7 +133,7 @@ export default function Sidebar() {
                            {Permission(user.permission, "get asset") && (
                               <li role="menuitem">
                                  <Link to="/data-asset" className="text-capitalize">
-                                    data asset
+                                    {user.role !== "Employee" ? "data asset" : "my asset"  }
                                  </Link>
                               </li>
                            )}
