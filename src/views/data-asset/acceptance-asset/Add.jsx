@@ -16,9 +16,10 @@ import {
    IconButton,
    Tooltip,
    Autocomplete,
-   Divider,
+   Button,
+   InputAdornment,
 } from "@mui/material";
-import { Delete, Edit } from "@mui/icons-material";
+import { Close, Delete, Edit, FileUploadOutlined, InsertDriveFile } from "@mui/icons-material";
 import { LoadingButton } from "@mui/lab";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
 
@@ -33,9 +34,11 @@ import Loading from "../../../component/Loading";
 import { useRecoilValue } from "recoil";
 import { authentication } from "../../../store/Authentication";
 import { Permission } from "../../../component/Permission";
+import { useSnackbar } from "notistack";
 
 export default function AddAcceptanceAsset() {
    const { user } = useRecoilValue(authentication);
+   const { enqueueSnackbar } = useSnackbar();
    const navigate = useNavigate();
 
    const [data, setData] = useState();
@@ -43,7 +46,7 @@ export default function AddAcceptanceAsset() {
    const [params, setParams] = useState({
       search: "",
       order_by_name: 0,
-      limit: 10,
+      limit: 5,
       page: 1,
       paginate: 1,
    });
@@ -73,42 +76,82 @@ export default function AddAcceptanceAsset() {
       }
    }, []);
 
+   useEffect(() => {
+      setAsset([]);
+      let timer = setTimeout(() => {
+         if (params) getAsset();
+      }, 500);
+      return () => clearTimeout(timer);
+   }, [params]);
+
    const handleReset = (e) => {
+      setParams({
+         ...params,
+         search: "",
+      });
       setData({
          asset_id: "",
          asset_name: "",
          master_asset: "",
-         location: "",
+         pic: "",
          department: "",
-         vendor: "",
+         location: "",
          po_number: "",
          date: null,
          type: "",
          remark: "",
+         document: [],
       });
    };
 
    const handleStaging = (e) => {
       e.preventDefault();
-      let newState = rows.concat(data);
-      setRows(newState);
-      handleReset();
+      if (data.document.length > 0) {
+         let newState = rows.concat(data);
+         setRows(newState);
+         handleReset();
+      } else {
+         enqueueSnackbar("Fill Supporting Document", { variant: "error" });
+      }
    };
 
    const handleEdit = (value, key) => {
       setRows([...rows.slice(0, key), ...rows.slice(key + 1, rows.length)]);
       setData(value);
+      setParams({
+         ...params,
+         search: `${value.asset_name}`,
+      });
    };
 
    const handleDelete = (key) => {
       setRows([...rows.slice(0, key), ...rows.slice(key + 1, rows.length)]);
    };
 
-   const handleChange = (e) => {
+   const handleFileDelete = (key) => {
+      let newState = data.document.filter((value, index) => index !== key);
       setData({
          ...data,
-         [e.target.name]: e.target.value,
+         document: newState,
       });
+   };
+
+   const handleChange = (e) => {
+      if (e.target.type === "file") {
+         if (e.target.files[0] !== undefined) {
+            let newState = data.document.concat(e.target.files[0]);
+            setData({
+               ...data,
+               document: newState,
+            });
+            e.target.value = null;
+         }
+      } else {
+         setData({
+            ...data,
+            [e.target.name]: e.target.value,
+         });
+      }
    };
 
    const [loading, setLoading] = useState(false);
@@ -122,6 +165,9 @@ export default function AddAcceptanceAsset() {
          formData.append(`asset_acceptance[${index}][date]`, moment(value.date).format("yyyy/MM/DD"));
          formData.append(`asset_acceptance[${index}][type]`, value.type);
          formData.append(`asset_acceptance[${index}][remark]`, value.remark);
+         value.document.map((row, key) => {
+            formData.append(`asset_acceptance[${index}][document][${key}]`, row);
+         });
       });
       // console.log(Object.fromEntries(formData));
       http
@@ -155,12 +201,14 @@ export default function AddAcceptanceAsset() {
                                        fullWidth
                                        disableClearable
                                        options={asset}
-                                       getOptionLabel={(option) => option.asset_name}
+                                       getOptionLabel={(option) => {
+                                          return `${option.asset_code} - ${option.asset_name}`;
+                                       }}
                                        inputValue={params.search}
                                        onInputChange={(event, newInputValue, reason) => {
                                           setParams({
                                              ...params,
-                                             search: reason === "reset" ? "" : newInputValue,
+                                             search: newInputValue,
                                           });
                                        }}
                                        onChange={(e, value) => {
@@ -171,8 +219,9 @@ export default function AddAcceptanceAsset() {
                                                   asset_id: value.id,
                                                   asset_name: `${value.asset_code} - ${value.asset_name}`,
                                                   master_asset: value,
-                                                  location: `${value.location.code} - ${value.location.location}`,
+                                                  pic: `${value.employee.id} - ${value.employee.name}`,
                                                   department: value.department.dept,
+                                                  location: `${value.location.code} - ${value.location.location}`,
                                                   vendor: `${value.vendor.code} - ${value.vendor.name}`,
                                                })
                                              : handleReset();
@@ -188,19 +237,15 @@ export default function AddAcceptanceAsset() {
                                           />
                                        )}
                                     />
-                                    <Divider sx={{ mt: 3, mb: 1 }} />
-                                 </Grid>
-                                 <Grid item xs={12}>
-                                    <TextField label="Asset" variant="outlined" value={data.asset_name} fullWidth disabled />
                                  </Grid>
                                  <Grid item xs={12} sm={6} md={4}>
-                                    <TextField label="Location" variant="outlined" value={data.location} fullWidth disabled />
+                                    <TextField label="PIC" variant="outlined" value={data.pic} fullWidth disabled />
                                  </Grid>
                                  <Grid item xs={12} sm={6} md={4}>
                                     <TextField label="Department" variant="outlined" value={data.department} fullWidth disabled />
                                  </Grid>
                                  <Grid item xs={12} sm={6} md={4}>
-                                    <TextField label="Vendor Name" variant="outlined" value={data.vendor} fullWidth disabled />
+                                    <TextField label="Location" variant="outlined" value={data.location} fullWidth disabled />
                                  </Grid>
                                  <Grid item xs={12}>
                                     <TextField
@@ -250,6 +295,41 @@ export default function AddAcceptanceAsset() {
                                  <Grid item xs={12}>
                                     <TextField name="remark" label="Remark" variant="outlined" value={data.remark} onChange={handleChange} fullWidth required />
                                  </Grid>
+                                 <Grid item xs={12} sm={6}>
+                                    {data.document.length > 0 &&
+                                       data.document.map((value, index) => (
+                                          <TextField
+                                             key={index}
+                                             variant="outlined"
+                                             label="Supporting Document *"
+                                             value={value.name}
+                                             sx={{ mb: 2 }}
+                                             InputProps={{
+                                                startAdornment: (
+                                                   <InputAdornment position="start">
+                                                      <InsertDriveFile />
+                                                   </InputAdornment>
+                                                ),
+                                                endAdornment: (
+                                                   <InputAdornment position="end">
+                                                      <Tooltip title="Delete">
+                                                         <IconButton onClick={() => handleFileDelete(index)}>
+                                                            <Close />
+                                                         </IconButton>
+                                                      </Tooltip>
+                                                   </InputAdornment>
+                                                ),
+                                             }}
+                                             fullWidth
+                                             disabled
+                                          />
+                                       ))}
+                                    <Button size="large" variant="outlined" component="label" fullWidth startIcon={<FileUploadOutlined />}>
+                                       Add Supporting Document *
+                                       <input name="document" type="file" onChange={handleChange} hidden />
+                                    </Button>
+                                 </Grid>
+                                 <Grid item xs={6} />
                                  <Grid item xs={12}>
                                     <Stack direction="row" justifyContent="flex-end" spacing={1}>
                                        <LoadingButton type="submit" variant="contained">
@@ -273,8 +353,11 @@ export default function AddAcceptanceAsset() {
                                        }}
                                     >
                                        <TableCell align="center">No.</TableCell>
-                                       <TableCell>Asset Name</TableCell>
                                        <TableCell>Asset Code</TableCell>
+                                       <TableCell>Asset Name</TableCell>
+                                       <TableCell>PIC</TableCell>
+                                       <TableCell>Department</TableCell>
+                                       <TableCell>Location</TableCell>
                                        <TableCell>Spesification</TableCell>
                                        <TableCell>Condition</TableCell>
                                        <TableCell>Purchase/Rent</TableCell>
@@ -288,8 +371,11 @@ export default function AddAcceptanceAsset() {
                                              <TableCell component="th" scope="row" align="center">
                                                 {key + 1}.
                                              </TableCell>
-                                             <TableCell>{value.master_asset.asset_name}</TableCell>
                                              <TableCell>{value.master_asset.asset_code}</TableCell>
+                                             <TableCell>{value.master_asset.asset_name}</TableCell>
+                                             <TableCell>{value.pic}</TableCell>
+                                             <TableCell>{value.department}</TableCell>
+                                             <TableCell>{value.location}</TableCell>
                                              <TableCell>{value.master_asset.specification}</TableCell>
                                              <TableCell>{value.master_asset.condition.condition}</TableCell>
                                              <TableCell>{value.type === "purchase" ? "Purchase" : "Rent"}</TableCell>
