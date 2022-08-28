@@ -30,6 +30,7 @@ import moment from "moment";
 import { useRecoilValue } from "recoil";
 import { authentication } from "../../../store/Authentication";
 import { Permission } from "../../../component/Permission";
+import { NumberFormat } from "../../../component/Format";
 
 export default function MaintenanceAsset() {
    const { user } = useRecoilValue(authentication);
@@ -198,7 +199,7 @@ export default function MaintenanceAsset() {
                                           </TableCell>
                                           <TableCell>{value.pic.department}</TableCell>
                                           <TableCell>{moment(value.applicant_date).format("LL")}</TableCell>
-                                          <TableCell></TableCell>
+                                          <TableCell>{NumberFormat(value.final_cost, "Rp")}</TableCell>
                                           <TableCell>{moment(value.request_time_finish).format("LL")}</TableCell>
                                           {Permission(user.permission, "update asset maintenance") ||
                                           Permission(user.permission, "delete asset maintenance") ? (
