@@ -15,15 +15,22 @@ export default function Header() {
    const [notification, setNotification] = useState([]);
    const getNotification = async () => {
       await http.get(`notification`).then((res) => {
-         // console.log(res.data.data);
+         console.log(res.data.data);
          setNotification(res.data.data);
       });
    };
 
-   const readNotification = async (id) => {
-      await http.delete(`notification/${id}`).then((res) => {
+   const readNotification = async (value) => {
+      let category = value.type.split("\\").pop();
+      await http.delete(`notification/${value.id}`).then((res) => {
          // console.log(res.data.data);
-         navigate(`/acceptance-asset`);
+         if (category === "AddNewAsset") {
+            value.data.asset.asset_type === "it"
+               ? navigate(`/detail-data-asset-it/${value.data.asset.id}`)
+               : navigate(`/detail-data-asset-non-it/${value.data.asset.id}`);
+         } else if (category === "AddNewAssetAcceptance") {
+            navigate(`/acceptance-asset`);
+         }
          getNotification();
       });
    };
@@ -59,6 +66,29 @@ export default function Header() {
          });
          localStorage.clear();
       });
+   };
+
+   const viewNotification = (value) => {
+      let category = value.type.split("\\").pop();
+      if (category === "AddNewAsset") {
+         return (
+            <div className="flex-grow-1">
+               <h6 className="mb-1">{value.data.from.name} - Add New Asset</h6>
+               <div className="text-muted">
+                  {value.data.asset.asset_code} - {value.data.asset.asset_name}
+               </div>
+            </div>
+         );
+      } else if (category === "AddNewAssetAcceptance") {
+         return (
+            <div className="flex-grow-1">
+               <h6 className="mb-1">{value.data.from.name} - Add New Acceptance Asset</h6>
+               <div className="text-muted">
+                  {value.data.asset_acceptance.asset_code} - {value.data.asset_acceptance.asset_name}
+               </div>
+            </div>
+         );
+      }
    };
 
    function tToggle() {
@@ -136,7 +166,7 @@ export default function Header() {
                      <div>
                         {notification.length > 0 ? (
                            notification.map((value, index) => (
-                              <a href="#" className="text-reset notification-item" key={index} onClick={() => readNotification(value.id)}>
+                              <a href="#" className="text-reset notification-item" key={index} onClick={() => readNotification(value)}>
                                  <div className="d-flex">
                                     <div className="flex-shrink-0 me-3">
                                        <div className="avatar-xs">
@@ -145,18 +175,7 @@ export default function Header() {
                                           </span>
                                        </div>
                                     </div>
-                                    <div className="flex-grow-1">
-                                       <h6 className="mb-1">Acceptance Asset</h6>
-                                       <div className="text-muted">
-                                          <p>#{value.data.asset_acceptance.po_number}</p>
-                                          <p>
-                                             Asset: {value.data.asset_acceptance.asset.asset_code} - {value.data.asset_acceptance.asset.asset_name}
-                                          </p>
-                                          <p>Vendor: {value.data.asset_acceptance.asset.veendor}</p>
-                                          <p>Location: {value.data.asset_acceptance.asset.location}</p>
-                                          <p>Department: {value.data.asset_acceptance.asset.dept}</p>
-                                       </div>
-                                    </div>
+                                    {viewNotification(value)}
                                  </div>
                               </a>
                            ))
