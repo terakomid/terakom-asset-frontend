@@ -207,11 +207,11 @@ export default function HistoryAsset() {
                               fullWidth
                            />
                         </Grid>
-                        <Grid item>
+                        {/* <Grid item>
                            <Button variant="link" startIcon={<FilterListRounded />}>
                               Filter
                            </Button>
-                        </Grid>
+                        </Grid> */}
                      </Grid>
                      <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 3 }}>
                         <Stack direction="row" spacing={1}>

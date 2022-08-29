@@ -22,8 +22,9 @@ import {
    DialogTitle,
    DialogContent,
    DialogActions,
+   Chip,
 } from "@mui/material";
-import { AddRounded, CloseRounded, Delete, Edit, FilterListRounded, MoreVert, Search, TableBar } from "@mui/icons-material";
+import { AddRounded, Check, CloseRounded, Delete, Download, Edit, FilterListRounded, InfoOutlined, MoreVert, Search, TableBar } from "@mui/icons-material";
 import { Link as RouterLink } from "react-router-dom";
 
 import http from "../../../component/api/Api";
@@ -52,7 +53,6 @@ export default function MaintenanceAsset() {
             params: params,
          })
          .then((res) => {
-            // console.log(res.data.data);
             setData(res.data.data);
          })
          .catch((err) => {
@@ -131,6 +131,12 @@ export default function MaintenanceAsset() {
       setDialog(!dialog);
    };
 
+   const handleCheck = async () => {
+      const res = await http.patch(`asset_maintenance/${staging.id}/update_status?status=complete`, {} )
+      getData()
+      handleMenu();
+   }
+
    return (
       <div className="main-content mb-5">
          <div className="page-content">
@@ -173,11 +179,11 @@ export default function MaintenanceAsset() {
                               fullWidth
                            />
                         </Grid>
-                        <Grid item>
+                        {/* <Grid item>
                            <Button variant="link" startIcon={<FilterListRounded />}>
                               Filter
                            </Button>
-                        </Grid>
+                        </Grid> */}
                      </Grid>
                      <TableContainer>
                         <Table sx={{ minWidth: 650, mt: 2 }} aria-label="simple table">
@@ -195,6 +201,7 @@ export default function MaintenanceAsset() {
                                  <TableCell>Final Cost</TableCell>
                                  <TableCell>Request Time To Finish</TableCell>
                                  <TableCell>Detail Asset</TableCell>
+                                 <TableCell>Status</TableCell>
                                  {Permission(user.permission, "update asset maintenance") || Permission(user.permission, "delete asset maintenance") ? (
                                     <TableCell align="center">Action</TableCell>
                                  ) : null}
@@ -217,6 +224,10 @@ export default function MaintenanceAsset() {
                                           <TableCell>{moment(value.request_time_finish).format("LL")}</TableCell>
                                           <TableCell align="center">
                                              <Button onClick={(e) => handleAsset(e, value)}>Detail</Button>
+                                          </TableCell>
+                                          <TableCell>
+                                             {value.status === "process" && <Chip label="Process" color="warning" />}
+                                             {value.status === "complete" && <Chip label="Complete" color="success" />}
                                           </TableCell>
                                           {Permission(user.permission, "update asset maintenance") ||
                                           Permission(user.permission, "delete asset maintenance") ? (
@@ -275,15 +286,15 @@ export default function MaintenanceAsset() {
                      transformOrigin={{ horizontal: "right", vertical: "top" }}
                      anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
                   >
-                     {Permission(user.permission, "update asset maintenance") && (
+                     {Permission(user.permission, "update asset maintenance") && staging !== undefined && (
                         <MenuItem component={RouterLink} to={`/history-asset/maintenance-asset/edit/${staging?.id}`}>
                            <ListItemIcon>
-                              <Edit />
+                              {staging.status === "complete" ? <InfoOutlined /> : <Edit />}
                            </ListItemIcon>
-                           Edit
+                           {staging.status === "complete" ? "Detail" : "Edit"}
                         </MenuItem>
                      )}
-                     {Permission(user.permission, "delete asset maintenance") && (
+                     {Permission(user.permission, "delete asset maintenance") && staging !== undefined && staging.status !== "complete" && (
                         <MenuItem onClick={handleModal}>
                            <ListItemIcon>
                               <Delete />
@@ -291,6 +302,22 @@ export default function MaintenanceAsset() {
                            Delete
                         </MenuItem>
                      )}
+                     {staging !== undefined && staging.document !== null && 
+                     <MenuItem component="a" href={staging.document} target="_blank" >
+                        <ListItemIcon>
+                           <Download />
+                        </ListItemIcon>
+                        Download Support Document
+                     </MenuItem>
+                     }
+                     {staging !== undefined && staging.status !== "complete" &&
+                     <MenuItem onClick={handleCheck}>
+                        <ListItemIcon>
+                           <Check />
+                        </ListItemIcon>
+                        Complete
+                     </MenuItem>
+                     }
                   </Menu>
                ) : null}
                <Dialog fullWidth maxWidth="md" open={dialog} onClose={handleDialog}>

@@ -93,6 +93,7 @@ export default function EditMaintenanceAsset() {
                asset_dept: "",
                reason: "",
                document: { name: value.document.split("/").pop() },
+               status: value.status
             });
 
             let newState = [];
@@ -648,9 +649,11 @@ export default function EditMaintenanceAsset() {
                         </CardContent>
                      </Card>
                      <Stack direction="row" spacing={1} sx={{ mt: 3 }}>
+                        {data.status !== "complete" &&
                         <LoadingButton type="submit" disabled={rows.length < 1} loading={loading} onClick={handleSubmit} variant="contained">
                            Save
                         </LoadingButton>
+                        }
                         <LoadingButton variant="outlined" component={RouterLink} to="/history-asset/maintenance-asset">
                            Back
                         </LoadingButton>

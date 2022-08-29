@@ -19,7 +19,7 @@ import {
    MenuItem,
    ListItemIcon,
 } from "@mui/material";
-import { AddRounded, CloseRounded, Delete, Edit, FilterListRounded, MoreVert, Search } from "@mui/icons-material";
+import { AddRounded, CloseRounded, Delete, Download, Edit, FilterListRounded, MoreVert, Search } from "@mui/icons-material";
 import { Link as RouterLink } from "react-router-dom";
 
 import http from "../../../component/api/Api";
@@ -159,11 +159,11 @@ export default function MutationAsset() {
                               fullWidth
                            />
                         </Grid>
-                        <Grid item>
+                        {/* <Grid item>
                            <Button variant="link" startIcon={<FilterListRounded />}>
                               Filter
                            </Button>
-                        </Grid>
+                        </Grid> */}
                      </Grid>
                      <TableContainer>
                         <Table sx={{ minWidth: 650, mt: 2 }} aria-label="simple table">
@@ -270,6 +270,14 @@ export default function MutationAsset() {
                            Edit
                         </MenuItem>
                      )}
+                     {staging !== undefined && staging.document !== null && 
+                     <MenuItem component="a" href={staging.document} target="_blank" >
+                        <ListItemIcon>
+                           <Download />
+                        </ListItemIcon>
+                        Download Support Document
+                     </MenuItem>
+                     }
                      {/* {Permission(user.permission, "delete asset mutation") && (
                         <MenuItem onClick={handleModal}>
                            <ListItemIcon>
