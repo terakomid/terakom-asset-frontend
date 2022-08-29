@@ -308,7 +308,7 @@ export default function Print() {
                <div className="d-flex align-items-center justify-content-between mt-2 mb-4">
                   <h3 className="fw-bold mb-0">Print Label</h3>
                   <Stack direction="row" spacing={1}>
-                     <Button variant="contained" disabled={staging.asset.length < 1 && print === false} onClick={handlePrint} startIcon={<Download />}>
+                     <Button variant="contained" disabled={staging.asset.length < 1} onClick={handlePrint} startIcon={<Download />}>
                         Download Label
                      </Button>
                   </Stack>
