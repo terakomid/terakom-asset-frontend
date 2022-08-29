@@ -34,12 +34,15 @@ import moment from "moment";
 import { DatePicker } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import HTMLtoDOCX from "html-to-docx";
+import { saveAs } from "file-saver";
 
 import http from "../../../component/api/Api";
 import Loading from "../../../component/Loading";
 import { NumberFormat } from "../../../component/Format";
-import { FilterListRounded } from "@mui/icons-material";
-import { LabelTable } from "../../../component/LabelTable";
+import { Download, FilterListRounded } from "@mui/icons-material";
+import QRCode from "react-qr-code";
+import { ConvertLabel } from "../../../help/LabelHelp";
 
 export default function Print() {
    const [rows, setRows] = useState({
@@ -188,10 +191,94 @@ export default function Print() {
       }
    };
 
-   const [print, setPrint] = useState(false);
-   const handlePrint = () => {
-      setPrint(!print);
+   const PrintTable = (props) => {
+      const [asset_code, setAssetCode] = useState([]);
+
+      useEffect(() => {
+         let mounted = true;
+         if (mounted) {
+            if (props.capitalizedSplit) {
+               setAssetCode(ConvertLabel(props.data, props.capitalizedSplit));
+            } else {
+               setAssetCode(ConvertLabel(props.data));
+            }
+         }
+         return () => (mounted = false);
+      }, []);
+
+      return (
+         <table style={{ border: "1px solid black", width: "302px", height: "188px" }}>
+            <tbody>
+               {/* <tr>
+                  <td rowSpan={4}>
+                     <QRCode size={80} value={asset_code.join("/")} />
+                  </td>
+               </tr> */}
+               <tr>
+                  <td colSpan={5}>
+                     <Typography variant="subtitle2" fontWeight="bold" textAlign="center" color="black">
+                        PT. Haier Sales Indonesia
+                     </Typography>
+                  </td>
+               </tr>
+               <tr>
+                  <td>
+                     <Typography variant="body2" fontWeight="bold" textAlign="center" color="black">
+                        {asset_code[0]}
+                     </Typography>
+                  </td>
+                  <td>
+                     <Typography variant="body2" fontWeight="bold" textAlign="center" color="black">
+                        {asset_code[1]}
+                     </Typography>
+                  </td>
+                  <td>
+                     <Typography variant="body2" fontWeight="bold" textAlign="center" color="black">
+                        {asset_code[2]}
+                     </Typography>
+                  </td>
+                  <td>
+                     <Typography variant="body2" fontWeight="bold" textAlign="center" color="black">
+                        {asset_code[3]}
+                     </Typography>
+                  </td>
+                  <td>
+                     <Typography variant="body2" fontWeight="bold" textAlign="center" color="black">
+                        {asset_code[4]}
+                     </Typography>
+                  </td>
+               </tr>
+               <tr>
+                  <td colSpan={5}>
+                     <Typography
+                        variant="p"
+                        fontWeight="bold"
+                        textAlign="center"
+                        color="black"
+                     >{`${props.data.asset_name} - ${props.data.employee.name} - ${props.data.department.dept}`}</Typography>
+                  </td>
+               </tr>
+            </tbody>
+         </table>
+      );
    };
+
+   const [print, setPrint] = useState(false);
+   const handlePrint = async () => {
+      setPrint(!print);
+      const download = document.getElementById("download").innerHTML;
+      const printLabel = `<!DOCTYPE html>
+         <html lang="en">
+            <head>
+               <meta charset="UTF-8" />
+               <title>Document</title>
+            </head>
+            <body>${download}</body>
+         </html>`;
+      const fileBuffer = await HTMLtoDOCX(printLabel, null);
+      saveAs(fileBuffer, "Print-Label.docx");
+   };
+
    const [complete, setComplete] = useState(false);
    const handleComplete = () => {
       setComplete(!complete);
@@ -221,95 +308,88 @@ export default function Print() {
                <div className="d-flex align-items-center justify-content-between mt-2 mb-4">
                   <h3 className="fw-bold mb-0">Print Label</h3>
                   <Stack direction="row" spacing={1}>
-                     <Button variant={print ? "outlined" : "contained"} disabled={staging.asset.length < 1} onClick={handlePrint}>
-                        {print ? "Kembali" : "Print Label"}
+                     <Button variant="contained" disabled={staging.asset.length < 1 && print === false} onClick={handlePrint} startIcon={<Download />}>
+                        Download Label
                      </Button>
                   </Stack>
                </div>
-               {print === false ? (
-                  <Card>
-                     <CardContent>
-                        <Grid container spacing={2} justifyContent="flex-end">
-                           <Grid item>
-                              <LoadingButton variant="link" startIcon={<FilterListRounded />} onClick={handleDialog}>
-                                 Filter
-                              </LoadingButton>
-                           </Grid>
+               <Card>
+                  <CardContent>
+                     <Grid container spacing={2} justifyContent="flex-end">
+                        <Grid item>
+                           <LoadingButton variant="link" startIcon={<FilterListRounded />} onClick={handleDialog}>
+                              Filter
+                           </LoadingButton>
                         </Grid>
-                        <TableContainer>
-                           <Table sx={{ minWidth: 650, mt: 3 }} aria-label="simple table">
-                              <TableHead>
-                                 <TableRow
-                                    sx={{
-                                       "& th:first-of-type": { borderRadius: "0.5em 0 0 0.5em" },
-                                       "& th:last-of-type": { borderRadius: "0 0.5em 0.5em 0" },
-                                    }}
-                                 >
-                                    <TableCell align="center">
-                                       <Checkbox
-                                          onClick={handleAllCheckbox}
-                                          checked={staging.asset.length > 0 && staging.asset.length === asset.length ? true : false}
-                                       />
-                                    </TableCell>
-                                    <TableCell align="center">No.</TableCell>
-                                    <TableCell>Code Asset</TableCell>
-                                    <TableCell>SAP Code</TableCell>
-                                    <TableCell>Asset Name</TableCell>
-                                    <TableCell>Category Asset</TableCell>
-                                    <TableCell>Capitalized On</TableCell>
-                                    <TableCell>Useful Life</TableCell>
-                                    <TableCell>Usage Limit</TableCell>
-                                    {/* <TableCell>Usage Period</TableCell> */}
-                                    <TableCell>Asset Acquistion Value</TableCell>
-                                    <TableCell>Deprecation</TableCell>
-                                 </TableRow>
-                              </TableHead>
-                              <TableBody>
-                                 {asset.length > 0 ? (
-                                    asset.map((value, index) => (
-                                       <TableRow key={index}>
-                                          <TableCell component="th" scope="row" align="center">
-                                             <Checkbox
-                                                name="asset"
-                                                value={value.id}
-                                                onChange={handleCheckbox}
-                                                checked={staging.asset.filter((v) => v == value.id).length > 0 ? true : false}
-                                             />
-                                          </TableCell>
-                                          <TableCell align="center">{index + 1}.</TableCell>
-                                          <TableCell>{value.asset_code}</TableCell>
-                                          <TableCell>{value.sap_code}</TableCell>
-                                          <TableCell>{value.asset_name}</TableCell>
-                                          <TableCell>
-                                             {value.category.code} - {value.category.category}
-                                          </TableCell>
-                                          <TableCell>{moment(value.capitalized).format("LL")}</TableCell>
-                                          <TableCell>{value.useful_life} Month</TableCell>
-                                          <TableCell>{value.useful_life / 12} Year</TableCell>
-                                          {/* <TableCell>{value.asset_code}</TableCell> */}
-                                          <TableCell>{NumberFormat(value.acquisition_value)}</TableCell>
-                                          <TableCell>{NumberFormat(value.depreciation)}</TableCell>
-                                       </TableRow>
-                                    ))
-                                 ) : (
-                                    <TableRow>
-                                       <TableCell component="th" scope="row" sx={{ textAlign: "center", py: 10 }} colSpan={100}>
-                                          No result found.
+                     </Grid>
+                     <TableContainer>
+                        <Table sx={{ minWidth: 650, mt: 3 }} aria-label="simple table">
+                           <TableHead>
+                              <TableRow
+                                 sx={{
+                                    "& th:first-of-type": { borderRadius: "0.5em 0 0 0.5em" },
+                                    "& th:last-of-type": { borderRadius: "0 0.5em 0.5em 0" },
+                                 }}
+                              >
+                                 <TableCell align="center">
+                                    <Checkbox
+                                       onClick={handleAllCheckbox}
+                                       checked={staging.asset.length > 0 && staging.asset.length === asset.length ? true : false}
+                                    />
+                                 </TableCell>
+                                 <TableCell align="center">No.</TableCell>
+                                 <TableCell>Code Asset</TableCell>
+                                 <TableCell>Asset Name</TableCell>
+                                 <TableCell>Category Asset</TableCell>
+                                 <TableCell>Capitalized On</TableCell>
+                                 <TableCell>Useful Life</TableCell>
+                                 <TableCell>Usage Limit</TableCell>
+                                 {/* <TableCell>Usage Period</TableCell> */}
+                                 <TableCell>Asset Acquistion Value</TableCell>
+                                 <TableCell>Deprecation</TableCell>
+                              </TableRow>
+                           </TableHead>
+                           <TableBody>
+                              {asset.length > 0 ? (
+                                 asset.map((value, index) => (
+                                    <TableRow key={index}>
+                                       <TableCell component="th" scope="row" align="center">
+                                          <Checkbox
+                                             name="asset"
+                                             value={value.id}
+                                             onChange={handleCheckbox}
+                                             checked={staging.asset.filter((v) => v == value.id).length > 0 ? true : false}
+                                          />
                                        </TableCell>
+                                       <TableCell align="center">{index + 1}.</TableCell>
+                                       <TableCell>{value.asset_code}</TableCell>
+                                       <TableCell>{value.asset_name}</TableCell>
+                                       <TableCell>
+                                          {value.category.code} - {value.category.category}
+                                       </TableCell>
+                                       <TableCell>{moment(value.capitalized).format("LL")}</TableCell>
+                                       <TableCell>{value.useful_life} Month</TableCell>
+                                       <TableCell>{value.useful_life / 12} Year</TableCell>
+                                       {/* <TableCell>{value.asset_code}</TableCell> */}
+                                       <TableCell>{NumberFormat(value.acquisition_value, "Rp")}</TableCell>
+                                       <TableCell>{NumberFormat(value.depreciation)}</TableCell>
                                     </TableRow>
-                                 )}
-                              </TableBody>
-                           </Table>
-                        </TableContainer>
-                     </CardContent>
-                  </Card>
-               ) : (
-                  <Stack direction="row" spacing={2}>
-                     {asset.map((value, index) => (
-                        <LabelTable data={value} key={index} />
-                     ))}
-                  </Stack>
-               )}
+                                 ))
+                              ) : (
+                                 <TableRow>
+                                    <TableCell component="th" scope="row" sx={{ textAlign: "center", py: 10 }} colSpan={100}>
+                                       No result found.
+                                    </TableCell>
+                                 </TableRow>
+                              )}
+                           </TableBody>
+                        </Table>
+                     </TableContainer>
+                  </CardContent>
+               </Card>
+               <div id="download" hidden>
+                  {asset.map((value, index) => staging.asset.filter((v) => v == value.id).length > 0 && <PrintTable data={value} key={index} />)}
+               </div>
                <Dialog open={dialog} onClose={handleDialog} maxWidth="md" fullWidth>
                   <DialogTitle>Filter Print Label</DialogTitle>
                   <Divider />
