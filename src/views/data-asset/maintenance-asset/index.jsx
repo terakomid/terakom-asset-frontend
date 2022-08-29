@@ -173,11 +173,11 @@ export default function MaintenanceAsset() {
                               fullWidth
                            />
                         </Grid>
-                        <Grid item>
+                        {/* <Grid item>
                            <Button variant="link" startIcon={<FilterListRounded />}>
                               Filter
                            </Button>
-                        </Grid>
+                        </Grid> */}
                      </Grid>
                      <TableContainer>
                         <Table sx={{ minWidth: 650, mt: 2 }} aria-label="simple table">
