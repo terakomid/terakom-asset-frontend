@@ -21,9 +21,7 @@ import {
    Dialog,
    DialogTitle,
    DialogContent,
-   DialogContentText,
    DialogActions,
-   Tooltip,
    InputLabel,
    Select,
    OutlinedInput,
@@ -37,15 +35,12 @@ import {
    Stack,
 } from "@mui/material";
 import {
-   Close,
    CloseRounded,
    Download,
    Edit,
    FileDownload,
-   FileUploadOutlined,
    FilterListRounded,
    InfoOutlined,
-   InsertDriveFile,
    KeyboardArrowDown,
    KeyboardArrowUp,
    MoreVert,
@@ -67,12 +62,13 @@ import { authentication } from "../../../store/Authentication";
 import { Permission } from "../../../component/Permission";
 import { NumberFormat } from "../../../component/Format";
 import { exportTableToExcel } from "../../../help/ExportToExcel";
+import { ImportModal } from "../../../component/ImportModal";
 
 const ModalFilter = (props) => {
    const [loading, setLoading] = useState(false);
    const [complete, setComplete] = useState(false);
    const [rows, setRows] = useState({
-      asset_type: 'all',
+      asset_type: "all",
       category_id: [],
       employees_id: [],
       capitalized_from: null,
@@ -198,17 +194,15 @@ const ModalFilter = (props) => {
                         onChange={(e) => {
                            setRows({
                               ...rows,
-                              asset_type: e.target.value
-                           })
+                              asset_type: e.target.value,
+                           });
                         }}
                         label="Type Asset"
                      >
                         <MenuItem value="all">All Asset</MenuItem>
                         <MenuItem value="it">IT</MenuItem>
                         <MenuItem value="non-it">NON IT</MenuItem>
-
                      </TextField>
-
                   </Grid>
                   <Grid item xs={12} md={6}>
                      <FormControl sx={{ mt: 1 }} fullWidth>
@@ -589,7 +583,7 @@ const ModalFilter = (props) => {
                               return data.windows[0].sub_master_it
                                  .filter((v) => selected.includes(v.id))
                                  .map((v, i) => {
-                                    return <Chip key={i} label={v.sub_type} onDelete={() => "cemas"} sx={{ mr: 0.5 }} />;
+                                    return <Chip key={i} label={v.sub_type} onDelete={() => ""} sx={{ mr: 0.5 }} />;
                                  });
                            }}
                         >
@@ -682,179 +676,74 @@ const ModalFilter = (props) => {
    );
 };
 
-const ModalImport = (props) => {
-   const [document, setDocument] = useState({
-      file: "",
-      file_url: "",
-   });
-   const [loading, setLoading] = useState(false);
-
-   const submitData = async () => {
-      const formData = new FormData();
-      formData.append("file", document.file);
-      const res = http.post(`asset/import_excel`, formData);
-   };
-
-   const onSubmit = () => {
-      setLoading(true);
-      submitData()
-         .then((res) => {
-            props.getData();
-            props.handleClose();
-         })
-         .catch((err) => {})
-         .finally(() => {
-            setLoading(false);
-         });
-   };
-
-   return (
-      <Dialog
-         fullWidth
-         maxWidth="xs"
-         open={props.open}
-         onClose={props.handleClose}
-         aria-labelledby="alert-dialog-title"
-         aria-describedby="alert-dialog-description"
-      >
-         <DialogTitle>Import</DialogTitle>
-         <DialogContent>
-            {document.file_url !== "" ? (
-               <TextField
-                  sx={{ my: 3 }}
-                  variant="outlined"
-                  label="Supporting Document *"
-                  value={document.file_url}
-                  disabled
-                  InputProps={{
-                     startAdornment: (
-                        <InputAdornment position="start">
-                           <InsertDriveFile />
-                        </InputAdornment>
-                     ),
-                     endAdornment: (
-                        <InputAdornment position="end">
-                           <Tooltip title="Delete">
-                              <IconButton
-                                 onClick={() =>
-                                    setDocument({
-                                       file: "",
-                                       file_url: "",
-                                    })
-                                 }
-                              >
-                                 <Close />
-                              </IconButton>
-                           </Tooltip>
-                        </InputAdornment>
-                     ),
-                  }}
-                  fullWidth
-               />
-            ) : (
-               <Button size="large" variant="outlined" component="label" fullWidth startIcon={<FileUploadOutlined />}>
-                  Import Data Asset(.xlsx)
-                  <input
-                     name="document"
-                     type="file"
-                     onChange={(e) => {
-                        let file = e.target.files[0];
-                        let file_url = file.name;
-                        setDocument({
-                           file,
-                           file_url,
-                        });
-                     }}
-                     hidden
-                     required
-                  />
-               </Button>
-            )}
-         </DialogContent>
-         <DialogActions>
-            <Button variant="text" onClick={props.handleClose}>
-               Cancel
-            </Button>
-            <LoadingButton loading={loading} variant="text" color="success" onClick={onSubmit} autoFocus>
-               Submit
-            </LoadingButton>
-         </DialogActions>
-      </Dialog>
-   );
-};
-
 const RowComponent = (props) => {
    const [open, setOpen] = React.useState(false);
-   
    return (
       <React.Fragment>
          <TableRow>
-               {props.data.evidence.length > 0 ?
+            {props.user.role !== "Admin Department" && props.user.role !== "Employee" && props.data.evidence.length > 0 ? (
                <TableCell component="th" scope="row" align="center">
-                     <Stack direction="row" alignItems={"center"} justifyContent={"center"}>  
-                        <IconButton
-                           aria-label="expand row"
-                           size="small"
-                           onClick={() => setOpen(!open)}
-                        >
-                           {open ? <KeyboardArrowUp /> : <KeyboardArrowDown />}
-                        </IconButton>
-                        {props.from + props.i}.
-
-                     </Stack>
+                  <Stack direction="row" alignItems={"center"} justifyContent={"center"}>
+                     <IconButton aria-label="expand row" size="small" onClick={() => setOpen(!open)}>
+                        {open ? <KeyboardArrowUp /> : <KeyboardArrowDown />}
+                     </IconButton>
+                     {props.from + props.i}.
+                  </Stack>
                </TableCell>
-               :
-               <TableCell>
-                  {props.from + props.i}.
-               </TableCell>
-               }
-               <TableCell>{props.data.asset_code}</TableCell>
-               <TableCell>{props.data.asset_name}</TableCell>
-               <TableCell>{props.data.employee.name}</TableCell>
-               <TableCell>{props.data.category.category}</TableCell>
-               <TableCell>{moment(props.data.capitalized).format("ll")}</TableCell>
-               <TableCell>{props.data.sub_category.useful_life}</TableCell>
-               {props.user.role !== 'Employee' &&
+            ) : (
+               <TableCell>{props.from + props.i}.</TableCell>
+            )}
+            <TableCell>{props.data.asset_code}</TableCell>
+            <TableCell>{props.data.asset_name}</TableCell>
+            <TableCell>{props.data.employee.name}</TableCell>
+            <TableCell>{props.data.department.dept}</TableCell>
+            <TableCell>{`${props.data.location.code} - ${props.data.location.location}`}</TableCell>
+            <TableCell>{props.data.category.category}</TableCell>
+            <TableCell>{moment(props.data.capitalized).format("ll")}</TableCell>
+            <TableCell>{props.data.sub_category.useful_life}</TableCell>
+            {props.user.role !== "Employee" && (
                <>
-               <TableCell>{NumberFormat(props.data.acquisition_value, "Rp")}</TableCell>
-               <TableCell>{NumberFormat(props.data.book_value, "Rp")}</TableCell>
+                  <TableCell>{NumberFormat(props.data.acquisition_value, "Rp")}</TableCell>
+                  <TableCell>{NumberFormat(props.data.book_value, "Rp")}</TableCell>
                </>
-               }
-               <TableCell align="center">
-                  <IconButton onClick={(e) => props.handleClick(e, props.data)}>
-                     <MoreVert />
-                  </IconButton>
-               </TableCell>
+            )}
+            <TableCell align="center">
+               <IconButton onClick={(e) => props.handleClick(e, props.data)}>
+                  <MoreVert />
+               </IconButton>
+            </TableCell>
          </TableRow>
          <TableRow>
             <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
                <Collapse in={open} timeout="auto" unmountOnExit>
                   <Box sx={{ margin: 1 }}>
-                  <Typography>Image & Evidence</Typography>
-                  <Table size="small" aria-label="purchases">
-                     <TableBody>
-                        {props.data.evidence.map((val, i) => (
-                        <TableRow key={val.id}>
-                           <TableCell component="th" scope="row">
-                              {i + 1}
-                           </TableCell>
-                           <TableCell>{val.file.split('/').pop()}</TableCell>
-                           <TableCell align="right"><Chip label="Download" component="a" href={val.file} target="_blank" /></TableCell>
-                        </TableRow>
-                        ))}
-                     </TableBody>
-                  </Table>
+                     <Typography>Image & Evidence</Typography>
+                     <Table size="small" aria-label="purchases">
+                        <TableBody>
+                           {props.data.evidence.map((val, i) => (
+                              <TableRow key={val.id}>
+                                 <TableCell component="th" scope="row">
+                                    {i + 1}
+                                 </TableCell>
+                                 <TableCell>{val.file.split("/").pop()}</TableCell>
+                                 <TableCell align="right">
+                                    <Chip label="Download" component="a" href={val.file} target="_blank" />
+                                 </TableCell>
+                              </TableRow>
+                           ))}
+                        </TableBody>
+                     </Table>
                   </Box>
                </Collapse>
             </TableCell>
          </TableRow>
       </React.Fragment>
    );
-}
+};
 
 const TableExport = (props) => {
    return (
-      <table id="table-export" style={{ display: 'none' }}>
+      <table id="table-export" style={{ display: "none" }}>
          <thead>
             <tr>
                <th>No</th>
@@ -904,65 +793,66 @@ const TableExport = (props) => {
                return (
                   <tr key={i}>
                      <td>{i + 1}</td>
-                     <td>{ val.asset_type }</td>
-                     <td>{ val.asset_code }</td>
-                     <td>{ val.category.category }</td>
-                     <td>{ val.sub_category.sub_category }</td>
-                     <td>{ val.asset_name }</td>
-                     <td>{ val.specification }</td>
-                     <td>{ val.useful_life }</td>
-                     <td>{ val.capitalized }</td>
-                     <td>{ val.sap_code }</td>
-                     <td>{ `${val.employee.code} - ${val.employee.name}` }</td>
-                     <td>{ `${val.location.code} - ${val.location.location}` }</td>
-                     <td>{ val.department.dept }</td>
-                     <td>{ val.condition.condition }</td>
-                     <td>{ val.latitude }</td>
-                     <td>{ val.longitude }</td>
-                     <td>{ `${val.cost.code} ${val.cost.name}` }</td>
-                     <td>{ val.acquisition_value }</td>
-                     <td>{ val.depreciation == 1 ? 'yes' : 'no' }</td>
-                     <td>{ `${val.vendor.code} - ${val.vendor.name}` }</td>
-                     <td>{ val.book_value }</td>
-                     <td>{ val.device ? val.device.sub_type : '' }</td>
-                     <td>{ val.type }</td>
-                     <td>{ val.brand ? val.brand.sub_type : '' }</td>
-                     <td>{ val.monitor_inch }</td>
-                     <td>{ val.model_brand }</td>
-                     <td>{ val.mac_address }</td>
-                     <td>{ val.warranty }</td>
-                     <td>{ val.computer_name }</td>
-                     <td>{ val.dlp }</td>
-                     <td>{ val.soc }</td>
-                     <td>{ val.snnbpc }</td>
-                     <td>{ val.processor ? val.processor.sub_type : '' }</td>
-                     <td>{ val.os ? val.os.sub_type : '' }</td>
-                     <td>{ val.sn_windows }</td>
-                     <td>{ val.office ? val.office.sub_type : '' }</td>
-                     <td>{ val.sn_office }</td>
-                     <td>{ val.antivirus ? val.antivirus.sub_type : '' }</td>
-                     <td>{ val.notes }</td>
+                     <td>{val.asset_type}</td>
+                     <td>{val.asset_code}</td>
+                     <td>{val.category.category}</td>
+                     <td>{val.sub_category.sub_category}</td>
+                     <td>{val.asset_name}</td>
+                     <td>{val.specification}</td>
+                     <td>{val.useful_life}</td>
+                     <td>{val.capitalized}</td>
+                     <td>{val.sap_code}</td>
+                     <td>{`${val.employee.code} - ${val.employee.name}`}</td>
+                     <td>{`${val.location.code} - ${val.location.location}`}</td>
+                     <td>{val.department.dept}</td>
+                     <td>{val.condition.condition}</td>
+                     <td>{val.latitude}</td>
+                     <td>{val.longitude}</td>
+                     <td>{`${val.cost.code} ${val.cost.name}`}</td>
+                     <td>{val.acquisition_value}</td>
+                     <td>{val.depreciation == 1 ? "yes" : "no"}</td>
+                     <td>{`${val.vendor.code} - ${val.vendor.name}`}</td>
+                     <td>{val.book_value}</td>
+                     <td>{val.device ? val.device.sub_type : ""}</td>
+                     <td>{val.type}</td>
+                     <td>{val.brand ? val.brand.sub_type : ""}</td>
+                     <td>{val.monitor_inch}</td>
+                     <td>{val.model_brand}</td>
+                     <td>{val.mac_address}</td>
+                     <td>{val.warranty}</td>
+                     <td>{val.computer_name}</td>
+                     <td>{val.dlp}</td>
+                     <td>{val.soc}</td>
+                     <td>{val.snnbpc}</td>
+                     <td>{val.processor ? val.processor.sub_type : ""}</td>
+                     <td>{val.os ? val.os.sub_type : ""}</td>
+                     <td>{val.sn_windows}</td>
+                     <td>{val.office ? val.office.sub_type : ""}</td>
+                     <td>{val.sn_office}</td>
+                     <td>{val.antivirus ? val.antivirus.sub_type : ""}</td>
+                     <td>{val.notes}</td>
                      <td>
-                        {val.evidence.length > 0 && val.evidence.map(v => (
-                           <a href={v.file}>
-                              {v.file.split('/').pop()} <br/> 
-                           </a>  
-                        ))}
+                        {val.evidence.length > 0 &&
+                           val.evidence.map((v) => (
+                              <a href={v.file}>
+                                 {v.file.split("/").pop()} <br />
+                              </a>
+                           ))}
                      </td>
-               </tr>
-               )
+                  </tr>
+               );
             })}
          </tbody>
       </table>
-   )
-}
+   );
+};
 
 const Index = () => {
    const { user } = useRecoilValue(authentication);
 
    const navigate = useNavigate();
    const [rows, setRows] = useState();
-   const [exportData, setExportData] = useState()
+   const [exportData, setExportData] = useState();
    const [data, setData] = useState({
       code: "",
       location: "",
@@ -989,7 +879,8 @@ const Index = () => {
          .then((res) => {
             setRows(res.data.data);
          })
-         .catch((err) => {});
+         .catch((err) => {
+         });
    };
    const getDataExport = async () => {
       http
@@ -1006,7 +897,7 @@ const Index = () => {
          .catch((err) => {});
    };
    const handleDownload = async () => {
-      exportTableToExcel('#table-export', 'Data asset')
+      exportTableToExcel("#table-export", "Data asset");
       // http
       //    .get(`/asset`, {
       //       responseType: 'blob',
@@ -1021,7 +912,7 @@ const Index = () => {
       //          const temp = window.URL.createObjectURL(new Blob([res.data]));
       //          const link = document.createElement("a");
       //          link.href = temp;
-      //          link.setAttribute("download", `asset.xlsx`); 
+      //          link.setAttribute("download", `asset.xlsx`);
       //          document.body.appendChild(link);
       //          link.click();
       //    })
@@ -1044,12 +935,12 @@ const Index = () => {
 
    useEffect(() => {
       setRows(undefined);
-      setExportData(undefined)
+      setExportData(undefined);
       let timer = setTimeout(() => {
-         if (params){
+         if (params) {
             getData();
-            getDataExport()
-         } 
+            getDataExport();
+         }
       }, 500);
       return () => clearTimeout(timer);
       // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -1148,9 +1039,17 @@ const Index = () => {
                <div className="my-2">
                   <div className="d-flex mb-3 align-items-center justify-content-between">
                      <h3 className="fw-bold">Stock Opname</h3>
-                     <Button disabled={exportData == undefined ? true : false}  sx={{ ml: 2 }} variant="contained" onClick={handleDownload} startIcon={<Download />}>
-                        Export
-                     </Button>
+                     <Box>
+                        <Button
+                           disabled={exportData == undefined ? true : false}
+                           sx={{ ml: 2 }}
+                           variant="contained"
+                           onClick={handleDownload}
+                           startIcon={<Download />}
+                        >
+                           Export
+                        </Button>
+                     </Box>
                   </div>
                </div>
                <div className="row">
@@ -1236,15 +1135,17 @@ const Index = () => {
                                        <TableCell>Code Asset</TableCell>
                                        <TableCell>Asset Name</TableCell>
                                        <TableCell>PIC Name</TableCell>
+                                       <TableCell>Department</TableCell>
+                                       <TableCell>Location</TableCell>
                                        <TableCell>Category Asset</TableCell>
                                        <TableCell>Capitalized On</TableCell>
                                        <TableCell>Useful Life</TableCell>
-                                       {user.role !== 'Employee' && 
-                                       <>
-                                       <TableCell>Acquisition Value</TableCell>
-                                       <TableCell>Book Value</TableCell>
-                                       </>
-                                       }
+                                       {user.role !== "Employee" && (
+                                          <>
+                                             <TableCell>Acquisition Value</TableCell>
+                                             <TableCell>Book Value</TableCell>
+                                          </>
+                                       )}
                                        <TableCell align="center">Action</TableCell>
                                     </TableRow>
                                  </TableHead>
@@ -1252,32 +1153,7 @@ const Index = () => {
                                     {rows !== undefined ? (
                                        rows.data.length > 0 ? (
                                           rows.data.map((value, key) => (
-                                             <>
-                                                <RowComponent i={key} key={key} data={value} user={user} from={rows.meta.from} handleClick={handleClick} />
-                                                {/* <TableRow key={key}>
-                                                   <TableCell component="th" scope="row" align="center">
-                                                      {rows.meta.from + key}.
-                                                   </TableCell>
-                                                   <TableCell>{value.asset_code}</TableCell>
-                                                   <TableCell>{value.asset_name}</TableCell>
-                                                   <TableCell>{value.employee.name}</TableCell>
-                                                   <TableCell>{value.category.category}</TableCell>
-                                                   <TableCell>{moment(value.capitalized).format("ll")}</TableCell>
-                                                   <TableCell>{value.sub_category.useful_life}</TableCell>
-                                                   {user.role !== 'Employee' &&
-                                                   <>
-                                                   <TableCell>{NumberFormat(value.acquisition_value, "Rp")}</TableCell>
-                                                   <TableCell>{NumberFormat(value.book_value, "Rp")}</TableCell>
-                                                   </>
-                                                   }
-                                                   <TableCell align="center">
-                                                      <IconButton onClick={(e) => handleClick(e, value)}>
-                                                         <MoreVert />
-                                                      </IconButton>
-                                                   </TableCell>
-                                                </TableRow> */}
-                                             </>
-                                          
+                                             <RowComponent i={key} key={key} data={value} user={user} from={rows.meta.from} handleClick={handleClick} />
                                           ))
                                        ) : (
                                           <TableRow>
@@ -1322,7 +1198,14 @@ const Index = () => {
                      {/* utils */}
                      <ModalDelete open={openModal} delete={onDelete} handleClose={handleModal} />
                      <ModalFilter open={modalFilter} params={params} setParams={setParams} handleClose={handleModalFilter} />
-                     <ModalImport open={openImport} handleClose={handleCloseImport} getData={getData} />
+                     {/* <ModalImport open={openImport} handleClose={handleCloseImport} getData={getData} /> */}
+                     <ImportModal
+                        buttonTitle={"Import Asset (.xlsx)"}
+                        getData={getData}
+                        handleClose={handleCloseImport}
+                        open={openImport}
+                        url={"asset/import_excel"}
+                     />
 
                      {/* menu */}
                      <Menu
@@ -1353,9 +1236,7 @@ const Index = () => {
                            Delete
                         </MenuItem> */}
                      </Menu>
-                     {exportData !== undefined &&
-                     <TableExport data={exportData} />
-                     }
+                     {exportData !== undefined && <TableExport data={exportData} />}
                   </div>
                </div>
             </div>

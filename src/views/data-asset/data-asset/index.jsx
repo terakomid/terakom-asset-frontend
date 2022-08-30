@@ -678,11 +678,10 @@ const ModalFilter = (props) => {
 
 const RowComponent = (props) => {
    const [open, setOpen] = React.useState(false);
-
    return (
       <React.Fragment>
          <TableRow>
-            {props.data.evidence.length > 0 ? (
+            {props.user.role !== "Admin Department" && props.user.role !== "Employee" && props.data.evidence.length > 0 ? (
                <TableCell component="th" scope="row" align="center">
                   <Stack direction="row" alignItems={"center"} justifyContent={"center"}>
                      <IconButton aria-label="expand row" size="small" onClick={() => setOpen(!open)}>
@@ -697,6 +696,8 @@ const RowComponent = (props) => {
             <TableCell>{props.data.asset_code}</TableCell>
             <TableCell>{props.data.asset_name}</TableCell>
             <TableCell>{props.data.employee.name}</TableCell>
+            <TableCell>{props.data.department.dept}</TableCell>
+            <TableCell>{`${props.data.location.code} - ${props.data.location.location}`}</TableCell>
             <TableCell>{props.data.category.category}</TableCell>
             <TableCell>{moment(props.data.capitalized).format("ll")}</TableCell>
             <TableCell>{props.data.sub_category.useful_life}</TableCell>
@@ -878,7 +879,8 @@ const Index = () => {
          .then((res) => {
             setRows(res.data.data);
          })
-         .catch((err) => {});
+         .catch((err) => {
+         });
    };
    const getDataExport = async () => {
       http
@@ -1162,6 +1164,8 @@ const Index = () => {
                                        <TableCell>Code Asset</TableCell>
                                        <TableCell>Asset Name</TableCell>
                                        <TableCell>PIC Name</TableCell>
+                                       <TableCell>Department</TableCell>
+                                       <TableCell>Location</TableCell>
                                        <TableCell>Category Asset</TableCell>
                                        <TableCell>Capitalized On</TableCell>
                                        <TableCell>Useful Life</TableCell>
@@ -1178,31 +1182,7 @@ const Index = () => {
                                     {rows !== undefined ? (
                                        rows.data.length > 0 ? (
                                           rows.data.map((value, key) => (
-                                             <>
-                                                <RowComponent i={key} key={key} data={value} user={user} from={rows.meta.from} handleClick={handleClick} />
-                                                {/* <TableRow key={key}>
-                                                   <TableCell component="th" scope="row" align="center">
-                                                      {rows.meta.from + key}.
-                                                   </TableCell>
-                                                   <TableCell>{value.asset_code}</TableCell>
-                                                   <TableCell>{value.asset_name}</TableCell>
-                                                   <TableCell>{value.employee.name}</TableCell>
-                                                   <TableCell>{value.category.category}</TableCell>
-                                                   <TableCell>{moment(value.capitalized).format("ll")}</TableCell>
-                                                   <TableCell>{value.sub_category.useful_life}</TableCell>
-                                                   {user.role !== 'Employee' &&
-                                                   <>
-                                                   <TableCell>{NumberFormat(value.acquisition_value, "Rp")}</TableCell>
-                                                   <TableCell>{NumberFormat(value.book_value, "Rp")}</TableCell>
-                                                   </>
-                                                   }
-                                                   <TableCell align="center">
-                                                      <IconButton onClick={(e) => handleClick(e, value)}>
-                                                         <MoreVert />
-                                                      </IconButton>
-                                                   </TableCell>
-                                                </TableRow> */}
-                                             </>
+                                             <RowComponent i={key} key={key} data={value} user={user} from={rows.meta.from} handleClick={handleClick} />
                                           ))
                                        ) : (
                                           <TableRow>

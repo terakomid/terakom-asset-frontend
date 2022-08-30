@@ -106,7 +106,6 @@ const ModalFilter = (props) => {
    }, [props.open]);
 
    const onFilter = () => {
-      console.log(data)
       props.setParams({
          ...props.params,
          ...data
@@ -543,6 +542,9 @@ const Index = () => {
          })
          .catch((err) => {
             setLoading(false);
+            if(err.response){
+               enqueueSnackbar("Delete User Failed", { variant: 'error' })
+            }
          });
    };
 

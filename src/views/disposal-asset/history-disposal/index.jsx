@@ -187,72 +187,68 @@ const ModalTable = (props) => {
 
 const RowComponent = (props) => {
    const [open, setOpen] = React.useState(false);
-   
    return (
       <React.Fragment>
          <TableRow>
-               {props.data.evidence.length > 0 ?
+            {props.user.role !== "Admin Department" && props.user.role !== "Employee" && props.data.evidence.length > 0 ? (
                <TableCell component="th" scope="row" align="center">
-                     <Stack direction="row" alignItems={"center"} justifyContent={"center"}>  
-                        <IconButton
-                           aria-label="expand row"
-                           size="small"
-                           onClick={() => setOpen(!open)}
-                        >
-                           {open ? <KeyboardArrowUp /> : <KeyboardArrowDown />}
-                        </IconButton>
-                        {props.from + props.i}.
-
-                     </Stack>
+                  <Stack direction="row" alignItems={"center"} justifyContent={"center"}>
+                     <IconButton aria-label="expand row" size="small" onClick={() => setOpen(!open)}>
+                        {open ? <KeyboardArrowUp /> : <KeyboardArrowDown />}
+                     </IconButton>
+                     {props.from + props.i}.
+                  </Stack>
                </TableCell>
-               :
-               <TableCell>
-                  {props.from + props.i}.
-               </TableCell>
-               }
-               <TableCell>{props.data.asset_code}</TableCell>
-               <TableCell>{props.data.asset_name}</TableCell>
-               <TableCell>{props.data.employee.name}</TableCell>
-               <TableCell>{props.data.category.category}</TableCell>
-               <TableCell>{moment(props.data.capitalized).format("ll")}</TableCell>
-               <TableCell>{props.data.sub_category.useful_life}</TableCell>
-               {props.user.role !== 'Employee' &&
+            ) : (
+               <TableCell>{props.from + props.i}.</TableCell>
+            )}
+            <TableCell>{props.data.asset_code}</TableCell>
+            <TableCell>{props.data.asset_name}</TableCell>
+            <TableCell>{props.data.employee.name}</TableCell>
+            <TableCell>{props.data.department.dept}</TableCell>
+            <TableCell>{`${props.data.location.code} - ${props.data.location.location}`}</TableCell>
+            <TableCell>{props.data.category.category}</TableCell>
+            <TableCell>{moment(props.data.capitalized).format("ll")}</TableCell>
+            <TableCell>{props.data.sub_category.useful_life}</TableCell>
+            {props.user.role !== "Employee" && (
                <>
-               <TableCell>{NumberFormat(props.data.acquisition_value, "Rp")}</TableCell>
-               <TableCell>{NumberFormat(props.data.book_value, "Rp")}</TableCell>
+                  <TableCell>{NumberFormat(props.data.acquisition_value, "Rp")}</TableCell>
+                  <TableCell>{NumberFormat(props.data.book_value, "Rp")}</TableCell>
                </>
-               }
-               <TableCell align="center">
-                  <IconButton onClick={(e) => props.handleClick(e, props.data)}>
-                     <MoreVert />
-                  </IconButton>
-               </TableCell>
+            )}
+            <TableCell align="center">
+               <IconButton onClick={(e) => props.handleClick(e, props.data)}>
+                  <MoreVert />
+               </IconButton>
+            </TableCell>
          </TableRow>
          <TableRow>
             <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
                <Collapse in={open} timeout="auto" unmountOnExit>
                   <Box sx={{ margin: 1 }}>
-                  <Typography>Image & Evidence</Typography>
-                  <Table size="small" aria-label="purchases">
-                     <TableBody>
-                        {props.data.evidence.map((val, i) => (
-                        <TableRow key={val.id}>
-                           <TableCell component="th" scope="row">
-                              {i + 1}
-                           </TableCell>
-                           <TableCell>{val.file.split('/').pop()}</TableCell>
-                           <TableCell align="right"><Chip label="Download" component="a" href={val.file} target="_blank" /></TableCell>
-                        </TableRow>
-                        ))}
-                     </TableBody>
-                  </Table>
+                     <Typography>Image & Evidence</Typography>
+                     <Table size="small" aria-label="purchases">
+                        <TableBody>
+                           {props.data.evidence.map((val, i) => (
+                              <TableRow key={val.id}>
+                                 <TableCell component="th" scope="row">
+                                    {i + 1}
+                                 </TableCell>
+                                 <TableCell>{val.file.split("/").pop()}</TableCell>
+                                 <TableCell align="right">
+                                    <Chip label="Download" component="a" href={val.file} target="_blank" />
+                                 </TableCell>
+                              </TableRow>
+                           ))}
+                        </TableBody>
+                     </Table>
                   </Box>
                </Collapse>
             </TableCell>
          </TableRow>
       </React.Fragment>
    );
-}
+};
 
 const Index = () => {
    const { user } = useRecoilValue(authentication);
@@ -436,6 +432,8 @@ const Index = () => {
                                           <TableCell>Code Asset</TableCell>
                                           <TableCell>Asset Name</TableCell>
                                           <TableCell>PIC Name</TableCell>
+                                          <TableCell>Department</TableCell>
+                                          <TableCell>Location</TableCell>
                                           <TableCell>Category Asset</TableCell>
                                           <TableCell>Capitalized On</TableCell>
                                           <TableCell>Useful Life</TableCell>
@@ -452,9 +450,8 @@ const Index = () => {
                                         {rows !== undefined ? (
                                         rows.data.length > 0 ? (
                                             rows.data.map((value, key) => (
-                                             <>
                                                 <RowComponent i={key} key={key} data={value} user={user} from={rows.meta.from} handleClick={handleClick} />
-                                             </>
+
                                             ))
                                         ) : (
                                             <TableRow>

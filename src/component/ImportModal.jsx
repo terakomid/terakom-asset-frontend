@@ -34,7 +34,15 @@ export const ImportModal = (props) => {
             enqueueSnackbar("Success Import Data", { variant: "success" });
          })
          .catch((err) => {
-            err.response && console.log(err.response);
+            if(err.response){
+               setDocument({
+                  file: "",
+                  file_url: "",
+               });
+               enqueueSnackbar("Failed Import Data", { variant: 'error' })
+               props.getData();
+               props.handleClose();
+            }
          })
          .finally(() => {
             setLoading(false);

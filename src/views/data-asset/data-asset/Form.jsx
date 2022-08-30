@@ -569,21 +569,8 @@ const DetailComponent = (props) => {
    }, []);
    return (
       <Grid item xs={12} md={12} alignItems="center" justifyContent="center" display="flex" flexDirection={"column"}>
-         <Grid container spacing={3} mt={2} justifyContent={props.data.picture.length > 0 ? "" : "center"} alignItems="center">
-            {props.data.picture.length > 0 && (
-               <Grid
-                  item
-                  md={5}
-                  xs={12}
-                  sx={{
-                     display: "flex",
-                     justifyContent: "center",
-                     alignItems: "center",
-                  }}
-               >
-                  <img alt="label" style={{ maxWidth: "200px", objectFit: "cover", objectPosition: "center", ml: "auto" }} src={props.data.picture[0].file} />
-               </Grid>
-            )}
+         <Grid container spacing={3} mt={2} justifyContent={"center"} alignItems="center">
+            
 
             <Grid item md={6} xs={12}>
                <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
@@ -706,6 +693,7 @@ const Form = (props) => {
          id: "",
          image_file: "",
          image_preview: "",
+         image_name: "",
       },
    ]);
    const [evidences, setEvidences] = useState([
@@ -890,7 +878,7 @@ const Form = (props) => {
    const setAutomatic = (data) => {
       setParamsEmploy({
          ...paramsEmployee,
-         search: `${data.employee.id} - ${data.employee.name}`,
+         search: `${data.employee.code} - ${data.employee.name}`,
       });
       setId(data.id);
       setDepartment(data.department.dept);
@@ -910,6 +898,7 @@ const Form = (props) => {
             id: v.id,
             image_preview: v.file,
             image_file: "",
+            image_name: v.file.split('/').pop()
          });
       });
       setPictures([...temp]);
@@ -1032,16 +1021,20 @@ const Form = (props) => {
                if (v.image_file === "") {
                   if (v.id !== "") formData.append(`picture[${i}][id]`, v.id);
                } else {
-                  if (v.image_file !== "") formData.append(`picture[${i}][file]`, v.image_file);
+                  if (v.image_file !== ""){
+                     formData.append(`picture[${i}][file]`, v.image_file);
+                     formData.append(`picture[${i}][main]`, 1);
+                  }
                }
-               if (v.id !== "") formData.append(`picture[${i}][main]`, 1);
             } else {
                if (v.image_file === "") {
                   if (v.id !== "") formData.append(`picture[${i}][id]`, v.id);
                } else {
-                  if (v.image_file !== "") formData.append(`picture[${i}][file]`, v.image_file);
+                  if (v.image_file !== "") {
+                     formData.append(`picture[${i}][file]`, v.image_file);
+                     formData.append(`picture[${i}][main]`, 0);
+                  }
                }
-               if (v.id !== "") formData.append(`picture[${i}][main]`, 0);
             }
          });
          evidences.map((v, i) => {
@@ -1052,7 +1045,6 @@ const Form = (props) => {
             }
          });
       }
-
       if (props.type === "it") {
          formData.append("asset_type", "it");
 
@@ -1916,64 +1908,74 @@ const Form = (props) => {
                                     error={typeof errors?.notes !== "undefined" ? true : false}
                                  />
                               </Grid>
-                              {/* image */}
-                              {/* <Grid Grid item md={12} xs={12}>
+                              
+                              {user.role === "Admin Department" &&
+                              // {/* image for admin department */}
+                              <Grid item md={12} xs={12}>
                                  <Typography>Picture </Typography>
                                  <Grid container>
                                     {pictures.map((v, i) => {
                                        return (
                                           <Grid key={i} item xs={6} md={4}>
                                              <Stack spacing={2} alignItems="center">
-                                                <Box component="label" sx={{ mt: { xs: 2 }, cursor: "pointer" }} htmlFor={`img-${i}`}>
+                                                <Box component="label" sx={{ mt: { xs: 2 }, cursor: "pointer", display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column' }} htmlFor={`img-${i}`}>
                                                    {v.image_preview == "" ? (
                                                       <InsertPhotoOutlined sx={{ fontSize: "100px" }} />
                                                    ) : (
-                                                      <img
-                                                         style={{ maxHeight: "100px", maxWidth: "100px", objectFit: "cover", objectPosition: "center" }}
-                                                         src={v.image_preview}
-                                                         alt="test"
-                                                      />
+                                                      <img src={v.image_preview} style={{ width: '150px', height: '150px', objecFit: 'cover', objectPosition: 'center' }} />
                                                    )}
-                                                   {typeof errors[`picture.${i}.file`] !== "undefined" && (
-                                                      <Typography sx={{ color: "red" }}>Image </Typography>
+                                                   {v.image_preview !== "undefined" && (
+                                                      <Typography>{v.image_name}</Typography>
+                                                   )}
+                                                   {errors !== undefined && typeof errors[`picture.${i}.file`] !== "undefined" && (
+                                                      <Typography sx={{ color: "red" }}>Image Required </Typography>
                                                    )}
                                                 </Box>
                                                 <input
-                                                   disabled={props.detail || user.role === "Admin Department" ? true : false}
+                                                   disabled={props.detail}
                                                    type="file"
                                                    style={{ display: "none" }}
                                                    id={`img-${i}`}
                                                    onChange={(e) => {
                                                       let image_file = e.target.files[0];
                                                       let image_preview = URL.createObjectURL(e.target.files[0]);
+                                                      let image_name = image_file.name
                                                       setPictures((currentAnswers) =>
                                                          produce(currentAnswers, (v) => {
                                                             v[i] = {
                                                                id: "",
                                                                image_file,
                                                                image_preview,
+                                                               image_name,
                                                             };
                                                          })
                                                       );
                                                    }}
                                                 />
-                                                {pictures.length > 1 && (
-                                                   <Chip
-                                                      disabled={props.detail || user.role === "Admin Department" ? true : false}
-                                                      color="error"
-                                                      label="delete"
-                                                      onClick={() => {
-                                                         setPictures((currentAnswers) => currentAnswers.filter((v, x) => x !== i));
-                                                      }}
-                                                   />
-                                                )}
+                                                <Stack  direction="row" justifyContent={"center"} alignContent="center">
+                                                   {v.image_preview !== "" && 
+                                                      <a target="_blank" href={v.image_preview} style={{ cursor: "pointer" }}>
+                                                         <Download sx={{ fontSize: "10x", marginTop: "1px", marginRight: "3px" }} />
+                                                      </a>
+                                                   }
+                                                   {pictures.length > 1 && (
+                                                      <Chip
+                                                         disabled={props.detail}
+                                                         color="error"
+                                                         label="delete"
+                                                         onClick={() => {
+                                                            setPictures((currentAnswers) => currentAnswers.filter((v, x) => x !== i));
+                                                         }}
+                                                      />
+                                                   )}
+                                                </Stack>
                                              </Stack>
                                           </Grid>
                                        );
                                     })}
                                     <Grid item md={12} xs={12}>
                                        <Chip
-                                          disabled={props.detail || user.role === "Admin Department" ? true : false}
+                                          disabled={props.detail}
                                           color="primary"
                                           sx={{ width: { xs: "100%", md: "auto" }, mt: { xs: 2, md: 5 } }}
                                           label="Tambah Image"
@@ -1990,10 +1992,45 @@ const Form = (props) => {
                                        />
                                     </Grid>
                                  </Grid>
-                              </Grid> */}
+                              </Grid>
+                              }
 
-                              {/*  */}
-                              <Grid Grid item md={12} xs={12}>
+                              {props.detail && user.role !== "Admin Department" &&
+                              // {/* image just for view */}
+                              <Grid item md={12} xs={12}>
+                                 <Typography>Picture </Typography>
+                                 <Grid container>
+                                    {pictures.map((v, i) => {
+                                       return (
+                                          <Grid key={i} item xs={6} md={4}>
+                                             <Stack spacing={2} alignItems="center">
+                                                <Box component="label" sx={{ mt: { xs: 2 }, cursor: "pointer", display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column' }} htmlFor={`img-${i}`}>
+                                                   {v.image_preview == "" ? (
+                                                      <InsertPhotoOutlined sx={{ fontSize: "100px" }} />
+                                                   ) : (
+                                                      <img src={v.image_preview} style={{ width: '150px', height: '150px', objecFit: 'cover', objectPosition: 'center' }} />
+                                                   )}
+                                                   {v.image_preview !== "undefined" && (
+                                                      <Typography>{v.image_name}</Typography>
+                                                   )}
+                                                </Box>
+                                                <Stack  direction="row" justifyContent={"center"} alignContent="center">
+                                                   {v.image_preview !== "" && 
+                                                      <a target="_blank" href={v.image_preview} style={{ cursor: "pointer" }}>
+                                                         <Download sx={{ fontSize: "10x", marginTop: "1px", marginRight: "3px" }} />
+                                                      </a>
+                                                   }
+                                                </Stack>
+                                             </Stack>
+                                          </Grid>
+                                       );
+                                    })}
+                                 </Grid>
+                              </Grid>
+                              }
+
+                              {/* Upload Image and Attachment */}
+                              <Grid item md={12} xs={12}>
                                  <Typography>Upload Image & Attachment</Typography>
                                  <Grid container>
                                     {evidences.map((v, i) => {
@@ -2035,7 +2072,7 @@ const Form = (props) => {
                                                    }}
                                                 />
                                                 <Stack direction="row" justifyContent={"center"} alignContent="center">
-                                                   {user.role !== "Admin Department" && v.file_url !== "" && props.title !== "add" &&
+                                                   {user.role !== "Admin Department" && user.role !== "Employee" && v.file_url !== "" && props.title !== "add" &&
                                                       <a target="_blank" href={v.file_url} style={{ cursor: "pointer" }}>
                                                          <Download sx={{ fontSize: "10x", marginTop: "1px", marginRight: "3px" }} />
                                                       </a>
