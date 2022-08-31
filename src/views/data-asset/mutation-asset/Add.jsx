@@ -44,33 +44,31 @@ export default function AddMutationAsset() {
 
    const [rows, setRows] = useState([]);
    const [data, setData] = useState();
-   const [params, setParams] = useState({
-      users: {
-         search: "",
-         order_by_name: 0,
-         limit: 5,
-         page: 1,
-         paginate: 1,
-      },
-      receive: {
-         search: "",
-         order_by_name: 0,
-         limit: 5,
-         page: 1,
-         paginate: 1,
-      },
+   const [userParams, setUserParams] = useState({
+      search: "",
+      order_by_name: 0,
+      limit: 5,
+      page: 1,
+      paginate: 1,
+   });
+   const [receiveParams, setReceiveParams] = useState({
+      search: "",
+      order_by_name: 0,
+      limit: 5,
+      page: 1,
+      paginate: 1,
    });
 
    const [users, setUsers] = useState();
    const getUsers = async () => {
-      const res = await http.get(`user`, { params: params.users });
+      const res = await http.get(`user`, { params: userParams });
       setUsers(res.data.data.data);
       return 1;
    };
 
    const [receive, setReceive] = useState();
    const getReceive = async () => {
-      const res = await http.get(`user`, { params: params.receive });
+      const res = await http.get(`user`, { params: receiveParams });
       setReceive(res.data.data.data);
       return 1;
    };
@@ -118,22 +116,27 @@ export default function AddMutationAsset() {
    useEffect(() => {
       setUsers([]);
       let timer = setTimeout(() => {
-         if (params) getUsers();
+         if (userParams) getUsers();
       }, 500);
       return () => clearTimeout(timer);
-   }, [params]);
+   }, [userParams]);
+
+   useEffect(() => {
+      setReceive([]);
+      let timer = setTimeout(() => {
+         if (receiveParams) getReceive();
+      }, 500);
+      return () => clearTimeout(timer);
+   }, [receiveParams]);
 
    const handleReset = (e) => {
-      setParams({
-         ...params,
-         users: {
-            ...params.users,
-            search: "",
-         },
-         receive: {
-            ...params.receive,
-            search: "",
-         },
+      setUserParams({
+         ...userParams,
+         search: "",
+      });
+      setReceiveParams({
+         ...receiveParams,
+         search: "",
       });
       setData({
          pic: "",
@@ -165,16 +168,13 @@ export default function AddMutationAsset() {
    const handleEdit = (value, key) => {
       setRows([...rows.slice(0, key), ...rows.slice(key + 1, rows.length)]);
       setData(value);
-      setParams({
-         ...params,
-         users: {
-            ...params.users,
-            search: `${value.pic.code} - ${value.pic.name}`,
-         },
-         receive: {
-            ...params.receive,
-            search: `${value.receive.code} - ${value.receive.name}`,
-         },
+      setUserParams({
+         ...userParams,
+         search: `${value.pic.code} - ${value.pic.name}`,
+      });
+      setReceiveParams({
+         ...receiveParams,
+         search: `${value.receive.code} - ${value.receive.name}`,
       });
    };
 
@@ -256,14 +256,11 @@ export default function AddMutationAsset() {
                                        getOptionLabel={(option) => {
                                           return `${option.code} - ${option.name}`;
                                        }}
-                                       inputValue={params.users.search}
+                                       inputValue={userParams.search}
                                        onInputChange={(event, newInputValue, reason) => {
-                                          setParams({
-                                             ...params,
-                                             users: {
-                                                ...params.users,
-                                                search: newInputValue,
-                                             },
+                                          setUserParams({
+                                             ...userParams,
+                                             search: newInputValue,
                                           });
                                        }}
                                        onChange={(e, value) => {
@@ -293,14 +290,11 @@ export default function AddMutationAsset() {
                                        getOptionLabel={(option) => {
                                           return `${option.code} - ${option.name}`;
                                        }}
-                                       inputValue={params.receive.search}
+                                       inputValue={receiveParams.search}
                                        onInputChange={(event, newInputValue, reason) => {
-                                          setParams({
-                                             ...params,
-                                             receive: {
-                                                ...params.receive,
-                                                search: newInputValue,
-                                             },
+                                          setReceiveParams({
+                                             ...receiveParams,
+                                             search: newInputValue,
                                           });
                                        }}
                                        onChange={(e, value) => {
