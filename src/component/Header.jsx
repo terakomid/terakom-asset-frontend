@@ -123,7 +123,12 @@ export default function Header() {
                   </a>
                </div>
 
-               <button type="button" className="btn btn-sm px-3 font-size-24 header-item waves-effect vertical-menu-btn text-white" onClick={tToggle}>
+               <button
+                  type="button"
+                  className="btn btn-sm px-3 font-size-24 header-item waves-effect vertical-menu-btn text-white"
+                  id="vertical-menu-btn"
+                  onClick={tToggle}
+               >
                   <i className="mdi mdi-menu"></i>
                </button>
             </div>
