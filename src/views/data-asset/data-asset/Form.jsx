@@ -73,13 +73,27 @@ const DetailModal = (props) => {
       navigate("/data-asset");
    };
 
+   const download = async () => {
+      const formData = new FormData()
+      formData.append('ids[]', props.data.id)
+      const res = await http.post('print_label', formData, {
+         responseType: 'blob'
+      })
+      const temp = window.URL.createObjectURL(new Blob([res.data]));
+      const link = document.createElement("a");
+      link.href = temp;
+      link.setAttribute("download", `${props.data.asset_code}.pdf`); 
+      document.body.appendChild(link);
+      link.click();
+   }
+
    return (
       <Dialog fullWidth maxWidth="xs" open={props.open} onClose={handleClose} aria-labelledby="alert-dialog-title" aria-describedby="alert-dialog-description">
          <DialogTitle>QR Asset</DialogTitle>
          <DialogContent>
             <Box sx={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" }}>
                <LabelTable data={props.data} capitalizedSplit={"/"} />
-               <Button sx={{ mt: 2 }} variant="contained">
+               <Button onClick={download}  sx={{ mt: 2 }} variant="contained">
                   Print
                </Button>
             </Box>
@@ -559,6 +573,20 @@ const TabsComponent = (props) => {
 const DetailComponent = (props) => {
    const [asset_code, setAssetCode] = useState("");
 
+   const download = async () => {
+      const formData = new FormData()
+      formData.append('ids[]', props.data.id)
+      const res = await http.post('print_label', formData, {
+         responseType: 'blob'
+      })
+      const temp = window.URL.createObjectURL(new Blob([res.data]));
+      const link = document.createElement("a");
+      link.href = temp;
+      link.setAttribute("download", `${asset_code}.pdf`); 
+      document.body.appendChild(link);
+      link.click();
+   }
+
    useEffect(() => {
       let mounted = true;
       if (mounted) {
@@ -578,7 +606,7 @@ const DetailComponent = (props) => {
                </Box>
             </Grid>
          </Grid>
-         <Button sx={{ mt: 2 }} variant="contained">
+         <Button sx={{ mt: 2 }} onClick={download} variant="contained">
             Print Label
          </Button>
       </Grid>

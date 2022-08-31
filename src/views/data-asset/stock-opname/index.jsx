@@ -681,7 +681,7 @@ const RowComponent = (props) => {
    return (
       <React.Fragment>
          <TableRow>
-            {props.user.role !== "Admin Department" && props.user.role !== "Employee" && props.data.evidence.length > 0 ? (
+            {props.user.role !== "Admin Department" && props.user.role !== "Employee" && (
                <TableCell component="th" scope="row" align="center">
                   <Stack direction="row" alignItems={"center"} justifyContent={"center"}>
                      <IconButton aria-label="expand row" size="small" onClick={() => setOpen(!open)}>
@@ -690,8 +690,6 @@ const RowComponent = (props) => {
                      {props.from + props.i}.
                   </Stack>
                </TableCell>
-            ) : (
-               <TableCell>{props.from + props.i}.</TableCell>
             )}
             <TableCell>{props.data.asset_code}</TableCell>
             <TableCell>{props.data.asset_name}</TableCell>
@@ -718,7 +716,12 @@ const RowComponent = (props) => {
             <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
                <Collapse in={open} timeout="auto" unmountOnExit>
                   <Box sx={{ margin: 1 }}>
-                     <Typography>Image & Evidence</Typography>
+                     {props.data.evidence.length > 0 &&
+                     <Typography mt={3}>Image & Evidence</Typography>
+                     }
+                     {props.data.evidence.length === 0 &&
+                     <Typography mt={3}>Image & Evidence Kosong</Typography>
+                     }
                      <Table size="small" aria-label="purchases">
                         <TableBody>
                            {props.data.evidence.map((val, i) => (
