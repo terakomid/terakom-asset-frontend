@@ -34,15 +34,11 @@ import moment from "moment";
 import { DatePicker } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import HTMLtoDOCX from "html-to-docx";
-import { saveAs } from "file-saver";
 
 import http from "../../../component/api/Api";
 import Loading from "../../../component/Loading";
 import { NumberFormat } from "../../../component/Format";
 import { Download, FilterListRounded } from "@mui/icons-material";
-import QRCode from "react-qr-code";
-import { ConvertLabel } from "../../../help/LabelHelp";
 
 export default function Print() {
    const [rows, setRows] = useState({
@@ -191,92 +187,9 @@ export default function Print() {
       }
    };
 
-   const PrintTable = (props) => {
-      const [asset_code, setAssetCode] = useState([]);
-
-      useEffect(() => {
-         let mounted = true;
-         if (mounted) {
-            if (props.capitalizedSplit) {
-               setAssetCode(ConvertLabel(props.data, props.capitalizedSplit));
-            } else {
-               setAssetCode(ConvertLabel(props.data));
-            }
-         }
-         return () => (mounted = false);
-      }, []);
-
-      return (
-         <table style={{ border: "1px solid black", width: "302px", height: "188px" }}>
-            <tbody>
-               {/* <tr>
-                  <td rowSpan={4}>
-                     <QRCode size={80} value={asset_code.join("/")} />
-                  </td>
-               </tr> */}
-               <tr>
-                  <td colSpan={5}>
-                     <Typography variant="subtitle2" fontWeight="bold" textAlign="center" color="black">
-                        PT. Haier Sales Indonesia
-                     </Typography>
-                  </td>
-               </tr>
-               <tr>
-                  <td>
-                     <Typography variant="body2" fontWeight="bold" textAlign="center" color="black">
-                        {asset_code[0]}
-                     </Typography>
-                  </td>
-                  <td>
-                     <Typography variant="body2" fontWeight="bold" textAlign="center" color="black">
-                        {asset_code[1]}
-                     </Typography>
-                  </td>
-                  <td>
-                     <Typography variant="body2" fontWeight="bold" textAlign="center" color="black">
-                        {asset_code[2]}
-                     </Typography>
-                  </td>
-                  <td>
-                     <Typography variant="body2" fontWeight="bold" textAlign="center" color="black">
-                        {asset_code[3]}
-                     </Typography>
-                  </td>
-                  <td>
-                     <Typography variant="body2" fontWeight="bold" textAlign="center" color="black">
-                        {asset_code[4]}
-                     </Typography>
-                  </td>
-               </tr>
-               <tr>
-                  <td colSpan={5}>
-                     <Typography
-                        variant="p"
-                        fontWeight="bold"
-                        textAlign="center"
-                        color="black"
-                     >{`${props.data.asset_name} - ${props.data.employee.name} - ${props.data.department.dept}`}</Typography>
-                  </td>
-               </tr>
-            </tbody>
-         </table>
-      );
-   };
-
    const [print, setPrint] = useState(false);
    const handlePrint = async () => {
       setPrint(!print);
-      const download = document.getElementById("download").innerHTML;
-      const printLabel = `<!DOCTYPE html>
-         <html lang="en">
-            <head>
-               <meta charset="UTF-8" />
-               <title>Document</title>
-            </head>
-            <body>${download}</body>
-         </html>`;
-      const fileBuffer = await HTMLtoDOCX(printLabel, null);
-      saveAs(fileBuffer, "Print-Label.docx");
    };
 
    const [complete, setComplete] = useState(false);
@@ -387,9 +300,6 @@ export default function Print() {
                      </TableContainer>
                   </CardContent>
                </Card>
-               <div id="download" hidden>
-                  {asset.map((value, index) => staging.asset.filter((v) => v == value.id).length > 0 && <PrintTable data={value} key={index} />)}
-               </div>
                <Dialog open={dialog} onClose={handleDialog} maxWidth="md" fullWidth>
                   <DialogTitle>Filter Print Label</DialogTitle>
                   <Divider />
