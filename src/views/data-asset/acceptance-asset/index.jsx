@@ -19,30 +19,75 @@ import {
    MenuItem,
    ListItemIcon,
    Chip,
+   Dialog,
+   DialogTitle,
+   DialogContent,
+   FormControl,
+   InputLabel,
+   Select,
+   OutlinedInput,
+   Checkbox,
+   ListItemText,
+   Box,
+   DialogActions,
 } from "@mui/material";
 import { AddRounded, Check, Close, CloseRounded, Delete, Edit, FilterListRounded, InfoOutlined, MoreVert, Search } from "@mui/icons-material";
 import { Link as RouterLink } from "react-router-dom";
 
+import moment from "moment";
+import { DatePicker } from "@mui/x-date-pickers";
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+
 import http from "../../../component/api/Api";
 import Loading from "../../../component/Loading";
 import ModalDelete from "../../../component/Delete";
-import moment from "moment";
 
 import { useRecoilValue } from "recoil";
 import { authentication } from "../../../store/Authentication";
 import { Permission } from "../../../component/Permission";
+import { LoadingButton } from "@mui/lab";
+import { Capitalize } from "../../../component/Format";
 
 export default function AcceptanceAsset() {
    const { user } = useRecoilValue(authentication);
 
+   const [data, setData] = useState();
+   const [rows, setRows] = useState();
    const [params, setParams] = useState({
       search: "",
       paginate: 1,
       limit: 10,
       page: 1,
+      department_id: [],
+      location_id: [],
+      vendor_id: [],
+      condition_id: [],
+      type: [],
+      from_date: null,
+      to_date: null,
    });
 
-   const [data, setData] = useState();
+   const getDepartment = async () => {
+      const res = await http.get(`dept`);
+      return res.data.data;
+   };
+   const getLocation = async () => {
+      const res = await http.get(`location`);
+      return res.data.data;
+   };
+   const getVendor = async () => {
+      const res = await http.get(`vendor`);
+      return res.data.data;
+   };
+   const getCondition = async () => {
+      const res = await http.get(`condition`);
+      return res.data.data;
+   };
+   const getType = async () => {
+      const res = ["purchase", "rent"];
+      return res;
+   };
    const getData = async () => {
       await http
          .get(`asset_acceptance`, {
@@ -51,6 +96,8 @@ export default function AcceptanceAsset() {
          .then((res) => {
             // console.log(res.data.data);
             setData(res.data.data);
+            setLoading(false);
+            setDialog(false);
          })
          .catch((err) => {
             // console.log(err.response);
@@ -66,6 +113,62 @@ export default function AcceptanceAsset() {
       return () => clearTimeout(timer);
       // eslint-disable-next-line react-hooks/exhaustive-deps
    }, [params]);
+
+   const getAll = async (e) => {
+      let mounted = true;
+      if (mounted) {
+         Promise.all([getDepartment(), getLocation(), getVendor(), getCondition(), getType()]).then((res) => {
+            handleComplete();
+            setRows({
+               ...rows,
+               department: res[0],
+               location: res[1],
+               vendor: res[2],
+               condition: res[3],
+               type: res[4],
+            });
+         });
+      }
+   };
+
+   const handleSubmit = async (e) => {
+      e.preventDefault();
+      handleLoading();
+      setParams({
+         ...params,
+         department_id: filter.department_id,
+         location_id: filter.location_id,
+         vendor_id: filter.vendor_id,
+         condition_id: filter.condition_id,
+         type: filter.type,
+         from_date: filter.from_date,
+         to_date: filter.to_date,
+      });
+   };
+
+   const handleReset = async (e) => {
+      e.preventDefault();
+      handleDialog();
+      setParams({
+         ...params,
+         department_id: [],
+         location_id: [],
+         vendor_id: [],
+         condition_id: [],
+         type: [],
+         from_date: null,
+         to_date: null,
+      });
+      setFilter({
+         department_id: [],
+         location_id: [],
+         vendor_id: [],
+         condition_id: [],
+         type: [],
+         from_date: null,
+         to_date: null,
+      });
+   };
 
    const handleSearch = (e) => {
       setParams({
@@ -129,6 +232,38 @@ export default function AcceptanceAsset() {
       }
    };
 
+   const [complete, setComplete] = useState(false);
+   const handleComplete = () => {
+      setComplete(!complete);
+   };
+   const [dialog, setDialog] = useState(false);
+   const handleDialog = () => {
+      complete === false && getAll();
+      setDialog(!dialog);
+   };
+   const [loading, setLoading] = useState(false);
+   const handleLoading = () => {
+      setLoading(!loading);
+   };
+   const [filter, setFilter] = useState({
+      department_id: [],
+      location_id: [],
+      vendor_id: [],
+      condition_id: [],
+      type: [],
+      from_date: null,
+      to_date: null,
+   });
+   const handleChange = async (e) => {
+      const {
+         target: { value },
+      } = e;
+      setFilter({
+         ...filter,
+         [e.target.name]: typeof value === "string" ? value.split(",") : value,
+      });
+   };
+
    return (
       <div className="main-content mb-5">
          <div className="page-content">
@@ -171,11 +306,11 @@ export default function AcceptanceAsset() {
                               fullWidth
                            />
                         </Grid>
-                        {/* <Grid item>
-                           <Button variant="link" startIcon={<FilterListRounded />}>
+                        <Grid item>
+                           <Button variant="link" startIcon={<FilterListRounded />} onClick={handleDialog}>
                               Filter
                            </Button>
-                        </Grid> */}
+                        </Grid>
                      </Grid>
                      <TableContainer>
                         <Table sx={{ minWidth: 650, mt: 2 }} aria-label="simple table">
@@ -189,7 +324,7 @@ export default function AcceptanceAsset() {
                                  <TableCell align="center">No.</TableCell>
                                  <TableCell>Asset Code</TableCell>
                                  <TableCell>Asset Name</TableCell>
-                                 <TableCell>PIC</TableCell>
+                                 <TableCell>PIC Name</TableCell>
                                  <TableCell>Department</TableCell>
                                  <TableCell>Location</TableCell>
                                  <TableCell>Date</TableCell>
@@ -317,6 +452,215 @@ export default function AcceptanceAsset() {
                      )}
                   </Menu>
                ) : null}
+               <Dialog open={dialog} onClose={handleDialog} maxWidth="md" fullWidth>
+                  <DialogTitle>Filter</DialogTitle>
+                  {complete ? (
+                     <DialogContent dividers>
+                        <Grid container spacing={2}>
+                           <Grid item xs={12} md={6}>
+                              <FormControl sx={{ mt: 1 }} fullWidth>
+                                 <InputLabel>Department</InputLabel>
+                                 <Select
+                                    multiple
+                                    name="department_id"
+                                    value={filter.department_id}
+                                    onChange={handleChange}
+                                    input={<OutlinedInput label="Department" />}
+                                    renderValue={(selected) => {
+                                       return rows.department
+                                          .filter((v) => selected.includes(v.id))
+                                          .map((v, i) => {
+                                             return <Chip key={i} label={v.dept} onDelete={() => "cemas"} sx={{ mr: 0.5 }} />;
+                                          });
+                                    }}
+                                 >
+                                    {rows.department.length > 0 &&
+                                       rows.department.map((v, i) => {
+                                          return (
+                                             <MenuItem key={i} value={v.id}>
+                                                <Checkbox checked={filter.department_id.indexOf(v.id) > -1} />
+                                                <ListItemText primary={v.dept} />
+                                             </MenuItem>
+                                          );
+                                       })}
+                                 </Select>
+                              </FormControl>
+                           </Grid>
+                           <Grid item xs={12} md={6}>
+                              <FormControl sx={{ mt: 1 }} fullWidth>
+                                 <InputLabel>Location</InputLabel>
+                                 <Select
+                                    multiple
+                                    name="location_id"
+                                    value={filter.location_id}
+                                    onChange={handleChange}
+                                    input={<OutlinedInput label="Location" />}
+                                    renderValue={(selected) => {
+                                       return rows.location
+                                          .filter((v) => selected.includes(v.id))
+                                          .map((v, i) => {
+                                             return <Chip key={i} label={`${v.code} - ${v.location}`} onDelete={() => "cemas"} sx={{ mr: 0.5 }} />;
+                                          });
+                                    }}
+                                 >
+                                    {rows.location.length > 0 &&
+                                       rows.location.map((v, i) => {
+                                          return (
+                                             <MenuItem key={i} value={v.id}>
+                                                <Checkbox checked={filter.location_id.indexOf(v.id) > -1} />
+                                                <ListItemText primary={`${v.code} - ${v.location}`} />
+                                             </MenuItem>
+                                          );
+                                       })}
+                                 </Select>
+                              </FormControl>
+                           </Grid>
+                           <Grid item xs={12} md={6}>
+                              <FormControl sx={{ mt: 1 }} fullWidth>
+                                 <InputLabel>Vendor</InputLabel>
+                                 <Select
+                                    multiple
+                                    name="vendor_id"
+                                    value={filter.vendor_id}
+                                    onChange={handleChange}
+                                    input={<OutlinedInput label="Vendor" />}
+                                    renderValue={(selected) => {
+                                       return rows.vendor
+                                          .filter((v) => selected.includes(v.id))
+                                          .map((v, i) => {
+                                             return <Chip key={i} label={`${v.code} - ${v.name}`} onDelete={() => "cemas"} sx={{ mr: 0.5 }} />;
+                                          });
+                                    }}
+                                 >
+                                    {rows.vendor.length > 0 &&
+                                       rows.vendor.map((v, i) => {
+                                          return (
+                                             <MenuItem key={i} value={v.id}>
+                                                <Checkbox checked={filter.vendor_id.indexOf(v.id) > -1} />
+                                                <ListItemText primary={`${v.code} - ${v.name}`} />
+                                             </MenuItem>
+                                          );
+                                       })}
+                                 </Select>
+                              </FormControl>
+                           </Grid>
+                           <Grid item xs={12} md={6}>
+                              <FormControl sx={{ mt: 1 }} fullWidth>
+                                 <InputLabel>Condition</InputLabel>
+                                 <Select
+                                    multiple
+                                    name="condition_id"
+                                    value={filter.condition_id}
+                                    onChange={handleChange}
+                                    input={<OutlinedInput label="Condition" />}
+                                    renderValue={(selected) => {
+                                       return rows.condition
+                                          .filter((v) => selected.includes(v.id))
+                                          .map((v, i) => {
+                                             return <Chip key={i} label={v.condition} onDelete={() => "cemas"} sx={{ mr: 0.5 }} />;
+                                          });
+                                    }}
+                                 >
+                                    {rows.condition.length > 0 &&
+                                       rows.condition.map((v, i) => {
+                                          return (
+                                             <MenuItem key={i} value={v.id}>
+                                                <Checkbox checked={filter.condition_id.indexOf(v.id) > -1} />
+                                                <ListItemText primary={v.condition} />
+                                             </MenuItem>
+                                          );
+                                       })}
+                                 </Select>
+                              </FormControl>
+                           </Grid>
+                           <Grid item xs={12} md={6}>
+                              <FormControl sx={{ mt: 1 }} fullWidth>
+                                 <InputLabel>Type</InputLabel>
+                                 <Select
+                                    multiple
+                                    name="type"
+                                    value={filter.type}
+                                    onChange={handleChange}
+                                    input={<OutlinedInput label="Type" />}
+                                    renderValue={(selected) => {
+                                       return rows.type
+                                          .filter((v) => selected.includes(v))
+                                          .map((v, i) => {
+                                             return <Chip key={i} label={Capitalize(v)} onDelete={() => "cemas"} sx={{ mr: 0.5 }} />;
+                                          });
+                                    }}
+                                 >
+                                    {rows.type.length > 0 &&
+                                       rows.type.map((v, i) => {
+                                          return (
+                                             <MenuItem key={i} value={v}>
+                                                <Checkbox checked={filter.type.indexOf(v) > -1} />
+                                                <ListItemText primary={Capitalize(v)} />
+                                             </MenuItem>
+                                          );
+                                       })}
+                                 </Select>
+                              </FormControl>
+                           </Grid>
+                           <Grid item xs={12} />
+                           <Grid item xs={12} md={6}>
+                              <FormControl fullWidth>
+                                 <LocalizationProvider dateAdapter={AdapterDateFns}>
+                                    <DatePicker
+                                       value={filter.from_date}
+                                       name="from_date"
+                                       label="From Date"
+                                       inputFormat="dd/MM/yyyy"
+                                       mask="__/__/____"
+                                       onChange={(newValue) => {
+                                          setFilter({
+                                             ...filter,
+                                             from_date: moment(newValue).format("yyyy-MM-DD"),
+                                          });
+                                       }}
+                                       renderInput={(params) => <TextField fullWidth {...params} />}
+                                    />
+                                 </LocalizationProvider>
+                              </FormControl>
+                           </Grid>
+                           <Grid item xs={12} md={6}>
+                              <FormControl fullWidth>
+                                 <LocalizationProvider dateAdapter={AdapterDateFns}>
+                                    <DatePicker
+                                       value={filter.to_date}
+                                       name="to_date"
+                                       label="Until Date"
+                                       inputFormat="dd/MM/yyyy"
+                                       mask="__/__/____"
+                                       onChange={(newValue) => {
+                                          setFilter({
+                                             ...filter,
+                                             to_date: moment(newValue).format("yyyy-MM-DD"),
+                                          });
+                                       }}
+                                       renderInput={(params) => <TextField fullWidth {...params} />}
+                                    />
+                                 </LocalizationProvider>
+                              </FormControl>
+                           </Grid>
+                        </Grid>
+                     </DialogContent>
+                  ) : (
+                     <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", height: "60vh" }}>
+                        <Loading />
+                     </Box>
+                  )}
+                  {complete && (
+                     <DialogActions sx={{ py: 2, px: 3 }}>
+                        <LoadingButton variant="outlined" onClick={handleReset}>
+                           Reset
+                        </LoadingButton>
+                        <LoadingButton loading={loading} variant="contained" onClick={handleSubmit}>
+                           Apply
+                        </LoadingButton>
+                     </DialogActions>
+                  )}
+               </Dialog>
             </div>
          </div>
       </div>
