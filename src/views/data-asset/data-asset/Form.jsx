@@ -955,6 +955,7 @@ const Form = (props) => {
          });
          if (err.response) {
             setErrors(err.response.data.errors);
+            console.log(err.response)
          }
       }
    };
@@ -1023,18 +1024,19 @@ const Form = (props) => {
                } else {
                   if (v.image_file !== ""){
                      formData.append(`picture[${i}][file]`, v.image_file);
-                     formData.append(`picture[${i}][main]`, 1);
                   }
                }
+               formData.append(`picture[${i}][main]`, 1);
             } else {
                if (v.image_file === "") {
                   if (v.id !== "") formData.append(`picture[${i}][id]`, v.id);
+                  formData.append(`picture[${i}][main]`, 0);
                } else {
                   if (v.image_file !== "") {
                      formData.append(`picture[${i}][file]`, v.image_file);
-                     formData.append(`picture[${i}][main]`, 0);
                   }
                }
+               formData.append(`picture[${i}][main]`, 0);
             }
          });
          evidences.map((v, i) => {
@@ -1087,6 +1089,7 @@ const Form = (props) => {
             edit(formData, id);
          }
       }
+      console.log(Object.fromEntries(formData))
    };
 
    useEffect(() => {
@@ -1894,7 +1897,7 @@ const Form = (props) => {
                         <CardContent>
                            <Typography>Information Support</Typography>
                            <Grid container mt={2} spacing={2}>
-                              <Grid Grid item md={12} xs={12}>
+                              <Grid item md={12} xs={12}>
                                  <TextField
                                     disabled={props.detail || user.role === "Admin Department" ? true : false}
                                     onChange={handleChange}
@@ -1995,9 +1998,10 @@ const Form = (props) => {
                               </Grid>
                               }
 
-                              {props.detail && user.role !== "Admin Department" &&
+                              {props.detail && user.role !== "Admin Department" && pictures[0].image_preview !== "" &&
                               // {/* image just for view */}
                               <Grid item md={12} xs={12}>
+                                 {console.log(pictures)}
                                  <Typography>Picture </Typography>
                                  <Grid container>
                                     {pictures.map((v, i) => {
@@ -2005,11 +2009,9 @@ const Form = (props) => {
                                           <Grid key={i} item xs={6} md={4}>
                                              <Stack spacing={2} alignItems="center">
                                                 <Box component="label" sx={{ mt: { xs: 2 }, cursor: "pointer", display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column' }} htmlFor={`img-${i}`}>
-                                                   {v.image_preview == "" ? (
-                                                      <InsertPhotoOutlined sx={{ fontSize: "100px" }} />
-                                                   ) : (
+                                                   {v.image_preview !== "" &&
                                                       <img src={v.image_preview} style={{ width: '150px', height: '150px', objecFit: 'cover', objectPosition: 'center' }} />
-                                                   )}
+                                                   }
                                                    {v.image_preview !== "undefined" && (
                                                       <Typography>{v.image_name}</Typography>
                                                    )}

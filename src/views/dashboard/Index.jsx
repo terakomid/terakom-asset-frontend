@@ -217,9 +217,26 @@ const index = () => {
     const [loading, setLoading] = useState(false)
     const [subCategoriesLoading, setSubCategoriesLoading] = useState(false)
 
+    const [child, setChild] = useState(0)
     const getLocation = async () => {
-        const res = await http.get('location')
-        setLocationOption([...res.data.data])
+        if(user.user.role !== "Admin Department"){
+            setChild(1)
+            const res = await http.get('location')
+            setLocationOption([...res.data.data]) 
+        }else{
+            const location_id = user.user.location.id;
+            const getLocationById = await http.get(`location/${location_id}/show_by_id`)
+            if(getLocationById.data.data.child > 0){
+                setChild(getLocationById.data.data.child)
+                const res = await http.get('location', {
+                    params: {
+                        parent_id: user.user.location.id 
+                    }
+                })
+                setLocationOption([...res.data.data])
+            }
+        }
+        
     }
 
     const getCategory = async () => {
@@ -237,14 +254,31 @@ const index = () => {
     const getData = async () => {
         const res = await http.get(`statistic/asset`, {
             params: {
-                location_id: user.user.role !== 'Admin Department' ? params.location_id : user.user.dept.id
+                location_id: params.location_id
             }
         })
         setData(res.data.data)
     }
     const getDataByLoc = async () => {
-        const res = await http.get(`statistic/asset_by_location`)
-        setDataByLoc(res.data.data)
+        if(user.user.role !== "Admin Department"){
+            const res = await http.get(`statistic/asset_by_location`, {
+                params: {
+                    location_id: params.location_id
+                }
+            })
+            setDataByLoc(res.data.data)
+        }else{
+            const location_id = user.user.location.id;
+            const getLocationById = await http.get(`location/${location_id}/show_by_id`)
+            if(getLocationById.data.data.child > 0){
+                const res = await http.get(`statistic/asset_by_location`, {
+                    params: {
+                        location_id: params.location_id === '' ? user.user.location.id : params.location_id 
+                    }
+                })
+                setDataByLoc(res.data.data)
+            }
+        }
     }
 
     const covertDataConditionCount = (arr) => {
@@ -285,7 +319,7 @@ const index = () => {
     const onFilter = (e) => {
         e.preventDefault()
         setLoading(true)
-        getData()
+        Promise.all([getDataByLoc(), getData()]) 
             .then(res => {
             })
             .catch(err => {
@@ -312,8 +346,7 @@ const index = () => {
                     <div className="row">
                         <div className="col-xl-12 col-12 mt-3">
                            <Grid container spacing={2}>
-                                {user.user.role !== 'Admin Department' && 
-                                <>
+                                {child > 0 &&
                                 <Grid item xs={12} md={12}>
                                     <Card>
                                         <CardContent>
@@ -356,7 +389,8 @@ const index = () => {
                                         </CardContent>
                                     </Card>
                                 </Grid>
-                                {dataByLoc.length > 0 && params.location_id === '' &&
+                                }
+                                {dataByLoc.length > 0 &&
                                 <Grid item xs={12} md={12}>
                                     <Card sx={{ height: '100%' }}>
                                         <CardContent>
@@ -378,9 +412,6 @@ const index = () => {
                                         </CardContent>
                                     </Card>
                                 </Grid>
-                                }
-                                </>
-                                
                                 }
                                 <Grid item xs={12} md={12}>
                                     <Card sx={{ height: '100%' }}>

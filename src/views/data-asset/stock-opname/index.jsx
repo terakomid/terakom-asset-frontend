@@ -699,6 +699,7 @@ const RowComponent = (props) => {
             <TableCell>{props.data.department.dept}</TableCell>
             <TableCell>{`${props.data.location.code} - ${props.data.location.location}`}</TableCell>
             <TableCell>{props.data.category.category}</TableCell>
+            <TableCell>{props.data.condition.condition}</TableCell>
             <TableCell>{moment(props.data.capitalized).format("ll")}</TableCell>
             <TableCell>{props.data.sub_category.useful_life}</TableCell>
             {props.user.role !== "Employee" && (
@@ -1138,6 +1139,7 @@ const Index = () => {
                                        <TableCell>Department</TableCell>
                                        <TableCell>Location</TableCell>
                                        <TableCell>Category Asset</TableCell>
+                                       <TableCell>Asset Condition</TableCell>
                                        <TableCell>Capitalized On</TableCell>
                                        <TableCell>Useful Life</TableCell>
                                        {user.role !== "Employee" && (

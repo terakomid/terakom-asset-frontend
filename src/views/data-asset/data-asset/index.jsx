@@ -691,7 +691,14 @@ const RowComponent = (props) => {
                   </Stack>
                </TableCell>
             ) : (
-               <TableCell>{props.from + props.i}.</TableCell>
+               <TableCell>
+                  <Stack direction="row" alignItems={"center"} justifyContent={"center"}>
+                     <IconButton aria-label="expand row" size="small" onClick={() => setOpen(!open)}>
+                        {open ? <KeyboardArrowUp /> : <KeyboardArrowDown />}
+                     </IconButton>
+                     {props.from + props.i}.
+                  </Stack>
+               </TableCell>
             )}
             <TableCell>{props.data.asset_code}</TableCell>
             <TableCell>{props.data.asset_name}</TableCell>
@@ -699,6 +706,7 @@ const RowComponent = (props) => {
             <TableCell>{props.data.department.dept}</TableCell>
             <TableCell>{`${props.data.location.code} - ${props.data.location.location}`}</TableCell>
             <TableCell>{props.data.category.category}</TableCell>
+            <TableCell>{props.data.condition.condition}</TableCell>
             <TableCell>{moment(props.data.capitalized).format("ll")}</TableCell>
             <TableCell>{props.data.sub_category.useful_life}</TableCell>
             {props.user.role !== "Employee" && (
@@ -718,6 +726,9 @@ const RowComponent = (props) => {
                <Collapse in={open} timeout="auto" unmountOnExit>
                   <Box sx={{ margin: 1 }}>
                      <Typography>Image & Evidence</Typography>
+                     {props.data.evidence.length === 0 &&
+                     <Typography mt={3}>Image & Evidence Kosong</Typography>
+                     }
                      <Table size="small" aria-label="purchases">
                         <TableBody>
                            {props.data.evidence.map((val, i) => (
@@ -1167,6 +1178,7 @@ const Index = () => {
                                        <TableCell>Department</TableCell>
                                        <TableCell>Location</TableCell>
                                        <TableCell>Category Asset</TableCell>
+                                       <TableCell>Asset Condition</TableCell>
                                        <TableCell>Capitalized On</TableCell>
                                        <TableCell>Useful Life</TableCell>
                                        {user.role !== "Employee" && (
