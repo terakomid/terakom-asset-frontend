@@ -26,7 +26,6 @@ import {
    TableCell,
    TableBody,
    Stack,
-   Button,
 } from "@mui/material";
 import { LoadingButton } from "@mui/lab";
 
@@ -187,9 +186,32 @@ export default function Print() {
       }
    };
 
-   const [print, setPrint] = useState(false);
+   const [download, setDownload] = useState(false);
    const handlePrint = async () => {
-      setPrint(!print);
+      setDownload(!download);
+      let formData = new FormData();
+      asset.map((value) => {
+         formData.append("ids[]", value.id);
+      });
+      await http
+         .post(`print_label`, formData, {
+            responseType: "blob",
+         })
+         .then(function (response) {
+            // console.log(JSON.stringify(response.data));
+            const temp = window.URL.createObjectURL(new Blob([response.data]));
+            const link = document.createElement("a");
+            link.href = temp;
+            link.setAttribute("download", `Print-Label.pdf`);
+            document.body.appendChild(link);
+            link.click();
+         })
+         .catch((err) => {
+            console.log(err.response);
+         })
+         .finally(() => {
+            setDownload(false);
+         });
    };
 
    const [complete, setComplete] = useState(false);
@@ -221,9 +243,9 @@ export default function Print() {
                <div className="d-flex align-items-center justify-content-between mt-2 mb-4">
                   <h3 className="fw-bold mb-0">Print Label</h3>
                   <Stack direction="row" spacing={1}>
-                     <Button variant="contained" disabled={staging.asset.length < 1} onClick={handlePrint} startIcon={<Download />}>
+                     <LoadingButton variant="contained" disabled={staging.asset.length < 1} loading={download} onClick={handlePrint} startIcon={<Download />}>
                         Download Label
-                     </Button>
+                     </LoadingButton>
                   </Stack>
                </div>
                <Card>
