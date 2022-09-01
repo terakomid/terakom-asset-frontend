@@ -1048,23 +1048,28 @@ const Form = (props) => {
          pictures.map((v, i) => {
             if (i === 0) {
                if (v.image_file === "") {
-                  if (v.id !== "") formData.append(`picture[${i}][id]`, v.id);
+                  if (v.id !== ""){
+                     formData.append(`picture[${i}][id]`, v.id);
+                     formData.append(`picture[${i}][main]`, 1);
+                  }
                } else {
                   if (v.image_file !== ""){
                      formData.append(`picture[${i}][file]`, v.image_file);
+                     formData.append(`picture[${i}][main]`, 1);
                   }
                }
-               formData.append(`picture[${i}][main]`, 1);
             } else {
                if (v.image_file === "") {
-                  if (v.id !== "") formData.append(`picture[${i}][id]`, v.id);
-                  formData.append(`picture[${i}][main]`, 0);
+                  if (v.id !== ""){
+                     formData.append(`picture[${i}][id]`, v.id);
+                     formData.append(`picture[${i}][main]`, 0);
+                  }
                } else {
                   if (v.image_file !== "") {
                      formData.append(`picture[${i}][file]`, v.image_file);
+                     formData.append(`picture[${i}][main]`, 0);
                   }
                }
-               formData.append(`picture[${i}][main]`, 0);
             }
          });
          evidences.map((v, i) => {

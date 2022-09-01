@@ -676,21 +676,20 @@ const ModalFilter = (props) => {
    );
 };
 
+const role = ["Admin Department", "Employee"]
 const RowComponent = (props) => {
    const [open, setOpen] = React.useState(false);
    return (
       <React.Fragment>
          <TableRow>
-            {props.user.role !== "Admin Department" && props.user.role !== "Employee" && (
-               <TableCell component="th" scope="row" align="center">
-                  <Stack direction="row" alignItems={"center"} justifyContent={"center"}>
-                     <IconButton aria-label="expand row" size="small" onClick={() => setOpen(!open)}>
-                        {open ? <KeyboardArrowUp /> : <KeyboardArrowDown />}
-                     </IconButton>
-                     {props.from + props.i}.
-                  </Stack>
-               </TableCell>
-            )}
+            <TableCell component="th" scope="row" align="center">
+               <Stack direction="row" alignItems={"center"} justifyContent={"center"}>
+                  <IconButton disabled={role.includes(props.user.role)} aria-label="expand row" size="small" onClick={() => setOpen(!open)}>
+                     {open ? <KeyboardArrowUp /> : <KeyboardArrowDown />}
+                  </IconButton>
+                  {props.from + props.i}.
+               </Stack>
+            </TableCell>
             <TableCell>{props.data.asset_code}</TableCell>
             <TableCell>{props.data.asset_name}</TableCell>
             <TableCell>{props.data.employee.name}</TableCell>
