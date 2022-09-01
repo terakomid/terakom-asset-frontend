@@ -190,8 +190,8 @@ export default function Print() {
    const handlePrint = async () => {
       setDownload(!download);
       let formData = new FormData();
-      asset.map((value) => {
-         formData.append("ids[]", value.id);
+      staging.asset.map((value) => {
+         formData.append("ids[]", value);
       });
       await http
          .post(`print_label`, formData, {

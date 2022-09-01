@@ -226,8 +226,8 @@ const index = () => {
         }else{
             const location_id = user.user.location.id;
             const getLocationById = await http.get(`location/${location_id}/show_by_id`)
-            if(getLocationById.data.data.child > 0){
-                setChild(getLocationById.data.data.child)
+            if(getLocationById.data.data.total_child > 0){
+                setChild(getLocationById.data.data.total_child)
                 const res = await http.get('location', {
                     params: {
                         parent_id: user.user.location.id 
@@ -252,12 +252,21 @@ const index = () => {
     }
     
     const getData = async () => {
-        const res = await http.get(`statistic/asset`, {
-            params: {
-                location_id: params.location_id
-            }
-        })
-        setData(res.data.data)
+        if(user.user.role !== "Admin Department"){
+            const res = await http.get(`statistic/asset`, {
+                params: {
+                    location_id: params.location_id
+                }
+            })
+            setData(res.data.data)
+        }else{
+            const res = await http.get(`statistic/asset`, {
+                params: {
+                    location_id: params.location_id === "" ? user.user.location.id : params.location_id
+                }
+            })
+            setData(res.data.data)
+        }
     }
     const getDataByLoc = async () => {
         if(user.user.role !== "Admin Department"){
@@ -270,7 +279,7 @@ const index = () => {
         }else{
             const location_id = user.user.location.id;
             const getLocationById = await http.get(`location/${location_id}/show_by_id`)
-            if(getLocationById.data.data.child > 0){
+            if(getLocationById.data.data.total_child > 0){
                 const res = await http.get(`statistic/asset_by_location`, {
                     params: {
                         location_id: params.location_id === '' ? user.user.location.id : params.location_id 
