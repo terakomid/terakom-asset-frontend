@@ -238,7 +238,7 @@ export default function MaintenanceAsset() {
    };
    const handleAsset = (event, value) => {
       setStaging(value);
-      handleDialog();
+      handleDetail()
    };
    const handleMenu = () => {
       setAnchorEl(null);

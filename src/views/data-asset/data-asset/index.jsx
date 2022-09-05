@@ -171,6 +171,7 @@ const ModalFilter = (props) => {
       props.setParams({
          ...props.params,
          ...rows,
+         page: 1,
          asset_type: rows.asset_type === "all" ? "" : rows.asset_type,
          capitalized_from: rows.capitalized_from === null ? "" : moment(rows.capitalized_from).format("yyyy-MM-DD"),
          capitalized_until: rows.capitalized_until === null ? "" : moment(rows.capitalized_until).format("yyyy-MM-DD"),
@@ -836,8 +837,8 @@ const TableExport = (props) => {
                      <td>{val.notes}</td>
                      <td>
                         {val.evidence.length > 0 &&
-                           val.evidence.map((v) => (
-                              <a href={v.file}>
+                           val.evidence.map((v, i) => (
+                              <a key={i} href={v.file}>
                                  {v.file.split("/").pop()} <br />
                               </a>
                            ))}

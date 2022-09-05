@@ -108,7 +108,8 @@ const ModalFilter = (props) => {
    const onFilter = () => {
       props.setParams({
          ...props.params,
-         ...data
+         ...data,
+         page: 1,
       })
       props.handleClose()
    }
@@ -459,7 +460,9 @@ const Index = () => {
 
    const getData = async () => {
       const res = await http.get(`user`, {
-         params: params,
+         params: {
+            ...params,
+         },
       })
       setRows(res.data.data);
       return 1
@@ -643,6 +646,7 @@ const Index = () => {
                                        <TableCell>Code</TableCell>
                                        <TableCell>Phone Number</TableCell>
                                        <TableCell>Department</TableCell>
+                                       <TableCell>Location</TableCell>
                                        <TableCell>Role</TableCell>
                                        <TableCell>Status</TableCell>
                                        {Permission(user.permission, "update user") || Permission(user.permission, "delete user") ? (
@@ -667,6 +671,7 @@ const Index = () => {
                                                 <TableCell>{value.code}</TableCell>
                                                 <TableCell>{value.phone_number}</TableCell>
                                                 <TableCell>{value.dept.dept}</TableCell>
+                                                <TableCell>{value.location.dept}</TableCell>
                                                 <TableCell>{value.role}</TableCell>
                                                 <TableCell>
                                                    {value.status == 1 ? <Chip label="Active" color="success" /> : <Chip label="Not Active" color="error" />}
