@@ -49,6 +49,7 @@ import { Permission } from "../../../component/Permission";
 import { LoadingButton } from "@mui/lab";
 import { Capitalize } from "../../../component/Format";
 
+const role = ["Employee", "Admin Department"]
 export default function AcceptanceAsset() {
    const { user } = useRecoilValue(authentication);
 
@@ -426,7 +427,7 @@ export default function AcceptanceAsset() {
                         </ListItemIcon>
                         Detail
                      </MenuItem>
-                     {staging?.status === "not_received" && Permission(user.permission, "update asset acceptance") && (
+                     {staging?.status === "not_received" && !role.includes(user.role) &&  Permission(user.permission, "update asset acceptance") && (
                         <MenuItem component={RouterLink} to={`/acceptance-asset/edit/${staging?.id}`}>
                            <ListItemIcon>
                               <Edit />

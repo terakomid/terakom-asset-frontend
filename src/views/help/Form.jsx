@@ -171,7 +171,7 @@ const Form = (props) => {
 										<TextField
 											variant="outlined"
 											label="Supporting Document *"
-											value={document.file_url}
+											value={document.file_url.split('/').pop()}
 											disabled
 											InputProps={{
 												startAdornment: (
@@ -202,7 +202,7 @@ const Form = (props) => {
 												type="file" 
 												onChange={(e) => {
 													let file = e.target.files[0]
-													let file_url = URL.createObjectURL(file)
+													let file_url = file.name
 													setDocument({
 														file,
 														file_url

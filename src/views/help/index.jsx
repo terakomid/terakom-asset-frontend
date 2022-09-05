@@ -129,6 +129,7 @@ const ModalFilter = (props) => {
    );
 };
 
+const role = ["Admin Department", "Employee"]
 const Index = () => {
    const { user } = useRecoilValue(authentication);
    const navigate = useNavigate();
@@ -301,8 +302,7 @@ const Index = () => {
                                        <TableCell>Created At</TableCell>
                                        <TableCell>Created By</TableCell>
                                        <TableCell>Rating</TableCell>
-                                       <TableCell>Status</TableCell>
-                                       {Permission(user.permission, "delete help") ? <TableCell align="center">Action</TableCell> : null}
+                                       <TableCell>Status</TableCell><TableCell align="center">Action</TableCell>
                                     </TableRow>
                                  </TableHead>
                                  <TableBody>
@@ -320,17 +320,18 @@ const Index = () => {
                                                 <TableCell>
                                                    <Rating readOnly value={value.rating} />
                                                 </TableCell>
-                                                <TableCell>
-                                                   {value.status === "open" && <Chip label="Open" color="primary" />}
-                                                   {value.status === "close" && <Chip label="Close" color="error" />}
+                                                <TableCell onClick={() => {
+                                                   handleMenu();
+                                                   navigate(`/help-detail/${value.id}`);
+                                                }}>
+                                                   {value.status === "open" && <Chip sx={{ cursor: 'pointer' }}  label="Open" color="primary" />}
+                                                   {value.status === "close" && <Chip sx={{ cursor: 'pointer' }}  label="Close" color="error" />}
                                                 </TableCell>
-                                                {Permission(user.permission, "delete help") ? (
-                                                   <TableCell align="center">
-                                                      <IconButton onClick={(e) => handleClick(e, value)}>
-                                                         <MoreVert />
-                                                      </IconButton>
-                                                   </TableCell>
-                                                ) : null}
+                                                <TableCell align="center">
+                                                   <IconButton onClick={(e) => handleClick(e, value)}>
+                                                      <MoreVert />
+                                                   </IconButton>
+                                                </TableCell>
                                              </TableRow>
                                           ))
                                        ) : (
@@ -378,7 +379,6 @@ const Index = () => {
                      <ModalFilter open={modalFilter} setParams={setParams} handleClose={handleModalFilter} />
 
                      {/* menu */}
-                     {Permission(user.permission, "delete help") ? (
                         <Menu
                            anchorEl={anchorEl}
                            open={open}
@@ -400,7 +400,7 @@ const Index = () => {
                                  Delete
                               </MenuItem>
                            )}
-                           {staging !== undefined && staging.status === "open" && user.role !== "Employee" && (
+                           {staging !== undefined && staging.status === "open" && !role.includes(user.role) && (
                               <MenuItem onClick={handleClose}>
                                  <ListItemIcon>
                                     <Close />
@@ -409,7 +409,6 @@ const Index = () => {
                               </MenuItem>
                            )}
                         </Menu>
-                     ) : null}
                   </div>
                </div>
             </div>
