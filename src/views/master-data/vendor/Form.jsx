@@ -167,8 +167,8 @@ export default function VendorForm() {
                                  variant="outlined"
                                  value={data.contact}
                                  onChange={handleChange}
-                                 error={!!error.cantact}
-                                 helperText={error.cantact !== undefined && error.cantact[0]}
+                                 error={!!error.contact}
+                                 helperText={error.contact !== undefined && error.contact[0]}
                                  fullWidth
                               />
                            </Grid>
