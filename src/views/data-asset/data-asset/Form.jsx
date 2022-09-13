@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
    Grid,
    Card,
@@ -58,6 +58,9 @@ import { LabelTable } from "../../../component/LabelTable";
 import { useSnackbar } from "notistack";
 import { useRecoilValue } from "recoil";
 import { authentication } from "../../../store/Authentication";
+import { DataURIToBlob } from "../../../help/DataUriToBlob";
+import Camera from "react-html5-camera-photo";
+import 'react-html5-camera-photo/build/css/index.css';
 
 const role = ["Admin Department", "Employee"]
 
@@ -613,6 +616,48 @@ const DetailComponent = (props) => {
    );
 };
 
+const ModalCamera = (props) => {
+   const ref = useRef(null)
+   const deleteCamera = () => {
+      ref.current.remove()
+   }
+
+   return (
+      <Dialog fullWidth maxWidth="md" open={props.open} onClose={props.handleClose} aria-labelledby="alert-dialog-title" aria-describedby="alert-dialog-description">
+         <DialogTitle>Camera</DialogTitle>
+         <DialogContent ref={ref}>
+            <Camera
+               idealFacingMode="user"
+               isSilentMode={true}
+               onTakePhoto = {(dataUri) => { 
+                  let blob = DataURIToBlob(dataUri) 
+                  let file = new File([blob], `Capture-${props.cameraIndex + 1}.png`, { type: 'image/png' });
+                  let file_url = URL.createObjectURL(file) 
+                  let file_name = file.name
+                  props.setEvidences((currentAnswers) => 
+                     produce(currentAnswers, (v) => { 
+                        v[props.cameraIndex] = { 
+                           id: "", 
+                           file, 
+                           file_url, 
+                           file_name, 
+                        };
+                     }) 
+                  ); 
+                  deleteCamera()
+                  props.handleClose()
+               }} 
+            />
+         </DialogContent>
+         <DialogActions>
+            <Button variant="success" onClick={props.handleClose}>
+               Close
+            </Button>
+         </DialogActions>
+      </Dialog>
+   )
+}
+
 const Form = (props) => {
    const [id, setId] = useState("");
    const { user } = useRecoilValue(authentication);
@@ -967,6 +1012,16 @@ const Form = (props) => {
       });
       setEvidences([...temp]);
    };
+
+   const [cameraOpen, setCameraOpen] = useState(false)
+   const [cameraIndex, setCameraIndex] = useState(0)
+   const handleCamera = () => {
+      setCameraOpen(!cameraOpen)
+   }
+   const handleOpenCamera = (i) => {
+      setCameraIndex(i)
+      handleCamera()
+   }
 
    const store = async (formData) => {
       try {
@@ -2146,6 +2201,10 @@ const Form = (props) => {
                                                       );
                                                    }}
                                                 />
+                                                <Chip 
+                                                   label="Take Photo"
+                                                   onClick={() => handleOpenCamera(i)}
+                                                />
                                                 <Stack direction="row" justifyContent={"center"} alignContent="center">
                                                    {user.role !== "Admin Department" && user.role !== "Employee" && v.file_url !== "" && props.title !== "add" &&
                                                       <a target="_blank" href={v.file_url} style={{ cursor: "pointer" }}>
@@ -2164,6 +2223,7 @@ const Form = (props) => {
                                                       />
                                                    )}
                                                 </Stack>
+                                                
                                              </Stack>
                                           </Grid>
                                        );
@@ -2185,6 +2245,14 @@ const Form = (props) => {
                                                 },
                                              ]);
                                           }}
+                                       />
+                                    </Grid>
+                                    <Grid item md={12} xs={12}>
+                                       <ModalCamera 
+                                          open={cameraOpen} 
+                                          handleClose={handleCamera} 
+                                          cameraIndex={cameraIndex} 
+                                          setEvidences={setEvidences} 
                                        />
                                     </Grid>
                                  </Grid>

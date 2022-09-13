@@ -130,7 +130,7 @@ const Index = () => {
                                           Lihat Detail Asset
                                        </Button>
                                        <Button variant="contained" onClick={handleEdit}>
-                                          Edit Asset
+                                          Reconcile Asset
                                        </Button>
                                     </>
                                  )}
