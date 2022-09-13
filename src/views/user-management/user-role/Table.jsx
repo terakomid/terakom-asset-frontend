@@ -67,7 +67,7 @@ const rows = [
     { id: 1, role: 'IT'},
     { id: 2, role: 'GA'},
     { id: 3, role: 'Admin Department'},
-    { id: 4, role: 'Staff'},
+    { id: 4, role: 'Employee'},
 ];
 
 export default Table
