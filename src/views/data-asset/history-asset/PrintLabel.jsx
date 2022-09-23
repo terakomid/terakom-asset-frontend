@@ -197,14 +197,11 @@ export default function Print() {
          .post(`print_label`, formData, {
             responseType: "blob",
          })
-         .then(function (response) {
-            // console.log(JSON.stringify(response.data));
-            const temp = window.URL.createObjectURL(new Blob([response.data]));
-            const link = document.createElement("a");
-            link.href = temp;
-            link.setAttribute("download", `Print-Label.pdf`);
-            document.body.appendChild(link);
-            link.click();
+         .then(function (res) {
+            const temp = window.URL.createObjectURL(new Blob([res.data], {
+               type: 'application/pdf'
+            }));
+            window.open(temp)
          })
          .catch((err) => {
             console.log(err.response);
@@ -244,7 +241,7 @@ export default function Print() {
                   <h3 className="fw-bold mb-0">Print Label</h3>
                   <Stack direction="row" spacing={1}>
                      <LoadingButton variant="contained" disabled={staging.asset.length < 1} loading={download} onClick={handlePrint} startIcon={<Download />}>
-                        Download Label
+                        Print Label
                      </LoadingButton>
                   </Stack>
                </div>

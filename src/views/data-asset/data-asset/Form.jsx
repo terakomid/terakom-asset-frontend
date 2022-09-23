@@ -82,12 +82,10 @@ const DetailModal = (props) => {
       const res = await http.post('print_label', formData, {
          responseType: 'blob'
       })
-      const temp = window.URL.createObjectURL(new Blob([res.data]));
-      const link = document.createElement("a");
-      link.href = temp;
-      link.setAttribute("download", `${props.data.asset_code}.pdf`); 
-      document.body.appendChild(link);
-      link.click();
+      const temp = window.URL.createObjectURL(new Blob([res.data], {
+         type: 'application/pdf'
+      }));
+      window.open(temp)
    }
 
    return (
@@ -575,19 +573,17 @@ const TabsComponent = (props) => {
 
 const DetailComponent = (props) => {
    const [asset_code, setAssetCode] = useState("");
-
+   
    const download = async () => {
       const formData = new FormData()
       formData.append('ids[]', props.data.id)
       const res = await http.post('print_label', formData, {
          responseType: 'blob'
       })
-      const temp = window.URL.createObjectURL(new Blob([res.data]));
-      const link = document.createElement("a");
-      link.href = temp;
-      link.setAttribute("download", `${asset_code}.pdf`); 
-      document.body.appendChild(link);
-      link.click();
+      const temp = window.URL.createObjectURL(new Blob([res.data], {
+         type: 'application/pdf'
+      }));
+      window.open(temp)
    }
 
    useEffect(() => {
