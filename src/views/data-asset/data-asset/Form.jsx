@@ -654,6 +654,48 @@ const ModalCamera = (props) => {
    )
 }
 
+const ModalCamera2 = (props) => {
+   const ref = useRef(null)
+   const deleteCamera = () => {
+      ref.current.remove()
+   }
+
+   return (
+      <Dialog fullWidth maxWidth="md" open={props.open} onClose={props.handleClose} aria-labelledby="alert-dialog-title" aria-describedby="alert-dialog-description">
+         <DialogTitle>Camera</DialogTitle>
+         <DialogContent ref={ref}>
+            <Camera
+               idealFacingMode="user"
+               isSilentMode={true}
+               onTakePhoto = {(dataUri) => { 
+                  let blob = DataURIToBlob(dataUri) 
+                  let image_file = new File([blob], `Capture-${props.cameraIndex + 1}.png`, { type: 'image/png' });
+                  let image_preview = URL.createObjectURL(image_file) 
+                  let image_name = image_file.name
+                  props.setPictures((currentAnswers) => 
+                     produce(currentAnswers, (v) => { 
+                        v[props.cameraIndex] = {
+                           id: "",
+                           image_file,
+                           image_preview,
+                           image_name,
+                        };
+                     }) 
+                  ); 
+                  deleteCamera()
+                  props.handleClose()
+               }} 
+            />
+         </DialogContent>
+         <DialogActions>
+            <Button variant="success" onClick={props.handleClose}>
+               Close
+            </Button>
+         </DialogActions>
+      </Dialog>
+   )
+}
+
 const Form = (props) => {
    const [id, setId] = useState("");
    const { user } = useRecoilValue(authentication);
@@ -1017,6 +1059,16 @@ const Form = (props) => {
    const handleOpenCamera = (i) => {
       setCameraIndex(i)
       handleCamera()
+   }
+   
+   const [cameraOpen2, setCameraOpen2] = useState(false)
+   const [cameraIndex2, setCameraIndex2] = useState(0)
+   const handleCamera2 = () => {
+      setCameraOpen2(!cameraOpen2)
+   }
+   const handleOpenCamera2 = (i) => {
+      setCameraIndex2(i)
+      handleCamera2()
    }
 
    const store = async (formData) => {
@@ -2080,6 +2132,10 @@ const Form = (props) => {
                                                       );
                                                    }}
                                                 />
+                                                <Chip 
+                                                   label="Take Photo"
+                                                   onClick={() => handleOpenCamera2(i)}
+                                                />
                                                 <Stack  direction="row" justifyContent={"center"} alignContent="center">
                                                    {v.image_preview !== "" && 
                                                       <a target="_blank" href={v.image_preview} style={{ cursor: "pointer" }}>
@@ -2119,6 +2175,16 @@ const Form = (props) => {
                                           }}
                                        />
                                     </Grid>
+                                    {!props.detail && 
+                                    <Grid item md={12} xs={12}>
+                                       <ModalCamera2
+                                          open={cameraOpen2} 
+                                          handleClose={handleCamera2} 
+                                          cameraIndex={cameraIndex2} 
+                                          setPictures={setPictures} 
+                                       />
+                                    </Grid>
+                                    }
                                  </Grid>
                               </Grid>
                               }
