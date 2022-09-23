@@ -42,12 +42,12 @@ export default function Vendor() {
 
    const getData = async () => {
       http
-         .get(`/vendor`, {
+         .get(`vendor`, {
             params: params,
          })
          .then((res) => {
             // console.log(res.data.data);
-            setRows(res.data.data);
+            setRows(res.data.data.data);
          })
          .catch((err) => {
             // console.log(err.response);
