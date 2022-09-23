@@ -2243,6 +2243,7 @@ const Form = (props) => {
                                           }}
                                        />
                                     </Grid>
+                                    {!props.detail && 
                                     <Grid item md={12} xs={12}>
                                        <ModalCamera 
                                           open={cameraOpen} 
@@ -2251,6 +2252,7 @@ const Form = (props) => {
                                           setEvidences={setEvidences} 
                                        />
                                     </Grid>
+                                    }
                                  </Grid>
                               </Grid>
                            </Grid>
