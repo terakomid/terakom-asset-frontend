@@ -330,6 +330,7 @@ export default function CostCenter() {
                         <table border={1} id="table-export" style={{ display: "none" }}>
                            <thead>
                               <tr>
+                                 <td>Id</td>
                                  <td>Cost Center Code</td>
                                  <td>Cost Center Name</td>
                               </tr>
@@ -338,6 +339,7 @@ export default function CostCenter() {
                               {rows.map((value, key) => {
                                  return (
                                     <tr key={key}>
+                                       <td>{value.id}</td>
                                        <td>{value.code}</td>
                                        <td>{value.name}</td>
                                     </tr>

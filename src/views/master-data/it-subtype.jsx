@@ -340,6 +340,7 @@ export default function ItSubType() {
                         <table border={1} id="table-export" style={{ display: "none" }}>
                            <thead>
                               <tr>
+                                 <td>Id</td>
                                  <td>Sub Type</td>
                               </tr>
                            </thead>
@@ -347,6 +348,7 @@ export default function ItSubType() {
                               {rows.map((value, key) => {
                                  return (
                                     <tr key={key}>
+                                       <td>{value.id}</td>
                                        <td>{value.sub_type}</td>
                                     </tr>
                                  );

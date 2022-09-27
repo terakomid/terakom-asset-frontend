@@ -331,6 +331,7 @@ export default function AssetCategory() {
                         <table border={1} id="table-export" style={{ display: "none" }}>
                            <thead>
                               <tr>
+                                 <td>Id</td>
                                  <td>Code</td>
                                  <td>Category</td>
                               </tr>
@@ -339,6 +340,7 @@ export default function AssetCategory() {
                               {rows.map((value, key) => {
                                  return (
                                     <tr key={key}>
+                                       <td>{value.id}</td>
                                        <td>{value.code}</td>
                                        <td>{value.category}</td>
                                     </tr>

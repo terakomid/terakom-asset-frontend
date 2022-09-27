@@ -263,6 +263,7 @@ export default function Vendor() {
                         {rows.map((value, key) => {
                            return (
                               <tr key={key}>
+                                 <td>{value.id}</td>
                                  <td>{value.code}</td>
                                  <td>{value.name}</td>
                                  <td>{value.address}</td>

@@ -47,11 +47,6 @@ export default function AssetIT() {
             <div className="container">
                <div className="d-flex align-items-center justify-content-between mt-2 mb-4">
                   <h3 className="fw-bold mb-0">Master IT</h3>
-                  <Stack direction="row" spacing={1}>
-                     <Button variant="contained" startIcon={<FileUpload />}>
-                        Export
-                     </Button>
-                  </Stack>
                </div>
                <Card>
                   <CardContent>

@@ -328,6 +328,7 @@ export default function Department() {
                         <table border={1} id="table-export" style={{ display: "none" }}>
                            <thead>
                               <tr>
+                                 <td>Id</td>
                                  <td>Department</td>
                               </tr>
                            </thead>
@@ -335,6 +336,7 @@ export default function Department() {
                               {rows.map((value, key) => {
                                  return (
                                     <tr key={key}>
+                                       <td>{value.id}</td>
                                        <td>{value.dept}</td>
                                     </tr>
                                  );

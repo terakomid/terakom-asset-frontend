@@ -48,7 +48,7 @@ export default function AssetSubCategory() {
       sub_category: "",
    });
    const [error, setError] = useState("");
-   const [usefulLife] = useState([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]);
+   const [usefulLife] = useState([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]);
    const [params, setParams] = useState({
       category_id: id,
       search: "",
@@ -296,7 +296,12 @@ export default function AssetSubCategory() {
                                                    {page * rowsPerPage + key + 1}.
                                                 </TableCell>
                                                 <TableCell>{value.sub_category}</TableCell>
+                                                {value.useful_life === 0 ?
+                                                <TableCell>Not Deprecated</TableCell>
+                                                :
                                                 <TableCell>{value.useful_life} Bulan</TableCell>
+                                                }
+                                                
                                                 {Permission(user.permission, "update sub category") || Permission(user.permission, "delete sub category") ? (
                                                    <TableCell align="center">
                                                       <IconButton onClick={(e) => handleClick(e, value)}>
@@ -348,6 +353,7 @@ export default function AssetSubCategory() {
                         <table border={1} id="table-export" style={{ display: "none" }}>
                            <thead>
                               <tr>
+                                 <td>Id</td>
                                  <td>Sub Category</td>
                                  <td>Useful Life</td>
                               </tr>
@@ -356,6 +362,7 @@ export default function AssetSubCategory() {
                               {rows.map((value, key) => {
                                  return (
                                     <tr key={key}>
+                                       <td>{value.id}</td>
                                        <td>{value.sub_category}</td>
                                        <td>{value.useful_life}</td>
                                     </tr>
@@ -403,11 +410,21 @@ export default function AssetSubCategory() {
                                  fullWidth
                                  required
                               >
-                                 {usefulLife.map((value, index) => (
-                                    <MenuItem value={value * 12} key={index}>
-                                       {value * 12} Bulan
-                                    </MenuItem>
-                                 ))}
+                                 {usefulLife.map((value, index) => {
+                                    if(value === 0){
+                                       return (
+                                          <MenuItem value={value * 12} key={index}>
+                                             Not Deprecated
+                                          </MenuItem>
+                                       )   
+                                    }else{
+                                       return (
+                                          <MenuItem value={value * 12} key={index}>
+                                             {value * 12} Bulan
+                                          </MenuItem>   
+                                       )
+                                   }
+                                 })}
                               </TextField>
                               <FormControl margin="normal">
                                  <Stack direction="row" spacing={1}>

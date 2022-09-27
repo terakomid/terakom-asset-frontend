@@ -319,6 +319,7 @@ export default function AssetCondition() {
                         <table border={1} id="table-export" style={{ display: "none" }}>
                            <thead>
                               <tr>
+                                 <td>Id</td>
                                  <td>Asset Condition</td>
                               </tr>
                            </thead>
@@ -326,6 +327,7 @@ export default function AssetCondition() {
                               {rows.map((value, key) => {
                                  return (
                                     <tr key={key}>
+                                       <td>{value.id}</td>
                                        <td>{value.condition}</td>
                                     </tr>
                                  );

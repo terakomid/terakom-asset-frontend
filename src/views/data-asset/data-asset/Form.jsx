@@ -1552,7 +1552,7 @@ const Form = (props) => {
                            <Grid container mt={2} spacing={2}>
                               <Grid item md={6} xs={12}>
                                  <Autocomplete
-                                    disabled={props.detail || user.role === "Admin Department" ? true : false}
+                                    disabled={props.detail}
                                     freeSolo
                                     disableClearable
                                     options={employees}
@@ -2116,6 +2116,7 @@ const Form = (props) => {
                                                    type="file"
                                                    style={{ display: "none" }}
                                                    id={`img-${i}`}
+                                                   accept="image/*"
                                                    onChange={(e) => {
                                                       let image_file = e.target.files[0];
                                                       let image_preview = URL.createObjectURL(e.target.files[0]);
@@ -2132,10 +2133,12 @@ const Form = (props) => {
                                                       );
                                                    }}
                                                 />
+                                                {!props.detail && 
                                                 <Chip 
                                                    label="Take Photo"
                                                    onClick={() => handleOpenCamera2(i)}
                                                 />
+                                                }
                                                 <Stack  direction="row" justifyContent={"center"} alignContent="center">
                                                    {v.image_preview !== "" && 
                                                       <a target="_blank" href={v.image_preview} style={{ cursor: "pointer" }}>
@@ -2247,6 +2250,7 @@ const Form = (props) => {
                                                    disabled={props.detail || user.role === "Admin Department" ? true : false}
                                                    style={{ display: "none" }}
                                                    id={`ev-${i}`}
+                                                   accept="image/*,.pdf"
                                                    onChange={(e) => {
                                                       let file = e.target.files[0];
                                                       let file_url = URL.createObjectURL(file)
@@ -2263,12 +2267,14 @@ const Form = (props) => {
                                                       );
                                                    }}
                                                 />
+                                                {user.role !== "employee" && user.role !== "Admin Department" && !props.detail &&
                                                 <Chip 
                                                    label="Take Photo"
                                                    onClick={() => handleOpenCamera(i)}
                                                 />
+                                                }
                                                 <Stack direction="row" justifyContent={"center"} alignContent="center">
-                                                   {user.role !== "Admin Department" && user.role !== "Employee" && v.file_url !== "" && props.title !== "add" &&
+                                                   {user.role !== "Admin Department" && user.role !== "Employee" && v.file_url !== "" && 
                                                       <a target="_blank" href={v.file_url} style={{ cursor: "pointer" }}>
                                                          <Download sx={{ fontSize: "10x", marginTop: "1px", marginRight: "3px" }} />
                                                       </a>

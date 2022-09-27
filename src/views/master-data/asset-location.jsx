@@ -392,6 +392,7 @@ export default function AssetLocation() {
                         <table border={1} id="table-export" style={{ display: "none" }}>
                            <thead>
                               <tr>
+                                 <td>Id</td>
                                  <td>Code</td>
                                  <td>Location</td>
                                  <td>Parent</td>
@@ -401,6 +402,7 @@ export default function AssetLocation() {
                               {rows.map((value, key) => {
                                  return (
                                     <tr key={key}>
+                                       <td>{value.id}</td>
                                        <td>{value.code}</td>
                                        <td>{value.location}</td>
                                        <td>{value.parent !== null && value.parent.location}</td>
