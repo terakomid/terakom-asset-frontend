@@ -223,11 +223,14 @@ export default function ItSubType() {
             <div className="container">
                <div className="d-flex align-items-center justify-content-between my-2">
                   <h3 className="fw-bold mb-0">Sub Master IT {category !== undefined && ` - ${category.type}`}</h3>
-                  <Stack direction="row" spacing={1}>
-                     <Button variant="contained" startIcon={<FileUpload />} onClick={handleExport}>
-                        Export
-                     </Button>
-                  </Stack>
+                  {rows !== undefined &&
+                     rows.length > 0 &&
+                     <Stack direction="row" spacing={1}>
+                        <Button variant="contained" startIcon={<FileUpload />} onClick={handleExport}>
+                           Export
+                        </Button>
+                     </Stack>
+                  }
                </div>
                <div className="row">
                   <div

@@ -212,10 +212,15 @@ export default function Department() {
                      <Button variant="contained" startIcon={<FileDownload />} onClick={handleModalImport}>
                         Import
                      </Button>
-                     <Button variant="contained" startIcon={<FileUpload />} onClick={handleExport}>
-                        Export
-                     </Button>
-                  </Stack>
+                     {rows !== undefined &&
+                        rows.length > 0 &&
+                        <Stack direction="row" spacing={1}>
+                           <Button variant="contained" startIcon={<FileUpload />} onClick={handleExport}>
+                              Export
+                           </Button>
+                        </Stack>
+                     }
+                 </Stack>
                </div>
                <div className="row">
                   <div

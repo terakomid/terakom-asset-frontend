@@ -131,10 +131,15 @@ export default function Vendor() {
                      <Button variant="contained" startIcon={<FileDownload />} onClick={handleModalImport}>
                         Import
                      </Button>
-                     <Button variant="contained" startIcon={<FileUpload />} onClick={handleExport}>
-                        Export
-                     </Button>
-                     {Permission(user.permission, "create vendor") && (
+                     {rows !== undefined &&
+                        rows.length > 0 &&
+                        <Stack direction="row" spacing={1}>
+                           <Button variant="contained" startIcon={<FileUpload />} onClick={handleExport}>
+                              Export
+                           </Button>
+                        </Stack>
+                     }
+                    {Permission(user.permission, "create vendor") && (
                         <Button variant="contained" startIcon={<AddRounded />} component={RouterLink} to="./add">
                            Add Vendor
                         </Button>
