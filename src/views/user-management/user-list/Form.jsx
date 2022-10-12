@@ -20,6 +20,7 @@ import {
    RadioGroup,
    FormControlLabel,
    Radio,
+   Autocomplete,
 } from "@mui/material";
 
 import { LoadingButton } from "@mui/lab";
@@ -58,7 +59,10 @@ const Form = (props) => {
    const [errors, setErrors] = useState({});
    const [showNew, setShowNew] = useState("password");
    const [showCon, setShowCon] = useState("password");
-
+   const [search, setSearch] = useState({
+      department: '',
+      location: ''
+   })
   
    const onShowNew = (e) => {
       if (showNew === "password") {
@@ -114,6 +118,11 @@ const Form = (props) => {
                   password: "",
                   password_confirmation: "",
                });
+               setSearch({
+                  ...search,
+                  department: data.dept.dept,
+                  location: `${data.location.code} - ${data.location.dept}`
+               })
                setImage({
                   ...image,
                   image_preview: data.photo_url,
@@ -282,24 +291,38 @@ const Form = (props) => {
                                  />
                               </Grid>
                               <Grid item xs={12} md={6}>
-                                 <TextField
-                                    name="department"
-                                    label="Department"
+                                 <Autocomplete
+                                    freeSolo
+                                    disableClearable
+                                    options={departmentOptions}
                                     fullWidth
-                                    select
-                                    value={form.department}
-                                    onChange={onChange}
-                                    disabled={!isComplete}
-                                    required
-                                 >
-                                    {departmentOptions.length > 0 &&
-                                       departmentOptions.map((v) => (
-                                          <MenuItem key={v.id} value={v.id}>
-                                             {v.dept}
-                                          </MenuItem>
-                                       ))}
-                                    {departmentOptions.length == 0 && <MenuItem disabled>Kosong</MenuItem>}
-                                 </TextField>
+                                    getOptionLabel={(option) => {
+                                       return `${option.dept}`;
+                                    }}
+                                    inputValue={search.department}
+                                    onInputChange={(event, newInputValue, reason) => {
+                                       setSearch({
+                                          ...search,
+                                          department: newInputValue
+                                       })
+                                    }}
+                                    onChange={(e, value) => {
+                                       setForm({
+                                          ...form,
+                                          department: value.id
+                                       })
+                                    }}
+                                    renderInput={(params) => (
+                                       <TextField
+                                          {...params}
+                                          label="Department"
+                                          InputProps={{
+                                             ...params.InputProps,
+                                             type: "search",
+                                          }}
+                                       />
+                                    )}
+                                 />
                               </Grid>
                               <Grid item xs={12} md={6}>
                                  <TextField name="role" label="Role" fullWidth select value={form.role} onChange={onChange} disabled={!isComplete} required>
@@ -313,26 +336,38 @@ const Form = (props) => {
                                  </TextField>
                               </Grid>
                               <Grid item xs={12} md={12}>
-                                 <TextField 
-                                    name="location_id" 
-                                    label="Location" 
-                                    fullWidth 
-                                    multiline 
-                                    rows={4} 
-                                    value={form.location_id} 
-                                    onChange={onChange} 
-                                    helperText={typeof errors?.location_id !== 'undefined' ? errors.location_id[0] : ''}
-                                    error={typeof errors?.location_id !== 'undefined' ? true : false}
-                                    select
-                                 >
-                                    {locationOptions.length > 0 &&
-                                       locationOptions.map((v) => (
-                                          <MenuItem key={v.id} value={v.id}>
-                                          {`${v.code} - ${v.location}`}
-                                          </MenuItem>
-                                       ))}
-                                    {locationOptions.length == 0 && <MenuItem disabled>Kosong</MenuItem>}
-                                 </TextField>
+                                 <Autocomplete
+                                    freeSolo
+                                    disableClearable
+                                    options={locationOptions}
+                                    fullWidth
+                                    getOptionLabel={(option) => {
+                                       return `${option.code} - ${option.location}`;
+                                    }}
+                                    inputValue={search.location}
+                                    onInputChange={(event, newInputValue, reason) => {
+                                       setSearch({
+                                          ...search,
+                                          location: newInputValue
+                                       })
+                                    }}
+                                    onChange={(e, value) => {
+                                       setForm({
+                                          ...form,
+                                          location_id: value.id
+                                       })
+                                    }}
+                                    renderInput={(params) => (
+                                       <TextField
+                                          {...params}
+                                          label="Location"
+                                          InputProps={{
+                                             ...params.InputProps,
+                                             type: "search",
+                                          }}
+                                       />
+                                    )}
+                                 />
                               </Grid>
                               <Grid item xs={12} md={12}>
                                  <TextField 
