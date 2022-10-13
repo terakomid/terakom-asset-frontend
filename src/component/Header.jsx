@@ -170,7 +170,7 @@ export default function Header() {
                            </div>
                         </div>
                      </div>
-                     <Box sx={{ height: '50vh', overflowY: 'auto' }}>
+                     <Box sx={{ maxHeight: '50vh', overflowY: 'auto' }}>
                         {notification.length > 0 ? (
                            notification.map((value, index) => (
                               <a href="#" className="text-reset notification-item" key={index} onClick={() => readNotification(value)}>
