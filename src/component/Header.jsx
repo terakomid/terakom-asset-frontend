@@ -3,16 +3,18 @@ import { Box } from "@mui/material";
 import { NotificationsNoneOutlined } from "@mui/icons-material";
 import { useRecoilState } from "recoil";
 import { authentication } from "../store/Authentication";
+import { notificationRecoil } from "../store/Notification";
 import { Link, useNavigate } from "react-router-dom";
 import addNotification, { Notifications } from "react-push-notification";
 import http from "../component/api/Api";
 import "../App.css";
+import moment from "moment";
 
 export default function Header() {
    const navigate = useNavigate();
    const [auth, setAuth] = useRecoilState(authentication);
 
-   const [notification, setNotification] = useState([]);
+   const [notification, setNotification] = useRecoilState(notificationRecoil);
    const getNotification = async () => {
       await http.get(`notification`).then((res) => {
          // console.log(res.data.data);
@@ -77,6 +79,9 @@ export default function Header() {
                <div className="text-muted">
                   {value.data.asset.asset_code} - {value.data.asset.asset_name}
                </div>
+               <div className="text-muted">
+                  {moment(value.created_at).fromNow()}
+               </div>
             </div>
          );
       } else if (category === "AddNewAssetAcceptance") {
@@ -85,6 +90,9 @@ export default function Header() {
                <h6 className="mb-1">{value.data.from.name} - Add New Acceptance Asset</h6>
                <div className="text-muted">
                   {value.data.asset_acceptance.asset_code} - {value.data.asset_acceptance.asset_name}
+               </div>
+               <div className="text-muted">
+                  {moment(value.created_at).fromNow()}
                </div>
             </div>
          );
@@ -158,11 +166,11 @@ export default function Header() {
                      <div className="p-3 border-bottom">
                         <div className="row align-items-center">
                            <div className="col">
-                              <h5 className="m-0">Notifications {notification.length > 0 && `(${notification.length})`}</h5>
+                              <h5 onClick={() => navigate('/notification')} className="m-0" style={{ cursor: 'pointer' }}>See All Notifications {notification.length > 0 && `(${notification.length})`}</h5>
                            </div>
                         </div>
                      </div>
-                     <div>
+                     <Box sx={{ height: '50vh', overflowY: 'auto' }}>
                         {notification.length > 0 ? (
                            notification.map((value, index) => (
                               <a href="#" className="text-reset notification-item" key={index} onClick={() => readNotification(value)}>
@@ -184,7 +192,7 @@ export default function Header() {
                               You have no notifications.
                            </Box>
                         )}
-                     </div>
+                     </Box>
                      {/* {notification.length > 0 && (
                         <div className="p-2 border-top">
                            <a className="btn btn-sm btn-link font-size-14 w-100 text-center" href="#link">

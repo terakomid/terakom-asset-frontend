@@ -597,8 +597,6 @@ const DetailComponent = (props) => {
    return (
       <Grid item xs={12} md={12} alignItems="center" justifyContent="center" display="flex" flexDirection={"column"}>
          <Grid container spacing={3} mt={2} justifyContent={"center"} alignItems="center">
-            
-
             <Grid item md={6} xs={12}>
                <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                   <LabelTable data={props.data} />

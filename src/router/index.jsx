@@ -13,6 +13,7 @@ import NewPassword from "../views/auth/new-password";
 //Header
 import Profil from "../views/headers/profil/Form";
 import ChangePassword from "../views/headers/reset-password/Form";
+import AllNotification from "../views/headers/notification"
 
 // Dashboard
 import Dashboard from "../views/dashboard/Index";
@@ -128,7 +129,14 @@ export default function Router() {
                   </Middleware.After>
                }
             />
-
+            <Route
+               path="/notification"
+               element={
+                  <Middleware.After>
+                     <Layout render={<AllNotification />} />
+                  </Middleware.After>
+               }
+            />
             {/* Dashboard */}
             <Route
                path="/dashboard"
