@@ -61,6 +61,7 @@ import { authentication } from "../../../store/Authentication";
 import { DataURIToBlob } from "../../../help/DataUriToBlob";
 import Camera from "react-html5-camera-photo";
 import 'react-html5-camera-photo/build/css/index.css';
+import { Permission } from "../../../component/Permission";
 
 const role = ["Admin Department", "Employee"]
 
@@ -573,7 +574,8 @@ const TabsComponent = (props) => {
 
 const DetailComponent = (props) => {
    const [asset_code, setAssetCode] = useState("");
-   
+   const { user } = useRecoilValue(authentication);
+   const navigate = useNavigate();
    const download = async () => {
       const formData = new FormData()
       formData.append('ids[]', props.data.id)
@@ -584,6 +586,14 @@ const DetailComponent = (props) => {
          type: 'application/pdf'
       }));
       window.open(temp)
+   }
+
+   const navigateEditAsset = (data) => {
+      if (data.asset_type === "it") {
+         navigate(`/edit-data-asset-it/${data.id}`);
+      } else {
+         navigate(`/edit-data-asset-non-it/${data.id}`);
+      }
    }
 
    useEffect(() => {
@@ -603,9 +613,16 @@ const DetailComponent = (props) => {
                </Box>
             </Grid>
          </Grid>
-         <Button sx={{ mt: 2 }} onClick={download} variant="contained">
+         <Box sx={{ mt: 2 }}>
+         <Button onClick={download} variant="contained">
             Print Label
          </Button>
+         {Permission(user.permission, "update asset") &&
+         <Button sx={{ ml: 1 }} onClick={() => navigateEditAsset(props.data)} variant="contained">
+            Edit Asset 
+         </Button>
+         }
+         </Box>
       </Grid>
    );
 };
