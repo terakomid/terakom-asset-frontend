@@ -1963,7 +1963,7 @@ const Form = (props) => {
                                                 value={form.snnbpc}
                                                 name="snnbpc"
                                                 fullWidth
-                                                label="SN NB & PC"
+                                                label="Serial Number"
                                              />
                                           </Grid>
                                           <Grid item md={12} xs={12}>
