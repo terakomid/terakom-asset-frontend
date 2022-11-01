@@ -197,11 +197,18 @@ export default function Print() {
          .post(`print_label`, formData, {
             responseType: "blob",
          })
-         .then(function (res) {
-            const temp = window.URL.createObjectURL(new Blob([res.data], {
-               type: 'application/pdf'
-            }));
-            window.open(temp)
+         .then(function (response) {
+            // console.log(JSON.stringify(response.data));
+            // const temp = window.URL.createObjectURL(new Blob([response.data], {
+            //    type: 'application/pdf'
+            // }));
+            // window.open(temp)
+            const temp = window.URL.createObjectURL(new Blob([response.data]));
+            const link = document.createElement("a");
+            link.href = temp;
+            link.setAttribute("download", `Print-Label.pdf`);
+            document.body.appendChild(link);
+            link.click();
          })
          .catch((err) => {
             console.log(err.response);
