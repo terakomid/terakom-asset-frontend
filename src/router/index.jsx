@@ -25,6 +25,7 @@ import UserRole from "../views/user-management/user-role/Content";
 import ListUser from "../views/user-management/user-list";
 import ListUserAdd from "../views/user-management/user-list/Add";
 import ListUserEdit from "../views/user-management/user-list/Edit";
+import AddUserReplacement from "../views/user-management/user-replacement/Add"
 
 // Master Data
 import AssetLocation from "../views/master-data/asset-location";
@@ -177,6 +178,14 @@ export default function Router() {
                element={
                   <Middleware.After>
                      <Layout render={<ListUser />} />
+                  </Middleware.After>
+               }
+            />
+            <Route
+               path="/user-replacement"
+               element={
+                  <Middleware.After>
+                     <Layout render={<AddUserReplacement />} />
                   </Middleware.After>
                }
             />

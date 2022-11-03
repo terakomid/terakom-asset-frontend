@@ -47,6 +47,13 @@ export default function Sidebar() {
                                  </Link>
                               </li>
                            )}
+                           {Permission(user.permission, "get user") && (
+                              <li role="menuitem">
+                                 <Link to="/user-replacement" className="text-capitalize">
+                                    user replacement
+                                 </Link>
+                              </li>
+                           )}
                         </ul>
                      </li>
                   ) : null}
