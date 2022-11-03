@@ -83,16 +83,21 @@ const DetailModal = (props) => {
       const res = await http.post('print_label', formData, {
          responseType: 'blob'
       })
-      const temp = window.URL.createObjectURL(new Blob([res.data]));
-      const link = document.createElement("a");
-      link.href = temp;
-      link.setAttribute("download", `${props.data.asset_code}.pdf`); 
-      document.body.appendChild(link);
-      link.click();
-      // const temp = window.URL.createObjectURL(new Blob([res.data], {
-      //    type: 'application/pdf'
-      // }));
-      // window.open(temp)
+      
+      // print without download
+      const temp = window.URL.createObjectURL(new Blob([res.data], {
+         type: 'application/pdf'
+      }));
+      window.open(temp)
+
+      // download print
+      // const temp = window.URL.createObjectURL(new Blob([res.data]));
+      // const link = document.createElement("a");
+      // link.href = temp;
+      // link.setAttribute("download", `${props.data.asset_code}.pdf`); 
+      // document.body.appendChild(link);
+      // link.click();
+      
    }
 
    return (
@@ -588,16 +593,20 @@ const DetailComponent = (props) => {
       const res = await http.post('print_label', formData, {
          responseType: 'blob'
       })
-      const temp = window.URL.createObjectURL(new Blob([res.data]));
-      const link = document.createElement("a");
-      link.href = temp;
-      link.setAttribute("download", `${props.data.asset_code}.pdf`); 
-      document.body.appendChild(link);
-      link.click();
-      // const temp = window.URL.createObjectURL(new Blob([res.data], {
-      //    type: 'application/pdf'
-      // }));
-      // window.open(temp)
+
+      // print without download
+      const temp = window.URL.createObjectURL(new Blob([res.data], {
+         type: 'application/pdf'
+      }));
+      window.open(temp)
+
+      // donwload print
+      // const temp = window.URL.createObjectURL(new Blob([res.data]));
+      // const link = document.createElement("a");
+      // link.href = temp;
+      // link.setAttribute("download", `${props.data.asset_code}.pdf`); 
+      // document.body.appendChild(link);
+      // link.click();
    }
 
    const navigateEditAsset = (data) => {
