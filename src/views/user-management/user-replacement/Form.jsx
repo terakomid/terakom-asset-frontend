@@ -72,11 +72,13 @@ const Form = (props) => {
             search: '',
             limit: 5,
             paginate: 1,
+            vacant: 1,
         },
         to: {
             search: '',
             limit: 5,
             paginate: 1,
+            vacant: 1,
         }
     })
     const [employeeData, setEmployeeData] = useState({

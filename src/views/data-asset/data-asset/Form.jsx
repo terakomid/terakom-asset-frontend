@@ -876,6 +876,7 @@ const Form = (props) => {
       paginate: 1,
       limit: 3,
       search: "",
+      vacant: 1,
    });
    const getEmployees = async () => {
       const res = await http.get(`user`, {
