@@ -53,6 +53,8 @@ const Form = (props) => {
 		from: '',
         to: '',
 	});
+    const { enqueueSnackbar } = useSnackbar();
+
 	const [loading, setLoading] = useState(false);
 	const [assetId, setAssetId] = useState([])
 
@@ -160,14 +162,27 @@ const Form = (props) => {
 
 	const onSubmit = (e) => {
 		e.preventDefault();
+        setLoading(true)
         const formData = new FormData();
-        formData.append('from', form.from)
-        formData.append('to', form.to)
+        formData.append('user_from_id', form.from)
+        formData.append('user_to_id', form.to)
         assetId.map((v, i) => {
-            formData.append(`asset_ids[${i}]`, v)
+            formData.append(`asset_id[${i}]`, v)
         })
 
-        console.table(Object.fromEntries(formData))
+        http.post(`/asset/replacement`, formData)
+        .then(res => {
+            setLoading(false)
+            enqueueSnackbar("Success Replacement Asset Data", { variant: "success" })
+            setAssetId([])
+            
+        })
+        .catch(err => {
+            setLoading(false)
+            if(err.response){
+                enqueueSnackbar("Failed Replacement Asset Data", { variant: "error" })
+            }
+        })
 	};
 
 	return (
@@ -384,8 +399,8 @@ const Form = (props) => {
 									}
                                 </Grid>
 							</Grid>
-							<LoadingButton disabled={props.title !== "add" && props.data?.status === "accepted" ? true : false} sx={{ display: "flex", mt: 3, borderRadius: 25, ml: "auto" }} type="submit" loading={loading} variant="contained">
-								{props.title !== "add" ? "Save" : "Create"}
+							<LoadingButton sx={{ display: "flex", mt: 3, borderRadius: 25, ml: "auto" }} type="submit" loading={loading} variant="contained">
+								Save
 							</LoadingButton>
 						</Box>
 					</CardContent>
