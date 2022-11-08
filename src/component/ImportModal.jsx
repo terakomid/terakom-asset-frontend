@@ -1,11 +1,40 @@
 import React, { useState } from "react";
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, InputAdornment, TextField, Tooltip } from "@mui/material";
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, InputAdornment, Stack, TextField, Tooltip, Typography } from "@mui/material";
 import { Close, FileUploadOutlined, InsertDriveFile } from "@mui/icons-material";
 import { LoadingButton } from "@mui/lab";
 import PropTypes from "prop-types";
 import http from "../component/api/Api";
 
 import { useSnackbar } from "notistack";
+
+const ErrorModal = (props) => {
+   return (
+      <Dialog
+         fullWidth
+         maxWidth="md"
+         open={props.open}
+         onClose={props.handleClose}
+         aria-labelledby="alert-dialog-title"
+         aria-describedby="alert-dialog-description"
+      >
+         <DialogTitle>Error Import Excel Data Asset</DialogTitle>
+         <DialogContent>
+            <Stack>
+               {props.data?.map((v, i) => {
+                  return (
+                     <Typography py={2} fontStyle="italic">{`${i +1}. ${v}`}</Typography>
+                  )
+               })}
+            </Stack>
+         </DialogContent>
+         <DialogActions>
+            <Button variant="text" onClick={props.handleClose}>
+               Ok
+            </Button>
+         </DialogActions>
+      </Dialog>
+   )
+}
 
 export const ImportModal = (props) => {
    const { enqueueSnackbar } = useSnackbar();
@@ -14,6 +43,8 @@ export const ImportModal = (props) => {
       file_url: "",
    });
    const [loading, setLoading] = useState(false);
+   const [openModalError, setOpenModalError] = useState(false);
+   const [dataError, setDataError] = useState([])
 
    const submitData = async () => {
       const formData = new FormData();
@@ -35,13 +66,22 @@ export const ImportModal = (props) => {
          })
          .catch((err) => {
             if(err.response){
-               setDocument({
-                  file: "",
-                  file_url: "",
-               });
-               enqueueSnackbar("Failed Import Data", { variant: 'error' })
-               props.getData();
-               props.handleClose();
+               if(err.response.status == 422 && props.url == 'asset/import_excel'){
+                  setDocument({
+                     file: "",
+                     file_url: "",
+                  });
+                  setOpenModalError(true)
+                  setDataError([...err.response.data.errors])
+               }else{
+                  setDocument({
+                     file: "",
+                     file_url: "",
+                  });
+                  enqueueSnackbar("Failed Import Data", { variant: 'error' })
+                  props.getData();
+                  props.handleClose();              
+               }
             }
          })
          .finally(() => {
@@ -49,6 +89,9 @@ export const ImportModal = (props) => {
          });
    };
 
+   const handleErrorModalClose = () => {
+      setOpenModalError(!openModalError)
+   }
    return (
       <Dialog
          fullWidth
@@ -111,6 +154,7 @@ export const ImportModal = (props) => {
                   />
                </Button>
             )}
+            <ErrorModal data={dataError} open={openModalError} handleClose={handleErrorModalClose} />
          </DialogContent>
          <DialogActions>
             <Button variant="text" onClick={props.handleClose}>
