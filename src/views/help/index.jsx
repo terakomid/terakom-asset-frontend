@@ -44,6 +44,7 @@ import {
    DoneOutline,
    Close,
    InfoOutlined,
+   Assessment
 } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import FileUploadIcon from "@mui/icons-material/FileUpload";
@@ -144,7 +145,9 @@ const Index = () => {
       limit: 10,
       page: 1,
       paginate: 1,
+      receiver_id: user.role !== "Super Admin" ? user.id : null,
    });
+   console.log(user)
    const [loading, setLoading] = useState(false);
 
    const getData = async () => {
@@ -247,9 +250,14 @@ const Index = () => {
                   <Stack direction="row" justifyContent={"space-between"}>
                      <h3 className="fw-bold mb-2">Help</h3>
                      {Permission(user.permission, "create help") && (
-                        <Button onClick={() => navigate("/help-add")} variant="contained" startIcon={<Add />}>
-                           Ticket
-                        </Button>
+                        <Box sx={{ display: "flex" }}>
+                           <Button sx={{ mr: 2 }}onClick={() => navigate("/help-export")} variant="contained" startIcon={<Assessment />}>
+                              View Admin Performance
+                           </Button>
+                           <Button onClick={() => navigate("/help-add")} variant="contained" startIcon={<Add />}>
+                              Ticket
+                           </Button>
+                        </Box>
                      )}
                   </Stack>
                </div>

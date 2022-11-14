@@ -38,6 +38,8 @@ import Department from "../views/master-data/department";
 import AssetCondition from "../views/master-data/asset-condition";
 import It from "../views/master-data/it";
 import ItSubType from "../views/master-data/it-subtype";
+import HelpAdmin from "../views/master-data/help-admin";
+
 
 import DataAsset from "../views/data-asset/data-asset";
 import AssetIT from "../views/data-asset/data-asset/IT/Add";
@@ -82,6 +84,7 @@ import ActivityLog from "../views/activity-log";
 import Help from "../views/help";
 import HelpAdd from "../views/help/Add";
 import HelpDetail from "../views/help/Detail";
+import HelpExport from "../views/help/Export";
 
 export default function Router() {
    return (
@@ -295,6 +298,15 @@ export default function Router() {
                   </Middleware.After>
                }
             />
+            <Route
+               path="/master-data/help-admin"
+               element={
+                  <Middleware.After>
+                     <Layout render={<HelpAdmin />} />
+                  </Middleware.After>
+               }
+            />
+            
 
             {/* Data Asset */}
             <Route
@@ -535,6 +547,14 @@ export default function Router() {
                element={
                   <Middleware.After>
                      <Layout render={<HelpAdd />} />
+                  </Middleware.After>
+               }
+            />
+            <Route
+               path="/help-export"
+               element={
+                  <Middleware.After>
+                     <Layout render={<HelpExport />} />
                   </Middleware.After>
                }
             />

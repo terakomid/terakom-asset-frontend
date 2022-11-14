@@ -32,9 +32,13 @@ export default function Header() {
                : navigate(`/detail-data-asset-non-it/${value.data.asset.id}`);
          } else if (category === "AddNewAssetAcceptance") {
             navigate(`/acceptance-asset`);
+         } else if (category === "AddNewHelp"){
+            navigate(`/help-detail/${value.data.help.id}`)
+         } else if (category === "AddNewHelpMessage"){
+            navigate(`/help-detail/${value.data.help_message.help_id}`)
          }
          getNotification();
-      });
+      })
    };
 
    useEffect(() => {
@@ -96,6 +100,30 @@ export default function Header() {
                </div>
             </div>
          );
+      } else if (category == "AddNewHelp"){
+         return (
+            <div className="flex-grow-1">
+               <h6 className="mb-1">{value.data.from.name} - Add New Ticket</h6>
+               <div className="text-muted">
+                  
+               </div>
+               <div className="text-muted">
+                  {moment(value.created_at).fromNow()}
+               </div>
+            </div>
+         )
+      } else if (category == "AddNewHelpMessage"){
+         return (
+            <div className="flex-grow-1">
+               <h6 className="mb-1">{value.data.from.name} - Send a Message</h6>
+               <div className="text-muted">
+                  Message "{value.data.help_message.message.length < 15 ? value.data.help_message.message : value.data.help_message.message.substring(0, 15) + "..."}"
+               </div>
+               <div className="text-muted">
+                  {moment(value.created_at).fromNow()}
+               </div>
+            </div>
+         )
       }
    };
 

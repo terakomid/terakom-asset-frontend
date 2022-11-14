@@ -41,6 +41,7 @@ import { useNavigate } from "react-router-dom";
 import Loading from "../../component/Loading";
 import { produce } from "immer";
 import moment from "moment";
+import HelpAdmin from "../master-data/help-admin";
 
 const Form = (props) => {
 	const navigate = useNavigate();
@@ -51,6 +52,7 @@ const Form = (props) => {
 		purpose: "",
 		status: "",
 		category: "",
+		receiever_id: "",
 	});
 	const [document, setDocument] = useState({
 		file: '',
@@ -68,7 +70,17 @@ const Form = (props) => {
 		paginate: 0,
     });
 
-	
+	const [helpAdmin, setHelpAdmin] = useState([])	
+	const getHelpAdmin = async () => {
+		const { data: { data: { data } } } = await http.get('/help_admin')
+		console.log(data)
+		setHelpAdmin([...data])
+	}
+	useEffect(() => {
+		let mounted = true
+		if(mounted) getHelpAdmin()
+		return () => mounted = false
+	}, [])
 	
 	useEffect(() => {
 		let mounted = true;
@@ -109,7 +121,8 @@ const Form = (props) => {
 		formData.append('title', form.title)
 		formData.append('purpose', form.purpose)
 		formData.append('category', form.category)
-
+		formData.append('receiver_id', form.receiever_id)
+		console.table(Object.fromEntries(formData))
 		// setTimeout(() => {
 		// 	console.log(Object.fromEntries(formData))
 		// 	setLoading(false)
@@ -224,7 +237,22 @@ const Form = (props) => {
 										select 
 									>
 										<MenuItem value="it">IT</MenuItem>
-										<MenuItem value="non_it">NON-IT</MenuItem>
+										<MenuItem value="non-it">NON-IT</MenuItem>
+									</TextField>
+								</Grid>
+								<Grid item xs={12} md={12}>
+									<TextField 
+										disabled={form.category == "" ? true : false}
+										name="receiever_id" 
+										value={form.receiever_id} 
+										onChange={onChange} 
+										label="Receiver"
+										fullWidth
+										select 
+									>
+										{helpAdmin?.filter(val => val.category == form.category).map(v => {
+											return <MenuItem value={v.user.id}>{`${v.user.code} - ${v.user.name}`}</MenuItem>
+										})}
 									</TextField>
 								</Grid>
 								<Grid item xs={12} md={12}>

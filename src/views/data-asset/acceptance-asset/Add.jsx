@@ -18,6 +18,7 @@ import {
    Autocomplete,
    Button,
    InputAdornment,
+   Typography,
 } from "@mui/material";
 import { Close, Delete, Edit, FileUploadOutlined, InsertDriveFile } from "@mui/icons-material";
 import { LoadingButton } from "@mui/lab";
@@ -50,6 +51,8 @@ export default function AddAcceptanceAsset() {
       page: 1,
       paginate: 1,
    });
+
+   const [document, setDocument] = useState([])
 
    const [asset, setAsset] = useState([]);
    const getAsset = async () => {
@@ -106,13 +109,10 @@ export default function AddAcceptanceAsset() {
 
    const handleStaging = (e) => {
       e.preventDefault();
-      if (data.document.length > 0) {
-         let newState = rows.concat(data);
-         setRows(newState);
-         handleReset();
-      } else {
-         enqueueSnackbar("Fill Supporting Document", { variant: "error" });
-      }
+      let newState = rows.concat(data);
+      setRows(newState);
+      handleReset();
+      
    };
 
    const handleEdit = (value, key) => {
@@ -129,21 +129,15 @@ export default function AddAcceptanceAsset() {
    };
 
    const handleFileDelete = (key) => {
-      let newState = data.document.filter((value, index) => index !== key);
-      setData({
-         ...data,
-         document: newState,
-      });
+      let newState = document.filter((value, index) => index !== key);
+      setDocument([...newState]);
    };
 
    const handleChange = (e) => {
       if (e.target.type === "file") {
          if (e.target.files[0] !== undefined) {
-            let newState = data.document.concat(e.target.files[0]);
-            setData({
-               ...data,
-               document: newState,
-            });
+            let newState = document.concat(e.target.files[0]);
+            setDocument([...newState])
             e.target.value = null;
          }
       } else {
@@ -165,11 +159,15 @@ export default function AddAcceptanceAsset() {
          formData.append(`asset_acceptance[${index}][date]`, moment(value.date).format("yyyy/MM/DD"));
          formData.append(`asset_acceptance[${index}][type]`, value.type);
          formData.append(`asset_acceptance[${index}][remark]`, value.remark);
-         value.document.map((row, key) => {
-            formData.append(`asset_acceptance[${index}][document][${key}]`, row);
-         });
       });
-      // console.log(Object.fromEntries(formData));
+      if (document.length == 0) {
+         setLoading(false);
+         return enqueueSnackbar("Fill Supporting Document", { variant: "error" });
+      }
+      document.map((v, i) => {
+         formData.append(`document[${i}]`, v)
+      })
+      // console.table(Object.fromEntries(formData));
       http
          .post(`asset_acceptance`, formData)
          .then((res) => {
@@ -244,7 +242,7 @@ export default function AddAcceptanceAsset() {
                                  <Grid item xs={12} sm={6} md={4}>
                                     <TextField label="Department" variant="outlined" value={data.department} fullWidth disabled />
                                  </Grid>
-                                 <Grid item xs={12} sm={6} md={4}>
+                                 <Grid item xs={12} sm={12} md={4}>
                                     <TextField label="Location" variant="outlined" value={data.location} fullWidth disabled />
                                  </Grid>
                                  <Grid item xs={12}>
@@ -294,40 +292,6 @@ export default function AddAcceptanceAsset() {
                                  </Grid>
                                  <Grid item xs={12}>
                                     <TextField name="remark" label="Remark" variant="outlined" value={data.remark} onChange={handleChange} fullWidth required />
-                                 </Grid>
-                                 <Grid item xs={12} sm={6}>
-                                    {data.document.length > 0 &&
-                                       data.document.map((value, index) => (
-                                          <TextField
-                                             key={index}
-                                             variant="outlined"
-                                             label="Supporting Document *"
-                                             value={value.name}
-                                             sx={{ mb: 2 }}
-                                             InputProps={{
-                                                startAdornment: (
-                                                   <InputAdornment position="start">
-                                                      <InsertDriveFile />
-                                                   </InputAdornment>
-                                                ),
-                                                endAdornment: (
-                                                   <InputAdornment position="end">
-                                                      <Tooltip title="Delete">
-                                                         <IconButton onClick={() => handleFileDelete(index)}>
-                                                            <Close />
-                                                         </IconButton>
-                                                      </Tooltip>
-                                                   </InputAdornment>
-                                                ),
-                                             }}
-                                             fullWidth
-                                             disabled
-                                          />
-                                       ))}
-                                    <Button size="large" variant="outlined" component="label" fullWidth startIcon={<FileUploadOutlined />}>
-                                       Add Supporting Document *
-                                       <input name="document" type="file" onChange={handleChange} hidden />
-                                    </Button>
                                  </Grid>
                                  <Grid item xs={6} />
                                  <Grid item xs={12}>
@@ -405,6 +369,49 @@ export default function AddAcceptanceAsset() {
                                  </TableBody>
                               </Table>
                            </TableContainer>
+                        </CardContent>
+                     </Card>
+                     <Card sx={{ mt: 2 }}>
+                        <CardContent>
+                           <Typography fontWeight={"bold"} fontStyle={"italic"} pb={2}>
+                              Support Document*
+                           </Typography>
+                           <Grid container>
+                              <Grid item xs={12} sm={12}>
+                                 {document.length > 0 &&
+                                    document.map((value, index) => (
+                                       <TextField
+                                          key={index}
+                                          variant="outlined"
+                                          label="Supporting Document *"
+                                          value={value.name}
+                                          sx={{ mb: 2 }}
+                                          InputProps={{
+                                             startAdornment: (
+                                                <InputAdornment position="start">
+                                                   <InsertDriveFile />
+                                                </InputAdornment>
+                                             ),
+                                             endAdornment: (
+                                                <InputAdornment position="end">
+                                                   <Tooltip title="Delete">
+                                                      <IconButton onClick={() => handleFileDelete(index)}>
+                                                         <Close />
+                                                      </IconButton>
+                                                   </Tooltip>
+                                                </InputAdornment>
+                                             ),
+                                          }}
+                                          fullWidth
+                                          disabled
+                                       />
+                                    ))}
+                                 <Button size="large" variant="outlined" component="label" fullWidth startIcon={<FileUploadOutlined />}>
+                                    Add Supporting Document *
+                                    <input name="document" type="file" onChange={handleChange} hidden />
+                                 </Button>
+                              </Grid>
+                           </Grid>
                         </CardContent>
                      </Card>
                      <Stack direction="row" spacing={1} sx={{ mt: 3 }}>

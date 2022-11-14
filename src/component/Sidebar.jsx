@@ -121,6 +121,13 @@ export default function Sidebar() {
                                  </Link>
                               </li>
                            )}
+                           {Permission(user.permission, "get master it") && (
+                              <li role="menuitem">
+                                 <Link to="/master-data/help-admin" className="text-capitalize py-2">
+                                    Help Admin
+                                 </Link>
+                              </li>
+                           )}
                         </ul>
                      </li>
                   ) : null}
