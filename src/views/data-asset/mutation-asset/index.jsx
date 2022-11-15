@@ -31,7 +31,7 @@ import {
    InputLabel,
    Checkbox,
 } from "@mui/material";
-import { AddRounded, CloseRounded, Delete, Download, Edit, FilterListRounded, MoreVert, Search } from "@mui/icons-material";
+import { AddRounded, CloseRounded, Delete, Download, Edit, FilterListRounded, MoreVert, Search, FileDownload } from "@mui/icons-material";
 import { Link as RouterLink } from "react-router-dom";
 import { LoadingButton } from "@mui/lab";
 
@@ -42,6 +42,57 @@ import ModalDelete from "../../../component/Delete";
 import { useRecoilValue } from "recoil";
 import { authentication } from "../../../store/Authentication";
 import { Permission } from "../../../component/Permission";
+import { exportTableToExcel } from "../../../help/ExportToExcel";
+
+const TableExport = (props) => {
+   return (
+      <table style={{ display: "none" }} border="1" id="table-export" >
+         <thead>
+            <tr>
+               <td align="center">No.</td>
+               <td>PIC Asset</td>
+               <td>Receive Name</td>
+               <td>Asset Code</td>
+               <td>Asset Name</td>
+               <td>From Branch</td>
+               <td>From Room</td>
+               <td>To Branch</td>
+               <td>To Room</td>
+            </tr>
+         </thead>
+         <tbody>
+            {props.data !== undefined ? (
+               props.data.data.length > 0 ? (
+                  props.data.data.map((value, index) => (
+                     <tr key={index}>
+                        <td align="center">
+                           {index + 1}.
+                        </td>
+                        <td>{value.pic.name}</td>
+                        <td>{value.receive.name}</td>
+                        <td>{value.asset.asset_code}</td>
+                        <td>{value.asset.asset_name}</td>
+                        <td>
+                           {value.from_branch.code} - {value.from_branch.location}
+                        </td>
+                        <td>{value.from_room}</td>
+                        <td>
+                           {value.to_branch.code} - {value.to_branch.location}
+                        </td>
+                        <td>{value.to_room}</td>
+                        {console.log(value)}
+                     </tr>
+                  ))
+               ) : (
+                  null
+               )
+            ) : (
+               null
+            )}
+         </tbody>
+      </table>
+   )
+}
 
 export default function MutationAsset() {
    const { user } = useRecoilValue(authentication);
@@ -224,13 +275,20 @@ export default function MutationAsset() {
             <div className="container">
                <div className="d-flex align-items-center justify-content-between mt-2 mb-4">
                   <h3 className="fw-bold mb-0">Mutation Asset</h3>
-                  {Permission(user.permission, "create asset mutation") && (
-                     <Stack direction="row" spacing={1}>
-                        <Button variant="contained" startIcon={<AddRounded />} component={RouterLink} to="./add">
-                           Add Mutation Asset
-                        </Button>
-                     </Stack>
-                  )}
+                  <Box sx={{ display: 'flex' }}>
+                     <Button disabled={data !== undefined && data.data.length > 0 ? false : true} sx={{ mr: 2 }} variant="contained" startIcon={<FileDownload />} onClick={() => exportTableToExcel("#table-export",  "Report_mutation_asset")}>
+                        Export
+                     </Button>
+                     {Permission(user.permission, "create asset mutation") && (
+                        <Stack direction="row" spacing={1}>
+                           <Button variant="contained" startIcon={<AddRounded />} component={RouterLink} to="./add">
+                              Add Mutation Asset
+                           </Button>
+                        </Stack>
+                     )}
+
+                  </Box>
+
                </div>
                <Card>
                   <CardContent>
@@ -354,6 +412,9 @@ export default function MutationAsset() {
                      )}
                   </CardContent>
                </Card>
+               {data !== undefined && data.data.length > 0 &&
+                  <TableExport data={data} />
+               }
                <ModalDelete open={openModal} delete={onDelete} handleClose={handleModal} />
                {Permission(user.permission, "update asset mutation") || Permission(user.permission, "delete asset mutation") ? (
                   <Menu

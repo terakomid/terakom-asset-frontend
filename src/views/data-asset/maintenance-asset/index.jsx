@@ -31,7 +31,7 @@ import {
    Checkbox,
    ListItemText,
 } from "@mui/material";
-import { AddRounded, Check, CloseRounded, Delete, Download, Edit, FilterListRounded, InfoOutlined, MoreVert, Search } from "@mui/icons-material";
+import { AddRounded, Check, CloseRounded, Delete, Download, Edit, FileDownload, FilterListRounded, InfoOutlined, MoreVert, Search } from "@mui/icons-material";
 import { Link as RouterLink } from "react-router-dom";
 import { LoadingButton } from "@mui/lab";
 
@@ -48,6 +48,75 @@ import { useRecoilValue } from "recoil";
 import { authentication } from "../../../store/Authentication";
 import { Permission } from "../../../component/Permission";
 import { NumberFormat } from "../../../component/Format";
+import { exportTableToExcel } from "../../../help/ExportToExcel";
+
+const TableExport = (props) => {
+   return (
+      <table style={{ display: "none" }} id="table-export" border="1">
+         <thead>
+            <tr>
+               <td align="center">No.</td>
+               <td>PIC Name</td>
+               <td>Department</td>
+               <td>Applicant Date</td>
+               <td>Final Cost</td>
+               <td>Request Time To Finish</td>
+               <td>Status</td>
+               <td>Asset Code</td>
+               <td>Asset Name</td>
+               <td>Location</td>
+               <td>Reason For Repair</td>
+            </tr>
+         </thead>
+         <tbody>
+            {props.data !== undefined ? (
+               props.data.data.length > 0 ? (
+                  props.data.data.map((value, index) => (
+                     <>
+                        <tr key={index}>
+                           <td rowSpan={value.asset_maintenance_data.length}>
+                              {index + 1}.
+                           </td>
+                           <td rowSpan={value.asset_maintenance_data.length}>
+                              {value.pic.code} - {value.pic.name}
+                           </td>
+                           <td rowSpan={value.asset_maintenance_data.length}>{value.pic.department}</td>
+                           <td rowSpan={value.asset_maintenance_data.length}>{moment(value.applicant_date).format("LL")}</td>
+                           <td rowSpan={value.asset_maintenance_data.length}>{value.final_cost}</td>
+                           <td rowSpan={value.asset_maintenance_data.length}>{moment(value.request_time_finish).format("LL")}</td>
+                           <td rowSpan={value.asset_maintenance_data.length}>
+                              {value.status === "process" &&  "Process"}
+                              {value.status === "complete" && "Complete"}
+                           </td>
+                           <td>{value.asset_maintenance_data[0].asset.asset_code}</td>
+                           <td>{value.asset_maintenance_data[0].asset.asset_name}</td>
+                           <td>{`${value.asset_maintenance_data[0].asset.location.code} - ${value.asset_maintenance_data[0].asset.location.location}`}</td>
+                           <td>{value.asset_maintenance_data[0].reason}</td>
+                        </tr>
+                        {value.asset_maintenance_data.map((v, i) => {
+                           if(i !== 0){
+                              return (
+                                 <tr>
+                                    <td>{v.asset.asset_code}</td>
+                                    <td>{v.asset.asset_name}</td>
+                                    <td>{`${v.asset.location.code} - ${v.asset.location.location}`}</td>
+                                    <td>{v.reason}</td>
+                                 </tr>
+                              )
+                           }
+                        })}
+                     </>
+                  ))
+               ) : (
+                  null
+               )
+            ) : (
+               null
+            )}
+         </tbody>
+      </table>
+   )
+}
 
 export default function MaintenanceAsset() {
    const { user } = useRecoilValue(authentication);
@@ -292,13 +361,19 @@ export default function MaintenanceAsset() {
             <div className="container">
                <div className="d-flex align-items-center justify-content-between mt-2 mb-4">
                   <h3 className="fw-bold mb-0">Maintenance Asset</h3>
-                  {Permission(user.permission, "create asset maintenance") && (
-                     <Stack direction="row" spacing={1}>
-                        <Button variant="contained" startIcon={<AddRounded />} component={RouterLink} to="./add">
-                           Add Maintenance Asset
-                        </Button>
-                     </Stack>
-                  )}
+                  <Box sx={{ display: "flex" }}>
+                     <Button disabled={data !== undefined && data.data.length > 0 ? false : true} sx={{ mr: 2 }} variant="contained" startIcon={<FileDownload />} onClick={() => exportTableToExcel("#table-export", "Report_Maintance_asset")}>
+                        Export
+                     </Button>
+                     {Permission(user.permission, "create asset maintenance") && (
+                        <Stack direction="row" spacing={1}>
+                           <Button variant="contained" startIcon={<AddRounded />} component={RouterLink} to="./add">
+                              Add Maintenance Asset
+                           </Button>
+                        </Stack>
+                     )}
+
+                  </Box>
                </div>
                <Card>
                   <CardContent>
@@ -426,6 +501,9 @@ export default function MaintenanceAsset() {
                      )}
                   </CardContent>
                </Card>
+               {data !== undefined && data.data.length > 0 && 
+                  <TableExport data={data} />
+               }
                <ModalDelete open={openModal} delete={onDelete} handleClose={handleModal} />
                {Permission(user.permission, "update asset maintenance") || Permission(user.permission, "delete asset maintenance") ? (
                   <Menu

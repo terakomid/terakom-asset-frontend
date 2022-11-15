@@ -146,8 +146,8 @@ const Index = () => {
       page: 1,
       paginate: 1,
       receiver_id: user.role !== "Super Admin" ? user.id : null,
+      export: 0,
    });
-   console.log(user)
    const [loading, setLoading] = useState(false);
 
    const getData = async () => {

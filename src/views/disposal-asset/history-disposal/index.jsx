@@ -40,148 +40,114 @@ import { useRecoilValue } from "recoil";
 import { authentication } from "../../../store/Authentication";
 import { Permission } from "../../../component/Permission";
 import { NumberFormat } from "../../../component/Format";
+import { DatePicker } from "@mui/x-date-pickers";
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { exportTableToExcel } from "../../../help/ExportToExcel";
 
-const ModalFilter = (props) => {
-   const [roleOptions, setRoleOptions] = useState([]);
-   const [departmentOptions, setDepartmentOptions] = useState([]);
-   const [filter, setFilter] = useState({
-      role: "",
-      department_id: "",
-   });
-   const [isComplete, setIsComplete] = useState(false);
-
-   const getDepartment = async () => {
-      const res = await http.get(`dept`);
-      setDepartmentOptions([...res.data.data]);
-      return 1;
-   };
-
-   const getRole = async () => {
-      const res = await http.get(`role`);
-      setRoleOptions([...res.data.data]);
-      return 1;
-   };
-
-   useEffect(() => {
-      let mounted = true;
-      if (mounted && props.open) {
-         Promise.all([getDepartment(), getRole()]).then((res) => {
-            setIsComplete(true);
-         });
-      }
-
-      return () => (mounted = false);
-   }, [props.open]);
-
+const TableExport = (props) => {
    return (
-      <Dialog
-         fullWidth
-         maxWidth="xs"
-         open={props.open}
-         onClose={props.handleClose}
-         aria-labelledby="alert-dialog-title"
-         aria-describedby="alert-dialog-description"
-      >
-         <DialogTitle>Filter</DialogTitle>
-         <DialogContent>
-            <DialogContentText>Filter</DialogContentText>
-            {isComplete && (
-               <Grid container>
-                  <Grid item xs={12} md={6}>
-                     <TextField select multiple size="small" name="role" label="role" value={filter.role} fullWidth>
-                        {roleOptions.length > 0 &&
-                           roleOptions.map((v) => (
-                              <MenuItem key={v.id} value={v.name}>
-                                 {v.name}
-                              </MenuItem>
+      <table id="table-export" style={{ display: "none" }}>
+         <thead>
+            <tr>
+               <th>No</th>
+               <th>Asset Type</th>
+               <th>Asset Code</th>
+               <th>Category</th>
+               <th>Sub Category</th>
+               <th>Asset Name</th>
+               <th>Asset Spesification</th>
+               <th>Useful Life</th>
+               <th>Capitalized On</th>
+               <th>SAP Code</th>
+               <th>Employee Name</th>
+               <th>Location</th>
+               <th>Department</th>
+               <th>Asset Condition</th>
+               <th>Latitude</th>
+               <th>Longitude</th>
+               <th>Cons Center Name</th>
+               <th>Acquisition Value</th>
+               <th>Depreciation</th>
+               <th>Vendor Name</th>
+               <th>Book Value</th>
+               <th>Device</th>
+               <th>Type</th>
+               <th>Brand</th>
+               <th>Monitor INC</th>
+               <th>Model Brand</th>
+               <th>Mac Address</th>
+               <th>Warranty Expiry</th>
+               <th>Computer Name</th>
+               <th>DLP</th>
+               <th>SOC</th>
+               <th>SN NB and PC</th>
+               <th>Processor</th>
+               <th>OS</th>
+               <th>SN Windows</th>
+               <th>MS Office</th>
+               <th>SN Office</th>
+               <th>Antivirus</th>
+               <th>Notes</th>
+               <th>Attachment</th>
+            </tr>
+         </thead>
+         <tbody>
+            {props.data.map((val, i) => {
+               return (
+                  <tr key={i}>
+                     <td>{i + 1}</td>
+                     <td>{val.asset_type}</td>
+                     <td>{val.asset_code}</td>
+                     <td>{val.category.category}</td>
+                     <td>{val.sub_category.sub_category}</td>
+                     <td>{val.asset_name}</td>
+                     <td>{val.specification}</td>
+                     <td>{val.useful_life}</td>
+                     <td>{val.capitalized}</td>
+                     <td>{val.sap_code}</td>
+                     <td>{`${val.employee.code} - ${val.employee.name}`}</td>
+                     <td>{`${val.location.code} - ${val.location.location}`}</td>
+                     <td>{val.department.dept}</td>
+                     <td>{val.condition.condition}</td>
+                     <td>{val.latitude}</td>
+                     <td>{val.longitude}</td>
+                     <td>{`${val.cost.code} ${val.cost.name}`}</td>
+                     <td>{val.acquisition_value}</td>
+                     <td>{val.depreciation == 1 ? "yes" : "no"}</td>
+                     <td>{`${val.vendor.code} - ${val.vendor.name}`}</td>
+                     <td>{val.book_value}</td>
+                     <td>{val.device ? val.device.sub_type : ""}</td>
+                     <td>{val.type}</td>
+                     <td>{val.brand ? val.brand.sub_type : ""}</td>
+                     <td>{val.monitor_inch}</td>
+                     <td>{val.model_brand}</td>
+                     <td>{val.mac_address}</td>
+                     <td>{val.warranty}</td>
+                     <td>{val.computer_name}</td>
+                     <td>{val.dlp}</td>
+                     <td>{val.soc}</td>
+                     <td>{val.snnbpc}</td>
+                     <td>{val.processor ? val.processor.sub_type : ""}</td>
+                     <td>{val.os ? val.os.sub_type : ""}</td>
+                     <td>{val.sn_windows}</td>
+                     <td>{val.office ? val.office.sub_type : ""}</td>
+                     <td>{val.sn_office}</td>
+                     <td>{val.antivirus ? val.antivirus.sub_type : ""}</td>
+                     <td>{val.notes}</td>
+                     <td>
+                        {val.evidence.length > 0 &&
+                           val.evidence.map((v, i) => (
+                              <a key={i} href={v.file}>
+                                 {v.file.split("/").pop()} <br />
+                              </a>
                            ))}
-                        {roleOptions.length == 0 && <MenuItem disabled>Kosong</MenuItem>}
-                     </TextField>
-                  </Grid>
-               </Grid>
-            )}
-         </DialogContent>
-         <DialogActions>
-            <Button variant="text" onClick={props.handleClose}>
-               Cancel
-            </Button>
-            <Button variant="text" color="error" onClick={() => console.log("filter")} autoFocus>
-               Delete
-            </Button>
-         </DialogActions>
-      </Dialog>
-   );
-};
-
-const ModalTable = (props) => {
-   const [roleOptions, setRoleOptions] = useState([]);
-   const [departmentOptions, setDepartmentOptions] = useState([]);
-   const [filter, setFilter] = useState({
-      role: "",
-      department_id: "",
-   });
-   const [isComplete, setIsComplete] = useState(false);
-
-   const getDepartment = async () => {
-      const res = await http.get(`dept`);
-      setDepartmentOptions([...res.data.data]);
-      return 1;
-   };
-
-   const getRole = async () => {
-      const res = await http.get(`role`);
-      setRoleOptions([...res.data.data]);
-      return 1;
-   };
-
-   useEffect(() => {
-      let mounted = true;
-      if (mounted && props.open) {
-         Promise.all([getDepartment(), getRole()]).then((res) => {
-            setIsComplete(true);
-         });
-      }
-
-      return () => (mounted = false);
-   }, [props.open]);
-
-   return (
-      <Dialog
-         fullWidth
-         maxWidth="xs"
-         open={props.open}
-         onClose={props.handleClose}
-         aria-labelledby="alert-dialog-title"
-         aria-describedby="alert-dialog-description"
-      >
-         <DialogTitle>Filter</DialogTitle>
-         <DialogContent>
-            <DialogContentText>Filter</DialogContentText>
-            {isComplete && (
-               <Grid container>
-                  <Grid item xs={12} md={6}>
-                     <TextField select multiple size="small" name="role" label="role" value={filter.role} fullWidth>
-                        {roleOptions.length > 0 &&
-                           roleOptions.map((v) => (
-                              <MenuItem key={v.id} value={v.name}>
-                                 {v.name}
-                              </MenuItem>
-                           ))}
-                        {roleOptions.length == 0 && <MenuItem disabled>Kosong</MenuItem>}
-                     </TextField>
-                  </Grid>
-               </Grid>
-            )}
-         </DialogContent>
-         <DialogActions>
-            <Button variant="text" onClick={props.handleClose}>
-               Cancel
-            </Button>
-            <Button variant="text" color="error" onClick={() => console.log("filter")} autoFocus>
-               Delete
-            </Button>
-         </DialogActions>
-      </Dialog>
+                     </td>
+                  </tr>
+               );
+            })}
+         </tbody>
+      </table>
    );
 };
 
@@ -261,6 +227,8 @@ const Index = () => {
       location: "",
    });
    const [params, setParams] = useState({
+      capitalized_from: moment(Date.now()).format('yyyy-MM-DD'), 
+      capitalized_until: moment().add(12, 'M').format('yyyy-MM-DD'),
       only_disposal: 1,
       paginate: 1,
       search: '',
@@ -391,6 +359,64 @@ const Index = () => {
                         <CardContent>
                            <Grid container spacing={2} sx={{ mb: 2 }} alignItems="center">
                               <Grid item xs>
+                                    <LocalizationProvider dateAdapter={AdapterDateFns}>
+                                       <DatePicker
+                                          value={params.capitalized_from}
+                                          name="capitalized_from"
+                                          label="From Date"
+                                          inputFormat="yyyy-MM-dd"
+                                          mask="____-__-__"
+                                          onChange={(newValue) => {
+                                                setParams({
+                                                   ...params,
+                                                   capitalized_from: moment(newValue).format('yyyy-MM-DD')
+                                                })
+                                          }}
+                                          renderInput={(params) => (
+                                                <TextField
+                                                   fullWidth
+                                                   {...params}
+                                                   required
+                                                />
+                                          )}
+                                       />
+                                    </LocalizationProvider>
+                              </Grid>
+                              <Grid item>
+                                    <Typography>To</Typography>
+                              </Grid>
+                              <Grid item xs>
+                                    <LocalizationProvider dateAdapter={AdapterDateFns}>
+                                       <DatePicker
+                                          value={params.capitalized_until}
+                                          name="capitalized_until"
+                                          label="Until Date"
+                                          inputFormat="yyyy-MM-dd"
+                                          mask="____-__-__"
+                                          onChange={(newValue) => {
+                                                setParams({
+                                                   ...params,
+                                                   capitalized_until: moment(newValue).format('yyyy-MM-DD')
+                                                })
+                                          }}
+                                          renderInput={(params) => (
+                                                <TextField
+                                                   fullWidth
+                                                   {...params}
+                                                   required
+                                                />
+                                          )}
+                                       />
+                                    </LocalizationProvider>
+                              </Grid>
+                              <Grid item xs={2}>
+                                    <Button disabled={rows !== undefined && rows.data.length > 0 ? false : true} variant="contained" onClick={() => exportTableToExcel("#table-export", "Report_Disposal_Asset")} startIcon={<DownloadOutlined />}>
+                                       Export
+                                    </Button>
+                              </Grid>
+                           </Grid>
+                           <Grid container spacing={2} sx={{ mb: 2 }} alignItems="center">
+                              <Grid item xs>
                                  <TextField
                                     name="search"
                                     variant="outlined"
@@ -491,6 +517,9 @@ const Index = () => {
                            )}
                         </CardContent>
                      </Card>
+                     {rows !== undefined && rows.data.length > 0 && 
+                     <TableExport data={rows.data} />
+                     }
                   </div>
                   <div className="col-xl-12 col-12 mt-3">
                      <Menu

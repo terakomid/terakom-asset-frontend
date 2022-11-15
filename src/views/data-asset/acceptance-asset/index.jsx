@@ -31,7 +31,7 @@ import {
    Box,
    DialogActions,
 } from "@mui/material";
-import { AddRounded, Check, Close, CloseRounded, Delete, Edit, FilterListRounded, InfoOutlined, MoreVert, Search } from "@mui/icons-material";
+import { AddRounded, Check, Close, CloseRounded, Delete, Edit, FileDownload, FilterListRounded, InfoOutlined, MoreVert, Search } from "@mui/icons-material";
 import { Link as RouterLink } from "react-router-dom";
 
 import moment from "moment";
@@ -48,8 +48,57 @@ import { authentication } from "../../../store/Authentication";
 import { Permission } from "../../../component/Permission";
 import { LoadingButton } from "@mui/lab";
 import { Capitalize } from "../../../component/Format";
+import { exportTableToExcel } from "../../../help/ExportToExcel";
 
 const role = ["Employee", "Admin Department"]
+
+const TableExport = (props) => {
+   return (
+      <table style={{ display: "none" }} id="table-export" border="1">
+         <thead>
+            <tr>
+               <td align="center">No.</td>
+               <td>Asset Code</td>
+               <td>Asset Name</td>
+               <td>PIC Name</td>
+               <td>Department</td>
+               <td>Location</td>
+               <td>Date</td>
+               <td>Status</td>
+            </tr>
+         </thead>
+         <tbody>
+            {props.data !== undefined ? (
+               props.data.data.length > 0 ? (
+                  props.data.data.map((value, index) => (
+                     <tr key={index}>
+                        <td component="th" scope="row" align="center">
+                           {index + 1}.
+                        </td>
+                        <td>{value.asset.asset_code}</td>
+                        <td>{value.asset.asset_name}</td>
+                        <td>
+                           {value.asset.employee.code} - {value.asset.employee.name}
+                        </td>
+                        <td>{value.asset.dept}</td>
+                        <td>{value.asset.location}</td>
+                        <td>{moment(value.date).format("LL")}</td>
+                        <td>
+                           {value.status === "received" ? "Received" : "Not Received"}
+                        </td>
+                     </tr>
+                  ))
+               ) : (
+                  null
+               )
+            ) : (
+               null
+            )}
+         </tbody>
+      </table>
+   )
+}
+
 export default function AcceptanceAsset() {
    const { user } = useRecoilValue(authentication);
 
@@ -271,13 +320,18 @@ export default function AcceptanceAsset() {
             <div className="container">
                <div className="d-flex align-items-center justify-content-between mt-2 mb-4">
                   <h3 className="fw-bold mb-0">Acceptance Asset</h3>
-                  {Permission(user.permission, "create asset acceptance") && (
-                     <Stack direction="row" spacing={1}>
-                        <Button variant="contained" startIcon={<AddRounded />} component={RouterLink} to="./add">
-                           Add Acceptance Asset
-                        </Button>
-                     </Stack>
-                  )}
+                  <Box display={"flex"}>
+                     <Button disabled={data !== undefined && data.data.length > 0 ? false : true} sx={{ mr: 2 }} variant="contained" startIcon={<FileDownload />} onClick={() => exportTableToExcel("#table-export", "Report_Acceptance_asset")}>
+                        Export
+                     </Button>
+                     {Permission(user.permission, "create asset acceptance") && (
+                        <Stack direction="row" spacing={1}>
+                           <Button variant="contained" startIcon={<AddRounded />} component={RouterLink} to="./add">
+                              Add Acceptance Asset
+                           </Button>
+                        </Stack>
+                     )}
+                  </Box>
                </div>
                <Card>
                   <CardContent>
@@ -410,6 +464,9 @@ export default function AcceptanceAsset() {
                      )}
                   </CardContent>
                </Card>
+               {data !== undefined && data.data.length > 0 && 
+                  <TableExport data={data} />
+               }
                <ModalDelete open={openModal} delete={onDelete} handleClose={handleModal} />
                {Permission(user.permission, "update status asset acceptance") ||
                Permission(user.permission, "update asset acceptance") ||

@@ -208,7 +208,7 @@ const Index = (props) => {
                                                     R
                                                 </Avatar>
                                             }
-                                            title={auth.user.role === "Employee" ? 'Helper': props.data.created_by.name}
+                                            title={auth.user.role === "Employee" || auth.user.role === "Admin Department" ? 'Helper': props.data.created_by.name}
                                         />
                                         <CardContent sx={{ backgroundColor: '#f3f3f3',  }}>
                                         {isComplete &&
