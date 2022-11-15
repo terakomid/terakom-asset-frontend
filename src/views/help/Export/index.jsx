@@ -82,8 +82,7 @@ const TableExport = (props) => {
                                 <td rowSpan={value.receiver.help.length}>{value.receiver.accumulation_rating}</td>
                                 <td rowSpan={value.receiver.help.length}>{value.receiver.total_help}</td>
                                 {/* Row 1 */}
-                                {/* <td>{value.receiver.help[0].user.name}</td> */}
-                                <td>user name</td>
+                                <td>{value.receiver.help[0].created_by.name}</td>
                                 <td>{value.receiver.help[0].title}</td>
                                 <td>{value.receiver.help[0].purpose}</td>
                                 <td>{value.receiver.help[0].status}</td>
@@ -94,7 +93,7 @@ const TableExport = (props) => {
                                 if(i !== 0){
                                     return (
                                         <tr key={i}>
-                                            <td>user name</td>
+                                            <td>{v.created_by.name}</td>
                                             <td>{v.title}</td>
                                             <td>{v.purpose}</td>
                                             <td>{v.status}</td>
@@ -426,8 +425,7 @@ const Index = () => {
                                                             <TableCell rowSpan={value.receiver.help.length}><Rating precision={0.5} readOnly value={value.receiver.accumulation_rating} /></TableCell>
                                                             <TableCell rowSpan={value.receiver.help.length}>{value.receiver.total_help}</TableCell>
                                                             {/* Row 1 */}
-                                                            {/* <TableCell>{value.receiver.help[0].user.name}</TableCell> */}
-                                                            <TableCell>user name</TableCell>
+                                                            <TableCell>{value.receiver.help[0].created_by.name}</TableCell>
                                                             <TableCell>  {value.receiver.help[0].title}</TableCell>
                                                             <TableCell>{value.receiver.help[0].purpose}</TableCell>
                                                             <TableCell><Chip color={value.receiver.help[0].status == "open" ? "default" : "error"} label={value.receiver.help[0].status} /></TableCell>
@@ -438,7 +436,7 @@ const Index = () => {
                                                             if(i !== 0){
                                                                 return (
                                                                     <TableRow sx={{ backgroundColor: key % 2 == 0 ? "#eeeeee" : "#e0e0e0" }} key={i}>
-                                                                        <TableCell>user name</TableCell>
+                                                                        <TableCell>{v.created_by.name}</TableCell>
                                                                         <TableCell>{v.title}</TableCell>
                                                                         <TableCell>{v.purpose}</TableCell>
                                                                         <TableCell> <Chip color={v.status == "open" ? "default" : "error"} label={v.status} /></TableCell>
