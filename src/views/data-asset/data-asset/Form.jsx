@@ -66,6 +66,7 @@ import { Permission } from "../../../component/Permission";
 const role = ["Admin Department", "Employee"]
 
 const DetailModal = (props) => {
+   console.log(props.data)
    const navigate = useNavigate();
    const { enqueueSnackbar } = useSnackbar();
    const handleClose = () => {
@@ -424,11 +425,11 @@ const TabPanel = (props) => {
                                     <TableCell>{value.asset.asset_code}</TableCell>
                                     <TableCell>{value.asset.asset_name}</TableCell>
                                     <TableCell>
-                                       {value.from_branch.code} - {value.from_branch.location}
+                                       {value.from_branch?.code} - {value.from_branch?.location}
                                     </TableCell>
                                     <TableCell>{value.from_room}</TableCell>
                                     <TableCell>
-                                       {value.to_branch.code} - {value.to_branch.location}
+                                       {value.to_branch?.code} - {value.to_branch?.location}
                                     </TableCell>
                                     <TableCell>{value.to_room}</TableCell>
                                  </TableRow>
@@ -984,8 +985,8 @@ const Form = (props) => {
          setForm({
             ...form,
             [e.target.name]: e.target.value,
-            department_id: user.dept.id,
-            location_id: user.location.id,
+            department_id: user.dept == null ? "" : user.dept.id,
+            location_id: user.location == null ? "" : user.location.id,
             asset_code: splitCode.join("/"),
          });
          setDepartment(user.dept.dept);
@@ -1050,7 +1051,7 @@ const Form = (props) => {
          search: `${data.vendor.code} - ${data.vendor.name}`
       })
       setId(data.id);
-      setDepartment(data.department.dept);
+      setDepartment(data.department === null ? "" : data.department.dept);
       setUseFul(data.sub_category.useful_life);
       setVendor({
          vendor_address: data.vendor.address,
@@ -1115,6 +1116,7 @@ const Form = (props) => {
          setDetailModalData(res.data.data);
          handleDetailModal();
       } catch (err) {
+         console.log(err.response)
          setLoading(false);
          handleClose();
          enqueueSnackbar("Complete All Mandatory Field!", { variant: 'error' })
@@ -1166,8 +1168,8 @@ const Form = (props) => {
 
       //asset holder
       formData.append("employee_id", form.employee_id);
-      formData.append("department_id", form.department_id);
-      formData.append("location_id", form.location_id);
+      form.department_id !== "" && formData.append("department_id", form.department_id);
+      form.location_id !== "" && formData.append("location_id", form.location_id);
       formData.append("condition_id", form.condition_id);
       form.latitude !== "" && formData.append("latitude", form.latitude);
       form.longitude !== "" && formData.append("longitude", form.longitude);
@@ -1326,8 +1328,8 @@ const Form = (props) => {
 
                         // asset holder
                         employee_id: data.employee.id,
-                        department_id: data.department.id,
-                        location_id: data.location.id,
+                        department_id: data.department == null ? '' : data.department.id,
+                        location_id: data.location == null ? '' : data.location.id,
                         condition_id: data.condition.id,
                         latitude: data.latitude === null ? "" : data.latitude,
                         longitude: data.longitude === null ? "" : data.longitude,
@@ -1384,8 +1386,8 @@ const Form = (props) => {
 
                         // asset holder
                         employee_id: data.employee.id,
-                        department_id: data.department.id,
-                        location_id: data.location.id,
+                        department_id: data.department == null ? '' : data.department.id,
+                        location_id: data.location == null ? '' : data.location.id,
                         condition_id: data.condition.id,
                         latitude: data.latitude === null ? "" : data.latitude,
                         longitude: data.longitude === null ? "" : data.longitude,
@@ -1605,16 +1607,17 @@ const Form = (props) => {
                                        });
                                     }}
                                     onChange={(e, value) => {
+                                       console.log(value)
                                        const splitCode = form.asset_code.split("/");
-                                       splitCode[2] = value.location.code;
+                                       splitCode[2] = value.location !== null ? value.location.code : "-"
                                        setForm({
                                           ...form,
                                           employee_id: value.id,
-                                          department_id: value.dept.id,
-                                          location_id: value.location.id,
+                                          department_id: value.dept === null ? null : value.dept.id,
+                                          location_id: value.location === null ? null : value.location.id,
                                           asset_code: splitCode.join("/"),
                                        });
-                                       setDepartment(value.dept.dept);
+                                       setDepartment(value.dept === null ? '' : value.dept.dept);
                                     }}
                                     renderInput={(params) => (
                                        <TextField

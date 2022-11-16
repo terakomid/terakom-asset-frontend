@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Typography } from "@mui/material";
 import QRCode from "react-qr-code";
 import { ConvertLabel } from "../help/LabelHelp";
+import { useMemo } from "react";
 
 export const LabelTable = (props) => {
    const [asset_code, setAssetCode] = useState([]);
@@ -17,6 +18,10 @@ export const LabelTable = (props) => {
       }
       return () => (mounted = false);
    }, []);
+
+   const departmentName = useMemo(() => {
+      return props.data.department === null ? "Not Definition" : props.data.department.dept
+   }, [props])
 
    return (
       <table style={{ border: "2px solid black", width: "302px", height: "188px" }}>
@@ -67,7 +72,7 @@ export const LabelTable = (props) => {
                      fontWeight="bold"
                      textAlign="center"
                      color="black"
-                  >{`${props.data.asset_name} - ${props.data.employee.name} - ${props.data.department.dept}`}</Typography>
+                  >{`${props.data.asset_name} - ${props.data.employee.name} - ${departmentName}`}</Typography>
                </td>
             </tr>
          </tbody>
