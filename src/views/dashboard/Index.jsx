@@ -57,6 +57,8 @@ import Loading from '../../component/Loading';
 import { LoadingButton } from '@mui/lab';
 import { useRecoilValue } from 'recoil';
 import { authentication } from '../../store/Authentication';
+import { useMemo } from 'react';
+import { useCallback } from 'react';
 
 ChartJS.register(
     CategoryScale,
@@ -306,6 +308,10 @@ const index = () => {
         return arr.map(v => v.asset_count)
     }
 
+    const convertCategoryColor = useMemo(() => {
+        return data.asset_location !== undefined && data.asset_location.map(v => `#${Math.floor(Math.random()*16777215).toString(16)}`)
+    }, [data.asset_location?.length])
+
     const covertDataLocationLabels = (arr) => {
         return arr.map(v => v.location)
     }
@@ -313,6 +319,13 @@ const index = () => {
     const covertDataLocationCount = (arr) => {
         return arr.map(v => v.asset_count)
     }
+
+    const convertLocationColor = useMemo(() => {
+        return typeof dataByLoc.length !== "undefined" && dataByLoc.map(v => `#${Math.floor(Math.random()*16777215).toString(16)}`)
+    }, [dataByLoc.length])
+
+
+    
 
     useEffect(() => {
         let mounted = true
@@ -412,7 +425,7 @@ const index = () => {
                                                             id: 1,
                                                             label: 'Asset',
                                                             data: covertDataLocationCount(dataByLoc),
-                                                            backgroundColor: 'rgba(7, 82, 143, 1)',
+                                                            backgroundColor: convertLocationColor,
                                                         }
                                                     ],
                                                 }} 
@@ -435,7 +448,7 @@ const index = () => {
                                                             id: 1,
                                                             label: 'Asset',
                                                             data: covertDataCategoryCount(data.asset_location),
-                                                            backgroundColor: 'rgba(7, 82, 143, 1)',
+                                                            backgroundColor: convertCategoryColor,
                                                         }
                                                     ],
                                                 }} 

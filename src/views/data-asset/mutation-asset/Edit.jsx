@@ -23,7 +23,7 @@ export default function EditMutationAsset() {
       http
          .get(`user`)
          .then((res) => {
-            // console.log(res.data.data);
+            console.log(res.data.data);
             setUsers(res.data.data);
          })
          .catch((err) => {
@@ -36,7 +36,7 @@ export default function EditMutationAsset() {
       http
          .get(`location`)
          .then((res) => {
-            // console.log(res.data.data);
+            console.log(res.data.data);
             setLocation(res.data.data);
          })
          .catch((err) => {
@@ -50,7 +50,7 @@ export default function EditMutationAsset() {
       http
          .get(`asset_mutation/${id}`)
          .then((res) => {
-            // console.log(res.data.data);
+            console.log(res.data.data);
             let value = res.data.data;
             setData({
                pic: value.pic.id,

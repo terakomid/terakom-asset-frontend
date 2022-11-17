@@ -66,7 +66,6 @@ import { Permission } from "../../../component/Permission";
 const role = ["Admin Department", "Employee"]
 
 const DetailModal = (props) => {
-   console.log(props.data)
    const navigate = useNavigate();
    const { enqueueSnackbar } = useSnackbar();
    const handleClose = () => {
@@ -873,6 +872,12 @@ const Form = (props) => {
       return 1;
    };
 
+   const [departmentOption, setDepartmentOption] = useState([])
+   const getDepartment = async () => {
+      const res = await http.get(`dept`);
+      setDepartmentOption([...res.data.data])
+   };
+
    const [paramsEmployee, setParamsEmploy] = useState({
       paginate: 1,
       limit: 3,
@@ -1098,6 +1103,11 @@ const Form = (props) => {
       setCameraIndex(i)
       handleCamera()
    }
+
+   const [disabled, setDisabled] = useState({
+      department: true,
+      location: true,
+   })
    
    const [cameraOpen2, setCameraOpen2] = useState(false)
    const [cameraIndex2, setCameraIndex2] = useState(0)
@@ -1116,7 +1126,6 @@ const Form = (props) => {
          setDetailModalData(res.data.data);
          handleDetailModal();
       } catch (err) {
-         console.log(err.response)
          setLoading(false);
          handleClose();
          enqueueSnackbar("Complete All Mandatory Field!", { variant: 'error' })
@@ -1168,8 +1177,13 @@ const Form = (props) => {
 
       //asset holder
       formData.append("employee_id", form.employee_id);
-      form.department_id !== "" && formData.append("department_id", form.department_id);
-      form.location_id !== "" && formData.append("location_id", form.location_id);
+      if(form.department_id === "" || form.location_id === ""){
+         setLoading(false);
+         enqueueSnackbar("Complete All Mandatory Field", { variant: 'error' })
+         return
+      }
+      formData.append("department_id", form.department_id);
+      formData.append("location_id", form.location_id);
       formData.append("condition_id", form.condition_id);
       form.latitude !== "" && formData.append("latitude", form.latitude);
       form.longitude !== "" && formData.append("longitude", form.longitude);
@@ -1292,6 +1306,7 @@ const Form = (props) => {
          Promise.all([
             getAssetCategories(),
             getAssetLocations(),
+            getDepartment(),
             getEmployees(),
             getAssetCondition(),
             getAssetCost(),
@@ -1607,17 +1622,20 @@ const Form = (props) => {
                                        });
                                     }}
                                     onChange={(e, value) => {
-                                       console.log(value)
                                        const splitCode = form.asset_code.split("/");
                                        splitCode[2] = value.location !== null ? value.location.code : "-"
                                        setForm({
                                           ...form,
                                           employee_id: value.id,
-                                          department_id: value.dept === null ? null : value.dept.id,
-                                          location_id: value.location === null ? null : value.location.id,
+                                          department_id: value.dept === null ? "" : value.dept.id,
+                                          location_id: value.location === null ? "" : value.location.id,
                                           asset_code: splitCode.join("/"),
                                        });
                                        setDepartment(value.dept === null ? '' : value.dept.dept);
+                                       setDisabled({
+                                          department: value.dept === null ? false : true,
+                                          location: value.location === null ? false : true
+                                       })
                                     }}
                                     renderInput={(params) => (
                                        <TextField
@@ -1631,14 +1649,33 @@ const Form = (props) => {
                                     )}
                                  />
                               </Grid>
-                              <Grid item md={6} xs={12}>
+                              {/* <Grid item md={6} xs={12}>
                                  <TextField value={department} name="department_id" fullWidth label="Department Using" disabled />
+                              </Grid> */}
+                              <Grid item md={6} xs={12}>
+                                 <TextField
+                                    name="department_id"
+                                    fullWidth
+                                    disabled={disabled.department}
+                                    onChange={handleChangeForBlurField}
+                                    onBlur={handleChange}
+                                    value={form.department_id}
+                                    label="Department Using"
+                                    select
+                                    required
+                                    helperText={typeof errors?.department_id !== "undefined" ? errors.location_id[0] : ""}
+                                    error={typeof errors?.department_id !== "undefined" ? true : false}
+                                 >
+                                    {departmentOption.length > 0 &&
+                                       departmentOption.map((v) => <MenuItem key={v.id} value={v.id}>{v.dept}</MenuItem>)}
+                                    {assetLocations.length == 0 && <MenuItem disabled>Kosong</MenuItem>}
+                                 </TextField>
                               </Grid>
                               <Grid item md={6} xs={12}>
                                  <TextField
                                     name="location_id"
                                     fullWidth
-                                    disabled
+                                    disabled={disabled.location}
                                     onChange={handleChangeForBlurField}
                                     onBlur={handleChange}
                                     value={form.location_id}

@@ -58,6 +58,7 @@ import Loading from '../../../component/Loading';
 import { LoadingButton } from '@mui/lab';
 import { authentication } from '../../../store/Authentication';
 import { useRecoilValue } from 'recoil'
+import { useMemo } from 'react';
 
 ChartJS.register(
     CategoryScale,
@@ -144,7 +145,7 @@ const index = () => {
         const res = await http.get(`/statistic/asset_it_by_location`, {
             params: {
                 device_id: locationParams.device_id,
-                location_id: user.user.role !== 'Admin Department' ? locationParams.location_id : [user.user.dept.id],
+                location_id: user.user.role !== 'Admin Department' ? locationParams.location_id : [user.user.location.id],
                 sub_location_id: locationParams.sub_location_id
             }
         })
@@ -156,7 +157,7 @@ const index = () => {
             params: {
                 device_id: departmentParams.device_id,
                 department_id: departmentParams.department_id,
-                sub_location_id: user.user.role !== 'Admin Department' ? departmentParams.location_id : [user.user.dept.id],
+                sub_location_id: user.user.role !== 'Admin Department' ? departmentParams.location_id : [user.user.location.id],
             }
         })
         setDataByDeparment(res.data.data)
@@ -202,11 +203,19 @@ const index = () => {
                 id: i,
                 label: v.device,
                 data: [...v.asset_count],
-                backgroundColor: `rgba(0, 0, ${160 + i * 5}, 1)`
+                backgroundColor: `#${Math.floor(Math.random()*16777215).toString(16)}`
             }
         })
         return temp
     }
+    const memoDepart = useMemo(() => {
+        return dataByDeparment.asset_count !== undefined ? covertDataGroupLocation(dataByDeparment.asset_count) : []
+    }, [dataByDeparment.asset_count])
+
+    const memoLocation = useMemo(() => {
+        return dataByLocation.asset_count !== undefined ? covertDataGroupLocation(dataByLocation.asset_count) : []
+    }, [dataByLocation.asset_count])
+
 
     const covertDataConditionCount = (arr) => {
         return arr.map(v => v.asset_count)
@@ -374,6 +383,7 @@ const index = () => {
                                                                 return deviceOption.filter(v => selected.includes(v.id)).map(v => {
                                                                     return (
                                                                         <Chip 
+                                                                            key={v.id}
                                                                             label={v.sub_type} 
                                                                             onDelete={() => 's'}
                                                                         />
@@ -491,7 +501,7 @@ const index = () => {
                                                         options={optionsBar} 
                                                         data={{
                                                             labels: dataByLocation.location,
-                                                            datasets: covertDataGroupLocation(dataByLocation.asset_count)
+                                                            datasets: memoLocation
                                                         }} 
                                                     />
                                                     
@@ -665,7 +675,7 @@ const index = () => {
                                                         options={optionsBar} 
                                                         data={{
                                                             labels: dataByDeparment.department,
-                                                            datasets: covertDataGroupLocation(dataByDeparment.asset_count)
+                                                            datasets: memoDepart
                                                         }} 
                                                     />
                                                     

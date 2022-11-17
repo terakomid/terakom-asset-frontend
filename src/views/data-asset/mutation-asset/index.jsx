@@ -73,14 +73,13 @@ const TableExport = (props) => {
                         <td>{value.asset.asset_code}</td>
                         <td>{value.asset.asset_name}</td>
                         <td>
-                           {value.from_branch.code} - {value.from_branch.location}
+                           {value.from_branch?.code} - {value.from_branch?.location}
                         </td>
                         <td>{value.from_room}</td>
                         <td>
-                           {value.to_branch.code} - {value.to_branch.location}
+                           {value.to_branch?.code} - {value.to_branch?.location}
                         </td>
                         <td>{value.to_room}</td>
-                        {console.log(value)}
                      </tr>
                   ))
                ) : (
@@ -101,6 +100,7 @@ export default function MutationAsset() {
    const [rows, setRows] = useState();
    const [params, setParams] = useState({
       search: "",
+      type: "mutation",
       paginate: 1,
       limit: 10,
       page: 1,
@@ -360,11 +360,11 @@ export default function MutationAsset() {
                                           <TableCell>{value.asset.asset_code}</TableCell>
                                           <TableCell>{value.asset.asset_name}</TableCell>
                                           <TableCell>
-                                             {value.from_branch.code} - {value.from_branch.location}
+                                             {value.from_branch?.code} - {value.from_branch?.location}
                                           </TableCell>
                                           <TableCell>{value.from_room}</TableCell>
                                           <TableCell>
-                                             {value.to_branch.code} - {value.to_branch.location}
+                                             {value.to_branch?.code} - {value.to_branch?.location}
                                           </TableCell>
                                           <TableCell>{value.to_room}</TableCell>
                                           {Permission(user.permission, "update asset mutation") || Permission(user.permission, "delete asset mutation") ? (

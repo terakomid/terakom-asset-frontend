@@ -762,8 +762,10 @@ const TableExport = (props) => {
                <th>sap_code</th>
                <th>employee_id</th>
                <th>employee_name</th>
-               <th>Location</th>
-               <th>Department</th>
+               <th>location_code</th>
+               <th>location_name</th>
+               <th>department_id</th>
+               <th>department_name</th>
                <th>condition_id</th>
                <th>condition_name</th>
                <th>latitude</th>
@@ -819,8 +821,10 @@ const TableExport = (props) => {
                      <td>'{val.sap_code}</td>
                      <td>{val.employee.code}</td>
                      <td>{val.employee.name}</td>
-                     <td>{`${val.location === null ? " " : val.location.code} - ${val.location === null ? " ": val.location.location}`}</td>
-                     <td>{val.department === null ? "-" : val.department.dept}</td>
+                     <td>{val.location.code}</td>
+                     <td>{val.location.location}</td>
+                     <td>{val.department.id}</td>
+                     <td>{val.department.dept}</td>
                      <td>{val.condition.id}</td>
                      <td>{val.condition.condition}</td>
                      <td>{val.latitude}</td>

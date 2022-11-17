@@ -52,11 +52,19 @@ const Form = (props) => {
 	const [form, setForm] = useState({
 		from: '',
         to: '',
+        location_id_to: "",
+        department_id_to: ""
 	});
     const { enqueueSnackbar } = useSnackbar();
 
 	const [loading, setLoading] = useState(false);
 	const [assetId, setAssetId] = useState([])
+
+    const [loading2, setLoading2] = useState([]);
+    const [option, setOption] = useState({
+        department: [],
+        location: [],
+    })
 
 	const [params, setParams] = useState({
         search: "",
@@ -161,6 +169,40 @@ const Form = (props) => {
 	useEffect(() => {
         assetId.length > 0 ? getDataMultipleAsset() : null
     }, [assetId]);
+    
+    const [disabled, setDisabled] = useState({
+        department: true,
+        location: true,
+    })
+    const onChange = (e) => {
+        setForm({
+            ...form,
+            [e.target.name]: e.target.value
+        })
+    }
+
+    const getLocation = async () => {
+        const res = await http.get(`location`);
+        return res.data;
+     };
+
+     const getDepartment = async () => {
+        const res = await http.get(`dept`);
+        return res.data;
+     };
+
+    useEffect(() => {
+        let mounted = true
+        if(!mounted) return
+        Promise.all([getDepartment(), getLocation()]).then(res => {
+            setOption({
+                department: [...res[0].data],
+                location: [...res[1].data]
+            })
+            setLoading2(false)
+        })
+        return () => mounted = false
+    }, [])
 
 	const onSubmit = (e) => {
 		e.preventDefault();
@@ -168,6 +210,9 @@ const Form = (props) => {
         const formData = new FormData();
         formData.append('user_from_id', form.from)
         formData.append('user_to_id', form.to)
+        formData.append('location_id_to', form.location_id_to)
+        formData.append('department_id_to', form.department_id_to)
+        
         assetId.map((v, i) => {
             formData.append(`asset_id[${i}]`, v)
         })
@@ -181,7 +226,6 @@ const Form = (props) => {
         })
         .catch(err => {
             setLoading(false)
-            console.log(err.response)
             if(err.response){
                 enqueueSnackbar("Failed Replacement Asset Data", { variant: "error" })
             }
@@ -193,6 +237,7 @@ const Form = (props) => {
             <Grid item md xs={12}>
 				<Card>
 					<CardContent>
+                        {!loading2 ? 
 						<Box component="form" onSubmit={onSubmit} autoComplete="off">
                             <Typography variant="h6" mb={2} >
                                 User Replacement
@@ -270,7 +315,13 @@ const Form = (props) => {
                                         onChange={(e, value) => {
                                             setForm({
                                                 ...form,
-                                                to: value.id
+                                                to: value.id,
+                                                location_id_to: value.location === null ? "" : value.location.id,
+                                                department_id_to: value.dept === null ? "" : value.dept.id 
+                                            })
+                                            setDisabled({
+                                                department: value.location === null ? false : true,
+                                                location: value.dept === null ? false : true
                                             })
                                         }}
                                         renderInput={(params) => (
@@ -285,6 +336,39 @@ const Form = (props) => {
                                         )}
                                     />
                                 </Grid>
+                                <Grid item xs={12} md={6}>
+                                    <TextField
+                                        name="location_id_to"
+                                        label="Location Id To"
+                                        fullWidth
+                                        value={form.location_id_to}
+                                        select
+                                        required
+                                        disabled={disabled.location}
+                                        onChange={onChange}
+                                    >
+                                        {option.location.map((v, i) => {
+                                            return <MenuItem key={v.id} value={v.id}>{`${v.code} - ${v.location}`}</MenuItem>
+                                        })}   
+                                    </TextField>
+                                </Grid>
+                                <Grid item xs={12} md={6}>
+                                    <TextField
+                                        name="department_id_to"
+                                        label="Department Id To"
+                                        fullWidth
+                                        value={form.department_id_to}
+                                        select
+                                        required
+                                        disabled={disabled.department}
+                                        onChange={onChange}
+                                    >
+                                        {option.department.map((v, i) => {
+                                            return <MenuItem key={v.id} value={v.id}>{v.dept}</MenuItem>
+                                        })}   
+                                    </TextField>
+                                </Grid>
+
 								<Grid item xs={12} md={12}>
                                     <Autocomplete
                                         freeSolo
@@ -406,6 +490,9 @@ const Form = (props) => {
 								Save
 							</LoadingButton>
 						</Box>
+                        :
+                            <Loading />      
+                        }
 					</CardContent>
 				</Card>
 			</Grid>
