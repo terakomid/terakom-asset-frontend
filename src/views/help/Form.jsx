@@ -73,7 +73,6 @@ const Form = (props) => {
 	const [helpAdmin, setHelpAdmin] = useState([])	
 	const getHelpAdmin = async () => {
 		const { data: { data: { data } } } = await http.get('/help_admin')
-		console.log(data)
 		setHelpAdmin([...data])
 	}
 	useEffect(() => {
@@ -136,7 +135,6 @@ const Form = (props) => {
 					navigate("/help");
 				})
 				.catch((err) => {
-					console.log(err.response)
 				})
 				.finally((res) => {
 					setLoading(false);
@@ -145,7 +143,6 @@ const Form = (props) => {
 			if (document.file !== "") formData.append("file", document.file);
 			formData.append('status', form.status)
 			formData.append("_method", "PUT");
-			console.log(Object.fromEntries(formData))
 			http
 				.post(`help/${id}`, formData)
 				.then((res) => {
@@ -153,7 +150,6 @@ const Form = (props) => {
 					navigate("/help");
 				})
 				.catch((err) => {
-					console.log(err.response)
 				})
 				.finally((res) => {
 					setLoading(false);

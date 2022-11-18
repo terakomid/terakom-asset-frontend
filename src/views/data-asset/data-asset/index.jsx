@@ -44,6 +44,7 @@ import {
    KeyboardArrowDown,
    KeyboardArrowUp,
    MoreVert,
+   QuestionMark,
    Search,
 } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
@@ -63,6 +64,71 @@ import { Permission } from "../../../component/Permission";
 import { NumberFormat } from "../../../component/Format";
 import { exportTableToExcel } from "../../../help/ExportToExcel";
 import { ImportModal } from "../../../component/ImportModal";
+
+const ButtonSupport = () => {
+   const [url, setUrl] = useState({
+      template: "",
+      instruction: "",
+   })
+
+   const [anchorEl, setAnchorEl] = React.useState(null);
+   const open = Boolean(anchorEl);
+   const handleClick = (event) => {
+      setAnchorEl(event.currentTarget);
+   };
+   const handleClose = () => {
+      setAnchorEl(null);
+   };
+
+   const getUrl = async (e) => {
+      const { data } = await http.get(`asset/file_url`)
+      setUrl({
+         template: data.asset_template,
+         instruction: data.asset_import_instruction
+      })
+   }
+   useEffect(() => {
+      let mounted = true
+      mounted ? getUrl() : null
+      return () => mounted = false
+   }, [])
+
+   return (
+      <div>
+         <Button
+            disabled={url.instruction === "" || url.template === "" ? true : false}
+            id="demo-positioned-button"
+            aria-controls={open ? 'demo-positioned-menu' : undefined}
+            aria-haspopup="true"
+            aria-expanded={open ? 'true' : undefined}
+            onClick={handleClick}
+            sx={{ mr: 2 }}
+            variant="contained"
+            startIcon={<QuestionMark />}
+         >
+            Instruction
+         </Button>
+         <Menu
+            id="demo-positioned-menu"
+            aria-labelledby="demo-positioned-button"
+            anchorEl={anchorEl}
+            open={open}
+            onClose={handleClose}
+            anchorOrigin={{
+               vertical: 'top',
+               horizontal: 'left',
+            }}
+            transformOrigin={{
+               vertical: 'top',
+               horizontal: 'left',
+            }}
+            >
+            <MenuItem component="a" href={url.template} target="_blank" onClick={handleClose}>Template Import Data Asset</MenuItem>
+            <MenuItem component="a" href={url.instruction} target="_blank" onClick={handleClose}>Instructions Import Data Asset</MenuItem>
+         </Menu>
+      </div>
+   );
+}
 
 const ModalFilter = (props) => {
    const [loading, setLoading] = useState(false);
@@ -748,6 +814,7 @@ const RowComponent = (props) => {
 const TableExport = (props) => {
    return (
       <table id="table-export" style={{ display: "none" }}>
+         {console.log(props.data)}
          <thead>
             <tr>
                <th>asset_type</th>
@@ -803,6 +870,7 @@ const TableExport = (props) => {
                <th>antivirus_name</th>
                <th>notes</th>
                <th>attachment</th>
+               <th>picture</th>
             </tr>
          </thead>
          <tbody>
@@ -864,6 +932,14 @@ const TableExport = (props) => {
                      <td>
                         {val.evidence.length > 0 &&
                            val.evidence.map((v, i) => (
+                              <a key={i} href={v.file}>
+                                 {v.file.split("/").pop()} <br />
+                              </a>
+                           ))}
+                     </td>
+                     <td>
+                        {val.picture.length > 0 &&
+                           val.picture.map((v, i) => (
                               <a key={i} href={v.file}>
                                  {v.file.split("/").pop()} <br />
                               </a>
@@ -1069,11 +1145,14 @@ const Index = () => {
                <div className="my-2">
                   <div className="d-flex mb-3 align-items-center justify-content-between">
                      <h3 className="fw-bold">Data Asset</h3>
-                     <Box>
+                     <Box display={"flex"}>
                         {Permission(user.permission, "create asset") && (
-                           <Button variant="contained" onClick={handleCloseImport} startIcon={<FileDownload />}>
-                              Import
-                           </Button>
+                           <Box display="flex">
+                              <ButtonSupport />
+                              <Button variant="contained" onClick={handleCloseImport} startIcon={<FileDownload />}>
+                                 Import
+                              </Button>
+                           </Box>
                         )}
                         <Button
                            disabled={exportData == undefined ? true : false}

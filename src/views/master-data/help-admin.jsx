@@ -446,7 +446,6 @@ export default function HelpAdmin() {
                                         select
                                         label="Category"
                                         value={data.category}
-                                        disabled
                                     >
                                         <MenuItem value="it">IT</MenuItem>
                                         <MenuItem value="non-it">Non IT</MenuItem>

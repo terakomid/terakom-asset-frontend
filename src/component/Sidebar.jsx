@@ -47,7 +47,7 @@ export default function Sidebar() {
                                  </Link>
                               </li>
                            )}
-                           {Permission(user.permission, "get user") && (
+                           {Permission(user.permission, "replacement") && (
                               <li role="menuitem">
                                  <Link to="/user-replacement" className="text-capitalize">
                                     user replacement
@@ -65,6 +65,7 @@ export default function Sidebar() {
                   Permission(user.permission, "get cost") ||
                   Permission(user.permission, "get department") ||
                   Permission(user.permission, "get condition") ||
+                  Permission(user.permission, "help admin") ||
                   Permission(user.permission, "get master it") ? (
                      <li role="menuitem">
                         <Link to="/" onClick={(e) => e.preventDefault()} className="has-arrow waves-effect">
@@ -121,7 +122,7 @@ export default function Sidebar() {
                                  </Link>
                               </li>
                            )}
-                           {Permission(user.permission, "get master it") && (
+                           {Permission(user.permission, "help admin") && (
                               <li role="menuitem">
                                  <Link to="/master-data/help-admin" className="text-capitalize py-2">
                                     Help Admin
