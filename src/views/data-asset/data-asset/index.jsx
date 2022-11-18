@@ -814,7 +814,6 @@ const RowComponent = (props) => {
 const TableExport = (props) => {
    return (
       <table id="table-export" style={{ display: "none" }}>
-         {console.log(props.data)}
          <thead>
             <tr>
                <th>asset_type</th>
