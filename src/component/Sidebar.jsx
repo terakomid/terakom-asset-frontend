@@ -133,6 +133,17 @@ export default function Sidebar() {
                      </li>
                   ) : null}
 
+                  {/* Data Stock */}
+                  {/* Qr Code Tagging */}
+                  {Permission(user.permission, "qrcode") && (
+                     <li role="menuitem">
+                        <Link to="/data-stock" className="waves-effect">
+                           <i className="mdi mdi-database"></i>
+                           <span className="text-capitalize">data stock</span>
+                        </Link>
+                     </li>
+                  )}
+
                   {/* Data Asset */}
                   {Permission(user.permission, "get asset") ||
                   Permission(user.permission, "get asset mutation") ||
