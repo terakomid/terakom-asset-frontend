@@ -44,6 +44,7 @@ import { produce } from "immer";
 import {
    AssignmentLateOutlined,
    AssignmentTurnedInOutlined,
+   Cameraswitch,
    DescriptionOutlined,
    Download,
    DownloadForOffline,
@@ -653,13 +654,33 @@ const ModalCamera = (props) => {
    const deleteCamera = () => {
       ref.current.remove()
    }
-
+   const [cameraType, setCameraType] = useState('user')
    return (
       <Dialog fullWidth maxWidth="md" open={props.open} onClose={props.handleClose} aria-labelledby="alert-dialog-title" aria-describedby="alert-dialog-description">
-         <DialogTitle>Camera</DialogTitle>
+         <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', px: { md: 10, xs: 2 }, }}>
+            Camera 
+            <Box 
+               component='span' 
+               onClick={() => {
+                  if(cameraType =='user') {
+                     setCameraType('environment')
+                  }else{
+                     setCameraType('user')
+                  }
+               }} 
+               sx={{ cursor: 'pointer', display: 'flex', gap: 1, fontSize: '0.9rem', alignItems: 'center' }}
+            >
+               <Cameraswitch 
+                  sx={{ 
+                     fontSize: '2rem',
+                  }}
+               />
+               Switch Camera
+            </Box>
+         </DialogTitle>
          <DialogContent ref={ref}>
             <Camera
-               idealFacingMode="user"
+               idealFacingMode={cameraType}
                isSilentMode={true}
                onTakePhoto = {(dataUri) => { 
                   let blob = DataURIToBlob(dataUri) 
