@@ -1052,6 +1052,15 @@ const Index = () => {
                         >
                            Export
                         </Button>
+                        <Button
+                           sx={{ ml: 2 }}
+                           color='success'
+                           variant="contained"
+                           onClick={() => ''}
+                           startIcon={<Download />}
+                        >
+                           Import
+                        </Button>
                      </Box>
                   </div>
                </div>
