@@ -446,6 +446,12 @@ export default function HelpAdmin() {
                                         select
                                         label="Category"
                                         value={data.category}
+                                        onChange={(e) => {
+                                          setData({
+                                             ...data,
+                                             category: e.target.value
+                                          })
+                                        }}
                                     >
                                         <MenuItem value="it">IT</MenuItem>
                                         <MenuItem value="non-it">Non IT</MenuItem>
