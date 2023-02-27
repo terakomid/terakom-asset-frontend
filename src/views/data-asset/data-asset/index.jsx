@@ -69,7 +69,7 @@ export const longUsageFormater = (data) => {
    const { long_usage } = data
    const year = !!long_usage?.y && !!long_usage?.y !== 0 ? `${long_usage?.y} Years, ` : ''
    const month = !!long_usage?.m && !!long_usage?.m !== 0 ? `${long_usage?.m} Months, ` : ''
-   const day = !!long_usage?.d && !!long_usage?.d !== 0 ? `${long_usage?.m} Days` : ''
+   const day = !!long_usage?.d && !!long_usage?.d !== 0 ? `${long_usage?.d} Days` : ''
    return `${year}${month}${day}`
 }
 
