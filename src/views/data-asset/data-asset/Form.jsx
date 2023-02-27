@@ -63,6 +63,7 @@ import { DataURIToBlob } from "../../../help/DataUriToBlob";
 import Camera from "react-html5-camera-photo";
 import 'react-html5-camera-photo/build/css/index.css';
 import { Permission } from "../../../component/Permission";
+import { longUsageFormater } from './index'
 
 const role = ["Admin Department", "Employee"]
 
@@ -1614,6 +1615,18 @@ const Form = (props) => {
                                     error={typeof errors?.sap_code !== "undefined" ? true : false}
                                  />
                               </Grid>
+                              {props.detail ? 
+                                 <Grid item md={12} xs={12}>
+                                    <TextField
+                                       disabled={true}
+                                       value={longUsageFormater(props.data)}
+                                       label="Long Usage"
+                                       fullWidth
+                                    />
+                                 </Grid>
+                              
+                              : null
+                              }
                            </Grid>
                         </CardContent>
                      </Card>
