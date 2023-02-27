@@ -63,6 +63,7 @@ import { Permission } from "../../../component/Permission";
 import { NumberFormat } from "../../../component/Format";
 import { exportTableToExcel } from "../../../help/ExportToExcel";
 import { ImportModal } from "../../../component/ImportModal";
+import { longUsageFormater } from "../data-asset";
 
 const ModalFilter = (props) => {
    const [loading, setLoading] = useState(false);
@@ -693,12 +694,13 @@ const RowComponent = (props) => {
             <TableCell>{props.data.asset_code}</TableCell>
             <TableCell>{props.data.asset_name}</TableCell>
             <TableCell>{props.data.employee.name}</TableCell>
-            <TableCell>{props.data.department.dept}</TableCell>
-            <TableCell>{`${props.data.location.code} - ${props.data.location.location}`}</TableCell>
+            <TableCell>{props.data.department === null ? "-" : props.data.department.dept}</TableCell>
+            <TableCell>{`${props.data.location === null ? " " : props.data.location.code} - ${props.data.location === null ? " ": props.data.location.location}`}</TableCell>
             <TableCell>{props.data.category.category}</TableCell>
             <TableCell>{props.data.condition.condition}</TableCell>
             <TableCell>{moment(props.data.capitalized).format("ll")}</TableCell>
             <TableCell>{props.data.sub_category.useful_life}</TableCell>
+            <TableCell>{longUsageFormater(props.data)}</TableCell>
             {props.user.role !== "Employee" && (
                <>
                   <TableCell>{NumberFormat(props.data.acquisition_value, "Rp")}</TableCell>
@@ -749,95 +751,132 @@ const TableExport = (props) => {
       <table id="table-export" style={{ display: "none" }}>
          <thead>
             <tr>
-               <th>No</th>
-               <th>Asset Type</th>
-               <th>Asset Code</th>
-               <th>Category</th>
-               <th>Sub Category</th>
-               <th>Asset Name</th>
-               <th>Asset Spesification</th>
-               <th>Useful Life</th>
-               <th>Capitalized On</th>
-               <th>SAP Code</th>
-               <th>Employee Name</th>
-               <th>Location</th>
-               <th>Department</th>
-               <th>Asset Condition</th>
-               <th>Latitude</th>
-               <th>Longitude</th>
-               <th>Cons Center Name</th>
-               <th>Acquisition Value</th>
-               <th>Depreciation</th>
-               <th>Vendor Name</th>
-               <th>Book Value</th>
-               <th>Device</th>
-               <th>Type</th>
-               <th>Brand</th>
-               <th>Monitor INC</th>
-               <th>Model Brand</th>
-               <th>Mac Address</th>
-               <th>Warranty Expiry</th>
-               <th>Computer Name</th>
-               <th>DLP</th>
-               <th>SOC</th>
-               <th>SN NB and PC</th>
-               <th>Processor</th>
-               <th>OS</th>
-               <th>SN Windows</th>
-               <th>MS Office</th>
+               <th>asset_type</th>
+               <th>asset_code</th>
+               <th>category_code</th>
+               <th>category_name</th>
+               <th>sub_category</th>
+               <th>asset_name</th>
+               <th>specification</th>
+               <th>useful_life</th>
+               <th>long_usage</th>
+               <th>capitalized</th>
+               <th>sap_code</th>
+               <th>employee_id</th>
+               <th>employee_name</th>
+               <th>location_code</th>
+               <th>location_name</th>
+               <th>department_id</th>
+               <th>department_name</th>
+               <th>condition_id</th>
+               <th>condition_name</th>
+               <th>latitude</th>
+               <th>longitude</th>
+               <th>cost_center_code</th>
+               <th>cost_center_name</th>
+               <th>acquisition_value</th>
+               <th>depreciation</th>
+               <th>vendor_code</th>
+               <th>vendor_name</th>
+               <th>book_value</th>
+               <th>device_id</th>
+               <th>device_name</th>
+               <th>type</th>
+               <th>brand_id</th>
+               <th>brand_name</th>
+               <th>monitor_inch</th>
+               <th>model_brand</th>
+               <th>mac_address</th>
+               <th>warranty</th>
+               <th>computer_name</th>
+               <th>dlp</th>
+               <th>soc</th>
+               <th>snnbpc</th>
+               <th>processor_id</th>
+               <th>processor_name</th>
+               <th>hardware</th>
+               <th>os_id</th>
+               <th>os_name</th>
+               <th>sn_windows</th>
+               <th>office_id</th>
+               <th>office_name</th>
                <th>SN Office</th>
-               <th>Antivirus</th>
-               <th>Notes</th>
-               <th>Attachment</th>
+               <th>antivirus_id</th>
+               <th>antivirus_name</th>
+               <th>notes</th>
+               <th>attachment</th>
+               <th>picture</th>
             </tr>
          </thead>
          <tbody>
             {props.data.map((val, i) => {
                return (
                   <tr key={i}>
-                     <td>{i + 1}</td>
                      <td>{val.asset_type}</td>
                      <td>{val.asset_code}</td>
+                     <td>{val.category.code}</td>
                      <td>{val.category.category}</td>
                      <td>{val.sub_category.sub_category}</td>
                      <td>{val.asset_name}</td>
                      <td>{val.specification}</td>
                      <td>{val.useful_life}</td>
-                     <td>{val.capitalized}</td>
-                     <td>{val.sap_code}</td>
-                     <td>{`${val.employee.code} - ${val.employee.name}`}</td>
-                     <td>{`${val.location.code} - ${val.location.location}`}</td>
+                     <td>{longUsageFormater(val)}</td>
+                     <td>=TEXT("{val.capitalized}";"yyyy/MM/DD")</td>
+                     <td>'{val.sap_code}</td>
+                     <td>{val.employee.code}</td>
+                     <td>{val.employee.name}</td>
+                     <td>{val.location.code}</td>
+                     <td>{val.location.location}</td>
+                     <td>{val.department.id}</td>
                      <td>{val.department.dept}</td>
+                     <td>{val.condition.id}</td>
                      <td>{val.condition.condition}</td>
                      <td>{val.latitude}</td>
                      <td>{val.longitude}</td>
-                     <td>{`${val.cost.code} ${val.cost.name}`}</td>
+                     <td>{val.cost.code}</td>
+                     <td>{val.cost.name}</td>
                      <td>{val.acquisition_value}</td>
-                     <td>{val.depreciation == 1 ? "yes" : "no"}</td>
-                     <td>{`${val.vendor.code} - ${val.vendor.name}`}</td>
+                     <td>{val.depreciation == 1 ? 1 : 0}</td>
+                     <td>{val.vendor.code}</td>
+                     <td>{val.vendor.name}</td>
                      <td>{val.book_value}</td>
+                     <td>{val.device ? val.device.id : ""}</td>
                      <td>{val.device ? val.device.sub_type : ""}</td>
                      <td>{val.type}</td>
+                     <td>{val.brand ? val.brand.id : ""}</td>
                      <td>{val.brand ? val.brand.sub_type : ""}</td>
                      <td>{val.monitor_inch}</td>
                      <td>{val.model_brand}</td>
                      <td>{val.mac_address}</td>
-                     <td>{val.warranty}</td>
+                     <td>{val.warranty === null ? null : `=TEXT("${val.warranty}";"yyyy-MM-DD")`}</td>
                      <td>{val.computer_name}</td>
                      <td>{val.dlp}</td>
                      <td>{val.soc}</td>
                      <td>{val.snnbpc}</td>
+                     <td>{val.processor ? val.processor.id : ""}</td>
                      <td>{val.processor ? val.processor.sub_type : ""}</td>
+                     <td>{val.hardware ? val.hardware.sub_type : ""}</td>
+                     <td>{val.os ? val.os.id : ""}</td>
                      <td>{val.os ? val.os.sub_type : ""}</td>
                      <td>{val.sn_windows}</td>
+                     <td>{val.office ? val.office.id : ""}</td>
                      <td>{val.office ? val.office.sub_type : ""}</td>
                      <td>{val.sn_office}</td>
+                     <td>{val.antivirus ? val.antivirus.id : ""}</td>
                      <td>{val.antivirus ? val.antivirus.sub_type : ""}</td>
                      <td>{val.notes}</td>
                      <td>
                         {val.evidence.length > 0 &&
-                           val.evidence.map((v) => (
-                              <a href={v.file}>
+                           val.evidence.map((v, i) => (
+                              <a key={i} href={v.file}>
+                                 {v.file.split("/").pop()} <br />
+                              </a>
+                           ))}
+                     </td>
+                     <td>
+                        {val.picture.length > 0 &&
+                           val.picture.map((v, i) => (
+                              <a key={i} href={v.file}>
                                  {v.file.split("/").pop()} <br />
                               </a>
                            ))}
@@ -1144,6 +1183,7 @@ const Index = () => {
                                        <TableCell>Asset Condition</TableCell>
                                        <TableCell>Capitalized On</TableCell>
                                        <TableCell>Useful Life</TableCell>
+                                       <TableCell>Long Usage</TableCell>
                                        {user.role !== "Employee" && (
                                           <>
                                              <TableCell>Acquisition Value</TableCell>

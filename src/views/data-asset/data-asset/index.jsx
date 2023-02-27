@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import {
    Button,
    Card,
@@ -64,6 +64,14 @@ import { Permission } from "../../../component/Permission";
 import { NumberFormat } from "../../../component/Format";
 import { exportTableToExcel } from "../../../help/ExportToExcel";
 import { ImportModal } from "../../../component/ImportModal";
+
+export const longUsageFormater = (data) => {
+   const { long_usage } = data
+   const year = !!long_usage?.y && !!long_usage?.y !== 0 ? `${long_usage?.y} Years, ` : ''
+   const month = !!long_usage?.m && !!long_usage?.m !== 0 ? `${long_usage?.m} Months, ` : ''
+   const day = !!long_usage?.d && !!long_usage?.d !== 0 ? `${long_usage?.m} Days` : ''
+   return `${year}${month}${day}`
+}
 
 const ButtonSupport = () => {
    const [url, setUrl] = useState({
@@ -766,6 +774,7 @@ const RowComponent = (props) => {
             <TableCell>{props.data.condition.condition}</TableCell>
             <TableCell>{moment(props.data.capitalized).format("ll")}</TableCell>
             <TableCell>{props.data.sub_category.useful_life}</TableCell>
+            <TableCell>{longUsageFormater(props.data)}</TableCell>
             {props.user.role !== "Employee" && (
                <>
                   <TableCell>{NumberFormat(props.data.acquisition_value, "Rp")}</TableCell>
@@ -824,6 +833,7 @@ const TableExport = (props) => {
                <th>asset_name</th>
                <th>specification</th>
                <th>useful_life</th>
+               <th>long_usage</th>
                <th>capitalized</th>
                <th>sap_code</th>
                <th>employee_id</th>
@@ -884,6 +894,7 @@ const TableExport = (props) => {
                      <td>{val.asset_name}</td>
                      <td>{val.specification}</td>
                      <td>{val.useful_life}</td>
+                     <td>{longUsageFormater(val)}</td>
                      <td>=TEXT("{val.capitalized}";"yyyy/MM/DD")</td>
                      <td>'{val.sap_code}</td>
                      <td>{val.employee.code}</td>
@@ -1278,6 +1289,7 @@ const Index = () => {
                                        <TableCell>Asset Condition</TableCell>
                                        <TableCell>Capitalized On</TableCell>
                                        <TableCell>Useful Life</TableCell>
+                                       <TableCell>Long Usage</TableCell>
                                        {user.role !== "Employee" && (
                                           <>
                                              <TableCell>Acquisition Value</TableCell>
