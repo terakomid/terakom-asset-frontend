@@ -45,7 +45,7 @@ export default function ResetPassword() {
       <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100%" }}>
          <Card sx={{ width: "400px" }}>
             <CardContent sx={{ textAlign: "center", mt: 5 }}>
-               <img alt="Logo" src="/assets/images/logo.webp" />
+               <img alt="Logo" src="/assets/images/logo-dark.png" />
                {success === false ? (
                   <Box sx={{ px: 2 }}>
                      <Typography variant="h6" mt={5} mb={2} fontWeight="bold">
