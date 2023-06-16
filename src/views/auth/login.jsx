@@ -81,7 +81,7 @@ export default function Login() {
       <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100%" }}>
          <Card sx={{ width: "400px" }}>
             <CardContent sx={{ textAlign: "center", mt: 5 }}>
-               <img alt="Logo" src="/assets/images/logo-dark.png" />
+               <img alt="Logo" src="/assets/images/fix asset .png" height="150" />
                <Typography variant="h6" my={5} fontWeight="bold" color="text.primary">
                   Asset Management System
                </Typography>
