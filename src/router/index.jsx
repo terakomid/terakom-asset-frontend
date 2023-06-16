@@ -40,6 +40,9 @@ import It from "../views/master-data/it";
 import ItSubType from "../views/master-data/it-subtype";
 import HelpAdmin from "../views/master-data/help-admin";
 
+// Data stock
+import DataStock from '../views/data-stock'
+import DataStockByCategory from '../views/data-stock/data-stock-by-category'
 
 import DataAsset from "../views/data-asset/data-asset";
 import AssetIT from "../views/data-asset/data-asset/IT/Add";
@@ -306,7 +309,24 @@ export default function Router() {
                   </Middleware.After>
                }
             />
-            
+
+            {/* Data Stock */}
+            <Route
+               path="/data-stock"
+               element={
+                  <Middleware.After>
+                     <Layout render={<DataStock />} />
+                  </Middleware.After>
+               }
+            />
+            <Route
+               path="/data-stock/:id"
+               element={
+                  <Middleware.After>
+                     <Layout render={<DataStockByCategory />} />
+                  </Middleware.After>
+               }
+            />
 
             {/* Data Asset */}
             <Route

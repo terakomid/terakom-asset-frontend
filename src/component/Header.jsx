@@ -137,15 +137,15 @@ export default function Header() {
       <header id="page-topbar">
          <Notifications />
          <div className="navbar-header bg-primary">
-            <div className="d-flex">
+            <div className="d-flex align-items-center">
                {/* LOGO */}
                <div className="navbar-brand-box bg-white px-1">
                   <Link to="/dashboard" className="logo logo-dark">
                      <span className="logo-sm">
-                        <img src="/assets/images/logo-sm.png" alt="" height="17" />
+                        <img src="/assets/images/fix asset .png" alt="" height="17" />
                      </span>
                      <span className="logo-lg">
-                        <img src="/assets/images/logo-dark.png" alt="" height="50" />
+                        <img src="/assets/images/fix asset .png" alt="" height="100" />
                      </span>
                   </Link>
 
